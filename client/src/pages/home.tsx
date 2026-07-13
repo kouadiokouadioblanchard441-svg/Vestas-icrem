@@ -50,7 +50,7 @@ export default function HomePage() {
   const telegramGroupLink = settings?.groupLink || "https://t.me/vestasgroup";
 
   return (
-    <div className="flex flex-col min-h-full" style={{ background: "#f0f2f5" }}>
+    <div className="flex flex-col min-h-full" style={{ background: "#87CEEB" }}>
 
       {/* ── POPUP NOTIFICATION ── */}
       {showPopup && (
