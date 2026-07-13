@@ -184,7 +184,7 @@ export default function AccountPage() {
         <div className="mx-4 mt-3">
           <button
             onClick={handleLogout}
-            className="w-full py-4 rounded-2xl text-sm font-bold border-2 border-[#F59E0B] text-[#F59E0B] bg-white active:bg-green-50"
+            className="w-full py-4 rounded-2xl text-sm font-bold border-2 border-red-600 text-red-600 bg-white active:bg-red-50"
             data-testid="button-logout"
           >
             Déconnexion
