@@ -154,33 +154,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ── Shortcut vers les produits ── */}
-      <div className="mx-3 mt-3">
-        <button
-          onClick={() => navigate("/invest")}
-          className="w-full flex items-center justify-between bg-white rounded-2xl shadow-sm px-5 py-4 active:scale-[0.98] transition-transform"
-          data-testid="button-go-products"
-        >
-          <div className="flex items-center gap-3">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: "linear-gradient(135deg, #00A651, #00C853)" }}
-            >
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" />
-              </svg>
-            </div>
-            <div className="text-left">
-              <p className="font-bold text-gray-800 text-sm">Voir nos produits</p>
-              <p className="text-gray-400 text-xs">Investissez et gagnez chaque jour</p>
-            </div>
-          </div>
-          <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-
       <div className="pb-24" />
     </div>
   );
