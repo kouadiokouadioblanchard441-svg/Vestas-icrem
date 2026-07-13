@@ -254,7 +254,7 @@ export default function TasksPage() {
                         </button>
                       ) : (
                         <span className="bg-gray-100 text-gray-400 text-[10px] font-semibold px-2.5 py-1.5 rounded-full block text-center">
-                          En cours
+                          En attente
                         </span>
                       )}
                     </div>
