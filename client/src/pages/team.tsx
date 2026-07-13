@@ -73,7 +73,7 @@ export default function TeamPage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-full pb-24" style={{ background: "#F0F2F5" }}>
+    <div className="flex flex-col min-h-full pb-24" style={{ background: "#87CEEB" }}>
 
       {/* ── Mon équipe header ── */}
       <div className="bg-white px-4 pt-5 pb-4 flex items-center justify-between shadow-sm">
