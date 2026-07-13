@@ -151,30 +151,6 @@ export default function AccountPage() {
           </div>
         </div>
 
-        {/* ── Récompense Salariale banner ── */}
-        <div className="mx-4 mt-4">
-          <button
-            onClick={() => navigate("/salary-bonus")}
-            className="w-full rounded-2xl overflow-hidden text-left active:scale-[0.98] transition-transform"
-            style={{ background: "linear-gradient(120deg, #FFF3CD 0%, #FFE0A0 50%, #FFD166 100%)" }}
-            data-testid="button-salary-bonus"
-          >
-            <div className="flex items-center justify-between px-5 py-4">
-              <div className="flex-1">
-                <p className="font-extrabold text-base text-amber-900 leading-tight">
-                  Récompense <span className="text-amber-700">Salariale</span>
-                </p>
-                <p className="font-extrabold text-base text-amber-900 leading-tight">Quotidienne</p>
-                <p className="text-amber-700 text-xs mt-1.5">Plus vous invitez, plus vous recevez</p>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-                <img src={iconRevenu} alt="" className="w-10 h-10 object-contain" />
-                <span className="text-xs font-bold text-amber-800 whitespace-nowrap">Vérifiez les détails &gt;&gt;</span>
-              </div>
-            </div>
-          </button>
-        </div>
-
         {/* ── Fonctions communes ── */}
         <div className="mx-4 mt-4 bg-white rounded-2xl overflow-hidden shadow-sm">
           <p className="text-gray-500 text-xs font-semibold uppercase tracking-widest px-5 pt-4 pb-3">
