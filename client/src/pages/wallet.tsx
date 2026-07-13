@@ -10,6 +10,12 @@ import { getPaymentMethodsForCountry, type ApiCountry } from "@/lib/countries";
 import { Loader2, Plus, Trash2, CreditCard, ChevronLeft, ChevronRight, Shield, Check } from "lucide-react";
 import { Link, useLocation, useSearch } from "wouter";
 import type { WithdrawalWallet } from "@shared/schema";
+import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
+
+function maskAccountNumber(num: string): string {
+  if (num.length <= 6) return num;
+  return num.slice(0, 2) + "****" + num.slice(6);
+}
 
 const walletSchema = z.object({
   accountName: z.string().min(2, "Nom du titulaire requis"),
@@ -253,118 +259,153 @@ export default function WalletPage() {
 
   /* ─── LIST VIEW ─── */
   return (
-    <div className="flex flex-col min-h-full bg-gray-50">
+    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
 
       {/* Header */}
-      <div
-        className="flex items-center px-4 py-4"
-        style={{ background: "linear-gradient(135deg, #00A651, #008C3A)" }}
-      >
+      <div className="flex items-center px-4 pt-10 pb-4">
         <Link href={backLink}>
-          <button className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20" data-testid="button-back">
-            <ChevronLeft className="w-5 h-5 text-white" />
+          <button className="p-1" data-testid="button-back">
+            <ChevronLeft className="w-6 h-6 text-gray-700" />
           </button>
         </Link>
-        <h1 className="flex-1 text-center text-white font-bold text-base">
-          {selectMode ? "Sélectionner un compte" : "Liste des comptes bancaires"}
+        <h1 className="flex-1 text-center text-gray-800 font-bold text-base mr-6">
+          Moyen de retrait
         </h1>
-        {!selectMode ? (
-          <button
-            onClick={() => setShowForm(true)}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20"
-            data-testid="button-add-wallet-icon"
-          >
-            <Plus className="w-5 h-5 text-white" />
-          </button>
-        ) : (
-          <div className="w-9" />
-        )}
       </div>
 
-      {/* Wallet list */}
-      <div className="flex-1 px-4 pt-4 pb-28 space-y-3">
+      {/* Content */}
+      <div className="px-4 pt-2 pb-6">
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="w-6 h-6 animate-spin text-[#00A651]" />
+            <Loader2 className="w-6 h-6 animate-spin text-white" />
           </div>
         ) : wallets && wallets.length > 0 ? (
-          wallets.map((wallet) => (
-            <div
-              key={wallet.id}
-              onClick={() => selectMode && handleSelectWallet(wallet)}
-              className={`bg-white rounded-2xl shadow-sm p-4 flex items-center gap-3 ${
-                selectMode ? "cursor-pointer active:opacity-80" : ""
-              } ${wallet.isDefault ? "border-l-4 border-[#00A651]" : ""}`}
-              data-testid={`wallet-card-${wallet.id}`}
-            >
-              {/* Icon */}
-              <div className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                <CreditCard className="w-5 h-5 text-gray-500" />
-              </div>
+          /* ── Cards view ── */
+          <div className="space-y-4">
+            {wallets.map((wallet) => (
+              <div
+                key={wallet.id}
+                onClick={() => selectMode && handleSelectWallet(wallet)}
+                className={selectMode ? "cursor-pointer active:opacity-90" : ""}
+                data-testid={`wallet-card-${wallet.id}`}
+              >
+                {/* Bank card */}
+                <div
+                  className="rounded-2xl p-5 relative overflow-hidden"
+                  style={{
+                    background: "linear-gradient(135deg, #0D47A1 0%, #1976D2 55%, #42A5F5 100%)",
+                    minHeight: 170,
+                    boxShadow: "0 10px 40px rgba(13,71,161,0.45)",
+                  }}
+                >
+                  {/* Shine diagonal */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        "linear-gradient(120deg, rgba(255,255,255,0.18) 0%, transparent 50%, rgba(255,255,255,0.06) 100%)",
+                    }}
+                  />
 
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-gray-800 text-sm">{wallet.paymentMethod}</p>
-                <p className="text-xs text-gray-500 mt-0.5 truncate">{wallet.accountName}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{wallet.accountNumber}</p>
-                {wallet.isDefault && (
-                  <div className="flex items-center gap-1 mt-1">
-                    <Shield className="w-3 h-3 text-[#00A651]" />
-                    <span className="text-xs text-[#00A651] font-medium">Par défaut</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Actions */}
-              {!selectMode && (
-                <div className="flex items-center gap-1">
-                  {!wallet.isDefault && (
-                    <button
-                      onClick={() => setDefaultMutation.mutate(wallet.id)}
-                      disabled={setDefaultMutation.isPending}
-                      className="p-2"
-                      data-testid={`button-set-default-${wallet.id}`}
-                    >
-                      <Check className="w-4 h-4 text-green-500" />
-                    </button>
+                  {/* Delete / set-default actions */}
+                  {!selectMode && (
+                    <div className="absolute top-3 right-3 flex gap-1">
+                      {!wallet.isDefault && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDefaultMutation.mutate(wallet.id); }}
+                          disabled={setDefaultMutation.isPending}
+                          className="p-1.5 rounded-full bg-white/20"
+                          data-testid={`button-set-default-${wallet.id}`}
+                        >
+                          <Check className="w-3.5 h-3.5 text-white" />
+                        </button>
+                      )}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(wallet.id); }}
+                        disabled={deleteMutation.isPending}
+                        className="p-1.5 rounded-full bg-white/20"
+                        data-testid={`button-delete-wallet-${wallet.id}`}
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-white" />
+                      </button>
+                    </div>
                   )}
-                  <button
-                    onClick={() => deleteMutation.mutate(wallet.id)}
-                    disabled={deleteMutation.isPending}
-                    className="p-2"
-                    data-testid={`button-delete-wallet-${wallet.id}`}
-                  >
-                    <Trash2 className="w-4 h-4 text-[#00A651]" />
-                  </button>
-                </div>
-              )}
 
-              {selectMode && (
-                <ChevronRight className="w-4 h-4 text-gray-300 flex-shrink-0" />
-              )}
-            </div>
-          ))
-        ) : (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
-              <CreditCard className="w-8 h-8 text-[#00A651]" />
-            </div>
-            <p className="text-gray-500 text-sm">Aucun compte bancaire enregistré</p>
-            <p className="text-gray-400 text-xs mt-1">Ajoutez un compte pour effectuer des retraits</p>
+                  {/* Account number */}
+                  <p className="text-white font-mono text-sm leading-relaxed tracking-wider mt-6 mb-4 break-all">
+                    {maskAccountNumber(wallet.accountNumber)}
+                  </p>
+
+                  {/* Bottom row: name + chip */}
+                  <div className="flex items-end justify-between mt-3">
+                    <div>
+                      <p className="text-white/60 text-xs mb-0.5">{wallet.paymentMethod}</p>
+                      <p className="text-white font-semibold text-sm">{wallet.accountName}</p>
+                      {wallet.isDefault && (
+                        <div className="flex items-center gap-1 mt-1">
+                          <Shield className="w-3 h-3 text-white/70" />
+                          <span className="text-white/70 text-xs">Par défaut</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Chip */}
+                    <div
+                      className="rounded-md flex flex-col justify-between overflow-hidden"
+                      style={{
+                        width: 44,
+                        height: 34,
+                        background: "linear-gradient(135deg, #bdbdbd, #f5f5f5, #9e9e9e)",
+                        boxShadow: "inset 0 1px 3px rgba(0,0,0,0.25)",
+                      }}
+                    >
+                      {/* Chip lines */}
+                      {[0, 1, 2].map((i) => (
+                        <div
+                          key={i}
+                          className="w-full"
+                          style={{ height: 1, background: "rgba(0,0,0,0.15)", margin: `${i === 1 ? "auto" : ""} 0` }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Add more */}
+            {!selectMode && (
+              <button
+                onClick={() => setShowForm(true)}
+                className="w-full py-3.5 rounded-full text-white font-bold text-sm shadow-md mt-2"
+                style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+                data-testid="button-add-wallet"
+              >
+                + Ajouter une carte
+              </button>
+            )}
           </div>
+        ) : (
+          /* ── Empty state ── */
+          <button
+            onClick={() => setShowForm(true)}
+            className="w-full py-4 rounded-full text-white font-bold text-base shadow-md"
+            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+            data-testid="button-add-wallet"
+          >
+            Ajouter un moyen de retrait
+          </button>
         )}
       </div>
 
-      {/* Bottom add button */}
-      <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-3 bg-gray-50">
-        <button
-          onClick={() => setShowForm(true)}
-          className="w-full py-4 rounded-full text-white font-bold text-base shadow-md"
-          style={{ background: "linear-gradient(135deg, #00A651, #008C3A)" }}
-          data-testid="button-add-wallet"
-        >
-          Ajouter une carte
-        </button>
+      {/* Landscape illustration — pushed to bottom */}
+      <div className="mt-auto">
+        <img
+          src={landscapeImg}
+          alt="SpolarPV"
+          className="w-full object-cover object-top"
+          style={{ maxHeight: 300 }}
+        />
       </div>
     </div>
   );
