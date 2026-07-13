@@ -3,6 +3,7 @@ import { SiTelegram } from "react-icons/si";
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { NEWS_ARTICLES } from "@/pages/news-detail";
 
 const jollibeeLogo = "/spolarpv-logo.svg";
 import heroImg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
@@ -152,6 +153,41 @@ export default function HomePage() {
             <span className="text-gray-700 text-xs font-medium">Service Client</span>
           </button>
         </div>
+      </div>
+
+      {/* ── Info Cards ── */}
+      <div className="mx-3 mt-3 space-y-3">
+        <p className="text-gray-700 font-bold text-sm px-1">Centre d'informations</p>
+        {NEWS_ARTICLES.map((article) => (
+          <button
+            key={article.id}
+            onClick={() => navigate(`/news/${article.id}`)}
+            className="w-full bg-white rounded-2xl shadow-sm overflow-hidden flex flex-row items-stretch text-left"
+            data-testid={`news-card-${article.id}`}
+          >
+            {/* Thumbnail */}
+            <div className="shrink-0 w-24" style={{ minHeight: 90 }}>
+              <img
+                src={article.image}
+                alt={article.title}
+                className="w-full h-full object-cover"
+                style={{ minHeight: 90 }}
+              />
+            </div>
+            {/* Text */}
+            <div className="flex-1 px-3 py-3 flex flex-col justify-between">
+              <p className="text-gray-900 font-bold text-xs leading-snug line-clamp-2 mb-1">
+                {article.title}
+              </p>
+              <p className="text-gray-400 text-xs leading-relaxed line-clamp-2">
+                {article.summary}
+              </p>
+              <p className="text-xs font-semibold mt-1" style={{ color: "#00A651" }}>
+                {article.date}
+              </p>
+            </div>
+          </button>
+        ))}
       </div>
 
       <div className="pb-24" />

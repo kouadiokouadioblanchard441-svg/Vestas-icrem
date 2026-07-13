@@ -35,6 +35,7 @@ import RewardsPage from "@/pages/rewards";
 import WithdrawalHistoryPage from "@/pages/withdrawal-history";
 import DepositOrdersPage from "@/pages/deposit-orders";
 import SalaryBonusPage from "@/pages/salary-bonus";
+import NewsDetailPage from "@/pages/news-detail";
 import NotFound from "@/pages/not-found";
 import { Loader2 } from "lucide-react";
 
@@ -294,6 +295,13 @@ function Router() {
         <ProtectedRoute>
           <AppLayout>
             <SalaryBonusPage />
+          </AppLayout>
+        </ProtectedRoute>
+      </Route>
+      <Route path="/news/:id">
+        <ProtectedRoute>
+          <AppLayout>
+            <NewsDetailPage />
           </AppLayout>
         </ProtectedRoute>
       </Route>
