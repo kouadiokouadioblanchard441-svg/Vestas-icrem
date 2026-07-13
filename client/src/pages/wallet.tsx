@@ -265,7 +265,7 @@ export default function WalletPage() {
                   >
                     <span className="text-gray-800 font-medium text-sm">{method}</span>
                     {selectedMethod === method && (
-                      <Check className="w-4 h-4 text-[#00A651]" />
+                      <Check className="w-4 h-4 text-[#F59E0B]" />
                     )}
                   </button>
                 ))}

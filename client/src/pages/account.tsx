@@ -184,7 +184,7 @@ export default function AccountPage() {
         <div className="mx-4 mt-3">
           <button
             onClick={handleLogout}
-            className="w-full py-4 rounded-2xl text-sm font-bold border-2 border-[#00A651] text-[#00A651] bg-white active:bg-green-50"
+            className="w-full py-4 rounded-2xl text-sm font-bold border-2 border-[#F59E0B] text-[#F59E0B] bg-white active:bg-green-50"
             data-testid="button-logout"
           >
             Déconnexion
@@ -197,7 +197,7 @@ export default function AccountPage() {
             <button
               onClick={handleAdminClick}
               className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl"
-              style={{ background: "linear-gradient(135deg, #00A651, #008C3A)" }}
+              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
               data-testid="button-admin"
             >
               <Shield className="w-5 h-5 text-white" />
@@ -237,7 +237,7 @@ export default function AccountPage() {
               }}
               disabled={verifyPinMutation.isPending || adminPin.length < 4}
               className="w-full"
-              style={{ backgroundColor: "#00A651" }}
+              style={{ backgroundColor: "#F59E0B" }}
               data-testid="button-verify-pin"
             >
               {verifyPinMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}

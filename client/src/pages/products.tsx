@@ -151,7 +151,7 @@ export default function ProductsPage() {
                     onClick={() => handleBuy(product)}
                     disabled={isPending}
                     className="mt-2 w-full py-2 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-1 disabled:opacity-60"
-                    style={{ background: "linear-gradient(135deg, #00A651, #00C853)" }}
+                    style={{ background: "linear-gradient(135deg, #F59E0B, #FBBF24)" }}
                     data-testid={`button-purchase-${product.id}`}
                   >
                     {isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : "Acheter"}

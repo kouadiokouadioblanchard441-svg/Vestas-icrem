@@ -1,1 +1,2 @@
 - [Vestas Platform Setup](vestas-platform.md) — Platform rebranded from Intel/Jollibee → Vestas (wind energy). Key colors, assets, and DB quirks documented.
+- [SpolarPV brand color migration](spolarpv-branding.md) — green (#00A651 family) brand replaced by orange + sky-blue (#87CEEB); semantic green-* Tailwind classes left untouched.

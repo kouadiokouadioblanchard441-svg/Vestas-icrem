@@ -187,7 +187,7 @@ export default function RegisterPage() {
             type="submit"
             disabled={isLoading}
             className="w-full h-14 rounded-full text-white font-bold text-base disabled:opacity-50 mt-4"
-            style={{ background: "#00A651", border: "2px solid #008C3A" }}
+            style={{ background: "#F59E0B", border: "2px solid #D97706" }}
             data-testid="button-register"
           >
             {isLoading ? (

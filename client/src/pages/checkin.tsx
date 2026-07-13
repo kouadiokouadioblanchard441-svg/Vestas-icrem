@@ -76,7 +76,7 @@ export default function CheckinPage() {
 
         {/* Red card */}
         <div className="mx-4">
-          <div className="bg-[#00A651] rounded-3xl pt-16 pb-6 px-5 shadow-lg">
+          <div className="bg-[#F59E0B] rounded-3xl pt-16 pb-6 px-5 shadow-lg">
             <h2 className="text-white text-2xl font-bold text-center">Pointage quotidien</h2>
             <p className="text-white/80 text-sm text-center mt-1 mb-5">
               Activer les récompenses quotidiennes
@@ -108,7 +108,7 @@ export default function CheckinPage() {
         {/* Cumulated rewards card */}
         <div className="mx-4 mt-3">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm py-5 px-6 text-center">
-            <p className="text-[#00A651] text-2xl font-bold">{currency} {totalBonusClaimed}</p>
+            <p className="text-[#F59E0B] text-2xl font-bold">{currency} {totalBonusClaimed}</p>
             <p className="text-gray-500 text-sm mt-1">Récompenses cumulées</p>
           </div>
         </div>
@@ -120,7 +120,7 @@ export default function CheckinPage() {
               onClick={() => claimMutation.mutate()}
               disabled={claimMutation.isPending}
               className="w-full py-4 rounded-full text-white font-bold text-lg shadow-md disabled:opacity-60"
-              style={{ background: "linear-gradient(135deg, #00A651, #008C3A)" }}
+              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
               data-testid="button-pointer"
             >
               {claimMutation.isPending ? (

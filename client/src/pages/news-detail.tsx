@@ -106,7 +106,7 @@ export default function NewsDetailPage() {
         <h1 className="text-gray-900 font-extrabold text-base leading-snug mb-3">
           {article.title}
         </h1>
-        <div className="w-12 h-1 rounded-full mb-4" style={{ background: "#00A651" }} />
+        <div className="w-12 h-1 rounded-full mb-4" style={{ background: "#F59E0B" }} />
         {article.body.split("\n\n").map((paragraph, i) => (
           <p key={i} className="text-gray-600 text-sm leading-relaxed mb-3">
             {paragraph}

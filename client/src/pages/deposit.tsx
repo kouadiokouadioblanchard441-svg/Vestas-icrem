@@ -261,13 +261,13 @@ export default function DepositPage() {
           >
             <div>
               <p className="text-xs text-gray-500">Montant à déposer</p>
-              <p className="text-xl font-bold text-[#00A651]">
+              <p className="text-xl font-bold text-[#F59E0B]">
                 {Number(amount).toLocaleString()} {currency}
               </p>
             </div>
             <button
               onClick={() => setStep("amount")}
-              className="text-xs text-[#00A651] underline"
+              className="text-xs text-[#F59E0B] underline"
               data-testid="button-change-amount"
             >
               Modifier
@@ -281,7 +281,7 @@ export default function DepositPage() {
 
             {numbersLoading ? (
               <div className="flex items-center justify-center py-16">
-                <Loader2 className="w-8 h-8 animate-spin text-[#00A651]" />
+                <Loader2 className="w-8 h-8 animate-spin text-[#F59E0B]" />
               </div>
             ) : paymentNumbersList.length === 0 ? (
               <div className="text-center py-14 text-gray-400">
@@ -301,12 +301,12 @@ export default function DepositPage() {
                       <img src={num.logoUrl} alt={num.operatorName} className="w-12 h-12 rounded-xl object-contain border border-gray-100" />
                     ) : (
                       <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center">
-                        <Phone className="w-6 h-6 text-[#00A651]" />
+                        <Phone className="w-6 h-6 text-[#F59E0B]" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-gray-900 text-sm">{num.operatorName}</p>
-                      <p className="text-[#00A651] font-mono font-bold text-lg">{num.phone}</p>
+                      <p className="text-[#F59E0B] font-mono font-bold text-lg">{num.phone}</p>
                       <p className="text-gray-500 text-xs">{num.ownerName}</p>
                     </div>
                     <button
@@ -316,13 +316,13 @@ export default function DepositPage() {
                     >
                       {copiedId === num.id
                         ? <CheckCircle className="w-5 h-5 text-green-500" />
-                        : <Copy className="w-5 h-5 text-[#00A651]" />}
+                        : <Copy className="w-5 h-5 text-[#F59E0B]" />}
                     </button>
                   </div>
                   <button
                     onClick={() => { setSelectedNumber(num); setStep("form"); }}
                     className="w-full py-3.5 font-bold text-sm text-white flex items-center justify-center gap-2"
-                    style={{ background: "linear-gradient(135deg, #00A651 0%, #008C3A 100%)" }}
+                    style={{ background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)" }}
                     data-testid={`button-select-${num.id}`}
                   >
                     J'ai envoyé l'argent sur ce numéro <ArrowRight className="w-4 h-4" />
@@ -358,12 +358,12 @@ export default function DepositPage() {
                 <img src={selectedNumber.logoUrl} alt={selectedNumber.operatorName} className="w-10 h-10 rounded-lg object-contain" />
               ) : (
                 <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center">
-                  <Phone className="w-5 h-5 text-[#00A651]" />
+                  <Phone className="w-5 h-5 text-[#F59E0B]" />
                 </div>
               )}
               <div className="flex-1">
                 <p className="text-xs text-gray-500">Numéro destinataire</p>
-                <p className="font-bold text-[#00A651] text-sm">{selectedNumber.operatorName} — {selectedNumber.phone}</p>
+                <p className="font-bold text-[#F59E0B] text-sm">{selectedNumber.operatorName} — {selectedNumber.phone}</p>
                 <p className="text-xs text-gray-500">{selectedNumber.ownerName}</p>
               </div>
               <div className="text-right">
