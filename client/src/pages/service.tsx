@@ -12,6 +12,7 @@ import {
 
 import heroImg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
 import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
+import { getContent } from "@/lib/content";
 
 interface LinksSettings {
   supportLink: string;
@@ -87,9 +88,17 @@ export default function ServicePage() {
     queryKey: ["/api/settings/links"],
   });
 
+  const { data: allSettings } = useQuery<Record<string, string>>({
+    queryKey: ["/api/settings"],
+  });
+
   const startHour = settings?.withdrawalStartHour || "9";
   const endHour = settings?.withdrawalEndHour || "17";
   const hoursDisplay = `${startHour}:00 - ${endHour}:00`;
+
+  const servicePageTitle = getContent(allSettings, "content_service_pageTitle", "Service client");
+  const serviceWithdrawalHoursText = getContent(allSettings, "content_service_withdrawalHoursText", "Heures de retrait : 24h.");
+  const serviceSupportHoursLabel = getContent(allSettings, "content_service_supportHoursLabel", "Horaires du service client :");
 
   const allLinks = [
     {
@@ -134,7 +143,7 @@ export default function ServicePage() {
           </button>
         </Link>
         <h1 className="flex-1 text-center text-gray-900 font-semibold text-base mr-9">
-          Service client
+          {servicePageTitle}
         </h1>
       </div>
 
@@ -171,9 +180,9 @@ export default function ServicePage() {
       <div className="mx-3 mt-3 pb-24">
         <div className="bg-white rounded-2xl shadow-sm px-6 py-5 text-center">
           <p className="text-2xl font-black text-gray-900 tracking-wide">{hoursDisplay}</p>
-          <p className="text-xs text-gray-400 mt-2">Heures de retrait : 24h.</p>
+          <p className="text-xs text-gray-400 mt-2">{serviceWithdrawalHoursText}</p>
           <p className="text-xs text-gray-400 mt-0.5">
-            Horaires du service client : {startHour}h - {endHour}h.
+            {serviceSupportHoursLabel} {startHour}h - {endHour}h.
           </p>
         </div>
       </div>

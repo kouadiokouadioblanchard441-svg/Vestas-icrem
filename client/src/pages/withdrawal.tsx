@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { ChevronLeft, ChevronRight, Info, Loader2, Plus } from "lucide-react";
+import { getContent } from "@/lib/content";
 import { Link, useLocation } from "wouter";
 import { getCountryByCode } from "@/lib/countries";
 
@@ -46,10 +47,25 @@ export default function WithdrawalPage() {
     refetchOnMount: true,
   });
 
+  const { data: allSettings } = useQuery<Record<string, string>>({
+    queryKey: ["/api/settings"],
+  });
+
   const minWithdrawal = withdrawalSettings?.minWithdrawal ?? 1500;
   const withdrawalFee = withdrawalSettings?.withdrawalFees ?? 18;
   const withdrawalStartHour = withdrawalSettings?.withdrawalStartHour ?? 9;
   const withdrawalEndHour = withdrawalSettings?.withdrawalEndHour ?? 17;
+
+  const withdrawalCtaButton = getContent(allSettings, "content_withdrawal_ctaButton", "Retirez votre argent maintenant");
+  const withdrawalInstructionsTitle = getContent(allSettings, "content_withdrawal_instructionsTitle", "Instructions de retrait");
+  const withdrawalInstruction1 = getContent(allSettings, "content_withdrawal_instruction1", `1. Le montant minimum de retrait est de ${minWithdrawal.toLocaleString()} ${currency}.`);
+  const withdrawalInstruction2 = getContent(allSettings, "content_withdrawal_instruction2", "2. Il n'y a pas de limite de temps pour les retraits, mais une limite de trois retraits par jour est autorisée.");
+  const withdrawalInstruction3 = getContent(allSettings, "content_withdrawal_instruction3", `3. Des frais de traitement de ${withdrawalFee}% seront appliqués sur chaque retrait.`);
+  const withdrawalInstruction4 = getContent(allSettings, "content_withdrawal_instruction4", "4. Les retraits seront disponibles sous 2 heures, et exceptionnellement sous 24 heures.");
+  const withdrawalInstruction5 = getContent(allSettings, "content_withdrawal_instruction5", "5. Si le retrait échoue, vérifiez que vos informations bancaires sont correctes, puis soumettez à nouveau la demande.");
+  const withdrawalInstruction6 = getContent(allSettings, "content_withdrawal_instruction6", "6. Effectuez votre première recharge et achetez des produits SpolarPV pour activer la fonction de retrait.");
+  const withdrawalWarningNoHours = getContent(allSettings, "content_withdrawal_warningNoHours", `⏰ Horaires de retrait : ${withdrawalStartHour}h00 – ${withdrawalEndHour}h00 (Fermé actuellement)`);
+  const withdrawalWarningNoProduct = getContent(allSettings, "content_withdrawal_warningNoProduct", "⚠️ Vous devez avoir un produit actif pour effectuer un retrait.");
 
   const amountAfterFees = amount ? Math.floor(Number(amount) * (1 - withdrawalFee / 100)) : 0;
   const currentHour = new Date().getHours();
@@ -239,12 +255,12 @@ export default function WithdrawalPage() {
         {/* ── Warnings ── */}
         {!isWithinWithdrawalHours && (
           <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-[#F59E0B] text-xs">
-            ⏰ Horaires de retrait : {withdrawalStartHour}h00 – {withdrawalEndHour}h00 (Fermé actuellement)
+            {withdrawalWarningNoHours}
           </div>
         )}
         {!hasActiveProduct && (
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-700 text-xs">
-            ⚠️ Vous devez avoir un produit actif pour effectuer un retrait.
+            {withdrawalWarningNoProduct}
           </div>
         )}
 
@@ -264,20 +280,20 @@ export default function WithdrawalPage() {
               Envoi en cours...
             </span>
           ) : (
-            "Retirez votre argent maintenant"
+            withdrawalCtaButton
           )}
         </button>
 
         {/* ── Instructions (texte existant conservé) ── */}
         <div className="pt-2 pb-6">
-          <p className="font-bold text-[#F59E0B] text-sm mb-3">Instructions de retrait</p>
+          <p className="font-bold text-[#F59E0B] text-sm mb-3">{withdrawalInstructionsTitle}</p>
           <div className="space-y-2.5 text-sm text-gray-600 leading-relaxed">
-            <p>1. Le montant minimum de retrait est de {minWithdrawal.toLocaleString()} {currency}.</p>
-            <p>2. Il n'y a pas de limite de temps pour les retraits, mais une limite de trois retraits par jour est autorisée.</p>
-            <p>3. Des frais de traitement de {withdrawalFee}% seront appliqués sur chaque retrait.</p>
-            <p>4. Les retraits seront disponibles sous 2 heures, et exceptionnellement sous 24 heures.</p>
-            <p>5. Si le retrait échoue, vérifiez que vos informations bancaires sont correctes, puis soumettez à nouveau la demande.</p>
-            <p>6. Effectuez votre première recharge et achetez des produits SpolarPV pour activer la fonction de retrait.</p>
+            <p>{withdrawalInstruction1}</p>
+            <p>{withdrawalInstruction2}</p>
+            <p>{withdrawalInstruction3}</p>
+            <p>{withdrawalInstruction4}</p>
+            <p>{withdrawalInstruction5}</p>
+            <p>{withdrawalInstruction6}</p>
           </div>
         </div>
       </div>

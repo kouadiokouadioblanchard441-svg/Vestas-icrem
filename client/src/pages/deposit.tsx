@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { getContent } from "@/lib/content";
 import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 import { useAuth } from "@/lib/auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -41,6 +42,12 @@ export default function DepositPage() {
     queryKey: ["/api/settings"],
   });
   const MIN_DEPOSIT = parseInt(platformSettings?.minDeposit || "4000");
+
+  const depositInfoText = getContent(platformSettings, "content_deposit_infoText", `Les services de dépôt sont disponibles 24h/24 et 7j/7. Le dépôt minimum est de ${MIN_DEPOSIT.toLocaleString()} francs CFA, sans limite maximale.`);
+  const depositWarning1 = getContent(platformSettings, "content_deposit_warning1", "Remarque importante : Ne divulguez à personne les captures d'écran de vos dépôts ni vos identifiants de transaction, car cela pourrait entraîner le vol de vos fonds.");
+  const depositWarning2 = getContent(platformSettings, "content_deposit_warning2", "Pour tout problème lié à vos dépôts, veuillez contacter immédiatement le service client de la plateforme.");
+  const depositInstruction1 = getContent(platformSettings, "content_deposit_instruction1", `1. Le dépôt minimum est de ${MIN_DEPOSIT.toLocaleString()} francs CFA.`);
+  const depositInstruction2 = getContent(platformSettings, "content_deposit_instruction2", "2. Veuillez vérifier attentivement les informations de votre compte avant d'effectuer un transfert afin d'éviter toute erreur de paiement.");
 
   const { data: paymentNumbersList = [], isLoading: numbersLoading } = useQuery<PaymentNumber[]>({
     queryKey: ["/api/payment-numbers", country],
@@ -207,24 +214,14 @@ export default function DepositPage() {
               style={{ background: "rgba(255,255,255,0.90)" }}
             >
               <p className="text-gray-700 text-sm leading-relaxed">
-                Les services de dépôt sont disponibles 24h/24 et 7j/7. Le dépôt minimum est de{" "}
-                <strong>{MIN_DEPOSIT.toLocaleString()} francs CFA</strong>, sans limite maximale.
+                {depositInfoText}
               </p>
 
               <div className="space-y-3 text-sm text-gray-700 leading-relaxed">
-                <p>
-                  Remarque importante : Ne divulguez à personne les captures d'écran de vos dépôts ni vos identifiants
-                  de transaction, car cela pourrait entraîner le vol de vos fonds.
-                </p>
-                <p>
-                  Pour tout problème lié à vos dépôts, veuillez contacter immédiatement le service client de la
-                  plateforme.
-                </p>
-                <p>1. Le dépôt minimum est de {MIN_DEPOSIT.toLocaleString()} francs CFA.</p>
-                <p>
-                  2. Veuillez vérifier attentivement les informations de votre compte avant d'effectuer un transfert
-                  afin d'éviter toute erreur de paiement.
-                </p>
+                <p>{depositWarning1}</p>
+                <p>{depositWarning2}</p>
+                <p>{depositInstruction1}</p>
+                <p>{depositInstruction2}</p>
               </div>
             </div>
           </div>
