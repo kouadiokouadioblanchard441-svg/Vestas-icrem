@@ -26,6 +26,7 @@ export default function DepositPage() {
   const [screenshotName, setScreenshotName] = useState("");
   const [paymentMessage, setPaymentMessage] = useState("");
   const [reference, setReference] = useState("");
+  const [westpayLoading, setWestpayLoading] = useState(false);
 
   const country = user?.country || "";
 
@@ -42,6 +43,7 @@ export default function DepositPage() {
     queryKey: ["/api/settings"],
   });
   const MIN_DEPOSIT = parseInt(platformSettings?.minDeposit || "4000");
+  const westpayEnabled = platformSettings?.westpayEnabled === "true";
 
   const depositInfoText = getContent(platformSettings, "content_deposit_infoText", `Les services de dépôt sont disponibles 24h/24 et 7j/7. Le dépôt minimum est de ${MIN_DEPOSIT.toLocaleString()} francs CFA, sans limite maximale.`);
   const depositWarning1 = getContent(platformSettings, "content_deposit_warning1", "Remarque importante : Ne divulguez à personne les captures d'écran de vos dépôts ni vos identifiants de transaction, car cela pourrait entraîner le vol de vos fonds.");
@@ -119,6 +121,33 @@ export default function DepositPage() {
     },
     onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
   });
+
+  const handleWestpay = async () => {
+    if (!amount || Number(amount) < MIN_DEPOSIT) {
+      toast({
+        title: "Montant invalide",
+        description: `Le minimum est de ${MIN_DEPOSIT.toLocaleString()} ${currency}`,
+        variant: "destructive",
+      });
+      return;
+    }
+    setWestpayLoading(true);
+    try {
+      const res = await fetch("/api/deposits/westpay/initiate", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: Number(amount) }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Erreur WestPay");
+      // Redirect user to WestPay hosted payment page
+      window.location.href = data.westpayUrl;
+    } catch (e: any) {
+      toast({ title: "Erreur WestPay", description: e.message, variant: "destructive" });
+      setWestpayLoading(false);
+    }
+  };
 
   const handleAmountNext = () => {
     if (!amount || Number(amount) < MIN_DEPOSIT) {
@@ -272,6 +301,49 @@ export default function DepositPage() {
           </div>
 
           <div className="p-4 space-y-3 pb-10">
+
+            {/* ── WestPay automatic option ── */}
+            {westpayEnabled && (
+              <div className="bg-white rounded-2xl border-2 border-[#F59E0B] shadow-sm overflow-hidden">
+                <div className="p-4 flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)" }}>
+                    <Zap className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-gray-900 text-sm">WestPay</p>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: "#F59E0B" }}>
+                        AUTOMATIQUE
+                      </span>
+                    </div>
+                    <p className="text-gray-500 text-xs mt-0.5">Mobile Money — paiement instantané sécurisé</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleWestpay}
+                  disabled={westpayLoading}
+                  className="w-full py-3.5 font-bold text-sm text-white flex items-center justify-center gap-2 disabled:opacity-60"
+                  style={{ background: "linear-gradient(135deg,#F59E0B 0%,#D97706 100%)" }}
+                  data-testid="button-pay-westpay"
+                >
+                  {westpayLoading ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Redirection…</>
+                  ) : (
+                    <>Payer avec WestPay <ArrowRight className="w-4 h-4" /></>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {/* ── Divider ── */}
+            {westpayEnabled && paymentNumbersList.length > 0 && (
+              <div className="flex items-center gap-3 py-1">
+                <div className="flex-1 h-px bg-gray-200" />
+                <span className="text-xs text-gray-400 font-medium">ou paiement manuel</span>
+                <div className="flex-1 h-px bg-gray-200" />
+              </div>
+            )}
+
             <p className="text-sm font-semibold text-gray-800 mb-2">
               Sélectionnez un numéro de paiement
             </p>
