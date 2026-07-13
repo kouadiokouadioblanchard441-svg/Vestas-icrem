@@ -290,7 +290,7 @@ export default function HomePage() {
                   <div className="px-2.5 pb-3 pt-2">
                     <div
                       className="w-full py-2 rounded-xl text-center text-white text-xs font-bold"
-                      style={{ background: "linear-gradient(135deg, #F4920A, #005599)" }}
+                      style={{ background: "linear-gradient(135deg, #00A651, #00C853)" }}
                     >
                       Acheter
                     </div>

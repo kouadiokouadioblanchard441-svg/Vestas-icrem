@@ -140,7 +140,7 @@ export default function InvestPage() {
                     <button
                       onClick={() => setConfirmProduct(product)}
                       className="w-full py-2 rounded-xl text-sm font-bold text-white shadow"
-                      style={{ background: "linear-gradient(135deg, #F4920A, #005599)" }}
+                      style={{ background: "linear-gradient(135deg, #00A651, #00C853)" }}
                       data-testid={`button-purchase-${product.id}`}
                     >
                       Acheter
