@@ -94,7 +94,8 @@ Preferred communication style: Simple, everyday language.
 - `SESSION_SECRET`: Secret for session encryption (optional, has fallback)
 
 ## Recent Changes (July 2026)
-- Re-imported project: installed dependencies, pushed DB schema (`npm run db:push --force`), confirmed the `Start application` workflow seeds data and serves on port 5000
+- Re-imported project (second time): reinstalled dependencies (`npm install`), pushed DB schema (`npm run db:push --force`), verified `npm run build` succeeds and the `Start application` workflow seeds data and serves on port 5000. Login page renders correctly, no client console errors beyond an expected 401 on the unauthenticated session check.
+- Note: `npx tsc --noEmit` reports pre-existing type errors in `server/routes.ts` (req.query values typed as `string | string[]`) and `server/storage.ts` (Map iteration needs `--downlevelIteration`). These don't block the dev server (tsx) or the production build (esbuild/vite), but `npm run check` will fail until fixed.
 - Fixed a leftover-from-rebranding bug: `client/src/pages/tasks.tsx` referenced an undefined `landscapeImg` (missing import); added the same import used elsewhere (`@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp`)
 
 ## Recent Changes (February 2026)
