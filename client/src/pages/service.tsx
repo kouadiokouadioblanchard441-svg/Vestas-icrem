@@ -10,7 +10,7 @@ import {
   SiYoutube,
 } from "react-icons/si";
 
-import heroImg from "@assets/vestas_112v_closeup_1783210181172.jpg";
+import heroImg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
 
 interface LinksSettings {
   supportLink: string;

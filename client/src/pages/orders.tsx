@@ -61,11 +61,11 @@ export default function OrdersPage() {
         </button>
       </div>
 
-      <div className="bg-blue-50 p-3 mx-4 mt-3 rounded-lg">
-        <p className="text-xs text-blue-700 leading-relaxed">
+      <div className="bg-orange-50 p-3 mx-4 mt-3 rounded-lg">
+        <p className="text-xs text-orange-700 leading-relaxed">
           Les revenus du produit sont credites automatiquement une fois toutes les 24 heures.
         </p>
-        <p className="text-xs text-blue-700 leading-relaxed mt-1">
+        <p className="text-xs text-orange-700 leading-relaxed mt-1">
           Vous pouvez acheter plusieurs machines pour augmenter vos revenus.
         </p>
       </div>
@@ -117,13 +117,13 @@ export default function OrdersPage() {
                       
                       <div className="space-y-0.5 text-[12px]">
                         <p className="text-gray-600">
-                          Prix : <span className="text-blue-500 font-medium">{up.product?.price?.toLocaleString() || 0} Fcfa</span>
+                          Prix : <span className="text-orange-500 font-medium">{up.product?.price?.toLocaleString() || 0} Fcfa</span>
                         </p>
                         <p className="text-gray-600">
                           Gains/jour : <span className="text-green-500 font-medium">{up.product?.dailyEarnings?.toLocaleString() || 0} Fcfa</span>
                         </p>
                         <p className="text-gray-600">
-                          Duree : <span className="text-blue-500 font-medium">{up.product?.cycleDays || 0} Jours</span>
+                          Duree : <span className="text-orange-500 font-medium">{up.product?.cycleDays || 0} Jours</span>
                         </p>
                         <p className="text-gray-600">
                           Jours restants : <span className="text-[#2196F3] font-medium">{up.daysRemaining || 0}</span>

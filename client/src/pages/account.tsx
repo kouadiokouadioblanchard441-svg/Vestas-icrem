@@ -22,8 +22,9 @@ import iconRevenu from "@assets/3309927_1783248791847.png";
 import iconSalaire from "@assets/téléchargement_(63)_1783248791872.png";
 import iconRecharger from "@assets/1-1_1783245823715.png";
 import iconRetraits from "@assets/2-1_1783245823825.png";
+import profileCardBg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
 
-const BLUE_FILTER = "brightness(0) saturate(100%) invert(27%) sepia(95%) saturate(1200%) hue-rotate(188deg) brightness(95%)";
+const ORANGE_FILTER = "brightness(0) saturate(100%) invert(55%) sepia(100%) saturate(344%) hue-rotate(355deg) brightness(88%) contrast(130%)";
 const WHITE_FILTER = "brightness(0) invert(1)";
 
 export default function AccountPage() {
@@ -96,12 +97,18 @@ export default function AccountPage() {
     <div className="flex flex-col min-h-screen" style={{ background: "#f0f2f5" }}>
       <div className="flex-1 overflow-y-auto pb-24">
 
-        {/* ── Blue top section ── */}
-        <div style={{ background: "linear-gradient(160deg, #1565C0 0%, #1976D2 70%, #1E88E5 100%)" }}>
+        {/* ── Profile top section (exhibition photo background) ── */}
+        <div
+          style={{
+            background: `linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 100%), url(${profileCardBg})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
 
           {/* Header */}
           <div className="flex items-center justify-between px-5 pt-6 pb-2">
-            <p className="text-white font-extrabold text-2xl">Moi</p>
+            <p className="text-white font-extrabold text-2xl drop-shadow">Moi</p>
             <img src={iconSalaire} alt="" className="w-8 h-8 object-contain" style={{ filter: WHITE_FILTER }} />
           </div>
 
@@ -112,10 +119,10 @@ export default function AccountPage() {
                 <img src={avatarImg} alt="avatar" className="w-full h-full object-cover" />
               </div>
               <div>
-                <p className="text-white font-bold text-base leading-tight" data-testid="text-phone">
+                <p className="text-white font-bold text-base leading-tight drop-shadow" data-testid="text-phone">
                   {phonePrefix}{user.phone}
                 </p>
-                <p className="text-white/70 text-xs mt-0.5">ID : {user.referralCode}</p>
+                <p className="text-white/80 text-xs mt-0.5 drop-shadow">ID : {user.referralCode}</p>
               </div>
             </div>
             <img src={iconWallet} alt="" className="w-16 h-16 object-contain" />
@@ -123,23 +130,23 @@ export default function AccountPage() {
 
           {/* Two balance cards */}
           <div className="px-4 pb-5 grid grid-cols-2 gap-3">
-            <div className="rounded-2xl px-4 py-3.5" style={{ background: "rgba(255,255,255,0.18)" }}>
+            <div className="rounded-2xl px-4 py-3.5" style={{ background: "rgba(0,0,0,0.35)" }}>
               <div className="flex items-center gap-2 mb-1">
                 <img src={iconWallet} alt="" className="w-7 h-7 object-contain" />
               </div>
               <p className="text-white font-extrabold text-base leading-tight" data-testid="text-balance">
                 {balance.toFixed(2)}
               </p>
-              <p className="text-white/70 text-xs mt-0.5">Solde du compte</p>
+              <p className="text-white/80 text-xs mt-0.5">Solde du compte</p>
             </div>
-            <div className="rounded-2xl px-4 py-3.5" style={{ background: "rgba(255,255,255,0.18)" }}>
+            <div className="rounded-2xl px-4 py-3.5" style={{ background: "rgba(0,0,0,0.35)" }}>
               <div className="flex items-center gap-2 mb-1">
                 <img src={iconRevenu} alt="" className="w-7 h-7 object-contain" />
               </div>
               <p className="text-white font-extrabold text-base leading-tight" data-testid="text-earnings">
                 {totalEarnings.toFixed(2)}
               </p>
-              <p className="text-white/70 text-xs mt-0.5">Revenus({currency})</p>
+              <p className="text-white/80 text-xs mt-0.5">Revenus({currency})</p>
             </div>
           </div>
         </div>
@@ -188,7 +195,7 @@ export default function AccountPage() {
                       src={item.icon}
                       alt={item.label}
                       className="w-6 h-6 object-contain"
-                      style={{ filter: item.white ? WHITE_FILTER + " " + BLUE_FILTER : BLUE_FILTER }}
+                      style={{ filter: item.white ? WHITE_FILTER + " " + ORANGE_FILTER : ORANGE_FILTER }}
                     />
                   </div>
                   <span className="text-gray-700 text-[10px] font-medium text-center leading-tight">{item.label}</span>
@@ -202,7 +209,7 @@ export default function AccountPage() {
         <div className="mx-4 mt-3">
           <button
             onClick={handleLogout}
-            className="w-full py-4 rounded-2xl text-sm font-bold border-2 border-[#1565C0] text-[#1565C0] bg-white active:bg-blue-50"
+            className="w-full py-4 rounded-2xl text-sm font-bold border-2 border-[#F4920A] text-[#F4920A] bg-white active:bg-orange-50"
             data-testid="button-logout"
           >
             Déconnexion
@@ -215,7 +222,7 @@ export default function AccountPage() {
             <button
               onClick={handleAdminClick}
               className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl"
-              style={{ background: "linear-gradient(135deg, #003366, #002244)" }}
+              style={{ background: "linear-gradient(135deg, #F4920A, #CF7C09)" }}
               data-testid="button-admin"
             >
               <Shield className="w-5 h-5 text-white" />
@@ -255,7 +262,7 @@ export default function AccountPage() {
               }}
               disabled={verifyPinMutation.isPending || adminPin.length < 4}
               className="w-full"
-              style={{ backgroundColor: "#1565C0" }}
+              style={{ backgroundColor: "#F4920A" }}
               data-testid="button-verify-pin"
             >
               {verifyPinMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}

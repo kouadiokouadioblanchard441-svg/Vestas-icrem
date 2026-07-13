@@ -208,7 +208,7 @@ export default function TeamPage() {
               <img src={lv1Img} alt="Lv1" className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(91,33,182,0.85) 0%, rgba(0,0,0,0.1) 60%)" }} />
               <div className="absolute inset-0 p-3 flex flex-col justify-between">
-                <span className="text-white font-extrabold text-xs bg-blue-900/60 px-2 py-0.5 rounded-full w-fit">VIP1</span>
+                <span className="text-white font-extrabold text-xs bg-orange-900/60 px-2 py-0.5 rounded-full w-fit">VIP1</span>
                 <div>
                   <p className="text-white font-extrabold text-2xl leading-none">{lv1Rate}%</p>
                   <p className="text-white/80 text-xs">Commission</p>

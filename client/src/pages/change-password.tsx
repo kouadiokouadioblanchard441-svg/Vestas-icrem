@@ -55,7 +55,7 @@ export default function ChangePasswordPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
 
-      {/* ── Blue header ── */}
+      {/* ── Orange header ── */}
       <header
         className="flex items-center px-4 py-4"
         style={{ background: "#003087" }}
@@ -87,7 +87,7 @@ export default function ChangePasswordPage() {
                 type={showCurrent ? "text" : "password"}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-4 py-4 text-sm text-gray-800 outline-none focus:border-blue-400 bg-white pr-11"
+                className="w-full border border-gray-200 rounded-xl px-4 py-4 text-sm text-gray-800 outline-none focus:border-orange-400 bg-white pr-11"
                 data-testid="input-current-password"
               />
               <button
@@ -110,7 +110,7 @@ export default function ChangePasswordPage() {
                 type={showNew ? "text" : "password"}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-4 py-4 text-sm text-gray-800 outline-none focus:border-blue-400 bg-white pr-11"
+                className="w-full border border-gray-200 rounded-xl px-4 py-4 text-sm text-gray-800 outline-none focus:border-orange-400 bg-white pr-11"
                 data-testid="input-new-password"
               />
               <button
@@ -133,7 +133,7 @@ export default function ChangePasswordPage() {
                 type={showConfirm ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-4 py-4 text-sm text-gray-800 outline-none focus:border-blue-400 bg-white pr-11"
+                className="w-full border border-gray-200 rounded-xl px-4 py-4 text-sm text-gray-800 outline-none focus:border-orange-400 bg-white pr-11"
                 data-testid="input-confirm-password"
               />
               <button

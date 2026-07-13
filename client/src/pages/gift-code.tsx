@@ -6,7 +6,7 @@ import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
-import jollibeeNight from "@assets/vestas_112v_closeup_(1)_1783210181118.jpg";
+import jollibeeNight from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
 
 export default function GiftCodePage() {
   const { refreshUser } = useAuth();
@@ -65,7 +65,7 @@ export default function GiftCodePage() {
         {/* Red gradient overlay */}
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(to bottom, rgba(0,113,197,0.65) 0%, rgba(0,90,158,0.85) 100%)" }}
+          style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.70) 100%)" }}
         />
 
         {/* Header over image */}
@@ -82,7 +82,7 @@ export default function GiftCodePage() {
 
         {/* Icon badge */}
         <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center shadow-lg border-2 border-white"
-          style={{ background: "linear-gradient(135deg, #003366, #002244)" }}>
+          style={{ background: "linear-gradient(135deg, #F4920A, #CF7C09)" }}>
           <Gift className="w-6 h-6 text-white" />
         </div>
       </div>
@@ -103,7 +103,7 @@ export default function GiftCodePage() {
         {/* Input card */}
         <div className="bg-white rounded-2xl shadow-sm p-4 space-y-3">
           <div className="flex items-center gap-2 mb-1">
-            <Tag className="w-4 h-4" style={{ color: "#003366" }} />
+            <Tag className="w-4 h-4" style={{ color: "#F4920A" }} />
             <span className="text-gray-800 font-semibold text-sm">Code cadeau</span>
           </div>
 
@@ -115,7 +115,7 @@ export default function GiftCodePage() {
               placeholder="Saisir le code ici"
               className="w-full px-4 py-3 rounded-xl border-2 text-center text-sm font-mono tracking-widest outline-none transition-colors"
               style={{
-                borderColor: code ? "#003366" : "#e5e7eb",
+                borderColor: code ? "#F4920A" : "#e5e7eb",
                 color: "#1f2937",
               }}
               data-testid="input-gift-code"
@@ -126,7 +126,7 @@ export default function GiftCodePage() {
             onClick={handleSubmit}
             disabled={claimMutation.isPending}
             className="w-full py-3.5 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2 transition-opacity active:opacity-80"
-            style={{ background: "linear-gradient(135deg, #003366, #002244)" }}
+            style={{ background: "linear-gradient(135deg, #F4920A, #CF7C09)" }}
             data-testid="button-submit-code"
           >
             {claimMutation.isPending ? (
@@ -146,17 +146,17 @@ export default function GiftCodePage() {
           <div className="space-y-2">
             <div className="flex items-start gap-2">
               <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-white text-[10px] font-bold"
-                style={{ backgroundColor: "#003366" }}>1</div>
+                style={{ backgroundColor: "#F4920A" }}>1</div>
               <p className="text-gray-500 text-xs">Rejoignez notre canal Telegram officiel</p>
             </div>
             <div className="flex items-start gap-2">
               <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-white text-[10px] font-bold"
-                style={{ backgroundColor: "#003366" }}>2</div>
+                style={{ backgroundColor: "#F4920A" }}>2</div>
               <p className="text-gray-500 text-xs">Suivez les annonces chaque soir à 17h GMT</p>
             </div>
             <div className="flex items-start gap-2">
               <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-white text-[10px] font-bold"
-                style={{ backgroundColor: "#003366" }}>3</div>
+                style={{ backgroundColor: "#F4920A" }}>3</div>
               <p className="text-gray-500 text-xs">Copiez le code et collez-le ici avant expiration</p>
             </div>
           </div>

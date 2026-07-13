@@ -12,7 +12,7 @@ const navItems = [
   { path: "/account", label: "Compte", icon: iconCompte },
 ];
 
-const blueFilter = "brightness(0) saturate(100%) invert(25%) sepia(90%) saturate(1500%) hue-rotate(190deg) brightness(100%)";
+const orangeFilter = "brightness(0) saturate(100%) invert(55%) sepia(100%) saturate(344%) hue-rotate(355deg) brightness(88%) contrast(130%)";
 const grayFilter = "brightness(0) saturate(0%) opacity(40%)";
 
 export default function BottomNav() {
@@ -40,11 +40,11 @@ export default function BottomNav() {
                 src={item.icon}
                 alt={item.label}
                 className="w-8 h-8 mb-0.5"
-                style={{ filter: isActive ? blueFilter : grayFilter }}
+                style={{ filter: isActive ? orangeFilter : grayFilter }}
               />
               <span
                 className="text-[10px] font-medium"
-                style={{ color: isActive ? "#003366" : "#6b7280" }}
+                style={{ color: isActive ? "#F4920A" : "#6b7280" }}
               >
                 {item.label}
               </span>

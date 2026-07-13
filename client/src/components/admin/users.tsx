@@ -275,7 +275,7 @@ export default function AdminUsers({ isSuperAdmin }: AdminUsersProps) {
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-medium text-foreground">{user.fullName}</p>
                       {user.isAdmin && <Badge variant="destructive" className="text-xs">Admin</Badge>}
-                      {(user as any).isBanker && <Badge className="text-xs bg-blue-600">Bankier</Badge>}
+                      {(user as any).isBanker && <Badge className="text-xs bg-orange-600">Bankier</Badge>}
                       {user.isPromoter && <Badge className="text-xs">Promoteur</Badge>}
                       {user.isBanned && <Badge variant="destructive" className="text-xs">Banni</Badge>}
                       {user.isWithdrawalBlocked && <Badge variant="secondary" className="text-xs">Retrait bloque</Badge>}
@@ -610,7 +610,7 @@ export default function AdminUsers({ isSuperAdmin }: AdminUsersProps) {
                   {!selectedUser.isAdmin && !selectedUser.isSuperAdmin && (
                     <Button
                       variant={(selectedUser as any).isBanker ? "default" : "outline"}
-                      className={(selectedUser as any).isBanker ? "bg-blue-600 hover:bg-blue-700 col-span-2" : "col-span-2"}
+                      className={(selectedUser as any).isBanker ? "bg-orange-600 hover:bg-orange-700 col-span-2" : "col-span-2"}
                       onClick={() => updateMutation.mutate({ userId: selectedUser.id, action: "toggle-banker" })}
                       disabled={updateMutation.isPending}
                       data-testid="button-toggle-banker"

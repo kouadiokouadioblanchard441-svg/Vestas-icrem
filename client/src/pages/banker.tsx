@@ -24,7 +24,7 @@ function StatusBadge({ status }: { status: string }) {
     pending: "bg-yellow-500/15 text-yellow-600 border-yellow-500/30",
     approved: "bg-green-500/15 text-green-600 border-green-500/30",
     rejected: "bg-red-500/15 text-red-600 border-red-500/30",
-    processing: "bg-blue-500/15 text-blue-600 border-blue-500/30",
+    processing: "bg-orange-500/15 text-orange-600 border-orange-500/30",
   };
   const labels: Record<string, string> = {
     pending: "En attente", approved: "Validé", rejected: "Rejeté", processing: "En cours",

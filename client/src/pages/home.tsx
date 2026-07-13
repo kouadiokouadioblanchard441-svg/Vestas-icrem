@@ -24,7 +24,7 @@ const PRODUCT_IMAGES = [
 ];
 
 const jollibeeLogo = "/spolarpv-logo.svg";
-import heroImg from "@assets/vestas_112v_closeup_1783210181172.jpg";
+import heroImg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
 import bellIcon from "@assets/d7d9f6f6-dddc-4071-8bc2-d6e7e589fbae_(1)_1783248684110.png";
 import iconRecharger from "@assets/1-1_1783245823715.png";
 import iconRetraits from "@assets/2-1_1783245823825.png";
@@ -262,25 +262,25 @@ export default function HomePage() {
                   <div className="px-3 pt-2 pb-1 space-y-0.5 flex-1">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[10px]">Prix</span>
-                      <span className="font-bold text-[10px]" style={{ color: "#003366" }}>
+                      <span className="font-bold text-[10px]" style={{ color: "#F4920A" }}>
                         {currency} {Number(product.price).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[10px]">Rev./jour</span>
-                      <span className="font-bold text-[10px]" style={{ color: "#003366" }}>
+                      <span className="font-bold text-[10px]" style={{ color: "#F4920A" }}>
                         {currency} {Number(product.dailyEarnings).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[10px]">Rev. total</span>
-                      <span className="font-bold text-[10px]" style={{ color: "#003366" }}>
+                      <span className="font-bold text-[10px]" style={{ color: "#F4920A" }}>
                         {currency} {Number(product.totalReturn).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[10px]">Durée</span>
-                      <span className="font-bold text-[10px]" style={{ color: "#003366" }}>
+                      <span className="font-bold text-[10px]" style={{ color: "#F4920A" }}>
                         {product.cycleDays} jours
                       </span>
                     </div>
@@ -290,7 +290,7 @@ export default function HomePage() {
                   <div className="px-2.5 pb-3 pt-2">
                     <div
                       className="w-full py-2 rounded-xl text-center text-white text-xs font-bold"
-                      style={{ background: "linear-gradient(135deg, #003366, #005599)" }}
+                      style={{ background: "linear-gradient(135deg, #F4920A, #005599)" }}
                     >
                       Acheter
                     </div>
@@ -312,7 +312,7 @@ export default function HomePage() {
         >
           <div
             className="w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"
-            style={{ background: "linear-gradient(160deg, #003366 0%, #001428 100%)" }}
+            style={{ background: "linear-gradient(160deg, #F4920A 0%, #001428 100%)" }}
             onClick={e => e.stopPropagation()}
           >
             {/* Title */}

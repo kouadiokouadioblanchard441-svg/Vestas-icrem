@@ -32,7 +32,7 @@ interface Withdrawal {
   createdAt: string;
 }
 
-const BG = "linear-gradient(160deg, #1565C0 0%, #1976D2 70%, #1E88E5 100%)";
+const BG = "linear-gradient(160deg, #F4920A 0%, #FFA733 70%, #FFB84D 100%)";
 
 export default function HistoryPage() {
   const { user, refreshUser } = useAuth();
@@ -226,7 +226,7 @@ export default function HistoryPage() {
                     onClick={() => handleVerify(deposit.id)}
                     disabled={verifyingId === deposit.id}
                     className="mt-3 w-full py-2 text-white text-xs font-bold rounded-full flex items-center justify-center gap-2 disabled:opacity-50"
-                    style={{ background: "#1976D2" }}
+                    style={{ background: "#FFA733" }}
                     data-testid={`button-verify-${deposit.id}`}
                   >
                     {verifyingId === deposit.id

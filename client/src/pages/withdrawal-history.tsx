@@ -40,7 +40,7 @@ export default function WithdrawalHistoryPage() {
       <header className="flex items-center px-4 py-3 bg-white border-b border-gray-200">
         <Link href="/account">
           <button className="p-1 mr-2" data-testid="button-back">
-            <ChevronLeft className="w-5 h-5 text-[#003366]" />
+            <ChevronLeft className="w-5 h-5 text-[#F4920A]" />
           </button>
         </Link>
         <h1 className="flex-1 text-center text-base font-bold text-gray-900 pr-8">
@@ -63,12 +63,12 @@ export default function WithdrawalHistoryPage() {
             return (
               <div key={w.id} className="bg-white rounded-2xl overflow-hidden shadow-sm">
                 {/* Red top bar */}
-                <div className="h-3 rounded-t-2xl" style={{ backgroundColor: "#003366" }} />
+                <div className="h-3 rounded-t-2xl" style={{ backgroundColor: "#F4920A" }} />
 
                 <div className="px-5 py-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-500 text-sm">Montant</span>
-                    <span className="text-[#003366] font-bold text-base">
+                    <span className="text-[#F4920A] font-bold text-base">
                       {parseFloat(w.amount).toLocaleString()}
                     </span>
                   </div>
