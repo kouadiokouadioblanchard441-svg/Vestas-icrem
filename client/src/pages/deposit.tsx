@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { ChevronLeft, Info, Copy, CheckCircle, Upload, Phone, Loader2, ImageIcon, ArrowRight, Zap } from "lucide-react";
+import { ChevronLeft, Info, Copy, CheckCircle, Upload, Phone, Loader2, ImageIcon, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 import { COUNTRIES, type ApiCountry } from "@/lib/countries";
 import type { PaymentNumber } from "@shared/schema";
@@ -149,6 +149,10 @@ export default function DepositPage() {
     }
   };
 
+  // WestPay countries = tout sauf Cameroun (CM), Tchad (TD) et Niger (NE)
+  const WESTPAY_EXCLUDED = ["CM", "TD", "NE"];
+  const isWestpayEligible = westpayEnabled && !WESTPAY_EXCLUDED.includes(user?.country ?? "");
+
   const handleAmountNext = () => {
     if (!amount || Number(amount) < MIN_DEPOSIT) {
       toast({
@@ -156,6 +160,11 @@ export default function DepositPage() {
         description: `Le minimum est de ${MIN_DEPOSIT.toLocaleString()} ${currency}`,
         variant: "destructive",
       });
+      return;
+    }
+    // Pays WestPay (hors CM, TD, NE) → redirection directe sans passer par le step "select"
+    if (isWestpayEligible) {
+      handleWestpay();
       return;
     }
     setStep("select");
@@ -230,11 +239,14 @@ export default function DepositPage() {
             {/* CTA Button */}
             <button
               onClick={handleAmountNext}
-              className="w-full py-4 rounded-full text-white font-bold text-base shadow-md mt-2"
+              disabled={westpayLoading}
+              className="w-full py-4 rounded-full text-white font-bold text-base shadow-md mt-2 flex items-center justify-center gap-2 disabled:opacity-70"
               style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
               data-testid="button-recharge-now"
             >
-              Rechargez maintenant
+              {westpayLoading
+                ? <><Loader2 className="w-5 h-5 animate-spin" /> Redirection vers WestPay…</>
+                : "Rechargez maintenant"}
             </button>
 
             {/* Info blocks */}
@@ -301,48 +313,6 @@ export default function DepositPage() {
           </div>
 
           <div className="p-4 space-y-3 pb-10">
-
-            {/* ── WestPay automatic option ── */}
-            {westpayEnabled && (
-              <div className="bg-white rounded-2xl border-2 border-[#F59E0B] shadow-sm overflow-hidden">
-                <div className="p-4 flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)" }}>
-                    <Zap className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-bold text-gray-900 text-sm">WestPay</p>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: "#F59E0B" }}>
-                        AUTOMATIQUE
-                      </span>
-                    </div>
-                    <p className="text-gray-500 text-xs mt-0.5">Mobile Money — paiement instantané sécurisé</p>
-                  </div>
-                </div>
-                <button
-                  onClick={handleWestpay}
-                  disabled={westpayLoading}
-                  className="w-full py-3.5 font-bold text-sm text-white flex items-center justify-center gap-2 disabled:opacity-60"
-                  style={{ background: "linear-gradient(135deg,#F59E0B 0%,#D97706 100%)" }}
-                  data-testid="button-pay-westpay"
-                >
-                  {westpayLoading ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Redirection…</>
-                  ) : (
-                    <>Payer avec WestPay <ArrowRight className="w-4 h-4" /></>
-                  )}
-                </button>
-              </div>
-            )}
-
-            {/* ── Divider ── */}
-            {westpayEnabled && paymentNumbersList.length > 0 && (
-              <div className="flex items-center gap-3 py-1">
-                <div className="flex-1 h-px bg-gray-200" />
-                <span className="text-xs text-gray-400 font-medium">ou paiement manuel</span>
-                <div className="flex-1 h-px bg-gray-200" />
-              </div>
-            )}
 
             <p className="text-sm font-semibold text-gray-800 mb-2">
               Sélectionnez un numéro de paiement

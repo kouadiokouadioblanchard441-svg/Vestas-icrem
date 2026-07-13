@@ -3,6 +3,7 @@ import crypto from "crypto";
 const WESTPAY_BASE = "https://westpay.cfd";
 
 /** Map our DB country codes to WestPay country name strings */
+// Tchad (TD) et Niger (NE) volontairement exclus — non supportés WestPay
 const COUNTRY_MAP: Record<string, string> = {
   CM: "Cameroun",
   BF: "Burkina Faso",
@@ -16,8 +17,6 @@ const COUNTRY_MAP: Record<string, string> = {
   GA: "Gabon",
   GN: "Guinee",
   NG: "Nigeria",
-  TD: "Tchad",
-  NE: "Niger",
 };
 
 export function getWestpayCountry(countryCode: string): string | null {
