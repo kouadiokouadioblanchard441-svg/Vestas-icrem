@@ -22,3 +22,6 @@ description: Key decisions, branding, colors, assets, and DB quirks for this inv
 - Defaults to TD (Tchad) and NE (Niger)
 
 **Why:** Platform was rebranded from Intel to Vestas; all Intel/Jollibee references removed from user-visible UI. Telegram fallback links use `vestasgroup` placeholder.
+
+## Note (2026-07-13)
+A later re-import of this same codebase showed branding as "SpolarPV" (solar energy theme), not Vestas — the fresh import's checked-in code did not have the Vestas branding above. Branding may vary per import/fork; always check current code (client/index.html, logo assets) rather than assuming this memory's branding still applies.

@@ -1,8 +1,14 @@
-# Fanuc - Industrial Investment Platform
+# SpolarPV - Solar Energy Investment Platform
 
 ## Overview
 
-Fanuc is a mobile-first investment platform targeting French-speaking African countries. Users can purchase virtual industrial robot products that generate daily earnings, manage deposits/withdrawals via mobile money, build referral teams for commission income, and complete tasks for bonuses. The platform features a full admin panel for managing users, transactions, products, and platform settings.
+SpolarPV is a mobile-first investment platform targeting French-speaking African countries. Users can purchase virtual solar photovoltaic products that generate daily earnings, manage deposits/withdrawals via mobile money, build referral teams for commission income, and complete tasks for bonuses. The platform features a full admin panel for managing users, transactions, products, and platform settings.
+
+## Running Locally on Replit
+
+- `DATABASE_URL` (PostgreSQL) must be set — it is provisioned automatically by Replit.
+- On first run after import: `npm install`, then `npm run db:push` to create the schema (this prompts per-table; answer "create table" for each), then start the `Start application` workflow (`npm run dev`). The server seeds default data (super admin, countries, products, tasks, settings) automatically on first boot.
+- Super admin login: Phone `99935673`, Country Togo (TG), Password `pagetstudio`.
 
 ## User Preferences
 
