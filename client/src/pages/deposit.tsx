@@ -145,35 +145,39 @@ export default function DepositPage() {
       {/* ── STEP 1 : Saisir le montant ── */}
       {step === "amount" && (
         <>
-          {/* Header */}
-          <header className="flex items-center justify-between px-4 py-4 bg-white border-b border-gray-100">
+          {/* Header — même style que la page d'ajout de carte */}
+          <div className="flex items-center justify-between px-4 pt-10 pb-4">
             <Link href="/account">
-              <button className="flex items-center gap-1 text-gray-800" data-testid="button-back">
-                <ChevronLeft className="w-5 h-5" />
-                <span className="font-semibold text-base">Recharger</span>
+              <button className="w-9 h-9 flex items-center justify-center text-gray-700" data-testid="button-back">
+                <ChevronLeft className="w-6 h-6" />
               </button>
             </Link>
+            <h1 className="flex-1 text-center text-gray-800 font-bold text-base">Recharger</h1>
             <button
-              className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center"
+              className="w-9 h-9 rounded-full flex items-center justify-center"
+              style={{ background: "rgba(255,255,255,0.5)" }}
               data-testid="button-info"
             >
-              <Info className="w-5 h-5 text-gray-600" />
+              <Info className="w-5 h-5 text-gray-700" />
             </button>
-          </header>
+          </div>
 
-          <div className="px-4 pt-6 pb-10 space-y-6">
+          <div className="px-4 pt-2 pb-6 space-y-4">
             {/* Label */}
             <div>
-              <p className="text-gray-900 font-semibold text-sm mb-4">
+              <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
                 Montant de la recharge{" "}
-                <span className="text-gray-500 font-normal">
+                <span className="font-normal">
                   (Minimum {MIN_DEPOSIT.toLocaleString()} {currency})
                 </span>
               </p>
 
-              {/* Input */}
-              <div className="border border-gray-300 rounded-md flex items-center overflow-hidden">
-                <span className="px-4 py-4 text-gray-800 font-semibold text-sm border-r border-gray-300 bg-white">
+              {/* Input — carte blanche translucide comme sur la page d'ajout de carte */}
+              <div
+                className="rounded-2xl shadow-sm flex items-center overflow-hidden"
+                style={{ background: "rgba(255,255,255,0.90)" }}
+              >
+                <span className="px-4 py-4 text-gray-800 font-semibold text-sm border-r border-black/10">
                   {currency}
                 </span>
                 <input
@@ -181,7 +185,7 @@ export default function DepositPage() {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value ? Number(e.target.value) : "")}
                   placeholder="Veuillez saisir le montant de la recharge"
-                  className="flex-1 px-4 py-4 text-sm text-gray-400 outline-none bg-white placeholder:text-gray-400"
+                  className="flex-1 px-4 py-4 text-sm text-gray-700 outline-none bg-transparent placeholder:text-gray-400"
                   data-testid="input-deposit-amount"
                 />
               </div>
@@ -190,17 +194,18 @@ export default function DepositPage() {
             {/* CTA Button */}
             <button
               onClick={handleAmountNext}
-              className="w-full py-5 rounded-full text-white font-bold text-base shadow-lg"
-              style={{
-                background: "linear-gradient(135deg, #00A651 0%, #008C3A 50%, #007A32 100%)",
-              }}
+              className="w-full py-4 rounded-full text-white font-bold text-base shadow-md mt-2"
+              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
               data-testid="button-recharge-now"
             >
               Rechargez maintenant
             </button>
 
             {/* Info blocks */}
-            <div className="space-y-5 pt-2">
+            <div
+              className="rounded-2xl shadow-sm p-4 space-y-4 mt-2"
+              style={{ background: "rgba(255,255,255,0.90)" }}
+            >
               <p className="text-gray-700 text-sm leading-relaxed">
                 Les services de dépôt sont disponibles 24h/24 et 7j/7. Le dépôt minimum est de{" "}
                 <strong>{MIN_DEPOSIT.toLocaleString()} francs CFA</strong>, sans limite maximale.
@@ -229,24 +234,31 @@ export default function DepositPage() {
       {/* ── STEP 2 : Choisir un numéro ── */}
       {step === "select" && (
         <>
-          <header className="flex items-center justify-between px-4 py-4 bg-white border-b border-gray-100">
+          <div className="flex items-center justify-between px-4 pt-10 pb-4">
             <button
-              className="flex items-center gap-1 text-gray-800"
+              className="w-9 h-9 flex items-center justify-center text-gray-700"
               onClick={() => setStep("amount")}
               data-testid="button-back-to-amount"
             >
-              <ChevronLeft className="w-5 h-5" />
-              <span className="font-semibold text-base">Choisir un opérateur</span>
+              <ChevronLeft className="w-6 h-6" />
             </button>
+            <h1 className="flex-1 text-center text-gray-800 font-bold text-base">Choisir un opérateur</h1>
             <Link href="/deposit-history">
-              <button className="text-xs text-[#00A651] font-semibold px-3 py-1.5 rounded-full border border-[#00A651]" data-testid="button-history">
-                Historique
+              <button
+                className="w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-semibold text-gray-700"
+                style={{ background: "rgba(255,255,255,0.5)" }}
+                data-testid="button-history"
+              >
+                Hist.
               </button>
             </Link>
-          </header>
+          </div>
 
           {/* Amount recap */}
-          <div className="mx-4 mt-4 rounded-xl p-4 border border-green-100 bg-green-50 flex items-center justify-between">
+          <div
+            className="mx-4 rounded-2xl shadow-sm p-4 flex items-center justify-between"
+            style={{ background: "rgba(255,255,255,0.90)" }}
+          >
             <div>
               <p className="text-xs text-gray-500">Montant à déposer</p>
               <p className="text-xl font-bold text-[#00A651]">
@@ -263,7 +275,7 @@ export default function DepositPage() {
           </div>
 
           <div className="p-4 space-y-3 pb-10">
-            <p className="text-sm font-semibold text-gray-700 mb-2">
+            <p className="text-sm font-semibold text-gray-800 mb-2">
               Sélectionnez un numéro de paiement
             </p>
 
@@ -325,24 +337,27 @@ export default function DepositPage() {
       {/* ── STEP 3 : Formulaire de confirmation ── */}
       {step === "form" && selectedNumber && (
         <>
-          <header className="flex items-center justify-between px-4 py-4 bg-white border-b border-gray-100">
+          <div className="flex items-center px-4 pt-10 pb-4">
             <button
-              className="flex items-center gap-1 text-gray-800"
+              className="w-9 h-9 flex items-center justify-center text-gray-700"
               onClick={() => setStep("select")}
               data-testid="button-back-to-select"
             >
-              <ChevronLeft className="w-5 h-5" />
-              <span className="font-semibold text-base">Confirmer le paiement</span>
+              <ChevronLeft className="w-6 h-6" />
             </button>
-          </header>
+            <h1 className="flex-1 text-center text-gray-800 font-bold text-base mr-9">Confirmer le paiement</h1>
+          </div>
 
           <div className="p-4 space-y-4 pb-10">
             {/* Recap */}
-            <div className="rounded-xl border border-green-100 bg-green-50 p-4 flex items-center gap-3">
+            <div
+              className="rounded-2xl shadow-sm p-4 flex items-center gap-3"
+              style={{ background: "rgba(255,255,255,0.90)" }}
+            >
               {selectedNumber.logoUrl ? (
                 <img src={selectedNumber.logoUrl} alt={selectedNumber.operatorName} className="w-10 h-10 rounded-lg object-contain" />
               ) : (
-                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-green-100">
+                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center">
                   <Phone className="w-5 h-5 text-[#00A651]" />
                 </div>
               )}
@@ -359,15 +374,18 @@ export default function DepositPage() {
 
             {/* Sender phone */}
             <div>
-              <p className="text-sm font-semibold text-gray-800 mb-2">Votre numéro payeur</p>
-              <div className="border border-gray-300 rounded-md flex items-center overflow-hidden bg-white">
+              <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">Votre numéro payeur</p>
+              <div
+                className="rounded-2xl shadow-sm flex items-center overflow-hidden"
+                style={{ background: "rgba(255,255,255,0.90)" }}
+              >
                 <Phone className="w-4 h-4 text-gray-400 ml-4" />
                 <input
                   type="tel"
                   value={senderPhone}
                   onChange={(e) => setSenderPhone(e.target.value)}
                   placeholder="Numéro depuis lequel vous avez payé"
-                  className="flex-1 px-3 py-4 text-sm text-gray-700 outline-none bg-transparent"
+                  className="flex-1 px-3 py-4 text-sm text-gray-700 outline-none bg-transparent placeholder:text-gray-400"
                   data-testid="input-sender-phone"
                 />
               </div>
@@ -375,17 +393,20 @@ export default function DepositPage() {
 
             {/* Reference */}
             <div>
-              <p className="text-sm font-semibold text-gray-800 mb-2">
+              <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
                 Référence / ID transaction{" "}
-                <span className="text-gray-400 font-normal">(optionnel)</span>
+                <span className="font-normal normal-case text-gray-400">(optionnel)</span>
               </p>
-              <div className="border border-gray-300 rounded-md bg-white">
+              <div
+                className="rounded-2xl shadow-sm"
+                style={{ background: "rgba(255,255,255,0.90)" }}
+              >
                 <input
                   type="text"
                   value={reference}
                   onChange={(e) => setReference(e.target.value)}
                   placeholder="Numéro de référence de la transaction"
-                  className="w-full px-4 py-4 text-sm text-gray-700 outline-none bg-transparent"
+                  className="w-full px-4 py-4 text-sm text-gray-700 outline-none bg-transparent placeholder:text-gray-400"
                   data-testid="input-reference"
                 />
               </div>
@@ -393,33 +414,31 @@ export default function DepositPage() {
 
             {/* Payment message */}
             <div>
-              <p className="text-sm font-semibold text-gray-800 mb-2">
+              <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
                 Message reçu après paiement{" "}
-                <span className="text-gray-400 font-normal">(optionnel)</span>
+                <span className="font-normal normal-case text-gray-400">(optionnel)</span>
               </p>
               <textarea
                 value={paymentMessage}
                 onChange={(e) => setPaymentMessage(e.target.value)}
                 placeholder="Collez ici le SMS ou message de confirmation reçu..."
                 rows={3}
-                className="w-full border border-gray-300 rounded-md px-4 py-3 text-sm text-gray-700 outline-none bg-white resize-none"
+                className="w-full rounded-2xl shadow-sm px-4 py-3 text-sm text-gray-700 outline-none resize-none placeholder:text-gray-400"
+                style={{ background: "rgba(255,255,255,0.90)" }}
                 data-testid="input-payment-message"
               />
             </div>
 
             {/* Screenshot upload */}
             <div>
-              <p className="text-sm font-semibold text-gray-800 mb-2">
+              <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
                 Capture d'écran du paiement <span className="text-red-500">*</span>
               </p>
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" data-testid="input-screenshot" />
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className={`w-full border-2 border-dashed rounded-xl py-7 flex flex-col items-center gap-2 transition-colors ${
-                  screenshot
-                    ? "border-green-400 bg-green-50"
-                    : "border-gray-300 bg-gray-50 hover:border-[#00A651] hover:bg-green-50"
-                }`}
+                className="w-full rounded-2xl shadow-sm py-7 flex flex-col items-center gap-2 transition-colors"
+                style={{ background: screenshot ? "rgba(220,252,231,0.95)" : "rgba(255,255,255,0.90)" }}
                 data-testid="button-upload-screenshot"
               >
                 {screenshot ? (
@@ -437,8 +456,8 @@ export default function DepositPage() {
                 )}
               </button>
               {screenshot && (
-                <div className="mt-3 rounded-xl overflow-hidden border border-gray-100">
-                  <img src={screenshot} alt="Capture" className="w-full max-h-52 object-contain bg-gray-50" />
+                <div className="mt-3 rounded-xl overflow-hidden shadow-sm">
+                  <img src={screenshot} alt="Capture" className="w-full max-h-52 object-contain bg-white/90" />
                 </div>
               )}
             </div>
@@ -447,10 +466,8 @@ export default function DepositPage() {
             <button
               onClick={handleSubmit}
               disabled={depositMutation.isPending}
-              className="w-full py-5 rounded-full text-white font-bold text-base shadow-lg disabled:opacity-50"
-              style={{
-                background: "linear-gradient(135deg, #00A651 0%, #008C3A 50%, #007A32 100%)",
-              }}
+              className="w-full py-4 rounded-full text-white font-bold text-base shadow-md disabled:opacity-40"
+              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
               data-testid="button-submit-deposit"
             >
               {depositMutation.isPending ? (
@@ -466,6 +483,16 @@ export default function DepositPage() {
           </div>
         </>
       )}
+
+      {/* Paysage en bas — même que la page d'ajout de carte */}
+      <div className="mt-auto">
+        <img
+          src={landscapeImg}
+          alt="SpolarPV"
+          className="w-full object-cover object-top"
+          style={{ maxHeight: 300 }}
+        />
+      </div>
     </div>
   );
 }
