@@ -7,11 +7,11 @@ import iconEquipe from "@assets/1244758_1783246767217.png";
 import iconCompte from "@assets/téléchargement_(12)_1770815897017.png";
 
 const navItems = [
-  { path: "/", label: "Accueil", icon: iconHome },
-  { path: "/invest", label: "Produits", icon: iconProduit },
-  { path: "/my-products", label: "Gains", icon: iconGains },
-  { path: "/team", label: "Partage", icon: iconEquipe },
-  { path: "/account", label: "Compte", icon: iconCompte },
+  { path: "/", label: "Home", icon: iconHome },
+  { path: "/invest", label: "Products", icon: iconProduit },
+  { path: "/my-products", label: "Earnings", icon: iconGains },
+  { path: "/team", label: "Team", icon: iconEquipe },
+  { path: "/account", label: "Me", icon: iconCompte },
 ];
 
 const greenFilter = "brightness(0) saturate(100%) invert(41%) sepia(98%) saturate(1907%) hue-rotate(133deg) brightness(94%) contrast(101%)";
