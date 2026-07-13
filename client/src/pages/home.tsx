@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { NEWS_ARTICLES } from "@/pages/news-detail";
+import { getContent } from "@/lib/content";
 
 const jollibeeLogo = "/spolarpv-logo.svg";
 import heroImg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
@@ -48,6 +49,14 @@ export default function HomePage() {
   const signupBonus = settings?.signupBonus || "500";
   const level1Commission = settings?.level1Commission || "25";
   const telegramGroupLink = settings?.groupLink || "https://t.me/vestasgroup";
+  const popupTitle = getContent(settings, "content_home_popupTitle", "NOTIFICATION");
+  const popupLines = [
+    getContent(settings, "content_home_popupLine1", `Prime d'inscription : ${parseInt(signupBonus).toLocaleString()} FCFA.`),
+    getContent(settings, "content_home_popupLine2", "Récompense de connexion quotidienne : 50 FCFA."),
+    getContent(settings, "content_home_popupLine3", `Invitez vos subordonnés à investir et recevez une récompense en espèces de ${level1Commission}% du montant de leur investissement.`),
+    getContent(settings, "content_home_popupLine4", "Il n'y a aucune limite quant au temps de retrait ou au nombre de retraits. Vous pouvez retirer de l'argent à tout moment."),
+    getContent(settings, "content_home_popupLine5", "SpolarPV attache une grande importance au marché."),
+  ];
 
   return (
     <div className="flex flex-col min-h-full" style={{ background: "#87CEEB" }}>
@@ -70,17 +79,11 @@ export default function HomePage() {
             </div>
 
             {/* Title */}
-            <p className="text-gray-900 font-extrabold text-xl text-center tracking-widest mb-4">NOTIFICATION</p>
+            <p className="text-gray-900 font-extrabold text-xl text-center tracking-widest mb-4">{popupTitle}</p>
 
             {/* Numbered list */}
             <div className="px-6 pb-2 space-y-2">
-              {[
-                `Prime d'inscription : ${parseInt(signupBonus).toLocaleString()} FCFA.`,
-                `Récompense de connexion quotidienne : 50 FCFA.`,
-                `Invitez vos subordonnés à investir et recevez une récompense en espèces de ${level1Commission}% du montant de leur investissement.`,
-                `Il n'y a aucune limite quant au temps de retrait ou au nombre de retraits. Vous pouvez retirer de l'argent à tout moment.`,
-                `SpolarPV attache une grande importance au marché.`,
-              ].map((item, i) => (
+              {popupLines.map((item, i) => (
                 <div key={i} className="flex items-start gap-2">
                   <span className="text-gray-700/70 text-xs font-bold mt-0.5 shrink-0">{i + 1}.</span>
                   <p className="text-gray-800/90 text-xs leading-relaxed">{item}</p>

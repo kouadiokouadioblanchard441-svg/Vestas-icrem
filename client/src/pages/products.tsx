@@ -6,6 +6,7 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { formatCurrency, getCountryByCode } from "@/lib/countries";
 import { Loader2, Settings } from "lucide-react";
 import { useLocation } from "wouter";
+import { getContent } from "@/lib/content";
 import type { Product } from "@shared/schema";
 
 const vestasLogo = "/spolarpv-logo.svg";
@@ -36,6 +37,10 @@ export default function ProductsPage() {
     queryKey: ["/api/products"],
   });
 
+  const { data: settings } = useQuery<Record<string, string>>({
+    queryKey: ["/api/settings"],
+  });
+
   const purchaseMutation = useMutation({
     mutationFn: async (productId: number) => {
       const response = await apiRequest("POST", `/api/products/${productId}/purchase`, {});
@@ -62,6 +67,7 @@ export default function ProductsPage() {
   const country = getCountryByCode(user.country);
   const currency = country?.currency || "FCFA";
   const paidProducts = products?.filter(p => !p.isFree) || [];
+  const headerTitle = getContent(settings, "content_products_headerTitle", "Nos Produits");
 
   const handleBuy = (product: ProductWithOwnership) => {
     if (balance < Number(product.price)) {
@@ -85,7 +91,7 @@ export default function ProductsPage() {
         style={{ background: "#87CEEB" }}
       >
         <img src={vestasLogo} alt="SpolarPV" className="h-8 w-auto object-contain" />
-        <p className="text-gray-800 font-bold text-base">Nos Produits</p>
+        <p className="text-gray-800 font-bold text-base">{headerTitle}</p>
         <button onClick={() => navigate("/service")} className="flex items-center justify-center" data-testid="button-service">
           <img src={serviceIcon} alt="Service client" className="w-8 h-8 object-contain" />
         </button>

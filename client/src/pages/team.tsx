@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getCountryByCode } from "@/lib/countries";
 import { useLocation } from "wouter";
 import { Copy } from "lucide-react";
+import { getContent } from "@/lib/content";
 
 import teamIcon from "@assets/1244758_1783246767217.png";
 import solarPanelImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
@@ -51,6 +52,13 @@ export default function TeamPage() {
   const lv2Rate = settings?.level2Commission || "2";
   const lv3Rate = settings?.level3Commission || "1";
 
+  const headerTitle = getContent(settings, "content_team_headerTitle", "Mon équipe");
+  const taskCenterButton = getContent(settings, "content_team_taskCenterButton", "Aller au Centre des Tâches >");
+  const inviteTitle = getContent(settings, "content_team_inviteTitle", "Inviter des amis");
+  const progressTitle = getContent(settings, "content_team_progressTitle", "Ma progression");
+  const howItWorksTitle = getContent(settings, "content_team_howItWorksTitle", "Comment fonctionne le parrainage");
+  const tip = getContent(settings, "content_team_tip", "Plus votre équipe s'agrandit sur les 3 niveaux, plus vos revenus de parrainage augmentent chaque fois qu'un membre investit.");
+
   const vipRows = [
     {
       label: "VIP1",
@@ -84,7 +92,7 @@ export default function TeamPage() {
             className="w-7 h-7 object-contain"
             style={{ filter: "brightness(0) saturate(100%)" }}
           />
-          <p className="text-gray-900 font-extrabold text-lg">Mon équipe</p>
+          <p className="text-gray-900 font-extrabold text-lg">{headerTitle}</p>
         </div>
         <button
           onClick={() => navigate("/salary-bonus")}
@@ -92,7 +100,7 @@ export default function TeamPage() {
           style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
           data-testid="button-centre-taches"
         >
-          Aller au Centre des Tâches &gt;
+          {taskCenterButton}
         </button>
       </div>
 
@@ -141,7 +149,7 @@ export default function TeamPage() {
               className="w-5 h-5 object-contain"
               style={{ filter: "brightness(0) invert(1)" }}
             />
-            <p className="text-white font-extrabold text-base">Inviter des amis</p>
+            <p className="text-white font-extrabold text-base">{inviteTitle}</p>
           </div>
 
           {/* Content */}
@@ -196,7 +204,7 @@ export default function TeamPage() {
             style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
           >
             <span className="text-white text-base">✦</span>
-            <p className="text-white font-extrabold text-base">Ma progression</p>
+            <p className="text-white font-extrabold text-base">{progressTitle}</p>
           </div>
 
           {/* Two image cards */}
@@ -277,7 +285,7 @@ export default function TeamPage() {
             <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
               <img src={teamIcon} alt="" className="w-4.5 h-4.5 object-contain" />
             </div>
-            <h3 className="text-white font-bold text-sm">Comment fonctionne le parrainage</h3>
+            <h3 className="text-white font-bold text-sm">{howItWorksTitle}</h3>
           </div>
 
           <div className="px-5 py-4 space-y-4">
@@ -347,7 +355,7 @@ export default function TeamPage() {
             <div className="rounded-xl bg-gray-50 px-3 py-2.5 flex items-start gap-2">
               <span className="text-[#1F2937] text-sm mt-0.5">💡</span>
               <p className="text-xs text-gray-500 leading-relaxed">
-                Plus votre équipe s'agrandit sur les 3 niveaux, plus vos revenus de parrainage augmentent chaque fois qu'un membre investit.
+                {tip}
               </p>
             </div>
           </div>

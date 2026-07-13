@@ -3,6 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { getCountryByCode } from "@/lib/countries";
+import { getContent } from "@/lib/content";
 import { ChevronLeft, Loader2, Gift } from "lucide-react";
 import { Link } from "wouter";
 import robotGift from "@assets/file_00000000168c7246a166e7a2da1eb7ba_1773319220043.png";
@@ -22,6 +23,10 @@ export default function CheckinPage() {
   const { data: bonusStatus } = useQuery<BonusStatus>({
     queryKey: ["/api/daily-bonus-status"],
     refetchInterval: 60000,
+  });
+
+  const { data: settings } = useQuery<Record<string, string>>({
+    queryKey: ["/api/settings"],
   });
 
   const claimMutation = useMutation({
@@ -50,6 +55,15 @@ export default function CheckinPage() {
   const totalBonusClaimed = bonusStatus?.totalBonusClaimed || 0;
   const daysPointed = bonusStatus?.daysPointed || 0;
 
+  const headerTitle = getContent(settings, "content_checkin_headerTitle", "Pointage");
+  const cardTitle = getContent(settings, "content_checkin_cardTitle", "Pointage quotidien");
+  const cardSubtitle = getContent(settings, "content_checkin_cardSubtitle", "Activer les récompenses quotidiennes");
+  const dailyRewardLabel = getContent(settings, "content_checkin_dailyRewardLabel", "Récompense du jour");
+  const streakLabel = getContent(settings, "content_checkin_streakLabel", "Jours consécutifs");
+  const totalLabel = getContent(settings, "content_checkin_totalLabel", "Récompenses cumulées");
+  const rule1 = getContent(settings, "content_checkin_rule1", "1. Récompense de connexion quotidienne : 50 FCFA");
+  const rule2 = getContent(settings, "content_checkin_rule2", "2. Connectez-vous une fois par jour pour accumuler des points.");
+
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
       <div className="flex-1 overflow-y-auto pb-24">
@@ -61,7 +75,7 @@ export default function CheckinPage() {
               <ChevronLeft className="w-6 h-6 text-gray-700" />
             </button>
           </Link>
-          <h1 className="flex-1 text-center text-base font-semibold text-gray-800 pr-7">Pointage</h1>
+          <h1 className="flex-1 text-center text-base font-semibold text-gray-800 pr-7">{headerTitle}</h1>
         </header>
 
         {/* Robot image — centered, overhangs the red card */}
@@ -77,9 +91,9 @@ export default function CheckinPage() {
         {/* Red card */}
         <div className="mx-4">
           <div className="bg-[#F59E0B] rounded-3xl pt-16 pb-6 px-5 shadow-lg">
-            <h2 className="text-white text-2xl font-bold text-center">Pointage quotidien</h2>
+            <h2 className="text-white text-2xl font-bold text-center">{cardTitle}</h2>
             <p className="text-white/80 text-sm text-center mt-1 mb-5">
-              Activer les récompenses quotidiennes
+              {cardSubtitle}
             </p>
 
             {/* Two columns */}
@@ -90,7 +104,7 @@ export default function CheckinPage() {
                   <Gift className="w-5 h-5 text-white" />
                 </div>
                 <p className="text-white text-xl font-bold">{currency} 50</p>
-                <p className="text-white/75 text-xs text-center">Récompense du jour</p>
+                <p className="text-white/75 text-xs text-center">{dailyRewardLabel}</p>
               </div>
 
               {/* Right col — consecutive days */}
@@ -99,7 +113,7 @@ export default function CheckinPage() {
                   <span className="text-white font-bold text-base">$</span>
                 </div>
                 <p className="text-white text-xl font-bold">{daysPointed}</p>
-                <p className="text-white/75 text-xs text-center">Jours consécutifs</p>
+                <p className="text-white/75 text-xs text-center">{streakLabel}</p>
               </div>
             </div>
           </div>
@@ -109,7 +123,7 @@ export default function CheckinPage() {
         <div className="mx-4 mt-3">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm py-5 px-6 text-center">
             <p className="text-[#F59E0B] text-2xl font-bold">{currency} {totalBonusClaimed}</p>
-            <p className="text-gray-500 text-sm mt-1">Récompenses cumulées</p>
+            <p className="text-gray-500 text-sm mt-1">{totalLabel}</p>
           </div>
         </div>
 
@@ -146,8 +160,8 @@ export default function CheckinPage() {
 
         {/* Rules */}
         <div className="mx-4 mt-5 space-y-1.5">
-          <p className="text-gray-400 text-xs">1. Récompense de connexion quotidienne : 50 {currency}</p>
-          <p className="text-gray-400 text-xs">2. Connectez-vous une fois par jour pour accumuler des points.</p>
+          <p className="text-gray-400 text-xs">{rule1}</p>
+          <p className="text-gray-400 text-xs">{rule2}</p>
         </div>
 
       </div>

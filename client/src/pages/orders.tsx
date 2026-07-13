@@ -3,6 +3,7 @@ import { useAuth } from "@/lib/auth";
 import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getContent } from "@/lib/content";
 
 import elfExpert1 from "@/assets/images/elf-expert-1.jpeg";
 import elfExpert2 from "@/assets/images/elf-expert-2.webp";
@@ -19,7 +20,15 @@ export default function OrdersPage() {
     queryKey: ["/api/user/products"],
   });
 
+  const { data: settings } = useQuery<Record<string, string>>({
+    queryKey: ["/api/settings"],
+  });
+
   if (!user) return null;
+
+  const headerTitle = getContent(settings, "content_orders_headerTitle", "Mes commandes");
+  const infoLine1 = getContent(settings, "content_orders_infoLine1", "Les revenus du produit sont credites automatiquement une fois toutes les 24 heures.");
+  const infoLine2 = getContent(settings, "content_orders_infoLine2", "Vous pouvez acheter plusieurs machines pour augmenter vos revenus.");
 
   const getProductImage = (index: number) => {
     return productImages[index % productImages.length];
@@ -32,7 +41,7 @@ export default function OrdersPage() {
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
       <header className="px-4 py-3 border-b">
-        <h1 className="text-lg font-semibold text-gray-800 text-center">Mes commandes</h1>
+        <h1 className="text-lg font-semibold text-gray-800 text-center">{headerTitle}</h1>
       </header>
 
       <div className="flex border-b">
@@ -64,10 +73,10 @@ export default function OrdersPage() {
 
       <div className="bg-green-50 p-3 mx-4 mt-3 rounded-lg">
         <p className="text-xs text-green-700 leading-relaxed">
-          Les revenus du produit sont credites automatiquement une fois toutes les 24 heures.
+          {infoLine1}
         </p>
         <p className="text-xs text-green-700 leading-relaxed mt-1">
-          Vous pouvez acheter plusieurs machines pour augmenter vos revenus.
+          {infoLine2}
         </p>
       </div>
 

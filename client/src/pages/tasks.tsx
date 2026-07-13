@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { getCountryByCode } from "@/lib/countries";
+import { getContent } from "@/lib/content";
 import { ChevronLeft, Loader2, Trophy, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import type { Task } from "@shared/schema";
@@ -50,6 +51,10 @@ export default function TasksPage() {
     queryKey: ["/api/tasks"],
   });
 
+  const { data: settings } = useQuery<Record<string, string>>({
+    queryKey: ["/api/settings"],
+  });
+
   const claimMutation = useMutation({
     mutationFn: async (taskId: number) => {
       const response = await apiRequest("POST", `/api/tasks/${taskId}/claim`, {});
@@ -76,6 +81,11 @@ export default function TasksPage() {
   const totalTaskRewards = tasks?.filter(t => t.isCompleted).reduce((sum, t) => sum + t.reward, 0) || 0;
   const completedCount = tasks?.filter(t => t.isCompleted).length || 0;
   const claimableCount = tasks?.filter(t => t.canClaim && !t.isCompleted).length || 0;
+
+  const headerTitle = getContent(settings, "content_tasks_headerTitle", "Programme de Parrainage");
+  const headerSubtitle = getContent(settings, "content_tasks_headerSubtitle", "Invitez des amis et gagnez des récompenses");
+  const tiersTitle = getContent(settings, "content_tasks_tiersTitle", "Paliers de parrainage");
+  const claimAllButton = getContent(settings, "content_tasks_claimAllButton", "Tout réclamer");
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
@@ -112,10 +122,10 @@ export default function TasksPage() {
         {/* Hero text — positioned above the stats card overlap zone (bottom 60px) */}
         <div className="absolute left-4 right-4" style={{ bottom: "60px" }}>
           <h1 className="text-white font-bold text-xl leading-tight" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>
-            Programme de Parrainage
+            {headerTitle}
           </h1>
           <p className="text-white text-xs mt-1" style={{ opacity: 0.92, textShadow: "0 1px 3px rgba(0,0,0,0.4)" }}>
-            Invitez des amis et gagnez des récompenses
+            {headerSubtitle}
           </p>
         </div>
       </div>
@@ -145,7 +155,7 @@ export default function TasksPage() {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Trophy className="w-4 h-4 text-[#16A34A]" />
-            <h2 className="text-gray-800 font-bold text-sm">Paliers de parrainage</h2>
+            <h2 className="text-gray-800 font-bold text-sm">{tiersTitle}</h2>
           </div>
           {claimableCount > 0 && (
             <button
@@ -159,7 +169,7 @@ export default function TasksPage() {
               className="text-xs text-[#16A34A] font-semibold bg-red-50 px-3 py-1.5 rounded-full"
               data-testid="button-claim-rewards"
             >
-              Tout réclamer ({claimableCount})
+              {claimAllButton} ({claimableCount})
             </button>
           )}
         </div>

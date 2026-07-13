@@ -5,6 +5,8 @@ import { ChevronLeft, Loader2, Gift, Tag } from "lucide-react";
 import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { getContent } from "@/lib/content";
 
 import jollibeeNight from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
 import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
@@ -13,6 +15,18 @@ export default function GiftCodePage() {
   const { refreshUser } = useAuth();
   const { toast } = useToast();
   const [code, setCode] = useState("");
+
+  const { data: settings } = useQuery<Record<string, string>>({
+    queryKey: ["/api/settings"],
+  });
+
+  const headerTitle = getContent(settings, "content_giftcode_headerTitle", "Code Bonus");
+  const infoLine1 = getContent(settings, "content_giftcode_infoLine1", "Entrez votre code bonus pour recevoir votre récompense instantanément");
+  const infoLine2 = getContent(settings, "content_giftcode_infoLine2", "Les codes sont disponibles chaque soir à 17h GMT");
+  const howToTitle = getContent(settings, "content_giftcode_howToTitle", "Comment obtenir des codes ?");
+  const step1 = getContent(settings, "content_giftcode_step1", "Rejoignez notre canal Telegram officiel");
+  const step2 = getContent(settings, "content_giftcode_step2", "Suivez les annonces chaque soir à 17h GMT");
+  const step3 = getContent(settings, "content_giftcode_step3", "Copiez le code et collez-le ici avant expiration");
 
   const claimMutation = useMutation({
     mutationFn: async (giftCode: string) => {
@@ -77,7 +91,7 @@ export default function GiftCodePage() {
             </button>
           </Link>
           <h1 className="flex-1 text-center text-base font-bold text-white pr-8">
-            Code Bonus
+            {headerTitle}
           </h1>
         </div>
 
@@ -94,10 +108,10 @@ export default function GiftCodePage() {
         {/* Info card */}
         <div className="bg-white rounded-2xl shadow-sm p-4 text-center">
           <p className="text-gray-700 text-sm font-medium">
-            Entrez votre code bonus pour recevoir votre récompense instantanément
+            {infoLine1}
           </p>
           <p className="text-xs text-gray-400 mt-1">
-            Les codes sont disponibles chaque soir à 17h GMT
+            {infoLine2}
           </p>
         </div>
 
@@ -143,22 +157,22 @@ export default function GiftCodePage() {
 
         {/* How to get codes */}
         <div className="bg-white rounded-2xl shadow-sm p-4">
-          <p className="text-gray-800 font-semibold text-sm mb-2">Comment obtenir des codes ?</p>
+          <p className="text-gray-800 font-semibold text-sm mb-2">{howToTitle}</p>
           <div className="space-y-2">
             <div className="flex items-start gap-2">
               <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-white text-[10px] font-bold"
                 style={{ backgroundColor: "#F59E0B" }}>1</div>
-              <p className="text-gray-500 text-xs">Rejoignez notre canal Telegram officiel</p>
+              <p className="text-gray-500 text-xs">{step1}</p>
             </div>
             <div className="flex items-start gap-2">
               <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-white text-[10px] font-bold"
                 style={{ backgroundColor: "#F59E0B" }}>2</div>
-              <p className="text-gray-500 text-xs">Suivez les annonces chaque soir à 17h GMT</p>
+              <p className="text-gray-500 text-xs">{step2}</p>
             </div>
             <div className="flex items-start gap-2">
               <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-white text-[10px] font-bold"
                 style={{ backgroundColor: "#F59E0B" }}>3</div>
-              <p className="text-gray-500 text-xs">Copiez le code et collez-le ici avant expiration</p>
+              <p className="text-gray-500 text-xs">{step3}</p>
             </div>
           </div>
         </div>

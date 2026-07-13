@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { getCountryByCode } from "@/lib/countries";
+import { getContent } from "@/lib/content";
 import solarPanelImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 
 export default function SalaryBonusPage() {
@@ -13,7 +14,13 @@ export default function SalaryBonusPage() {
     queryKey: ["/api/team/stats"],
   });
 
+  const { data: settings } = useQuery<Record<string, string>>({
+    queryKey: ["/api/settings"],
+  });
+
   if (!user) return null;
+
+  const headerTitle = getContent(settings, "content_salarybonus_headerTitle", "Centre des tâches");
 
   const country = getCountryByCode(user.country);
   const currency = country?.currency || "FCFA";
@@ -43,7 +50,7 @@ export default function SalaryBonusPage() {
           <ChevronLeft className="w-5 h-5 text-gray-700" />
         </button>
         <p className="flex-1 text-center text-gray-900 font-extrabold text-lg pr-9">
-          Centre des tâches
+          {headerTitle}
         </p>
       </div>
 
