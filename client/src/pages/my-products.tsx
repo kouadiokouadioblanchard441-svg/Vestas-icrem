@@ -13,6 +13,8 @@ import productImg5 from "@assets/images_(41)_1783210181134.jpeg";
 import productImg6 from "@assets/images_(49)_1783210181155.jpeg";
 import productImg7 from "@assets/images_(40)_1783210181193.jpeg";
 import productImg8 from "@assets/images_(39)_1783210181215.jpeg";
+import iconWallet from "@assets/portefeuille-chaud-3d-icon-png-download-9878550_1783248791774.png";
+import iconRevenu from "@assets/3309927_1783248791847.png";
 
 const PRODUCT_IMAGES = [productImg1, productImg2, productImg3, productImg4, productImg5, productImg6, productImg7, productImg8];
 
@@ -77,21 +79,21 @@ export default function MyProductsPage() {
 
         {/* Stats cards */}
         <div className="grid grid-cols-2 gap-3 mx-3 mt-3">
-          <div
-            className="rounded-2xl px-4 py-4 text-white shadow-md"
-            style={{ background: "linear-gradient(135deg, #F4920A, #E08308)" }}
-          >
-            <p className="text-white/70 text-xs mb-1">Mon appareil</p>
-            <p className="text-white font-black text-2xl">{allProducts.length}</p>
+          <div className="rounded-2xl px-4 py-4 bg-white shadow-md flex items-center gap-3">
+            <img src={iconWallet} alt="" className="w-10 h-10 object-contain shrink-0" />
+            <div>
+              <p className="text-gray-500 text-xs mb-1">Mon appareil</p>
+              <p className="text-gray-900 font-black text-2xl">{allProducts.length}</p>
+            </div>
           </div>
-          <div
-            className="rounded-2xl px-4 py-4 text-white shadow-md"
-            style={{ background: "linear-gradient(135deg, #F4920A, #E08308)" }}
-          >
-            <p className="text-white/70 text-xs mb-1">Mes revenus</p>
-            <p className="text-white font-black text-xl leading-tight">
-              {currency} {totalEarned.toLocaleString("fr-FR")}
-            </p>
+          <div className="rounded-2xl px-4 py-4 bg-white shadow-md flex items-center gap-3">
+            <img src={iconRevenu} alt="" className="w-10 h-10 object-contain shrink-0" />
+            <div>
+              <p className="text-gray-500 text-xs mb-1">Mes revenus</p>
+              <p className="text-gray-900 font-black text-lg leading-tight">
+                {currency} {totalEarned.toLocaleString("fr-FR")}
+              </p>
+            </div>
           </div>
         </div>
 
