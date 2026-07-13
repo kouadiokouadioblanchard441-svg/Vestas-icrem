@@ -34,9 +34,9 @@ export default function DepositPage() {
     queryKey: ["/api/countries"],
   });
 
-  const countryInfo = apiCountries.length > 0
+  const countryInfo: ApiCountry | undefined = apiCountries.length > 0
     ? apiCountries.find(c => c.code === country && c.isActive)
-    : COUNTRIES.find(c => c.code === country);
+    : COUNTRIES.find(c => c.code === country) as ApiCountry | undefined;
   const currency = countryInfo?.currency || "FCFA";
 
   const { data: platformSettings } = useQuery<Record<string, string>>({
@@ -149,9 +149,8 @@ export default function DepositPage() {
     }
   };
 
-  // WestPay countries = tout sauf Cameroun (CM)
-  const WESTPAY_EXCLUDED = ["CM"];
-  const isWestpayEligible = westpayEnabled && !WESTPAY_EXCLUDED.includes(user?.country ?? "");
+  // Paiement automatique WestPay = activé globalement ET pour le pays de l'utilisateur (géré dans Admin > Pays)
+  const isWestpayEligible = westpayEnabled && !!countryInfo?.autoPaymentEnabled;
 
   const handleAmountNext = () => {
     if (!amount || Number(amount) < MIN_DEPOSIT) {
@@ -162,7 +161,7 @@ export default function DepositPage() {
       });
       return;
     }
-    // Pays WestPay (hors CM) → redirection directe sans passer par le step "select"
+    // Pays en paiement automatique (WestPay activé pour ce pays) → redirection directe sans passer par le step "select"
     if (isWestpayEligible) {
       handleWestpay();
       return;

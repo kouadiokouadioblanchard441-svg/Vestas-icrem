@@ -68,6 +68,7 @@ export async function seed() {
       phonePrefix: "237",
       operators: JSON.stringify(["Orange Cameroun", "MTN Cameroun"]),
       isActive: true,
+      autoPaymentEnabled: false,
     },
     {
       code: "BF",
@@ -76,6 +77,7 @@ export async function seed() {
       phonePrefix: "226",
       operators: JSON.stringify(["Orange Burkina", "Moov Africa Burkina"]),
       isActive: true,
+      autoPaymentEnabled: false,
     },
     {
       code: "BJ",
@@ -84,6 +86,7 @@ export async function seed() {
       phonePrefix: "229",
       operators: JSON.stringify(["MTN Benin", "Moov Africa Benin"]),
       isActive: true,
+      autoPaymentEnabled: false,
     },
   ];
 
@@ -195,6 +198,7 @@ export async function seed() {
     { key: "omnipayEnabled", value: "false" },
     { key: "omnipayChannelName", value: "OmniPay" },
     { key: "omnipayCallbackKey", value: "" },
+    { key: "westpayEnabled", value: "false" },
   ];
 
   for (const settingData of requiredSettings) {

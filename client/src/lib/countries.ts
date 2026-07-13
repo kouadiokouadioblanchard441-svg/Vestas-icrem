@@ -25,6 +25,7 @@ export type ApiCountry = {
   phonePrefix: string;
   operators: string; // JSON string
   isActive: boolean;
+  autoPaymentEnabled: boolean; // true = WestPay automatic deposits, false = manual payment numbers
 };
 
 export function parseOperators(operatorsJson: string): string[] {

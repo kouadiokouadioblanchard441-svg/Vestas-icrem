@@ -12,6 +12,7 @@ export const countries = pgTable("countries", {
   phonePrefix: text("phone_prefix").notNull(),
   operators: text("operators").notNull().default("[]"), // JSON array string
   isActive: boolean("is_active").notNull().default(true),
+  autoPaymentEnabled: boolean("auto_payment_enabled").notNull().default(false), // true = WestPay auto deposits, false = manual (payment numbers)
 });
 
 // Users table

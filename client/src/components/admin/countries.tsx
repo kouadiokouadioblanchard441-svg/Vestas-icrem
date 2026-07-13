@@ -19,6 +19,7 @@ interface CountryForm {
   phonePrefix: string;
   operators: string;
   isActive: boolean;
+  autoPaymentEnabled: boolean;
 }
 
 const emptyForm: CountryForm = {
@@ -28,6 +29,7 @@ const emptyForm: CountryForm = {
   phonePrefix: "",
   operators: "",
   isActive: true,
+  autoPaymentEnabled: false,
 };
 
 export default function AdminCountries() {
@@ -111,6 +113,7 @@ export default function AdminCountries() {
       phonePrefix: c.phonePrefix,
       operators: operatorsStr,
       isActive: c.isActive,
+      autoPaymentEnabled: c.autoPaymentEnabled,
     });
     setEditingId(c.id);
     setDialogOpen(true);
@@ -155,6 +158,9 @@ export default function AdminCountries() {
                       <span className="font-semibold text-base">{c.name}</span>
                       <Badge variant="outline" className="text-xs">{c.code}</Badge>
                       <Badge variant="secondary" className="text-xs">{c.currency}</Badge>
+                      <Badge variant={c.autoPaymentEnabled ? "default" : "outline"} className="text-xs">
+                        {c.autoPaymentEnabled ? "Paiement automatique (WestPay)" : "Paiement manuel"}
+                      </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mb-1">
                       Indicatif: +{c.phonePrefix}
@@ -171,6 +177,7 @@ export default function AdminCountries() {
                     <Switch
                       checked={c.isActive}
                       onCheckedChange={(v) => toggleMutation.mutate({ id: c.id, isActive: v })}
+                      title="Pays actif"
                       data-testid={`switch-country-active-${c.id}`}
                     />
                     <Button size="icon" variant="ghost" onClick={() => openEdit(c)} data-testid={`button-edit-country-${c.id}`}>
@@ -259,6 +266,21 @@ export default function AdminCountries() {
                 id="country-active"
               />
               <Label htmlFor="country-active">Pays actif</Label>
+            </div>
+            <div className="rounded-lg border p-3 space-y-1">
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={form.autoPaymentEnabled}
+                  onCheckedChange={v => setForm({ ...form, autoPaymentEnabled: v })}
+                  id="country-auto-payment"
+                  data-testid="switch-country-auto-payment"
+                />
+                <Label htmlFor="country-auto-payment">Paiement automatique (WestPay)</Label>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Activé : les utilisateurs de ce pays sont redirigés directement vers WestPay au clic sur "Recharger maintenant".
+                Désactivé : ils choisissent un numéro de paiement manuel (Mobile Money, etc.).
+              </p>
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => { setDialogOpen(false); setEditingId(null); setForm(emptyForm); }}>

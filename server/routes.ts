@@ -869,6 +869,17 @@ export async function registerRoutes(
         return res.status(500).json({ message: "WestPay non configuré (slug manquant)" });
       }
 
+      const westpayEnabled = settings.westpayEnabled === "true";
+      if (!westpayEnabled) {
+        return res.status(400).json({ message: "WestPay n'est pas activé sur la plateforme" });
+      }
+
+      const allCountries = await storage.getCountries();
+      const userCountry = allCountries.find(c => c.code === user.country);
+      if (!userCountry?.autoPaymentEnabled) {
+        return res.status(400).json({ message: "Le paiement automatique n'est pas disponible pour votre pays" });
+      }
+
       // Create deposit record in "processing" state (will be approved by webhook)
       const deposit = await storage.createDeposit({
         userId: user.id,
@@ -1888,7 +1899,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/countries", requireAdmin, async (req, res) => {
     try {
-      const { code, name, currency, phonePrefix, operators, isActive } = req.body;
+      const { code, name, currency, phonePrefix, operators, isActive, autoPaymentEnabled } = req.body;
       if (!code || !name || !currency || !phonePrefix) {
         return res.status(400).json({ message: "Code, nom, devise et indicatif sont requis" });
       }
@@ -1899,6 +1910,7 @@ export async function registerRoutes(
         phonePrefix,
         operators: operators || "[]",
         isActive: isActive !== undefined ? isActive : true,
+        autoPaymentEnabled: autoPaymentEnabled !== undefined ? autoPaymentEnabled : false,
       });
       res.json(country);
     } catch (error: any) {
@@ -1909,13 +1921,14 @@ export async function registerRoutes(
   app.put("/api/admin/countries/:id", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const { code, name, currency, phonePrefix, operators, isActive } = req.body;
+      const { name, currency, phonePrefix, operators, isActive, autoPaymentEnabled } = req.body;
       const updateData: any = {};
       if (name !== undefined) updateData.name = name;
       if (currency !== undefined) updateData.currency = currency;
       if (phonePrefix !== undefined) updateData.phonePrefix = phonePrefix;
       if (operators !== undefined) updateData.operators = operators;
       if (isActive !== undefined) updateData.isActive = isActive;
+      if (autoPaymentEnabled !== undefined) updateData.autoPaymentEnabled = autoPaymentEnabled;
       const country = await storage.updateCountry(id, updateData);
       res.json(country);
     } catch (error: any) {
