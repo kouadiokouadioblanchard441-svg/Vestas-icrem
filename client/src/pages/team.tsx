@@ -5,9 +5,8 @@ import { getCountryByCode } from "@/lib/countries";
 import { useLocation } from "wouter";
 import { Copy } from "lucide-react";
 
-import lv1Img from "@assets/vestas_112v_closeup_(1)_1783210181118.jpg";
-import lv2Img from "@assets/vestas_112v_closeup_(2)_1783210180090.jpg";
 import teamIcon from "@assets/1244758_1783246767217.png";
+import solarPanelImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 
 interface TeamStats {
   level1Count: number;
@@ -205,7 +204,7 @@ export default function TeamPage() {
 
             {/* Card Lv1 */}
             <div className="relative rounded-2xl overflow-hidden" style={{ height: 160 }} data-testid="card-progress-lv1">
-              <img src={lv1Img} alt="Lv1" className="absolute inset-0 w-full h-full object-cover" />
+              <img src={solarPanelImg} alt="Lv1" className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(91,33,182,0.85) 0%, rgba(0,0,0,0.1) 60%)" }} />
               <div className="absolute inset-0 p-3 flex flex-col justify-between">
                 <span className="text-white font-extrabold text-xs bg-orange-900/60 px-2 py-0.5 rounded-full w-fit">VIP1</span>
@@ -232,7 +231,7 @@ export default function TeamPage() {
             <div className="flex flex-col gap-3">
               {/* Lv2 */}
               <div className="relative rounded-2xl overflow-hidden" style={{ height: 74 }} data-testid="card-progress-lv2">
-                <img src={lv2Img} alt="Lv2" className="absolute inset-0 w-full h-full object-cover" />
+                <img src={solarPanelImg} alt="Lv2" className="absolute inset-0 w-full h-full object-cover" />
                 <div className="absolute inset-0" style={{ background: "rgba(91,33,182,0.65)" }} />
                 <div className="absolute inset-0 p-2.5 flex flex-col justify-between">
                   <span className="text-white font-extrabold text-xs">VIP2</span>
@@ -251,7 +250,7 @@ export default function TeamPage() {
 
               {/* Lv3 */}
               <div className="relative rounded-2xl overflow-hidden" style={{ height: 74 }} data-testid="card-progress-lv3">
-                <img src={lv1Img} alt="Lv3" className="absolute inset-0 w-full h-full object-cover" />
+                <img src={solarPanelImg} alt="Lv3" className="absolute inset-0 w-full h-full object-cover" />
                 <div className="absolute inset-0" style={{ background: "rgba(124,58,237,0.65)" }} />
                 <div className="absolute inset-0 p-2.5 flex flex-col justify-between">
                   <span className="text-white font-extrabold text-xs">VIP3</span>
