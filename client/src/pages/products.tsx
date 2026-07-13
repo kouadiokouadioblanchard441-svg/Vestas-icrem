@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { formatCurrency, getCountryByCode } from "@/lib/countries";
-import { Loader2, AlertTriangle, Settings, ChevronRight } from "lucide-react";
+import { Loader2, Settings } from "lucide-react";
 import { useLocation } from "wouter";
 import type { Product } from "@shared/schema";
 
@@ -32,7 +31,6 @@ export default function ProductsPage() {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
   const [, navigate] = useLocation();
-  const [confirmProduct, setConfirmProduct] = useState<ProductWithOwnership | null>(null);
 
   const { data: products, isLoading } = useQuery<ProductWithOwnership[]>({
     queryKey: ["/api/products"],
@@ -51,11 +49,9 @@ export default function ProductsPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user/products"] });
       refreshUser();
-      setConfirmProduct(null);
       toast({ title: "Produit acheté !", description: "Vous commencerez à recevoir des gains demain." });
     },
     onError: (error: any) => {
-      setConfirmProduct(null);
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
     },
   });
@@ -66,6 +62,19 @@ export default function ProductsPage() {
   const country = getCountryByCode(user.country);
   const currency = country?.currency || "FCFA";
   const paidProducts = products?.filter(p => !p.isFree) || [];
+
+  const handleBuy = (product: ProductWithOwnership) => {
+    if (balance < Number(product.price)) {
+      const manque = formatCurrency(Number(product.price) - balance, user.country);
+      toast({
+        title: "Solde insuffisant",
+        description: `Il vous manque ${manque} pour acheter ce produit.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    purchaseMutation.mutate(product.id);
+  };
 
   return (
     <div className="flex flex-col min-h-full" style={{ background: "#f0f2f5" }}>
@@ -93,17 +102,16 @@ export default function ProductsPage() {
         ) : paidProducts.length > 0 ? (
           paidProducts.map((product, idx) => {
             const img = PRODUCT_IMAGES[idx % PRODUCT_IMAGES.length];
-            const canAfford = balance >= Number(product.price);
+            const isPending = purchaseMutation.isPending;
             return (
               <div
                 key={product.id}
-                className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-row cursor-pointer active:scale-[0.99] transition-transform"
-                onClick={() => setConfirmProduct(product)}
+                className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-row"
                 data-testid={`product-card-${product.id}`}
               >
                 {/* Image */}
-                <div className="shrink-0 w-28 h-full" style={{ minHeight: 112 }}>
-                  <img src={img} alt={product.name} className="w-full h-full object-cover" style={{ minHeight: 112 }} />
+                <div className="shrink-0 w-28" style={{ minHeight: 120 }}>
+                  <img src={img} alt={product.name} className="w-full h-full object-cover" style={{ minHeight: 120 }} />
                 </div>
 
                 {/* Info */}
@@ -113,25 +121,25 @@ export default function ProductsPage() {
                     <div className="space-y-1">
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400 text-xs">Prix</span>
-                        <span className="font-bold text-xs" style={{ color: "#00A651" }}>
+                        <span className="font-bold text-xs text-gray-900">
                           {currency} {Number(product.price).toLocaleString("fr-FR")}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400 text-xs">Rev./jour</span>
-                        <span className="font-bold text-xs" style={{ color: "#00A651" }}>
+                        <span className="font-bold text-xs text-gray-900">
                           {currency} {Number(product.dailyEarnings).toLocaleString("fr-FR")}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400 text-xs">Rev. total</span>
-                        <span className="font-bold text-xs" style={{ color: "#00A651" }}>
+                        <span className="font-bold text-xs text-gray-900">
                           {currency} {Number(product.totalReturn).toLocaleString("fr-FR")}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400 text-xs">Durée</span>
-                        <span className="font-bold text-xs" style={{ color: "#00A651" }}>
+                        <span className="font-bold text-xs text-gray-900">
                           {product.cycleDays} jours
                         </span>
                       </div>
@@ -140,17 +148,13 @@ export default function ProductsPage() {
 
                   {/* Buy button */}
                   <button
-                    onClick={e => { e.stopPropagation(); setConfirmProduct(product); }}
-                    className="mt-2 w-full py-2 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-1"
-                    style={{
-                      background: canAfford
-                        ? "linear-gradient(135deg, #00A651, #00C853)"
-                        : "linear-gradient(135deg, #9ca3af, #6b7280)",
-                    }}
+                    onClick={() => handleBuy(product)}
+                    disabled={isPending}
+                    className="mt-2 w-full py-2 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-1 disabled:opacity-60"
+                    style={{ background: "linear-gradient(135deg, #00A651, #00C853)" }}
                     data-testid={`button-purchase-${product.id}`}
                   >
-                    {canAfford ? "Acheter" : "Solde insuffisant"}
-                    <ChevronRight className="w-3 h-3" />
+                    {isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : "Acheter"}
                   </button>
                 </div>
               </div>
@@ -163,95 +167,6 @@ export default function ProductsPage() {
           </div>
         )}
       </div>
-
-      {/* Purchase confirm modal */}
-      {confirmProduct && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center px-5 bg-black/60"
-          onClick={() => setConfirmProduct(null)}
-        >
-          <div
-            className="w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"
-            style={{ background: "linear-gradient(160deg, #00A651 0%, #001a40 100%)" }}
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Title */}
-            <div className="pt-6 px-6 pb-3">
-              <h3 className="text-white text-2xl font-black">{confirmProduct.name}</h3>
-              <p className="text-white/70 text-sm mt-1">
-                Après l'achat du produit, vos gains seront crédités sur votre compte toutes les 24 heures.
-              </p>
-            </div>
-
-            {/* Image + Info row */}
-            <div className="flex items-center gap-4 px-6 py-3">
-              <div className="w-28 h-24 rounded-2xl overflow-hidden shrink-0 shadow-lg">
-                <img
-                  src={PRODUCT_IMAGES[(confirmProduct.sortOrder || 0) % PRODUCT_IMAGES.length]}
-                  alt={confirmProduct.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex-1 space-y-1.5">
-                <div>
-                  <p className="text-white/60 text-xs">Prix</p>
-                  <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.price).toLocaleString("fr-FR")}</p>
-                </div>
-                <div>
-                  <p className="text-white/60 text-xs">Revenu quotidien</p>
-                  <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.dailyEarnings).toLocaleString("fr-FR")}</p>
-                </div>
-                <div>
-                  <p className="text-white/60 text-xs">Revenu total</p>
-                  <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.totalReturn).toLocaleString("fr-FR")}</p>
-                </div>
-                <div>
-                  <p className="text-white/60 text-xs">Période de validité</p>
-                  <p className="text-white font-bold text-sm">{confirmProduct.cycleDays} jours</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Warning */}
-            <div className="mx-6 mb-3">
-              {balance < Number(confirmProduct.price) ? (
-                <div className="flex items-center gap-2 p-2.5 bg-red-500/20 border border-red-400/30 rounded-xl">
-                  <AlertTriangle className="w-4 h-4 text-red-300 shrink-0" />
-                  <p className="text-xs text-red-200">
-                    Solde insuffisant. Il vous manque {formatCurrency(Number(confirmProduct.price) - balance, user.country)}.
-                  </p>
-                </div>
-              ) : (
-                <p className="text-white/70 text-xs text-center font-semibold">
-                  Chaque personne ne peut acheter qu'un seul article par jour.
-                </p>
-              )}
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-3 px-6 pb-6 pt-1">
-              <button
-                onClick={() => setConfirmProduct(null)}
-                className="flex-1 py-3 rounded-full font-semibold text-sm"
-                style={{ background: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.8)" }}
-                data-testid="button-cancel-purchase"
-              >
-                Annuler
-              </button>
-              <button
-                onClick={() => purchaseMutation.mutate(confirmProduct.id)}
-                disabled={purchaseMutation.isPending || balance < Number(confirmProduct.price)}
-                className="flex-1 py-3 rounded-full text-white font-bold text-sm flex items-center justify-center gap-1 disabled:opacity-50"
-                style={{ background: "linear-gradient(135deg, #00C853, #004499)" }}
-                data-testid="button-confirm-purchase"
-              >
-                {purchaseMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                Confirmer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
