@@ -40,6 +40,7 @@ export interface IStorage {
   getDeposits(status?: string): Promise<(Deposit & { user: User })[]>;
   getUserDeposits(userId: number): Promise<Deposit[]>;
   updateDeposit(id: number, data: Partial<Deposit>): Promise<Deposit>;
+  findProcessingWestpayDeposit(amount: number): Promise<Deposit | undefined>;
   cleanupDepositScreenshots(): Promise<void>;
   processDepositReferralCommissions(userId: number, amount: number): Promise<void>;
   
@@ -529,6 +530,18 @@ export class DatabaseStorage implements IStorage {
 
   async updateDeposit(id: number, data: Partial<Deposit>): Promise<Deposit> {
     const [deposit] = await db.update(deposits).set(data).where(eq(deposits.id, id)).returning();
+    return deposit;
+  }
+
+  async findProcessingWestpayDeposit(amount: number): Promise<Deposit | undefined> {
+    const [deposit] = await db.select().from(deposits)
+      .where(and(
+        eq(deposits.channelName, "westpay"),
+        eq(deposits.status, "processing"),
+        eq(deposits.amount, amount),
+      ))
+      .orderBy(desc(deposits.createdAt))
+      .limit(1);
     return deposit;
   }
 

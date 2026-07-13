@@ -34,6 +34,7 @@ import CheckinPage from "@/pages/checkin";
 import RewardsPage from "@/pages/rewards";
 import WithdrawalHistoryPage from "@/pages/withdrawal-history";
 import DepositOrdersPage from "@/pages/deposit-orders";
+import DepositCallbackPage from "@/pages/deposit-callback";
 import SalaryBonusPage from "@/pages/salary-bonus";
 import NewsDetailPage from "@/pages/news-detail";
 import NotFound from "@/pages/not-found";
@@ -247,6 +248,11 @@ function Router() {
       <Route path="/deposit-orders">
         <ProtectedRoute>
           <DepositOrdersPage />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/deposit-callback">
+        <ProtectedRoute>
+          <DepositCallbackPage />
         </ProtectedRoute>
       </Route>
       <Route path="/service">

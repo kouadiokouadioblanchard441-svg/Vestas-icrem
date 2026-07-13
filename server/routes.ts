@@ -13,6 +13,7 @@ import {
   mapSoleaspayStatus,
   SOLEASPAY_SERVICE_MAP 
 } from "./soleaspay";
+import { buildPaymentUrl, verifyWebhookSignature } from "./westpay";
 
 // --- Brute-force protection (in-memory) ---
 const loginAttempts = new Map<string, { count: number; blockedUntil: number }>();
@@ -454,6 +455,9 @@ export async function registerRoutes(
 
       const soleaspayEnabled = settings.soleaspayEnabled === "true";
       const soleaspayChannelName = settings.soleaspayChannelName || "Westpay";
+      const westpayEnabled = settings.westpayEnabled === "true";
+      const westpayMerchantSlug = process.env.WESTPAY_MERCHANT_SLUG;
+
       // Build virtual gateway channels when enabled in settings
       const virtualChannels: any[] = [];
       if (soleaspayEnabled) {
@@ -464,6 +468,16 @@ export async function registerRoutes(
           isApi: true,
           isActive: true,
           gateway: "soleaspay",
+        });
+      }
+      if (westpayEnabled && westpayMerchantSlug) {
+        virtualChannels.push({
+          id: -2,
+          name: "WestPay",
+          redirectUrl: "",
+          isApi: true,
+          isActive: true,
+          gateway: "westpay",
         });
       }
 
@@ -835,6 +849,120 @@ export async function registerRoutes(
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
+  });
+
+  // ── WestPay: initiate hosted payment ──────────────────────────────────────
+  app.post("/api/deposits/westpay/initiate", requireAuth, async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const user = await storage.getUser(req.session.userId!);
+      if (!user) return res.status(401).json({ message: "Non authentifié" });
+
+      const settings = await storage.getSettings();
+      const minDeposit = parseInt(settings.minDeposit || "3500");
+      if (!amount || Number(amount) < minDeposit) {
+        return res.status(400).json({ message: `Montant minimum : ${minDeposit.toLocaleString()} FCFA` });
+      }
+
+      const merchantSlug = process.env.WESTPAY_MERCHANT_SLUG;
+      if (!merchantSlug) {
+        return res.status(500).json({ message: "WestPay non configuré (slug manquant)" });
+      }
+
+      // Create deposit record in "processing" state (will be approved by webhook)
+      const deposit = await storage.createDeposit({
+        userId: user.id,
+        amount: Number(amount),
+        accountName: user.fullName || user.phone,
+        accountNumber: user.phone,
+        country: user.country,
+        paymentMethod: "WestPay",
+        channelName: "westpay",
+        status: "processing",
+      });
+
+      // Build callback URL — WestPay appends ?status=...&amount=...&ref=... to it
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN
+        ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+        : `https://${req.headers.host}`;
+      const redirectUrl = `${baseUrl}/deposit-callback?depositId=${deposit.id}`;
+      const westpayUrl = buildPaymentUrl(merchantSlug, Number(amount), user.country, redirectUrl);
+
+      console.log(`[westpay] Deposit #${deposit.id} initiated for user ${user.id}, amount ${amount}`);
+      return res.json({ depositId: deposit.id, westpayUrl });
+    } catch (error: any) {
+      console.error("[westpay] initiate error:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ── WestPay: webhook (server-to-server, HMAC-signed) ─────────────────────
+  // Must receive raw body for HMAC verification — placed BEFORE json middleware applies
+  app.post("/api/webhook/westpay", (req, res, next) => {
+    // Collect raw body
+    let raw = "";
+    req.on("data", (chunk) => { raw += chunk.toString(); });
+    req.on("end", async () => {
+      try {
+        const signature = (req.headers["x-robotpay-signature"] as string) || "";
+        const event = (req.headers["x-robotpay-event"] as string) || "";
+        const webhookSecret = process.env.WESTPAY_WEBHOOK_SECRET;
+
+        if (!webhookSecret) {
+          console.error("[westpay webhook] WESTPAY_WEBHOOK_SECRET not set");
+          return res.json({ received: true });
+        }
+
+        if (!signature || !verifyWebhookSignature(raw, signature, webhookSecret)) {
+          console.error("[westpay webhook] Invalid HMAC signature");
+          return res.status(401).json({ error: "Signature invalide" });
+        }
+
+        if (event !== "payment.confirmed") {
+          return res.json({ received: true });
+        }
+
+        const payload = JSON.parse(raw);
+        const { txId, amount, payer } = payload;
+        console.log(`[westpay webhook] payment.confirmed txId=${txId} amount=${amount} payer=${payer}`);
+
+        // Find the most recent unconfirmed WestPay deposit with matching amount
+        const deposit = await storage.findProcessingWestpayDeposit(Number(amount));
+        if (!deposit) {
+          console.error(`[westpay webhook] No matching deposit for amount=${amount} txId=${txId}`);
+          return res.json({ received: true });
+        }
+
+        // Approve and credit user
+        await storage.updateDeposit(deposit.id, {
+          status: "approved",
+          reference: txId,
+          processedAt: new Date(),
+        });
+
+        const user = await storage.getUser(deposit.userId);
+        if (user) {
+          const newBalance = parseFloat(user.balance) + deposit.amount;
+          await storage.updateUser(deposit.userId, {
+            balance: newBalance.toFixed(2),
+            hasDeposited: true,
+          });
+          await storage.createTransaction({
+            userId: deposit.userId,
+            type: "deposit",
+            amount: deposit.amount.toString(),
+            description: `Dépôt WestPay #${deposit.id} (${txId})`,
+          });
+          await storage.processDepositReferralCommissions(deposit.userId, deposit.amount);
+        }
+
+        console.log(`[westpay webhook] Deposit #${deposit.id} approved — user ${deposit.userId} +${deposit.amount}`);
+        return res.json({ received: true });
+      } catch (err: any) {
+        console.error("[westpay webhook] Error:", err);
+        return res.json({ received: true }); // Always 200 to WestPay
+      }
+    });
   });
 
   // Withdrawals

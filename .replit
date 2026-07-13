@@ -49,6 +49,7 @@ expertMode = true
 [userenv]
 
 [userenv.shared]
+WESTPAY_MERCHANT_SLUG = "business"
 
 [postMerge]
 path = "scripts/post-merge.sh"

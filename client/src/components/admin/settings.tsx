@@ -51,6 +51,7 @@ const settingsSchema = z.object({
   level1Commission: z.string().min(1, "Commission requise"),
   level2Commission: z.string().min(1, "Commission requise"),
   level3Commission: z.string().min(1, "Commission requise"),
+  westpayEnabled: z.boolean(),
 });
 
 type SettingsForm = z.infer<typeof settingsSchema>;
@@ -96,6 +97,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
       level1Commission: "15",
       level2Commission: "2",
       level3Commission: "1",
+      westpayEnabled: false,
     },
   });
 
@@ -129,6 +131,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         level1Commission: settings.level1Commission || "15",
         level2Commission: settings.level2Commission || "2",
         level3Commission: settings.level3Commission || "1",
+        westpayEnabled: settings.westpayEnabled === "true",
       });
     }
   }, [settings, form]);
@@ -141,6 +144,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         support2Enabled: String(data.support2Enabled),
         channelEnabled: String(data.channelEnabled),
         groupEnabled: String(data.groupEnabled),
+        westpayEnabled: String(data.westpayEnabled),
       };
       const response = await apiRequest("POST", "/api/admin/settings", serialized);
       if (!response.ok) {
@@ -490,6 +494,34 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
                 </FormItem>
               )} />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* ── WestPay ── */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <span className="text-lg">💳</span>
+              Passerelle WestPay (dépôts automatiques)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between rounded-xl border p-3">
+              <div>
+                <p className="text-sm font-medium">Activer WestPay</p>
+                <p className="text-xs text-gray-400">Redirige les utilisateurs vers la page de paiement WestPay</p>
+              </div>
+              <Controller
+                control={form.control}
+                name="westpayEnabled"
+                render={({ field }) => (
+                  <Switch checked={!!field.value} onCheckedChange={field.onChange} />
+                )}
+              />
+            </div>
+            <p className="text-xs text-gray-400 px-1">
+              Slug marchand : <span className="font-mono font-semibold text-gray-600">business</span> (défini via variable d'environnement)
+            </p>
           </CardContent>
         </Card>
 
