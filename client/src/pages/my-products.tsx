@@ -78,44 +78,35 @@ export default function MyProductsPage() {
         </div>
 
         {/* Stats cards */}
-        <div className="grid grid-cols-2 gap-3 mx-3 mt-3">
-          <div
-            className="rounded-2xl px-4 py-4 shadow-md flex items-center gap-3 relative overflow-hidden"
-            style={{
-              background: `linear-gradient(135deg, rgba(0,0,0,0.55), rgba(0,0,0,0.35)), url(${heroBanner})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          >
-            <img src={iconWallet} alt="" className="w-10 h-10 object-contain shrink-0" />
-            <div>
-              <p className="text-white/80 text-xs mb-1">Mon appareil</p>
-              <p className="text-white font-black text-2xl">{allProducts.length}</p>
+        <div
+          className="mx-3 mt-3 rounded-2xl shadow-md overflow-hidden relative"
+          style={{
+            background: `linear-gradient(135deg, rgba(0,0,0,0.60), rgba(0,0,0,0.40)), url(${heroBanner})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <div className="grid grid-cols-2 divide-x divide-white/20">
+            <div className="px-4 py-4 flex items-center gap-3">
+              <img src={iconWallet} alt="" className="w-10 h-10 object-contain shrink-0" />
+              <div>
+                <p className="text-white/80 text-xs mb-1">Mon appareil</p>
+                <p className="text-white font-black text-2xl">{allProducts.length}</p>
+              </div>
+            </div>
+            <div className="px-4 py-4 flex items-center gap-3">
+              <img src={iconRevenu} alt="" className="w-10 h-10 object-contain shrink-0" />
+              <div>
+                <p className="text-white/80 text-xs mb-1">Mes revenus</p>
+                <p className="text-white font-black text-lg leading-tight">
+                  {currency} {totalEarned.toLocaleString("fr-FR")}
+                </p>
+              </div>
             </div>
           </div>
-          <div
-            className="rounded-2xl px-4 py-4 shadow-md flex items-center gap-3 relative overflow-hidden"
-            style={{
-              background: `linear-gradient(135deg, rgba(0,0,0,0.55), rgba(0,0,0,0.35)), url(${heroBanner})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          >
-            <img src={iconRevenu} alt="" className="w-10 h-10 object-contain shrink-0" />
-            <div>
-              <p className="text-white/80 text-xs mb-1">Mes revenus</p>
-              <p className="text-white font-black text-lg leading-tight">
-                {currency} {totalEarned.toLocaleString("fr-FR")}
-              </p>
-            </div>
+          <div className="border-t border-white/20 px-4 py-2.5 text-center">
+            <p className="text-white/90 text-xs">⏱️ Les revenus des produits sont réglés toutes les 24 heures</p>
           </div>
-        </div>
-
-        {/* Info notice */}
-        <div className="mx-3 mt-3 bg-white rounded-xl px-4 py-3 shadow-sm">
-          <p className="text-gray-500 text-xs text-center">
-            ℹ️ Les revenus des produits sont réglés toutes les 24 heures
-          </p>
         </div>
 
         {/* Product cards */}
