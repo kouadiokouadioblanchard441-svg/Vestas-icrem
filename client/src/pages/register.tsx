@@ -9,7 +9,7 @@ import { useAuth } from "@/lib/auth";
 import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
 import { CountrySelector } from "@/components/country-selector";
 import { Loader2 } from "lucide-react";
-const intelLogo = "/spolarpv-logo.svg";
+const intelLogo = "/spolarpv-logo.png";
 
 const registerSchema = z.object({
   phone: z.string().min(8, "Numéro de téléphone invalide"),

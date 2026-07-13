@@ -9,7 +9,7 @@ import { useLocation } from "wouter";
 import { getContent } from "@/lib/content";
 import type { Product } from "@shared/schema";
 
-const vestasLogo = "/spolarpv-logo.svg";
+const vestasLogo = "/spolarpv-logo.png";
 import serviceIcon from "@assets/20260311_214852_1773265973964.png";
 import productImg1 from "@assets/vestas_112v_closeup_1783210181172.jpg";
 import productImg2 from "@assets/vestas_112v_closeup_(1)_1783210181118.jpg";

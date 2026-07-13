@@ -10,7 +10,7 @@ import { Link } from "wouter";
 import type { Task } from "@shared/schema";
 import jollibeeImg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
 import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
-import jollibeeLogo from "@assets/vestas-logo_1783210030332.png";
+const jollibeeLogo = "/spolarpv-logo.png";
 import iconBronze from "@assets/344464_1773318022355.png";
 import iconArgent from "@assets/817729_1773318022328.png";
 import iconOr from "@assets/sac-argent-gros-tas-illustration-icone-argent-comptant-icone-p_1773318022388.jpg";

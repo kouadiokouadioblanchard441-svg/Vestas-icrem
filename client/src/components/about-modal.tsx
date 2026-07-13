@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-const vestasLogo = "/spolarpv-logo.svg";
+const vestasLogo = "/spolarpv-logo.png";
 
 interface AboutModalProps {
   open: boolean;

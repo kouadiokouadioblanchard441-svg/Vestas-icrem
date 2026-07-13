@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { NEWS_ARTICLES } from "@/pages/news-detail";
 import { getContent } from "@/lib/content";
 
-const jollibeeLogo = "/spolarpv-logo.svg";
+const jollibeeLogo = "/spolarpv-logo.png";
 import heroImg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
 import bellIcon from "@assets/d7d9f6f6-dddc-4071-8bc2-d6e7e589fbae_(1)_1783248684110.png";
 import iconRecharger from "@assets/1-1_1783245823715.png";
