@@ -133,81 +133,93 @@ export default function WalletPage() {
   /* ─── ADD FORM VIEW ─── */
   if (showForm) {
     return (
-      <div className="flex flex-col min-h-full bg-gray-50">
+      <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
 
-        {/* Header */}
-        <div
-          className="flex items-center px-4 py-4"
-          style={{ background: "linear-gradient(135deg, #00A651, #008C3A)" }}
-        >
+        {/* Header — même style que la liste */}
+        <div className="flex items-center px-4 pt-10 pb-4">
           <button
             onClick={() => { setShowForm(false); form.reset(); setSelectedMethod(""); }}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20"
+            className="p-1"
             data-testid="button-back-form"
           >
-            <ChevronLeft className="w-5 h-5 text-white" />
+            <ChevronLeft className="w-6 h-6 text-gray-700" />
           </button>
-          <h1 className="flex-1 text-center text-white font-bold text-base mr-9">
-            Ajouter un compte bancaire
+          <h1 className="flex-1 text-center text-gray-800 font-bold text-base mr-6">
+            Ajouter un moyen de retrait
           </h1>
         </div>
 
-        {/* Form sections */}
-        <div className="flex-1 bg-white mt-3 mx-4 rounded-2xl shadow-sm overflow-hidden">
+        {/* Champs de saisie */}
+        <div className="px-4 space-y-3">
 
-          {/* Bank selector */}
-          <button
-            type="button"
-            onClick={() => setShowBankSheet(true)}
-            className="w-full px-5 py-4 flex items-center justify-between border-b border-gray-100"
-            data-testid="button-select-bank"
-          >
-            <div className="text-left">
-              <p className="text-xs text-gray-400 mb-0.5">Banque</p>
-              <p className={`text-sm font-medium ${selectedMethod ? "text-gray-800" : "text-gray-400"}`}>
-                {selectedMethod || "Sélectionner une banque"}
-              </p>
+          {/* Sélection opérateur */}
+          <div>
+            <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
+              Opérateur / Banque
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowBankSheet(true)}
+              className="w-full flex items-center justify-between px-4 py-4 rounded-2xl shadow-sm"
+              style={{ background: "rgba(255,255,255,0.90)" }}
+              data-testid="button-select-bank"
+            >
+              <span className={`text-sm font-medium ${selectedMethod ? "text-gray-800" : "text-gray-400"}`}>
+                {selectedMethod || "Sélectionner un opérateur"}
+              </span>
+              <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
+            </button>
+          </div>
+
+          {/* Nom du titulaire */}
+          <div>
+            <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
+              Nom du titulaire
+            </p>
+            <div
+              className="w-full flex items-center px-4 py-4 rounded-2xl shadow-sm"
+              style={{ background: "rgba(255,255,255,0.90)" }}
+            >
+              <input
+                {...form.register("accountName")}
+                placeholder="Entrez le nom du titulaire"
+                className="flex-1 bg-transparent text-sm text-gray-800 placeholder:text-gray-400 outline-none"
+                data-testid="input-wallet-name"
+              />
             </div>
-            <ChevronRight className="w-4 h-4 text-gray-400" />
-          </button>
-
-          {/* Account name */}
-          <div className="px-5 py-4 border-b border-gray-100">
-            <p className="text-xs text-gray-400 mb-1">Titulaire</p>
-            <input
-              {...form.register("accountName")}
-              placeholder="Nom du titulaire"
-              className="w-full text-sm text-gray-800 bg-transparent outline-none placeholder:text-gray-300"
-              data-testid="input-wallet-name"
-            />
             {form.formState.errors.accountName && (
-              <p className="text-xs text-[#00A651] mt-1">{form.formState.errors.accountName.message}</p>
+              <p className="text-red-600 text-xs mt-1 ml-1">{form.formState.errors.accountName.message}</p>
             )}
           </div>
 
-          {/* Account number */}
-          <div className="px-5 py-4">
-            <p className="text-xs text-gray-400 mb-1">Numéro de compte</p>
-            <input
-              {...form.register("accountNumber")}
-              type="tel"
-              placeholder="Numéro de compte"
-              className="w-full text-sm text-gray-800 bg-transparent outline-none placeholder:text-gray-300"
-              data-testid="input-wallet-number"
-            />
+          {/* Numéro de compte / téléphone */}
+          <div>
+            <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
+              Numéro de téléphone / compte
+            </p>
+            <div
+              className="w-full flex items-center px-4 py-4 rounded-2xl shadow-sm"
+              style={{ background: "rgba(255,255,255,0.90)" }}
+            >
+              <input
+                {...form.register("accountNumber")}
+                type="tel"
+                placeholder="Ex : 6XXXXXXXX"
+                className="flex-1 bg-transparent text-sm text-gray-800 placeholder:text-gray-400 outline-none"
+                data-testid="input-wallet-number"
+              />
+            </div>
             {form.formState.errors.accountNumber && (
-              <p className="text-xs text-[#00A651] mt-1">{form.formState.errors.accountNumber.message}</p>
+              <p className="text-red-600 text-xs mt-1 ml-1">{form.formState.errors.accountNumber.message}</p>
             )}
           </div>
-        </div>
 
-        {/* Confirm button */}
-        <div className="px-4 py-6 mt-auto">
+          {/* Bouton confirmer */}
           <button
             onClick={handleSubmit}
             disabled={addMutation.isPending}
-            className="w-full py-4 rounded-full text-white font-bold text-base disabled:opacity-40 shadow-md"
-            style={{ background: "linear-gradient(135deg, #00A651, #008C3A)" }}
+            className="w-full py-4 rounded-full text-white font-bold text-base shadow-md mt-2 disabled:opacity-40"
+            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
             data-testid="button-confirm-wallet"
           >
             {addMutation.isPending ? (
@@ -215,16 +227,24 @@ export default function WalletPage() {
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Enregistrement...
               </span>
-            ) : (
-              "Confirmer"
-            )}
+            ) : "Confirmer"}
           </button>
         </div>
 
-        {/* Bank bottom sheet */}
+        {/* Paysage en bas — même que la liste */}
+        <div className="mt-auto">
+          <img
+            src={landscapeImg}
+            alt="SpolarPV"
+            className="w-full object-cover object-top"
+            style={{ maxHeight: 300 }}
+          />
+        </div>
+
+        {/* Bottom sheet opérateur */}
         {showBankSheet && (
           <div className="fixed inset-0 z-50" onClick={() => setShowBankSheet(false)}>
-            <div className="absolute inset-0 bg-black/40" />
+            <div className="absolute inset-0 bg-black/50" />
             <div
               className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl"
               onClick={(e) => e.stopPropagation()}
@@ -233,17 +253,17 @@ export default function WalletPage() {
                 <div className="w-10 h-1 bg-gray-200 rounded-full" />
               </div>
               <h2 className="text-center font-bold text-gray-800 text-base pt-3 pb-4 border-b border-gray-100">
-                Choisir une banque
+                Choisir un opérateur
               </h2>
-              <div className="pb-8">
+              <div className="pb-10 max-h-80 overflow-y-auto">
                 {paymentMethods.map((method) => (
                   <button
                     key={method}
                     onClick={() => handleChooseMethod(method)}
-                    className="w-full py-4 px-5 flex items-center justify-between border-b border-gray-50 last:border-0"
+                    className="w-full py-4 px-5 flex items-center justify-between border-b border-gray-50 last:border-0 active:bg-gray-50"
                     data-testid={`button-bank-${method}`}
                   >
-                    <span className="text-gray-700 font-medium text-sm">{method}</span>
+                    <span className="text-gray-800 font-medium text-sm">{method}</span>
                     {selectedMethod === method && (
                       <Check className="w-4 h-4 text-[#00A651]" />
                     )}
