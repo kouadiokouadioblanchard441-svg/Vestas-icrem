@@ -79,18 +79,32 @@ export default function MyProductsPage() {
 
         {/* Stats cards */}
         <div className="grid grid-cols-2 gap-3 mx-3 mt-3">
-          <div className="rounded-2xl px-4 py-4 bg-white shadow-md flex items-center gap-3">
+          <div
+            className="rounded-2xl px-4 py-4 shadow-md flex items-center gap-3 relative overflow-hidden"
+            style={{
+              background: `linear-gradient(135deg, rgba(0,0,0,0.55), rgba(0,0,0,0.35)), url(${heroBanner})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
             <img src={iconWallet} alt="" className="w-10 h-10 object-contain shrink-0" />
             <div>
-              <p className="text-gray-500 text-xs mb-1">Mon appareil</p>
-              <p className="text-gray-900 font-black text-2xl">{allProducts.length}</p>
+              <p className="text-white/80 text-xs mb-1">Mon appareil</p>
+              <p className="text-white font-black text-2xl">{allProducts.length}</p>
             </div>
           </div>
-          <div className="rounded-2xl px-4 py-4 bg-white shadow-md flex items-center gap-3">
+          <div
+            className="rounded-2xl px-4 py-4 shadow-md flex items-center gap-3 relative overflow-hidden"
+            style={{
+              background: `linear-gradient(135deg, rgba(0,0,0,0.55), rgba(0,0,0,0.35)), url(${heroBanner})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
             <img src={iconRevenu} alt="" className="w-10 h-10 object-contain shrink-0" />
             <div>
-              <p className="text-gray-500 text-xs mb-1">Mes revenus</p>
-              <p className="text-gray-900 font-black text-lg leading-tight">
+              <p className="text-white/80 text-xs mb-1">Mes revenus</p>
+              <p className="text-white font-black text-lg leading-tight">
                 {currency} {totalEarned.toLocaleString("fr-FR")}
               </p>
             </div>
