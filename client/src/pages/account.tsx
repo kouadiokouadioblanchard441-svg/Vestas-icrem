@@ -19,12 +19,9 @@ import iconWithdraw from "@assets/withdraw-icon-DFsum39V_(1)_1782689895379.png";
 import iconChangePwd from "@assets/mine-mod-change-pwd-D4tL_Aft_1782689895436.png";
 import iconWallet from "@assets/portefeuille-chaud-3d-icon-png-download-9878550_1783248791774.png";
 import iconRevenu from "@assets/3309927_1783248791847.png";
-import iconSalaire from "@assets/téléchargement_(63)_1783248791872.png";
 import iconRecharger from "@assets/1-1_1783245823715.png";
 import iconRetraits from "@assets/2-1_1783245823825.png";
 import profileCardBg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
-
-const WHITE_FILTER = "brightness(0) invert(1)";
 
 export default function AccountPage() {
   const { user, logout } = useAuth();
@@ -105,14 +102,8 @@ export default function AccountPage() {
           }}
         >
 
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 pt-6 pb-2">
-            <p className="text-white font-extrabold text-2xl drop-shadow">Moi</p>
-            <img src={iconSalaire} alt="" className="w-8 h-8 object-contain" style={{ filter: WHITE_FILTER }} />
-          </div>
-
           {/* Profile row */}
-          <div className="flex items-center justify-between px-5 pt-2 pb-5">
+          <div className="flex items-center justify-between px-5 pt-6 pb-5">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white/40 shrink-0">
                 <img src={avatarImg} alt="avatar" className="w-full h-full object-cover" />
