@@ -166,7 +166,7 @@ export default function LoginPage() {
             type="submit"
             disabled={isLoading}
             className="w-full h-14 rounded-full text-white font-bold text-base disabled:opacity-50 mt-4"
-            style={{ background: "#F59E0B", border: "2px solid #D97706" }}
+            style={{ background: "#16A34A", border: "2px solid #15803D" }}
             data-testid="button-login"
           >
             {isLoading ? (
