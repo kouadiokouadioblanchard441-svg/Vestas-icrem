@@ -82,14 +82,14 @@ export default function AccountPage() {
   const phonePrefix = country?.phonePrefix || "";
 
   const gridItems = [
-    { icon: iconRecharger, label: "Recharger", href: "/deposit", white: true },
-    { icon: iconRetraits, label: "Retirer", href: "/withdrawal", white: true },
-    { icon: iconRecords, label: "Facture", href: "/history", white: false },
-    { icon: iconChangePwd, label: "Sécurité", href: "/change-password", white: false },
-    { icon: iconGift, label: "Échangeur", href: "/gift-code", white: false },
-    { icon: iconCS, label: "Service", href: "/service", white: false },
-    { icon: iconAbout, label: "À propos", href: "/about", white: false },
-    { icon: iconWithdraw, label: "Ma carte", href: "/wallet", white: false },
+    { icon: iconRecharger, label: "Deposit", href: "/deposit", white: true },
+    { icon: iconRetraits, label: "Withdraw", href: "/withdrawal", white: true },
+    { icon: iconRecords, label: "Records", href: "/history", white: false },
+    { icon: iconChangePwd, label: "Security", href: "/change-password", white: false },
+    { icon: iconGift, label: "Redeem", href: "/gift-code", white: false },
+    { icon: iconCS, label: "Support", href: "/service", white: false },
+    { icon: iconAbout, label: "About", href: "/about", white: false },
+    { icon: iconWithdraw, label: "Wallet", href: "/wallet", white: false },
   ];
 
   return (

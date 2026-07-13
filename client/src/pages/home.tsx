@@ -139,21 +139,21 @@ export default function HomePage() {
         <div className="flex justify-around items-center">
           <button onClick={() => navigate("/deposit")} className="flex flex-col items-center gap-2" data-testid="button-depot">
             <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <img src={iconRecharger} alt="Dépôt" className="w-8 h-8 object-contain" style={DARK_ICON} />
+              <img src={iconRecharger} alt="Deposit" className="w-8 h-8 object-contain" style={DARK_ICON} />
             </div>
-            <span className="text-gray-700 text-xs font-medium">Recharger</span>
+            <span className="text-gray-700 text-xs font-medium">Deposit</span>
           </button>
           <button onClick={() => navigate("/withdrawal")} className="flex flex-col items-center gap-2" data-testid="button-retrait">
             <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <img src={iconRetraits} alt="Retrait" className="w-8 h-8 object-contain" style={DARK_ICON} />
+              <img src={iconRetraits} alt="Withdraw" className="w-8 h-8 object-contain" style={DARK_ICON} />
             </div>
-            <span className="text-gray-700 text-xs font-medium">Retirer</span>
+            <span className="text-gray-700 text-xs font-medium">Withdraw</span>
           </button>
           <button onClick={() => navigate("/service")} className="flex flex-col items-center gap-2" data-testid="button-aide">
             <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <img src={iconService} alt="Aide" className="w-8 h-8 object-contain" style={DARK_ICON} />
+              <img src={iconService} alt="Support" className="w-8 h-8 object-contain" style={DARK_ICON} />
             </div>
-            <span className="text-gray-700 text-xs font-medium">Service Client</span>
+            <span className="text-gray-700 text-xs font-medium">Customer Service</span>
           </button>
         </div>
       </div>
