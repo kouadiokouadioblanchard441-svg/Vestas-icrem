@@ -103,8 +103,8 @@ export default function AdminDashboard({ isSuperAdmin }: AdminDashboardProps) {
       value: stats.totalUsers,
       subtitle: `+${stats.todayUsers} aujourd'hui`,
       icon: Users,
-      color: "text-orange-500",
-      bg: "bg-orange-500/20",
+      color: "text-green-500",
+      bg: "bg-green-500/20",
     },
     {
       title: "Investisseurs actifs",
@@ -131,7 +131,7 @@ export default function AdminDashboard({ isSuperAdmin }: AdminDashboardProps) {
       subtitle: `${stats.pendingDepositsCount} demande(s)`,
       icon: Clock,
       color: "text-[#2196F3]",
-      bg: "bg-orange-500/20",
+      bg: "bg-green-500/20",
     },
   ];
 

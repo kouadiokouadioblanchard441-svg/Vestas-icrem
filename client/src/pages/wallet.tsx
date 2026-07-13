@@ -132,7 +132,7 @@ export default function WalletPage() {
         {/* Header */}
         <div
           className="flex items-center px-4 py-4"
-          style={{ background: "linear-gradient(135deg, #F4920A, #CF7C09)" }}
+          style={{ background: "linear-gradient(135deg, #00A651, #008C3A)" }}
         >
           <button
             onClick={() => { setShowForm(false); form.reset(); setSelectedMethod(""); }}
@@ -175,7 +175,7 @@ export default function WalletPage() {
               data-testid="input-wallet-name"
             />
             {form.formState.errors.accountName && (
-              <p className="text-xs text-[#F4920A] mt-1">{form.formState.errors.accountName.message}</p>
+              <p className="text-xs text-[#00A651] mt-1">{form.formState.errors.accountName.message}</p>
             )}
           </div>
 
@@ -190,7 +190,7 @@ export default function WalletPage() {
               data-testid="input-wallet-number"
             />
             {form.formState.errors.accountNumber && (
-              <p className="text-xs text-[#F4920A] mt-1">{form.formState.errors.accountNumber.message}</p>
+              <p className="text-xs text-[#00A651] mt-1">{form.formState.errors.accountNumber.message}</p>
             )}
           </div>
         </div>
@@ -201,7 +201,7 @@ export default function WalletPage() {
             onClick={handleSubmit}
             disabled={addMutation.isPending}
             className="w-full py-4 rounded-full text-white font-bold text-base disabled:opacity-40 shadow-md"
-            style={{ background: "linear-gradient(135deg, #F4920A, #CF7C09)" }}
+            style={{ background: "linear-gradient(135deg, #00A651, #008C3A)" }}
             data-testid="button-confirm-wallet"
           >
             {addMutation.isPending ? (
@@ -239,7 +239,7 @@ export default function WalletPage() {
                   >
                     <span className="text-gray-700 font-medium text-sm">{method}</span>
                     {selectedMethod === method && (
-                      <Check className="w-4 h-4 text-[#F4920A]" />
+                      <Check className="w-4 h-4 text-[#00A651]" />
                     )}
                   </button>
                 ))}
@@ -258,7 +258,7 @@ export default function WalletPage() {
       {/* Header */}
       <div
         className="flex items-center px-4 py-4"
-        style={{ background: "linear-gradient(135deg, #F4920A, #CF7C09)" }}
+        style={{ background: "linear-gradient(135deg, #00A651, #008C3A)" }}
       >
         <Link href={backLink}>
           <button className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20" data-testid="button-back">
@@ -285,7 +285,7 @@ export default function WalletPage() {
       <div className="flex-1 px-4 pt-4 pb-28 space-y-3">
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="w-6 h-6 animate-spin text-[#F4920A]" />
+            <Loader2 className="w-6 h-6 animate-spin text-[#00A651]" />
           </div>
         ) : wallets && wallets.length > 0 ? (
           wallets.map((wallet) => (
@@ -294,7 +294,7 @@ export default function WalletPage() {
               onClick={() => selectMode && handleSelectWallet(wallet)}
               className={`bg-white rounded-2xl shadow-sm p-4 flex items-center gap-3 ${
                 selectMode ? "cursor-pointer active:opacity-80" : ""
-              } ${wallet.isDefault ? "border-l-4 border-[#F4920A]" : ""}`}
+              } ${wallet.isDefault ? "border-l-4 border-[#00A651]" : ""}`}
               data-testid={`wallet-card-${wallet.id}`}
             >
               {/* Icon */}
@@ -309,8 +309,8 @@ export default function WalletPage() {
                 <p className="text-xs text-gray-400 mt-0.5">{wallet.accountNumber}</p>
                 {wallet.isDefault && (
                   <div className="flex items-center gap-1 mt-1">
-                    <Shield className="w-3 h-3 text-[#F4920A]" />
-                    <span className="text-xs text-[#F4920A] font-medium">Par défaut</span>
+                    <Shield className="w-3 h-3 text-[#00A651]" />
+                    <span className="text-xs text-[#00A651] font-medium">Par défaut</span>
                   </div>
                 )}
               </div>
@@ -334,7 +334,7 @@ export default function WalletPage() {
                     className="p-2"
                     data-testid={`button-delete-wallet-${wallet.id}`}
                   >
-                    <Trash2 className="w-4 h-4 text-[#F4920A]" />
+                    <Trash2 className="w-4 h-4 text-[#00A651]" />
                   </button>
                 </div>
               )}
@@ -346,8 +346,8 @@ export default function WalletPage() {
           ))
         ) : (
           <div className="text-center py-16">
-            <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center mx-auto mb-4">
-              <CreditCard className="w-8 h-8 text-[#F4920A]" />
+            <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
+              <CreditCard className="w-8 h-8 text-[#00A651]" />
             </div>
             <p className="text-gray-500 text-sm">Aucun compte bancaire enregistré</p>
             <p className="text-gray-400 text-xs mt-1">Ajoutez un compte pour effectuer des retraits</p>
@@ -360,7 +360,7 @@ export default function WalletPage() {
         <button
           onClick={() => setShowForm(true)}
           className="w-full py-4 rounded-full text-white font-bold text-base shadow-md"
-          style={{ background: "linear-gradient(135deg, #F4920A, #CF7C09)" }}
+          style={{ background: "linear-gradient(135deg, #00A651, #008C3A)" }}
           data-testid="button-add-wallet"
         >
           Ajouter une carte

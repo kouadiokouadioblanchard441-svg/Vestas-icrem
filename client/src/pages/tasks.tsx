@@ -35,7 +35,7 @@ const TIER_COLORS = [
   { bg: "from-gray-500 to-gray-400" },
   { bg: "from-yellow-600 to-yellow-400" },
   { bg: "from-cyan-600 to-cyan-400" },
-  { bg: "from-orange-700 to-orange-500" },
+  { bg: "from-green-700 to-green-500" },
   { bg: "from-purple-700 to-purple-500" },
 ];
 
@@ -123,17 +123,17 @@ export default function TasksPage() {
       <div className="mx-4 -mt-10 z-10 relative">
         <div className="bg-white rounded-2xl shadow-lg p-4 flex items-center justify-between">
           <div className="flex-1 text-center border-r border-gray-100">
-            <p className="text-[#F4920A] text-xl font-bold" data-testid="text-total-rewards">
+            <p className="text-[#00A651] text-xl font-bold" data-testid="text-total-rewards">
               {totalTaskRewards.toLocaleString()}
             </p>
             <p className="text-gray-500 text-[11px] mt-0.5">{currency} gagnés</p>
           </div>
           <div className="flex-1 text-center border-r border-gray-100">
-            <p className="text-[#F4920A] text-xl font-bold">{completedCount}</p>
+            <p className="text-[#00A651] text-xl font-bold">{completedCount}</p>
             <p className="text-gray-500 text-[11px] mt-0.5">Terminées</p>
           </div>
           <div className="flex-1 text-center">
-            <p className="text-[#F4920A] text-xl font-bold">{claimableCount}</p>
+            <p className="text-[#00A651] text-xl font-bold">{claimableCount}</p>
             <p className="text-gray-500 text-[11px] mt-0.5">À réclamer</p>
           </div>
         </div>
@@ -143,7 +143,7 @@ export default function TasksPage() {
       <div className="mx-4 mt-4 mb-24">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-[#F4920A]" />
+            <Trophy className="w-4 h-4 text-[#00A651]" />
             <h2 className="text-gray-800 font-bold text-sm">Paliers de parrainage</h2>
           </div>
           {claimableCount > 0 && (
@@ -155,7 +155,7 @@ export default function TasksPage() {
                 }
               }}
               disabled={claimMutation.isPending}
-              className="text-xs text-[#F4920A] font-semibold bg-red-50 px-3 py-1.5 rounded-full"
+              className="text-xs text-[#00A651] font-semibold bg-red-50 px-3 py-1.5 rounded-full"
               data-testid="button-claim-rewards"
             >
               Tout réclamer ({claimableCount})
@@ -184,7 +184,7 @@ export default function TasksPage() {
                     task.isCompleted
                       ? "border-green-200"
                       : task.canClaim
-                      ? "border-[#F4920A]/40"
+                      ? "border-[#00A651]/40"
                       : "border-gray-100"
                   }`}
                   data-testid={`task-item-${task.id}`}
@@ -209,7 +209,7 @@ export default function TasksPage() {
                         <span className="font-bold text-gray-900">{task.requiredInvites}</span>{" "}
                         personnes à recharger
                       </p>
-                      <p className="text-[#F4920A] font-bold text-base">
+                      <p className="text-[#00A651] font-bold text-base">
                         {task.reward.toLocaleString()} {currency}
                       </p>
 
@@ -224,7 +224,7 @@ export default function TasksPage() {
                         <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all duration-500 ${
-                              task.isCompleted ? "bg-green-500" : "bg-[#F4920A]"
+                              task.isCompleted ? "bg-green-500" : "bg-[#00A651]"
                             }`}
                             style={{ width: `${progress}%` }}
                           />
@@ -242,7 +242,7 @@ export default function TasksPage() {
                         <button
                           onClick={() => !claimMutation.isPending && claimMutation.mutate(task.id)}
                           disabled={claimMutation.isPending}
-                          className="bg-[#F4920A] text-white text-[11px] font-semibold px-3 py-1.5 rounded-full active:scale-95 transition-transform shadow-sm"
+                          className="bg-[#00A651] text-white text-[11px] font-semibold px-3 py-1.5 rounded-full active:scale-95 transition-transform shadow-sm"
                           data-testid={`button-claim-${task.id}`}
                         >
                           {claimMutation.isPending ? (

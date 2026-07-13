@@ -24,7 +24,6 @@ import iconRecharger from "@assets/1-1_1783245823715.png";
 import iconRetraits from "@assets/2-1_1783245823825.png";
 import profileCardBg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
 
-const ORANGE_FILTER = "brightness(0) saturate(100%) invert(55%) sepia(100%) saturate(344%) hue-rotate(355deg) brightness(88%) contrast(130%)";
 const WHITE_FILTER = "brightness(0) invert(1)";
 
 export default function AccountPage() {
@@ -164,14 +163,14 @@ export default function AccountPage() {
                   data-testid={`button-grid-${idx}`}
                 >
                   <div
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center"
-                    style={{ background: "linear-gradient(135deg, #DBEAFE, #BFDBFE)" }}
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-md"
+                    style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
                   >
                     <img
                       src={item.icon}
                       alt={item.label}
-                      className="w-6 h-6 object-contain"
-                      style={{ filter: item.white ? WHITE_FILTER + " " + ORANGE_FILTER : ORANGE_FILTER }}
+                      className="w-8 h-8 object-contain"
+                      style={item.white ? undefined : { filter: "brightness(0) invert(1)" }}
                     />
                   </div>
                   <span className="text-gray-700 text-[10px] font-medium text-center leading-tight">{item.label}</span>
@@ -185,7 +184,7 @@ export default function AccountPage() {
         <div className="mx-4 mt-3">
           <button
             onClick={handleLogout}
-            className="w-full py-4 rounded-2xl text-sm font-bold border-2 border-[#F4920A] text-[#F4920A] bg-white active:bg-orange-50"
+            className="w-full py-4 rounded-2xl text-sm font-bold border-2 border-[#00A651] text-[#00A651] bg-white active:bg-green-50"
             data-testid="button-logout"
           >
             Déconnexion
@@ -198,7 +197,7 @@ export default function AccountPage() {
             <button
               onClick={handleAdminClick}
               className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl"
-              style={{ background: "linear-gradient(135deg, #F4920A, #CF7C09)" }}
+              style={{ background: "linear-gradient(135deg, #00A651, #008C3A)" }}
               data-testid="button-admin"
             >
               <Shield className="w-5 h-5 text-white" />
@@ -238,7 +237,7 @@ export default function AccountPage() {
               }}
               disabled={verifyPinMutation.isPending || adminPin.length < 4}
               className="w-full"
-              style={{ backgroundColor: "#F4920A" }}
+              style={{ backgroundColor: "#00A651" }}
               data-testid="button-verify-pin"
             >
               {verifyPinMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}

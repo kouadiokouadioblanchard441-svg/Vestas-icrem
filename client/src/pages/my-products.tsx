@@ -122,7 +122,7 @@ export default function MyProductsPage() {
         <div className="px-3 mt-3 space-y-3">
           {isLoading ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#F4920A" }} />
+              <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#00A651" }} />
             </div>
           ) : allProducts.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl shadow-sm flex flex-col items-center gap-3">
@@ -148,7 +148,7 @@ export default function MyProductsPage() {
                   {/* Top header */}
                   <div
                     className="flex items-center justify-between px-4 py-2.5"
-                    style={{ background: "linear-gradient(135deg, #F4920A, #CF7C09)" }}
+                    style={{ background: "linear-gradient(135deg, #00A651, #008C3A)" }}
                   >
                     <p className="text-white font-bold text-sm">{up.product?.name || "Produit"}</p>
                     <span className="text-white/70 text-xs">{formatDateTime(up.purchasedAt)}</span>
@@ -166,13 +166,13 @@ export default function MyProductsPage() {
                     <div className="flex-1 space-y-1.5">
                       <div className="flex justify-between">
                         <span className="text-gray-400 text-xs">Revenu/jour</span>
-                        <span className="font-bold text-sm" style={{ color: "#F4920A" }}>
+                        <span className="font-bold text-sm" style={{ color: "#00A651" }}>
                           {currency} {dailyEarnings.toLocaleString("fr-FR")}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400 text-xs">Gagné</span>
-                        <span className="font-bold text-sm" style={{ color: "#F4920A" }}>
+                        <span className="font-bold text-sm" style={{ color: "#00A651" }}>
                           {currency} {earnedSoFar.toLocaleString("fr-FR")}
                         </span>
                       </div>
@@ -189,12 +189,12 @@ export default function MyProductsPage() {
                   <div className="px-4 pb-4">
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-gray-400 text-xs">Progression</span>
-                      <span className="text-xs font-bold" style={{ color: "#F4920A" }}>{progress}%</span>
+                      <span className="text-xs font-bold" style={{ color: "#00A651" }}>{progress}%</span>
                     </div>
                     <div className="w-full bg-gray-100 rounded-full h-2">
                       <div
                         className="h-2 rounded-full"
-                        style={{ width: `${progress}%`, background: "linear-gradient(90deg, #F4920A, #0066cc)" }}
+                        style={{ width: `${progress}%`, background: "linear-gradient(90deg, #00A651, #00C853)" }}
                       />
                     </div>
                   </div>
@@ -202,7 +202,7 @@ export default function MyProductsPage() {
                   {/* Bottom bar */}
                   <div
                     className="px-4 py-2.5 text-center text-white text-xs font-semibold"
-                    style={{ background: "linear-gradient(135deg, #F4920A, #CF7C09)" }}
+                    style={{ background: "linear-gradient(135deg, #00A651, #008C3A)" }}
                   >
                     Revenus reçus : {currency} {earnedSoFar.toLocaleString("fr-FR")}
                   </div>

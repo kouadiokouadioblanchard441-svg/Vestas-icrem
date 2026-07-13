@@ -120,7 +120,7 @@ export default function WithdrawalPage() {
   if (walletsLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#F4920A]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#00A651]" />
       </div>
     );
   }
@@ -193,7 +193,7 @@ export default function WithdrawalPage() {
                 : hasWallets
                   ? "Sélectionner un compte bancaire"
                   : (
-                    <span className="flex items-center gap-2 text-[#F4920A]">
+                    <span className="flex items-center gap-2 text-[#00A651]">
                       <Plus className="w-4 h-4" /> Ajouter un portefeuille de retrait
                     </span>
                   )
@@ -237,7 +237,7 @@ export default function WithdrawalPage() {
 
         {/* ── Warnings ── */}
         {!isWithinWithdrawalHours && (
-          <div className="rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-[#F4920A] text-xs">
+          <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-[#00A651] text-xs">
             ⏰ Horaires de retrait : {withdrawalStartHour}h00 – {withdrawalEndHour}h00 (Fermé actuellement)
           </div>
         )}
@@ -253,7 +253,7 @@ export default function WithdrawalPage() {
           disabled={withdrawMutation.isPending}
           className="w-full py-5 rounded-full text-white font-bold text-base shadow-lg disabled:opacity-50"
           style={{
-            background: "linear-gradient(135deg, #F4920A 0%, #CF7C09 50%, #AB6607 100%)",
+            background: "linear-gradient(135deg, #00A651 0%, #008C3A 50%, #007A32 100%)",
           }}
           data-testid="button-submit-withdrawal"
         >
@@ -269,7 +269,7 @@ export default function WithdrawalPage() {
 
         {/* ── Instructions (texte existant conservé) ── */}
         <div className="pt-2 pb-6">
-          <p className="font-bold text-[#F4920A] text-sm mb-3">Instructions de retrait</p>
+          <p className="font-bold text-[#00A651] text-sm mb-3">Instructions de retrait</p>
           <div className="space-y-2.5 text-sm text-gray-600 leading-relaxed">
             <p>1. Le montant minimum de retrait est de {minWithdrawal.toLocaleString()} {currency}.</p>
             <p>2. Il n'y a pas de limite de temps pour les retraits, mais une limite de trois retraits par jour est autorisée.</p>

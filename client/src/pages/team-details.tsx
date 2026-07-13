@@ -41,8 +41,8 @@ function formatDate(dateStr: string): string {
   return `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
 }
 
-const ORANGE = "#F4920A";
-const ORANGE_BG = "#fdeacb";
+const GREEN = "#00A651";
+const GREEN_BG = "#d9f5e4";
 
 export default function TeamDetailsPage() {
   const [activeLevel, setActiveLevel] = useState<1 | 2 | 3>(1);
@@ -96,7 +96,7 @@ export default function TeamDetailsPage() {
         </button>
         <h1
           className="flex-1 text-center font-bold text-base pr-7"
-          style={{ color: ORANGE }}
+          style={{ color: GREEN }}
           data-testid="text-page-title"
         >
           Historique d'équipe
@@ -110,14 +110,14 @@ export default function TeamDetailsPage() {
             key={level.num}
             onClick={() => setActiveLevel(level.num)}
             className="flex-1 py-3 text-center text-sm font-medium relative"
-            style={{ color: activeLevel === level.num ? ORANGE : "#9ca3af" }}
+            style={{ color: activeLevel === level.num ? GREEN : "#9ca3af" }}
             data-testid={`tab-level-${level.num}`}
           >
             {level.label}
             {activeLevel === level.num && (
               <span
                 className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full"
-                style={{ backgroundColor: ORANGE }}
+                style={{ backgroundColor: GREEN }}
               />
             )}
           </button>
@@ -139,7 +139,7 @@ export default function TeamDetailsPage() {
           <p className="text-xs text-gray-400 mb-1">Dépôts de l'équipe</p>
           <p
             className="text-xl font-black"
-            style={{ color: ORANGE }}
+            style={{ color: GREEN }}
             data-testid="text-total-invested"
           >
             {isLoading
@@ -159,9 +159,9 @@ export default function TeamDetailsPage() {
           <div className="bg-white rounded-2xl shadow-sm text-center py-14 px-6">
             <div
               className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3"
-              style={{ backgroundColor: ORANGE_BG }}
+              style={{ backgroundColor: GREEN_BG }}
             >
-              <User className="w-7 h-7" style={{ color: ORANGE }} />
+              <User className="w-7 h-7" style={{ color: GREEN }} />
             </div>
             <p className="text-gray-500 text-sm font-medium">
               Aucun membre au niveau {activeLevel}
@@ -180,9 +180,9 @@ export default function TeamDetailsPage() {
               {/* Green avatar circle */}
               <div
                 className="w-11 h-11 rounded-full border-2 flex items-center justify-center shrink-0"
-                style={{ borderColor: ORANGE, backgroundColor: ORANGE_BG }}
+                style={{ borderColor: GREEN, backgroundColor: GREEN_BG }}
               >
-                <User className="w-5 h-5" style={{ color: ORANGE }} />
+                <User className="w-5 h-5" style={{ color: GREEN }} />
               </div>
 
               {/* Info */}

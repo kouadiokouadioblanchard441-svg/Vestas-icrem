@@ -165,7 +165,7 @@ export default function AdminStaking() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap mb-1">
                             <p className="font-bold text-foreground">{sp.name}</p>
-                            <Badge variant={!sp.isActive ? "secondary" : scheduled ? "outline" : "default"} className={scheduled ? "border-orange-400 text-orange-600" : ""}>
+                            <Badge variant={!sp.isActive ? "secondary" : scheduled ? "outline" : "default"} className={scheduled ? "border-green-400 text-green-600" : ""}>
                               {!sp.isActive ? "Inactif" : scheduled ? "Planifié" : "Actif"}
                             </Badge>
                           </div>
@@ -223,7 +223,7 @@ export default function AdminStaking() {
             </div>
             <div className="bg-secondary rounded-xl p-3 text-center">
               <p className="text-xs text-muted-foreground">Total bloqué</p>
-              <p className="font-bold text-orange-600">{totalStaked.toLocaleString()} F</p>
+              <p className="font-bold text-green-600">{totalStaked.toLocaleString()} F</p>
             </div>
             <div className="bg-secondary rounded-xl p-3 text-center">
               <p className="text-xs text-muted-foreground">Total libéré</p>

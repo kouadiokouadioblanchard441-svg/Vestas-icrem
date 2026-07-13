@@ -262,25 +262,25 @@ export default function HomePage() {
                   <div className="px-3 pt-2 pb-1 space-y-0.5 flex-1">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[10px]">Prix</span>
-                      <span className="font-bold text-[10px]" style={{ color: "#F4920A" }}>
+                      <span className="font-bold text-[10px]" style={{ color: "#00A651" }}>
                         {currency} {Number(product.price).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[10px]">Rev./jour</span>
-                      <span className="font-bold text-[10px]" style={{ color: "#F4920A" }}>
+                      <span className="font-bold text-[10px]" style={{ color: "#00A651" }}>
                         {currency} {Number(product.dailyEarnings).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[10px]">Rev. total</span>
-                      <span className="font-bold text-[10px]" style={{ color: "#F4920A" }}>
+                      <span className="font-bold text-[10px]" style={{ color: "#00A651" }}>
                         {currency} {Number(product.totalReturn).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[10px]">Durée</span>
-                      <span className="font-bold text-[10px]" style={{ color: "#F4920A" }}>
+                      <span className="font-bold text-[10px]" style={{ color: "#00A651" }}>
                         {product.cycleDays} jours
                       </span>
                     </div>
@@ -312,7 +312,7 @@ export default function HomePage() {
         >
           <div
             className="w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"
-            style={{ background: "linear-gradient(160deg, #F4920A 0%, #001428 100%)" }}
+            style={{ background: "linear-gradient(160deg, #00A651 0%, #001428 100%)" }}
             onClick={e => e.stopPropagation()}
           >
             {/* Title */}
@@ -382,7 +382,7 @@ export default function HomePage() {
                 onClick={() => purchaseMutation.mutate(confirmProduct.id)}
                 disabled={purchaseMutation.isPending || balance < Number(confirmProduct.price)}
                 className="flex-1 py-3 rounded-2xl text-white font-bold text-sm flex items-center justify-center gap-1 disabled:opacity-50"
-                style={{ background: "linear-gradient(135deg, #0066cc, #004499)" }}
+                style={{ background: "linear-gradient(135deg, #00C853, #004499)" }}
                 data-testid="button-confirm-purchase"
               >
                 {purchaseMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}

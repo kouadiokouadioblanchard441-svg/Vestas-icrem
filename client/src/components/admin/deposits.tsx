@@ -180,10 +180,10 @@ export default function AdminDeposits() {
 
                   {/* Payment message */}
                   {(deposit as any).paymentMessage && (
-                    <div className="bg-orange-50 dark:bg-orange-950 rounded-xl p-3">
+                    <div className="bg-green-50 dark:bg-green-950 rounded-xl p-3">
                       <div className="flex items-center gap-1 mb-1">
-                        <MessageSquare className="w-3.5 h-3.5 text-orange-600" />
-                        <p className="text-xs font-medium text-orange-600">Message de paiement reçu</p>
+                        <MessageSquare className="w-3.5 h-3.5 text-green-600" />
+                        <p className="text-xs font-medium text-green-600">Message de paiement reçu</p>
                       </div>
                       <p className="text-sm text-foreground whitespace-pre-wrap">{(deposit as any).paymentMessage}</p>
                     </div>

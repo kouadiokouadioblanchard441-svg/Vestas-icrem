@@ -24,7 +24,7 @@ function StatusBadge({ status }: { status: string }) {
     pending: "bg-yellow-500/15 text-yellow-600 border-yellow-500/30",
     approved: "bg-green-500/15 text-green-600 border-green-500/30",
     rejected: "bg-red-500/15 text-red-600 border-red-500/30",
-    processing: "bg-orange-500/15 text-orange-600 border-orange-500/30",
+    processing: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30",
   };
   const labels: Record<string, string> = {
     pending: "En attente", approved: "Validé", rejected: "Rejeté", processing: "En cours",
@@ -190,9 +190,9 @@ export default function BankerPage() {
             <p className="text-xs text-muted-foreground mt-1">Dépôts en attente</p>
           </CardContent>
         </Card>
-        <Card className="border-orange-500/30 bg-orange-500/5">
+        <Card className="border-emerald-500/30 bg-emerald-500/5">
           <CardContent className="p-3 text-center">
-            <p className="text-2xl font-bold text-orange-600">{pendingWithdrawalsCount}</p>
+            <p className="text-2xl font-bold text-emerald-600">{pendingWithdrawalsCount}</p>
             <p className="text-xs text-muted-foreground mt-1">Retraits en attente</p>
           </CardContent>
         </Card>
@@ -452,10 +452,10 @@ export default function BankerPage() {
                     <CardContent className="p-3">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-3">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${type === "deposit" ? "bg-green-500/15" : "bg-orange-500/15"}`}>
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${type === "deposit" ? "bg-green-500/15" : "bg-emerald-500/15"}`}>
                             {type === "deposit"
                               ? <ArrowDownCircle className="w-4 h-4 text-green-600" />
-                              : <ArrowUpCircle className="w-4 h-4 text-orange-600" />}
+                              : <ArrowUpCircle className="w-4 h-4 text-emerald-600" />}
                           </div>
                           <div>
                             <p className="font-medium text-sm">{item.user.fullName}</p>
@@ -467,7 +467,7 @@ export default function BankerPage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className={`font-bold ${type === "deposit" ? "text-green-600" : "text-orange-600"}`}>
+                          <p className={`font-bold ${type === "deposit" ? "text-green-600" : "text-emerald-600"}`}>
                             {type === "deposit" ? "+" : "-"}{Number(type === "deposit" ? item.amount : item.netAmount).toLocaleString()} F
                           </p>
                           <StatusBadge status={item.status} />

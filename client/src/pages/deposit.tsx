@@ -191,7 +191,7 @@ export default function DepositPage() {
               onClick={handleAmountNext}
               className="w-full py-5 rounded-full text-white font-bold text-base shadow-lg"
               style={{
-                background: "linear-gradient(135deg, #F4920A 0%, #CF7C09 50%, #AB6607 100%)",
+                background: "linear-gradient(135deg, #00A651 0%, #008C3A 50%, #007A32 100%)",
               }}
               data-testid="button-recharge-now"
             >
@@ -238,23 +238,23 @@ export default function DepositPage() {
               <span className="font-semibold text-base">Choisir un opérateur</span>
             </button>
             <Link href="/deposit-history">
-              <button className="text-xs text-[#F4920A] font-semibold px-3 py-1.5 rounded-full border border-[#F4920A]" data-testid="button-history">
+              <button className="text-xs text-[#00A651] font-semibold px-3 py-1.5 rounded-full border border-[#00A651]" data-testid="button-history">
                 Historique
               </button>
             </Link>
           </header>
 
           {/* Amount recap */}
-          <div className="mx-4 mt-4 rounded-xl p-4 border border-orange-100 bg-orange-50 flex items-center justify-between">
+          <div className="mx-4 mt-4 rounded-xl p-4 border border-green-100 bg-green-50 flex items-center justify-between">
             <div>
               <p className="text-xs text-gray-500">Montant à déposer</p>
-              <p className="text-xl font-bold text-[#F4920A]">
+              <p className="text-xl font-bold text-[#00A651]">
                 {Number(amount).toLocaleString()} {currency}
               </p>
             </div>
             <button
               onClick={() => setStep("amount")}
-              className="text-xs text-[#F4920A] underline"
+              className="text-xs text-[#00A651] underline"
               data-testid="button-change-amount"
             >
               Modifier
@@ -268,7 +268,7 @@ export default function DepositPage() {
 
             {numbersLoading ? (
               <div className="flex items-center justify-center py-16">
-                <Loader2 className="w-8 h-8 animate-spin text-[#F4920A]" />
+                <Loader2 className="w-8 h-8 animate-spin text-[#00A651]" />
               </div>
             ) : paymentNumbersList.length === 0 ? (
               <div className="text-center py-14 text-gray-400">
@@ -287,13 +287,13 @@ export default function DepositPage() {
                     {num.logoUrl ? (
                       <img src={num.logoUrl} alt={num.operatorName} className="w-12 h-12 rounded-xl object-contain border border-gray-100" />
                     ) : (
-                      <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center">
-                        <Phone className="w-6 h-6 text-[#F4920A]" />
+                      <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center">
+                        <Phone className="w-6 h-6 text-[#00A651]" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-gray-900 text-sm">{num.operatorName}</p>
-                      <p className="text-[#F4920A] font-mono font-bold text-lg">{num.phone}</p>
+                      <p className="text-[#00A651] font-mono font-bold text-lg">{num.phone}</p>
                       <p className="text-gray-500 text-xs">{num.ownerName}</p>
                     </div>
                     <button
@@ -303,13 +303,13 @@ export default function DepositPage() {
                     >
                       {copiedId === num.id
                         ? <CheckCircle className="w-5 h-5 text-green-500" />
-                        : <Copy className="w-5 h-5 text-[#F4920A]" />}
+                        : <Copy className="w-5 h-5 text-[#00A651]" />}
                     </button>
                   </div>
                   <button
                     onClick={() => { setSelectedNumber(num); setStep("form"); }}
                     className="w-full py-3.5 font-bold text-sm text-white flex items-center justify-center gap-2"
-                    style={{ background: "linear-gradient(135deg, #F4920A 0%, #CF7C09 100%)" }}
+                    style={{ background: "linear-gradient(135deg, #00A651 0%, #008C3A 100%)" }}
                     data-testid={`button-select-${num.id}`}
                   >
                     J'ai envoyé l'argent sur ce numéro <ArrowRight className="w-4 h-4" />
@@ -337,17 +337,17 @@ export default function DepositPage() {
 
           <div className="p-4 space-y-4 pb-10">
             {/* Recap */}
-            <div className="rounded-xl border border-orange-100 bg-orange-50 p-4 flex items-center gap-3">
+            <div className="rounded-xl border border-green-100 bg-green-50 p-4 flex items-center gap-3">
               {selectedNumber.logoUrl ? (
                 <img src={selectedNumber.logoUrl} alt={selectedNumber.operatorName} className="w-10 h-10 rounded-lg object-contain" />
               ) : (
-                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-orange-100">
-                  <Phone className="w-5 h-5 text-[#F4920A]" />
+                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-green-100">
+                  <Phone className="w-5 h-5 text-[#00A651]" />
                 </div>
               )}
               <div className="flex-1">
                 <p className="text-xs text-gray-500">Numéro destinataire</p>
-                <p className="font-bold text-[#F4920A] text-sm">{selectedNumber.operatorName} — {selectedNumber.phone}</p>
+                <p className="font-bold text-[#00A651] text-sm">{selectedNumber.operatorName} — {selectedNumber.phone}</p>
                 <p className="text-xs text-gray-500">{selectedNumber.ownerName}</p>
               </div>
               <div className="text-right">
@@ -417,7 +417,7 @@ export default function DepositPage() {
                 className={`w-full border-2 border-dashed rounded-xl py-7 flex flex-col items-center gap-2 transition-colors ${
                   screenshot
                     ? "border-green-400 bg-green-50"
-                    : "border-gray-300 bg-gray-50 hover:border-[#F4920A] hover:bg-orange-50"
+                    : "border-gray-300 bg-gray-50 hover:border-[#00A651] hover:bg-green-50"
                 }`}
                 data-testid="button-upload-screenshot"
               >
@@ -448,7 +448,7 @@ export default function DepositPage() {
               disabled={depositMutation.isPending}
               className="w-full py-5 rounded-full text-white font-bold text-base shadow-lg disabled:opacity-50"
               style={{
-                background: "linear-gradient(135deg, #F4920A 0%, #CF7C09 50%, #AB6607 100%)",
+                background: "linear-gradient(135deg, #00A651 0%, #008C3A 50%, #007A32 100%)",
               }}
               data-testid="button-submit-deposit"
             >
