@@ -89,7 +89,7 @@ export default function TeamPage() {
         <button
           onClick={() => navigate("/salary-bonus")}
           className="px-4 py-2 rounded-full text-white text-xs font-bold"
-          style={{ background: "linear-gradient(90deg, #003087, #0047AB)" }}
+          style={{ background: "linear-gradient(90deg, #00A651, #00C853)" }}
           data-testid="button-centre-taches"
         >
           Aller au Centre des Tâches &gt;
@@ -117,7 +117,7 @@ export default function TeamPage() {
               {/* VIP badge */}
               <div
                 className="w-14 h-10 rounded-xl flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg, #003087, #0047AB)" }}
+                style={{ background: "linear-gradient(135deg, #00A651, #00C853)" }}
               >
                 <span className="text-white font-extrabold text-sm">{row.label}</span>
               </div>
@@ -133,7 +133,7 @@ export default function TeamPage() {
           {/* Purple header */}
           <div
             className="flex items-center gap-2 px-4 py-3"
-            style={{ background: "linear-gradient(90deg, #003087, #0047AB)" }}
+            style={{ background: "linear-gradient(90deg, #00A651, #00C853)" }}
           >
             <img
               src={teamIcon}
@@ -157,7 +157,7 @@ export default function TeamPage() {
               <button
                 onClick={copyCode}
                 className="px-4 py-2 rounded-xl text-white text-xs font-bold shrink-0 flex items-center gap-1"
-                style={{ background: "linear-gradient(90deg, #003087, #0047AB)" }}
+                style={{ background: "linear-gradient(90deg, #00A651, #00C853)" }}
                 data-testid="button-copy-code"
               >
                 <Copy className="w-3 h-3" />
@@ -178,7 +178,7 @@ export default function TeamPage() {
               <button
                 onClick={copyLink}
                 className="px-4 py-2 rounded-xl text-white text-xs font-bold shrink-0 flex items-center gap-1"
-                style={{ background: "linear-gradient(90deg, #003087, #0047AB)" }}
+                style={{ background: "linear-gradient(90deg, #00A651, #00C853)" }}
                 data-testid="button-copy-link"
               >
                 <Copy className="w-3 h-3" />
@@ -193,7 +193,7 @@ export default function TeamPage() {
           {/* Purple header */}
           <div
             className="flex items-center gap-2 px-4 py-3"
-            style={{ background: "linear-gradient(90deg, #003087, #0047AB)" }}
+            style={{ background: "linear-gradient(90deg, #00A651, #00C853)" }}
           >
             <span className="text-white text-base">✦</span>
             <p className="text-white font-extrabold text-base">Ma progression</p>
