@@ -1,11 +1,11 @@
 {
-  "name": "Vestas",
-  "short_name": "Vestas",
-  "description": "Vestas est le leader mondial du secteur de l'énergie éolienne. Investissez et générez des revenus quotidiens.",
+  "name": "SpolarPV",
+  "short_name": "SpolarPV",
+  "description": "SpolarPV - Investissement solaire. Easy Invest, More Returns.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#003366",
+  "theme_color": "#1B3C8A",
   "orientation": "portrait",
   "icons": [
     {

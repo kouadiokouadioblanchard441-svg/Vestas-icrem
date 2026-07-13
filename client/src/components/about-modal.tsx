@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import vestasLogo from "@assets/vestas-logo_1783210030332.png";
+const vestasLogo = "/spolarpv-logo.svg";
 
 interface AboutModalProps {
   open: boolean;
@@ -13,18 +13,18 @@ export default function AboutModal({ open, onClose }: AboutModalProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden">
-              <img src={vestasLogo} alt="Vestas" className="w-10 h-10 object-contain" />
+              <img src={vestasLogo} alt="SpolarPV" className="w-10 h-10 object-contain" />
             </div>
-            À propos de Vestas
+            À propos de SpolarPV
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 text-sm text-muted-foreground">
           <p>
-            Vestas est le leader mondial du secteur de l'énergie éolienne. L'entreprise conçoit, fabrique, installe et entretient des éoliennes terrestres et offshore dans le monde entier.
+            SpolarPV est un leader mondial dans le secteur de l'énergie solaire photovoltaïque. L'entreprise conçoit, fabrique et déploie des solutions solaires innovantes à travers le monde entier.
           </p>
           <p>
-            Vestas fournit des solutions d'énergie renouvelable de pointe qui alimentent des millions de foyers à travers plus de 80 pays dans le monde.
+            SpolarPV fournit des solutions d'énergie renouvelable de pointe qui alimentent des millions de foyers à travers plus de 80 pays dans le monde.
           </p>
           <div className="bg-secondary rounded-lg p-4 space-y-2">
             <h4 className="font-medium text-foreground">Nos avantages :</h4>

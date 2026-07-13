@@ -23,7 +23,7 @@ const PRODUCT_IMAGES = [
   productImg5, productImg6, productImg7, productImg8,
 ];
 
-import jollibeeLogo from "@assets/vestas-logo_1783210030332.png";
+const jollibeeLogo = "/spolarpv-logo.svg";
 import heroImg from "@assets/vestas_112v_closeup_1783210181172.jpg";
 import bellIcon from "@assets/d7d9f6f6-dddc-4071-8bc2-d6e7e589fbae_(1)_1783248684110.png";
 import iconRecharger from "@assets/1-1_1783245823715.png";

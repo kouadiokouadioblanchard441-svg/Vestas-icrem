@@ -9,7 +9,7 @@ import { Loader2, AlertTriangle, Settings } from "lucide-react";
 import { useLocation } from "wouter";
 import type { Product } from "@shared/schema";
 
-import vestasLogo from "@assets/vestas-logo_1783210030332.png";
+const vestasLogo = "/spolarpv-logo.svg";
 import serviceIcon from "@assets/20260311_214852_1773265973964.png";
 import productImg1 from "@assets/vestas_112v_closeup_1783210181172.jpg";
 import productImg2 from "@assets/vestas_112v_closeup_(1)_1783210181118.jpg";
