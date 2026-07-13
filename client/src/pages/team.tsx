@@ -273,36 +273,82 @@ export default function TeamPage() {
 
         {/* ── Info ── */}
         <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-          <div className="px-5 py-3.5 flex items-center gap-2.5" style={{ background: "linear-gradient(135deg, #F4920A, #D97A00)" }}>
+          <div className="px-5 py-3.5 flex items-center gap-2.5" style={{ background: "linear-gradient(135deg, #00A651, #00C853)" }}>
             <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
               <img src={teamIcon} alt="" className="w-4.5 h-4.5 object-contain" />
             </div>
             <h3 className="text-white font-bold text-sm">Comment fonctionne le parrainage</h3>
           </div>
 
-          <div className="px-5 py-4 space-y-3">
-            <div className="flex items-start gap-3 pb-3 border-b border-gray-100">
-              <span className="w-6 h-6 rounded-full bg-[#F4920A]/10 text-[#F4920A] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                Invitez un ami → il investit → vous recevez{" "}
-                <span className="font-bold text-[#F4920A]">{lv1Rate}%</span> de son investissement.
+          <div className="px-5 py-4 space-y-4">
+            {/* Niveau 1 */}
+            <div className="pb-4 border-b border-gray-100">
+              <div className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-[#00A651]/10 text-[#00A651] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  Invitez un ami avec votre code ou votre lien de parrainage. Dès qu'il investit dans un produit, vous recevez automatiquement{" "}
+                  <span className="font-bold text-[#00A651]">{lv1Rate}%</span> du montant investi, directement crédité sur votre solde.
+                </p>
+              </div>
+              <div className="mt-2.5 ml-9 rounded-xl bg-[#00A651]/5 border border-[#00A651]/15 px-3 py-2.5">
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  <span className="font-bold text-gray-800">Exemple : </span>
+                  votre ami (niveau 1) investit {currency} 10 000 → vous recevez{" "}
+                  <span className="font-bold text-[#00A651]">
+                    {currency} {(10000 * (Number(lv1Rate) / 100)).toLocaleString("fr-FR")}
+                  </span>{" "}
+                  ({lv1Rate}%).
+                </p>
+              </div>
+            </div>
+
+            {/* Niveau 2 */}
+            <div className="pb-4 border-b border-gray-100">
+              <div className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-[#00A651]/10 text-[#00A651] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  Lorsqu'une personne invitée par votre filleul (niveau 2) investit à son tour, vous touchez{" "}
+                  <span className="font-bold text-[#00A651]">{lv2Rate}%</span> de son investissement, même si vous ne la connaissez pas directement.
+                </p>
+              </div>
+              <div className="mt-2.5 ml-9 rounded-xl bg-[#00A651]/5 border border-[#00A651]/15 px-3 py-2.5">
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  <span className="font-bold text-gray-800">Exemple : </span>
+                  un filleul de niveau 2 investit {currency} 10 000 → vous recevez{" "}
+                  <span className="font-bold text-[#00A651]">
+                    {currency} {(10000 * (Number(lv2Rate) / 100)).toLocaleString("fr-FR")}
+                  </span>{" "}
+                  ({lv2Rate}%).
+                </p>
+              </div>
+            </div>
+
+            {/* Niveau 3 */}
+            <div>
+              <div className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-[#00A651]/10 text-[#00A651] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  Le réseau continue de vous rapporter jusqu'au niveau 3 : pour chaque investissement réalisé à ce niveau, vous percevez{" "}
+                  <span className="font-bold text-[#00A651]">{lv3Rate}%</span>, sans aucune action supplémentaire de votre part.
+                </p>
+              </div>
+              <div className="mt-2.5 ml-9 rounded-xl bg-[#00A651]/5 border border-[#00A651]/15 px-3 py-2.5">
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  <span className="font-bold text-gray-800">Exemple : </span>
+                  un filleul de niveau 3 investit {currency} 10 000 → vous recevez{" "}
+                  <span className="font-bold text-[#00A651]">
+                    {currency} {(10000 * (Number(lv3Rate) / 100)).toLocaleString("fr-FR")}
+                  </span>{" "}
+                  ({lv3Rate}%).
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-gray-50 px-3 py-2.5 flex items-start gap-2">
+              <span className="text-[#00A651] text-sm mt-0.5">💡</span>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Plus votre équipe s'agrandit sur les 3 niveaux, plus vos revenus de parrainage augmentent chaque fois qu'un membre investit.
               </p>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="w-6 h-6 rounded-full bg-[#F4920A]/10 text-[#F4920A] text-xs font-bold flex items-center justify-center shrink-0">2</span>
-                <p className="text-sm text-gray-600">Niveau 2</p>
-              </div>
-              <span className="text-sm font-bold text-[#F4920A]">{lv2Rate}%</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="w-6 h-6 rounded-full bg-[#F4920A]/10 text-[#F4920A] text-xs font-bold flex items-center justify-center shrink-0">3</span>
-                <p className="text-sm text-gray-600">Niveau 3</p>
-              </div>
-              <span className="text-sm font-bold text-[#F4920A]">{lv3Rate}%</span>
             </div>
           </div>
         </div>
