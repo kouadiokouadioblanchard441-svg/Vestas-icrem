@@ -117,14 +117,8 @@ export default function HomePage() {
       )}
 
       {/* ── Header ── */}
-      <div className="flex items-center justify-between px-4 py-2 bg-white shadow-sm">
+      <div className="flex items-center px-4 py-2 bg-white shadow-sm">
         <img src={jollibeeLogo} alt="SpolarPV" className="h-10 w-auto object-contain" />
-        <button
-          onClick={() => navigate("/service")}
-          className="text-xs font-medium px-3 py-1.5 rounded-full bg-gray-100 text-gray-600"
-        >
-          Support
-        </button>
       </div>
 
       {/* ── Hero Banner ── */}
