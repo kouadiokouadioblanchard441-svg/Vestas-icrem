@@ -191,7 +191,7 @@ export async function seed() {
     { key: "level1Commission", value: "25" },
     { key: "level2Commission", value: "3" },
     { key: "level3Commission", value: "2" },
-    { key: "signupBonus", value: "500" },
+    { key: "signupBonus", value: "200" },
     { key: "soleaspayEnabled", value: "false" },
     { key: "soleaspayCountries", value: "" },
     { key: "soleaspayChannelName", value: "Westpay" },

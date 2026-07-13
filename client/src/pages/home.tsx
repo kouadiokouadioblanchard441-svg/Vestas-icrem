@@ -46,7 +46,7 @@ export default function HomePage() {
 
   if (!user) return null;
 
-  const signupBonus = settings?.signupBonus || "500";
+  const signupBonus = settings?.signupBonus || "200";
   const level1Commission = settings?.level1Commission || "25";
   const telegramGroupLink = settings?.groupLink || "https://t.me/vestasgroup";
   const popupTitle = getContent(settings, "content_home_popupTitle", "NOTIFICATION");

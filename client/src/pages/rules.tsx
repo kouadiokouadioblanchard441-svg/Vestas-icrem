@@ -9,7 +9,7 @@ export default function RulesPage() {
     queryKey: ["/api/settings"],
   });
 
-  const signupBonus = settings?.signupBonus || "500";
+  const signupBonus = settings?.signupBonus || "200";
   const minDeposit = settings?.minDeposit || "4000";
   const minWithdrawal = settings?.minWithdrawal || "1500";
   const withdrawalFees = settings?.withdrawalFees || "18";
