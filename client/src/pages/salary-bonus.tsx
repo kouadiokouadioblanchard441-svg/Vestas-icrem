@@ -85,7 +85,7 @@ export default function SalaryBonusPage() {
               {/* Purple left bar */}
               <div
                 className="flex items-center justify-center px-4 py-5"
-                style={{ background: "linear-gradient(160deg, #F59E0B, #FBBF24)", minWidth: 72 }}
+                style={{ background: "linear-gradient(160deg, #16A34A, #4ADE80)", minWidth: 72 }}
               >
                 <p className="text-white font-extrabold text-lg">Lv{lv}</p>
               </div>
@@ -94,7 +94,7 @@ export default function SalaryBonusPage() {
               <div className="flex-1 px-4 py-4">
                 <p className="text-gray-700 text-xs text-center leading-snug mb-3">
                   Invitez <span className="font-bold text-gray-900">{required}</span> investisseurs de niveau 1 pour obtenir :{" "}
-                  <span className="font-bold" style={{ color: "#F59E0B" }}>{currency} {reward.toLocaleString()}</span>
+                  <span className="font-bold" style={{ color: "#16A34A" }}>{currency} {reward.toLocaleString()}</span>
                 </p>
 
                 {/* Stats row */}
@@ -128,7 +128,7 @@ export default function SalaryBonusPage() {
                 <button
                   className="w-full py-2.5 rounded-xl text-sm font-bold transition-all"
                   style={reached
-                    ? { background: "linear-gradient(90deg, #F59E0B, #FBBF24)", color: "#fff" }
+                    ? { background: "linear-gradient(90deg, #16A34A, #4ADE80)", color: "#fff" }
                     : { background: "#F3F4F6", color: "#6B7280" }
                   }
                   data-testid={`button-level-${lv}`}
