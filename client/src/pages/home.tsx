@@ -2,26 +2,7 @@ import { useAuth } from "@/lib/auth";
 import { SiTelegram } from "react-icons/si";
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { getCountryByCode, formatCurrency } from "@/lib/countries";
-import { useToast } from "@/hooks/use-toast";
-import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Loader2, AlertTriangle } from "lucide-react";
-import type { Product } from "@shared/schema";
-
-import productImg1 from "@assets/vestas_112v_closeup_1783210181172.jpg";
-import productImg2 from "@assets/vestas_112v_closeup_(1)_1783210181118.jpg";
-import productImg3 from "@assets/vestas_112v_closeup_(2)_1783210180090.jpg";
-import productImg4 from "@assets/images_(50)_1783210180466.jpeg";
-import productImg5 from "@assets/images_(41)_1783210181134.jpeg";
-import productImg6 from "@assets/images_(49)_1783210181155.jpeg";
-import productImg7 from "@assets/images_(40)_1783210181193.jpeg";
-import productImg8 from "@assets/images_(39)_1783210181215.jpeg";
-
-const PRODUCT_IMAGES = [
-  productImg1, productImg2, productImg3, productImg4,
-  productImg5, productImg6, productImg7, productImg8,
-];
+import { useQuery } from "@tanstack/react-query";
 
 const jollibeeLogo = "/spolarpv-logo.svg";
 import heroImg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
@@ -30,29 +11,17 @@ import iconRecharger from "@assets/1-1_1783245823715.png";
 import iconRetraits from "@assets/2-1_1783245823825.png";
 import iconService from "@assets/3-1_1783245823860.png";
 
-interface ProductWithOwnership extends Product {
-  isOwned?: boolean;
-  canClaimFree?: boolean;
-  ownedCount?: number;
-}
-
 const DARK_ICON = { filter: "brightness(0) saturate(100%)" } as React.CSSProperties;
 
 export default function HomePage() {
-  const { user, refreshUser } = useAuth();
+  const { user } = useAuth();
   const [, navigate] = useLocation();
-  const { toast } = useToast();
   const [showPopup, setShowPopup] = useState(false);
-  const [confirmProduct, setConfirmProduct] = useState<ProductWithOwnership | null>(null);
   const [installPrompt, setInstallPrompt] = useState<any>(null);
   const [installed, setInstalled] = useState(false);
 
   const { data: settings } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
-  });
-
-  const { data: products } = useQuery<ProductWithOwnership[]>({
-    queryKey: ["/api/products"],
   });
 
   // Show popup on mount and every time home tab is clicked
@@ -73,57 +42,11 @@ export default function HomePage() {
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
-  const purchaseMutation = useMutation({
-    mutationFn: async (productId: number) => {
-      const response = await apiRequest("POST", `/api/products/${productId}/purchase`, {});
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || "Erreur lors de l'achat");
-      }
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user/products"] });
-      refreshUser();
-      setConfirmProduct(null);
-      toast({ title: "✅ Produit acheté !", description: "Vos gains débutent demain." });
-    },
-    onError: (error: any) => {
-      setConfirmProduct(null);
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
-    },
-  });
-
-  const handleInstall = async () => {
-    if (installed) {
-      toast({ title: "Déjà installée", description: "L'app est déjà sur votre écran d'accueil." });
-      return;
-    }
-    if (installPrompt) {
-      installPrompt.prompt();
-      const { outcome } = await installPrompt.userChoice;
-      if (outcome === "accepted") setInstalled(true);
-      setInstallPrompt(null);
-    } else {
-      toast({
-        title: "Installer l'application",
-        description: "iPhone : Partager → Sur l'écran d'accueil. Android : menu → Ajouter à l'écran d'accueil.",
-      });
-    }
-  };
-
   if (!user) return null;
 
-  const country = getCountryByCode(user.country);
-  const currency = country?.currency || "FCFA";
-  const balance = parseFloat(user.balance || "0");
-
-  const paidProducts = products?.filter(p => !p.isFree) || [];
   const signupBonus = settings?.signupBonus || "500";
   const level1Commission = settings?.level1Commission || "25";
   const telegramGroupLink = settings?.groupLink || "https://t.me/vestasgroup";
-  const popupButtonLabel = settings?.popupButtonLabel || "Rejoindre notre groupe Telegram";
 
   return (
     <div className="flex flex-col min-h-full" style={{ background: "#f0f2f5" }}>
@@ -231,167 +154,34 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ── Produits ── */}
-      {paidProducts.length > 0 && (
-        <div className="mx-3 mt-4">
-          <div className="flex items-center justify-between mb-2.5">
-            <p className="text-gray-800 font-extrabold text-base">Nos Produits</p>
+      {/* ── Shortcut vers les produits ── */}
+      <div className="mx-3 mt-3">
+        <button
+          onClick={() => navigate("/invest")}
+          className="w-full flex items-center justify-between bg-white rounded-2xl shadow-sm px-5 py-4 active:scale-[0.98] transition-transform"
+          data-testid="button-go-products"
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center"
+              style={{ background: "linear-gradient(135deg, #00A651, #00C853)" }}
+            >
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" />
+              </svg>
+            </div>
+            <div className="text-left">
+              <p className="font-bold text-gray-800 text-sm">Voir nos produits</p>
+              <p className="text-gray-400 text-xs">Investissez et gagnez chaque jour</p>
+            </div>
           </div>
-
-          <div className="grid grid-cols-2 gap-2.5">
-            {paidProducts.map((product, idx) => {
-              const img = PRODUCT_IMAGES[idx % PRODUCT_IMAGES.length];
-              return (
-                <div
-                  key={product.id}
-                  className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col cursor-pointer active:scale-[0.98] transition-transform"
-                  onClick={() => setConfirmProduct(product)}
-                  data-testid={`home-product-card-${product.id}`}
-                >
-                  {/* Name */}
-                  <div className="text-center pt-3 pb-1 px-2">
-                    <p className="font-bold text-gray-800 text-sm">{product.name}</p>
-                  </div>
-
-                  {/* Image */}
-                  <div className="mx-2.5 rounded-xl overflow-hidden" style={{ height: 95 }}>
-                    <img src={img} alt={product.name} className="w-full h-full object-cover" />
-                  </div>
-
-                  {/* Stats */}
-                  <div className="px-3 pt-2 pb-1 space-y-0.5 flex-1">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-[10px]">Prix</span>
-                      <span className="font-bold text-[10px]" style={{ color: "#00A651" }}>
-                        {currency} {Number(product.price).toLocaleString("fr-FR")}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-[10px]">Rev./jour</span>
-                      <span className="font-bold text-[10px]" style={{ color: "#00A651" }}>
-                        {currency} {Number(product.dailyEarnings).toLocaleString("fr-FR")}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-[10px]">Rev. total</span>
-                      <span className="font-bold text-[10px]" style={{ color: "#00A651" }}>
-                        {currency} {Number(product.totalReturn).toLocaleString("fr-FR")}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-[10px]">Durée</span>
-                      <span className="font-bold text-[10px]" style={{ color: "#00A651" }}>
-                        {product.cycleDays} jours
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Buy button */}
-                  <div className="px-2.5 pb-3 pt-2">
-                    <div
-                      className="w-full py-2 rounded-xl text-center text-white text-xs font-bold"
-                      style={{ background: "linear-gradient(135deg, #00A651, #00C853)" }}
-                    >
-                      Acheter
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+          <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
 
       <div className="pb-24" />
-
-      {/* ── Purchase confirm modal ── */}
-      {confirmProduct && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center px-5 bg-black/60"
-          onClick={() => setConfirmProduct(null)}
-        >
-          <div
-            className="w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"
-            style={{ background: "linear-gradient(160deg, #00A651 0%, #001428 100%)" }}
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Title */}
-            <div className="pt-6 px-6 pb-3">
-              <h3 className="text-white text-2xl font-black">{confirmProduct.name}</h3>
-              <p className="text-white/70 text-sm mt-1">
-                Vos gains seront crédités toutes les 24 heures.
-              </p>
-            </div>
-
-            {/* Image + Info */}
-            <div className="flex items-center gap-4 px-6 py-3">
-              <div className="w-28 h-24 rounded-2xl overflow-hidden shrink-0 shadow-lg">
-                <img
-                  src={PRODUCT_IMAGES[((confirmProduct.sortOrder ?? 0)) % PRODUCT_IMAGES.length]}
-                  alt={confirmProduct.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex-1 space-y-2">
-                <div>
-                  <p className="text-white/60 text-xs">Prix</p>
-                  <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.price).toLocaleString("fr-FR")}</p>
-                </div>
-                <div>
-                  <p className="text-white/60 text-xs">Revenu quotidien</p>
-                  <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.dailyEarnings).toLocaleString("fr-FR")}</p>
-                </div>
-                <div>
-                  <p className="text-white/60 text-xs">Revenu total</p>
-                  <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.totalReturn).toLocaleString("fr-FR")}</p>
-                </div>
-                <div>
-                  <p className="text-white/60 text-xs">Période</p>
-                  <p className="text-white font-bold text-sm">{confirmProduct.cycleDays} jours</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Warning / info */}
-            <div className="mx-6 mb-3">
-              {balance < Number(confirmProduct.price) ? (
-                <div className="flex items-center gap-2 p-3 rounded-2xl" style={{ background: "rgba(239,68,68,0.2)" }}>
-                  <AlertTriangle className="w-4 h-4 text-red-300 shrink-0" />
-                  <p className="text-xs text-red-200">
-                    Solde insuffisant. Il vous manque {formatCurrency(Number(confirmProduct.price) - balance, user.country)}.
-                  </p>
-                </div>
-              ) : (
-                <p className="text-white/60 text-xs text-center">
-                  Chaque personne ne peut acheter qu'un seul article par jour.
-                </p>
-              )}
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-3 px-6 pb-6 pt-1">
-              <button
-                onClick={() => setConfirmProduct(null)}
-                className="flex-1 py-3 rounded-2xl font-semibold text-sm"
-                style={{ background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.8)" }}
-                data-testid="button-cancel-purchase"
-              >
-                Annuler
-              </button>
-              <button
-                onClick={() => purchaseMutation.mutate(confirmProduct.id)}
-                disabled={purchaseMutation.isPending || balance < Number(confirmProduct.price)}
-                className="flex-1 py-3 rounded-2xl text-white font-bold text-sm flex items-center justify-center gap-1 disabled:opacity-50"
-                style={{ background: "linear-gradient(135deg, #00C853, #004499)" }}
-                data-testid="button-confirm-purchase"
-              >
-                {purchaseMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                Confirmer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

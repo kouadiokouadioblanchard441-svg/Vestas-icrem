@@ -7,6 +7,7 @@ import iconCompte from "@assets/téléchargement_(12)_1770815897017.png";
 
 const navItems = [
   { path: "/", label: "Accueil", icon: iconHome },
+  { path: "/invest", label: "Produits", icon: iconProduit },
   { path: "/my-products", label: "Gains", icon: iconProduit },
   { path: "/team", label: "Partage", icon: iconEquipe },
   { path: "/account", label: "Compte", icon: iconCompte },

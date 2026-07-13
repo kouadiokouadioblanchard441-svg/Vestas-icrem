@@ -10,6 +10,7 @@ import RegisterPage from "@/pages/register";
 import HomePage from "@/pages/home";
 import TasksPage from "@/pages/tasks";
 import InvestPage from "@/pages/invest";
+import ProductsPage from "@/pages/products";
 import OrdersPage from "@/pages/orders";
 import TeamPage from "@/pages/team";
 import AccountPage from "@/pages/account";
@@ -173,7 +174,7 @@ function Router() {
       <Route path="/invest">
         <ProtectedRoute>
           <AppLayout>
-            <InvestPage />
+            <ProductsPage />
           </AppLayout>
         </ProtectedRoute>
       </Route>
