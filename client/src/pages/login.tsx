@@ -84,8 +84,17 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen flex flex-col"
-      style={{ background: "#0d1b2e" }}
+      style={{
+        backgroundImage: "url('/auth-bg.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        position: "relative",
+      }}
     >
+      {/* Overlay sombre pour lisibilité */}
+      <div style={{ position: "absolute", inset: 0, background: "rgba(5, 15, 35, 0.72)", zIndex: 0 }} />
+      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", flex: 1 }}>
       <div className="flex-1 flex flex-col px-6 pt-16 pb-10">
 
         {/* Logo */}
@@ -188,6 +197,7 @@ export default function LoginPage() {
         onClose={() => setCountryModalOpen(false)}
         onSelect={(code) => form.setValue("country", code, { shouldValidate: true })}
       />
+      </div>{/* fin wrapper zIndex */}
     </div>
   );
 }
