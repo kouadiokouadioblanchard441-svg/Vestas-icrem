@@ -91,6 +91,61 @@ export default function ProductsPage() {
         </button>
       </div>
 
+      {/* Info card — cycle 24h */}
+      <div className="px-3 pt-4 pb-1">
+        <div
+          className="rounded-2xl overflow-hidden shadow-sm"
+          style={{ background: "linear-gradient(135deg, #00A651 0%, #005c2e 100%)" }}
+        >
+          <div className="px-4 pt-4 pb-1 text-center">
+            <span className="text-2xl">⏱️</span>
+            <p className="text-white font-extrabold text-sm mt-1 leading-snug">
+              Revenus crédités toutes les 24 heures
+            </p>
+            <p className="text-green-100 text-xs mt-1 leading-relaxed">
+              Chaque produit génère un revenu quotidien automatiquement versé sur votre compte chaque jour.
+            </p>
+          </div>
+
+          {/* Divider */}
+          <div className="mx-4 my-3 border-t border-green-400/40" />
+
+          {/* Examples */}
+          <div className="px-4 pb-4 space-y-2">
+            <p className="text-green-200 text-xs font-semibold uppercase tracking-wide text-center mb-2">
+              Exemples
+            </p>
+
+            {[
+              { name: "VIP 1", price: "4 000", daily: "300", days: 90, total: "27 000" },
+              { name: "VIP 2", price: "10 000", daily: "800", days: 90, total: "72 000" },
+              { name: "VIP 3", price: "15 000", daily: "1 500", days: 90, total: "135 000" },
+            ].map((ex) => (
+              <div
+                key={ex.name}
+                className="rounded-xl px-3 py-2"
+                style={{ background: "rgba(255,255,255,0.10)" }}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-white font-bold text-xs">{ex.name}</span>
+                  <span className="text-green-200 text-xs">Prix : {ex.price} XOF</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-green-100">
+                    +{ex.daily} XOF / jour × {ex.days} jours
+                  </span>
+                  <span className="text-white font-bold">= {ex.total} XOF</span>
+                </div>
+              </div>
+            ))}
+
+            <p className="text-green-200 text-xs text-center pt-1 leading-relaxed">
+              Le crédit arrive automatiquement sur votre solde, tous les jours sans action de votre part.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Products list */}
       <div className="flex-1 overflow-y-auto pb-24 px-3 pt-3 space-y-3">
         {isLoading ? (
