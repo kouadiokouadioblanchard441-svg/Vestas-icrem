@@ -17,31 +17,31 @@ export default function AboutPage() {
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-[#00A651]">Qui sommes-nous ?</h2>
           <p className="text-gray-600 leading-relaxed">
-            Vestas est le leader mondial du secteur de l'énergie éolienne. L'entreprise conçoit, fabrique, installe et entretient des éoliennes terrestres (onshore) et en mer (offshore) dans le monde entier.
+            SpolarPV est le leader mondial du secteur de l'énergie solaire. L'entreprise conçoit, fabrique, installe et entretient des panneaux solaires terrestres et des solutions énergétiques dans le monde entier.
           </p>
           <p className="text-gray-600 leading-relaxed">
-            Grâce à notre expertise et à notre réseau mondial, nous offrons à nos utilisateurs des opportunités uniques de générer des revenus quotidiens en participant au financement et à l'expansion de la marque Vestas à l'échelle internationale.
+            Grâce à notre expertise et à notre réseau mondial, nous offrons à nos utilisateurs des opportunités uniques de générer des revenus quotidiens en participant au financement et à l'expansion de la marque SpolarPV à l'échelle internationale.
           </p>
         </div>
 
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-[#00A651]">🏭 Fabrication et Installation</h2>
           <p className="text-gray-600 leading-relaxed">
-            <strong>Conception d'éoliennes :</strong> Développement de turbines de haute technologie adaptées à différents climats et conditions de vent. Vestas produit industriellement les pales, les nacelles et les composants clés de chaque éolienne.
+            <strong>Conception de panneaux solaires :</strong> Développement de solutions photovoltaïques de haute technologie adaptées à différents climats et conditions d'ensoleillement. SpolarPV produit industriellement les modules, les onduleurs et les composants clés de chaque installation.
           </p>
         </div>
 
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-[#00A651]">Notre héritage</h2>
           <p className="text-gray-600 leading-relaxed">
-            Aujourd'hui, Vestas est présente dans plus de 80 pays avec des milliers d'éoliennes installées à travers le monde, devenant ainsi la marque référence de l'énergie renouvelable à l'échelle internationale.
+            Aujourd'hui, SpolarPV est présente dans plus de 80 pays avec des milliers d'installations solaires à travers le monde, devenant ainsi la marque référence de l'énergie renouvelable à l'échelle internationale.
           </p>
         </div>
 
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-[#00A651]">Sécurité et Fiabilité</h2>
           <p className="text-gray-600 leading-relaxed">
-            La sécurité de vos fonds et la transparence de nos opérations sont nos priorités absolues. L'empreinte de Vestas dans le domaine de l'énergie éolienne illustre parfaitement la capacité d'une entreprise à conjuguer qualité, innovation et stratégie de marque pérenne.
+            La sécurité de vos fonds et la transparence de nos opérations sont nos priorités absolues. L'empreinte de SpolarPV dans le domaine de l'énergie solaire illustre parfaitement la capacité d'une entreprise à conjuguer qualité, innovation et stratégie de marque pérenne.
           </p>
         </div>
       </div>

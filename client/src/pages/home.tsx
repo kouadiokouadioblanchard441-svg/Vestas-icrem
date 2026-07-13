@@ -79,7 +79,7 @@ export default function HomePage() {
                 `Récompense de connexion quotidienne : 50 FCFA.`,
                 `Invitez vos subordonnés à investir et recevez une récompense en espèces de ${level1Commission}% du montant de leur investissement.`,
                 `Il n'y a aucune limite quant au temps de retrait ou au nombre de retraits. Vous pouvez retirer de l'argent à tout moment.`,
-                `Vestas attache une grande importance au marché.`,
+                `SpolarPV attache une grande importance au marché.`,
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-2">
                   <span className="text-white/60 text-xs font-bold mt-0.5 shrink-0">{i + 1}.</span>
@@ -115,7 +115,7 @@ export default function HomePage() {
 
       {/* ── Header ── */}
       <div className="flex items-center justify-between px-4 py-2 bg-white shadow-sm">
-        <img src={jollibeeLogo} alt="Vestas" className="h-10 w-auto object-contain" />
+        <img src={jollibeeLogo} alt="SpolarPV" className="h-10 w-auto object-contain" />
         <button
           onClick={() => navigate("/service")}
           className="text-xs font-medium px-3 py-1.5 rounded-full bg-gray-100 text-gray-600"
@@ -127,7 +127,7 @@ export default function HomePage() {
       {/* ── Hero Banner ── */}
       <div className="mx-3 mt-2">
         <div className="relative w-full rounded-2xl overflow-hidden" style={{ height: 210 }}>
-          <img src={heroImg} alt="Vestas" className="w-full h-full object-cover" />
+          <img src={heroImg} alt="SpolarPV" className="w-full h-full object-cover" />
         </div>
       </div>
 

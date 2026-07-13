@@ -84,7 +84,7 @@ export default function ProductsPage() {
         className="flex items-center justify-between px-4 py-3 shadow-sm"
         style={{ background: "linear-gradient(135deg, #00A651 0%, #001a40 100%)" }}
       >
-        <img src={vestasLogo} alt="Vestas" className="h-8 w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} />
+        <img src={vestasLogo} alt="SpolarPV" className="h-8 w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} />
         <p className="text-white font-bold text-base">Nos Produits</p>
         <button onClick={() => navigate("/service")} className="flex items-center justify-center" data-testid="button-service">
           <img src={serviceIcon} alt="Service client" className="w-8 h-8 object-contain" />

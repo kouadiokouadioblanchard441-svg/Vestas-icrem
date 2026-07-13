@@ -8,16 +8,16 @@ import img3 from "@assets/vestas_112v_closeup_(1)_1783210181118.jpg";
 export const NEWS_ARTICLES = [
   {
     id: "1",
-    title: "Vestas Wind Energy — Exposition Philippines 2026",
+    title: "SpolarPV — Exposition Philippines 2026",
     summary:
-      "L'exposition de mai 2026 aux Philippines a été un succès retentissant pour Vestas Wind Energy. Des milliers de visiteurs ont découvert nos dernières innovations en énergie éolienne.",
-    body: `L'exposition internationale de mai 2026 aux Philippines a marqué un tournant majeur pour Vestas Wind Energy sur le marché asiatique.
+      "L'exposition de mai 2026 aux Philippines a été un succès retentissant pour SpolarPV. Des milliers de visiteurs ont découvert nos dernières innovations en énergie solaire.",
+    body: `L'exposition internationale de mai 2026 aux Philippines a marqué un tournant majeur pour SpolarPV sur le marché asiatique.
 
-Pendant 5 jours, nos équipes ont présenté les toutes dernières turbines éoliennes de la gamme V112, capables de produire jusqu'à 3,45 MW d'énergie propre par unité.
+Pendant 5 jours, nos équipes ont présenté les toutes dernières solutions photovoltaïques de la gamme SpolarPV, capables de produire jusqu'à 3,45 MW d'énergie propre par installation.
 
 Les investisseurs présents ont été particulièrement intéressés par notre programme de rendement journalier, qui garantit des revenus stables et prévisibles sur une période de 90 jours.
 
-Cette exposition confirme la position de Vestas comme leader mondial de l'énergie éolienne durable, avec plus de 100 GW de capacité installée dans le monde entier.
+Cette exposition confirme la position de SpolarPV comme leader mondial de l'énergie solaire durable, avec plus de 100 GW de capacité installée dans le monde entier.
 
 Rejoignez-nous dans cette aventure et commencez dès aujourd'hui à investir dans un avenir plus vert et plus rentable.`,
     image: img1,
@@ -25,33 +25,33 @@ Rejoignez-nous dans cette aventure et commencez dès aujourd'hui à investir dan
   },
   {
     id: "2",
-    title: "Nouvelle turbine V112 — Performances record en 2026",
+    title: "Nouvelle gamme SpolarPV — Performances record en 2026",
     summary:
-      "La turbine Vestas V112 établit de nouveaux records de production d'énergie. Découvrez comment cette technologie révolutionne le secteur et booste vos investissements.",
-    body: `La turbine Vestas V112 a établi en 2026 un nouveau record mondial de production d'énergie éolienne en conditions réelles.
+      "SpolarPV établit de nouveaux records de production d'énergie solaire. Découvrez comment cette technologie révolutionne le secteur et booste vos investissements.",
+    body: `SpolarPV a établi en 2026 un nouveau record mondial de production d'énergie solaire en conditions réelles.
 
-Avec un facteur de charge moyen de 48 %, bien au-dessus de la moyenne du secteur (35 %), la V112 représente l'état de l'art en matière d'ingénierie éolienne.
+Avec un rendement moyen de 48 %, bien au-dessus de la moyenne du secteur (35 %), nos panneaux représentent l'état de l'art en matière d'ingénierie photovoltaïque.
 
-Ses 3 pales de 54,6 mètres chacune capturent le vent de manière optimale, même à des vitesses de vent faibles. Le système de contrôle intelligent ajuste automatiquement l'angle des pales pour maximiser la production.
+Nos modules à haute densité capturent la lumière solaire de manière optimale, même par faible ensoleillement. Le système de contrôle intelligent ajuste automatiquement l'orientation des panneaux pour maximiser la production.
 
 Pour nos investisseurs, cela se traduit directement par des revenus quotidiens fiables et une rentabilité accrue sur toute la durée du cycle d'investissement.
 
-Investir dans Vestas, c'est choisir la technologie la plus avancée au monde au service de votre patrimoine financier.`,
+Investir dans SpolarPV, c'est choisir la technologie la plus avancée au monde au service de votre patrimoine financier.`,
     image: img2,
     date: "10 Juin 2026",
   },
   {
     id: "3",
-    title: "Expansion Vestas en Afrique francophone — Plan 2026–2027",
+    title: "Expansion SpolarPV en Afrique francophone — Plan 2026–2027",
     summary:
-      "Vestas Wind Energy accélère son développement en Afrique de l'Ouest et Centrale. Un plan ambitieux pour apporter l'énergie propre et des opportunités d'investissement à toute la région.",
-    body: `Vestas Wind Energy annonce un plan d'expansion ambitieux pour l'Afrique francophone couvrant la période 2026–2027.
+      "SpolarPV accélère son développement en Afrique de l'Ouest et Centrale. Un plan ambitieux pour apporter l'énergie propre et des opportunités d'investissement à toute la région.",
+    body: `SpolarPV annonce un plan d'expansion ambitieux pour l'Afrique francophone couvrant la période 2026–2027.
 
-Ce plan prévoit l'installation de 200 nouvelles turbines dans des pays clés comme le Sénégal, la Côte d'Ivoire, le Tchad, le Cameroun et le Burkina Faso, pour une capacité totale de 690 MW.
+Ce plan prévoit l'installation de 200 nouvelles fermes solaires dans des pays clés comme le Sénégal, la Côte d'Ivoire, le Tchad, le Cameroun et le Burkina Faso, pour une capacité totale de 690 MW.
 
 L'objectif est double : contribuer à la transition énergétique du continent africain et offrir à nos investisseurs locaux des opportunités de rendement exceptionnelles, directement liées à la performance de nos installations.
 
-Les investisseurs qui rejoignent notre plateforme bénéficient de revenus quotidiens issus directement de la production d'énergie de nos parcs éoliens en exploitation.
+Les investisseurs qui rejoignent notre plateforme bénéficient de revenus quotidiens issus directement de la production d'énergie de nos parcs solaires en exploitation.
 
 Ensemble, nous construisons un avenir énergétique durable pour l'Afrique tout en faisant fructifier votre épargne de façon sécurisée et transparente.`,
     image: img3,

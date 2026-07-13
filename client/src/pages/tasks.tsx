@@ -83,7 +83,7 @@ export default function TasksPage() {
       <div className="relative overflow-hidden" style={{ height: "260px" }}>
         <img
           src={jollibeeImg}
-          alt="Vestas"
+          alt="SpolarPV"
           className="w-full h-full object-cover object-center"
         />
         {/* Dark gradient overlay */}
@@ -103,7 +103,7 @@ export default function TasksPage() {
             </button>
           </Link>
           <div className="flex-1 flex justify-center">
-            <img src={jollibeeLogo} alt="Vestas" className="h-8 object-contain" />
+            <img src={jollibeeLogo} alt="SpolarPV" className="h-8 object-contain" />
           </div>
           <div className="w-9" />
         </div>

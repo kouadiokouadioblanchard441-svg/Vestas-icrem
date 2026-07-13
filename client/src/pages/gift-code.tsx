@@ -58,7 +58,7 @@ export default function GiftCodePage() {
       <div className="relative">
         <img
           src={jollibeeNight}
-          alt="Vestas"
+          alt="SpolarPV"
           className="w-full h-52 object-cover"
           data-testid="img-gift-banner"
         />

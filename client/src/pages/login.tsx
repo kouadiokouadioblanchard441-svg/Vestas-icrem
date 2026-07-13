@@ -26,7 +26,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [countryModalOpen, setCountryModalOpen] = useState(false);
 
-  const savedCredentials = typeof window !== "undefined" ? localStorage.getItem("vestas_credentials") : null;
+  const savedCredentials = typeof window !== "undefined" ? localStorage.getItem("spolarpv_credentials") : null;
   const parsedCredentials = savedCredentials ? JSON.parse(savedCredentials) : null;
   const [rememberMe, setRememberMe] = useState(!!parsedCredentials);
 
@@ -69,9 +69,9 @@ export default function LoginPage() {
     try {
       await login(data.phone, data.country, data.password);
       if (rememberMe) {
-        localStorage.setItem("vestas_credentials", JSON.stringify({ phone: data.phone, country: data.country, password: data.password }));
+        localStorage.setItem("spolarpv_credentials", JSON.stringify({ phone: data.phone, country: data.country, password: data.password }));
       } else {
-        localStorage.removeItem("vestas_credentials");
+        localStorage.removeItem("spolarpv_credentials");
       }
       navigate("/");
     } catch (error: any) {

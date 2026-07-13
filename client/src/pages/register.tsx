@@ -81,7 +81,7 @@ export default function RegisterPage() {
         password: data.password,
         invitationCode: data.invitationCode,
       });
-      toast({ title: "Inscription réussie !", description: "Bienvenue sur Vestas !" });
+      toast({ title: "Inscription réussie !", description: "Bienvenue sur SpolarPV !" });
       navigate("/");
     } catch (error: any) {
       toast({ title: "Erreur d'inscription", description: error.message || "Une erreur est survenue", variant: "destructive" });

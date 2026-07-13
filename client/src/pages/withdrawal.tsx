@@ -276,7 +276,7 @@ export default function WithdrawalPage() {
             <p>3. Des frais de traitement de {withdrawalFee}% seront appliqués sur chaque retrait.</p>
             <p>4. Les retraits seront disponibles sous 2 heures, et exceptionnellement sous 24 heures.</p>
             <p>5. Si le retrait échoue, vérifiez que vos informations bancaires sont correctes, puis soumettez à nouveau la demande.</p>
-            <p>6. Effectuez votre première recharge et achetez des produits Vestas pour activer la fonction de retrait.</p>
+            <p>6. Effectuez votre première recharge et achetez des produits SpolarPV pour activer la fonction de retrait.</p>
           </div>
         </div>
       </div>
