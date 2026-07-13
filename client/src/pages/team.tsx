@@ -89,7 +89,7 @@ export default function TeamPage() {
         <button
           onClick={() => navigate("/salary-bonus")}
           className="px-4 py-2 rounded-full text-white text-xs font-bold"
-          style={{ background: "linear-gradient(90deg, #F59E0B, #FBBF24)" }}
+          style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
           data-testid="button-centre-taches"
         >
           Aller au Centre des Tâches &gt;
@@ -117,7 +117,7 @@ export default function TeamPage() {
               {/* VIP badge */}
               <div
                 className="w-14 h-10 rounded-xl flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg, #F59E0B, #FBBF24)" }}
+                style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
               >
                 <span className="text-white font-extrabold text-sm">{row.label}</span>
               </div>
@@ -133,7 +133,7 @@ export default function TeamPage() {
           {/* Purple header */}
           <div
             className="flex items-center gap-2 px-4 py-3"
-            style={{ background: "linear-gradient(90deg, #F59E0B, #FBBF24)" }}
+            style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
           >
             <img
               src={teamIcon}
@@ -157,7 +157,7 @@ export default function TeamPage() {
               <button
                 onClick={copyCode}
                 className="px-4 py-2 rounded-xl text-white text-xs font-bold shrink-0 flex items-center gap-1"
-                style={{ background: "linear-gradient(90deg, #F59E0B, #FBBF24)" }}
+                style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
                 data-testid="button-copy-code"
               >
                 <Copy className="w-3 h-3" />
@@ -178,7 +178,7 @@ export default function TeamPage() {
               <button
                 onClick={copyLink}
                 className="px-4 py-2 rounded-xl text-white text-xs font-bold shrink-0 flex items-center gap-1"
-                style={{ background: "linear-gradient(90deg, #F59E0B, #FBBF24)" }}
+                style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
                 data-testid="button-copy-link"
               >
                 <Copy className="w-3 h-3" />
@@ -193,7 +193,7 @@ export default function TeamPage() {
           {/* Purple header */}
           <div
             className="flex items-center gap-2 px-4 py-3"
-            style={{ background: "linear-gradient(90deg, #F59E0B, #FBBF24)" }}
+            style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
           >
             <span className="text-white text-base">✦</span>
             <p className="text-white font-extrabold text-base">Ma progression</p>
@@ -273,7 +273,7 @@ export default function TeamPage() {
 
         {/* ── Info ── */}
         <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-          <div className="px-5 py-3.5 flex items-center gap-2.5" style={{ background: "linear-gradient(135deg, #F59E0B, #FBBF24)" }}>
+          <div className="px-5 py-3.5 flex items-center gap-2.5" style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}>
             <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
               <img src={teamIcon} alt="" className="w-4.5 h-4.5 object-contain" />
             </div>
@@ -284,17 +284,17 @@ export default function TeamPage() {
             {/* Niveau 1 */}
             <div className="pb-4 border-b border-gray-100">
               <div className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-[#F59E0B]/10 text-[#F59E0B] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+                <span className="w-6 h-6 rounded-full bg-[#1F2937]/10 text-[#1F2937] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
                 <p className="text-sm text-gray-700 leading-relaxed">
                   Invitez un ami avec votre code ou votre lien de parrainage. Dès qu'il investit dans un produit, vous recevez automatiquement{" "}
-                  <span className="font-bold text-[#F59E0B]">{lv1Rate}%</span> du montant investi, directement crédité sur votre solde.
+                  <span className="font-bold text-[#1F2937]">{lv1Rate}%</span> du montant investi, directement crédité sur votre solde.
                 </p>
               </div>
-              <div className="mt-2.5 ml-9 rounded-xl bg-[#F59E0B]/5 border border-[#F59E0B]/15 px-3 py-2.5">
+              <div className="mt-2.5 ml-9 rounded-xl bg-[#1F2937]/5 border border-[#1F2937]/15 px-3 py-2.5">
                 <p className="text-xs text-gray-600 leading-relaxed">
                   <span className="font-bold text-gray-800">Exemple : </span>
                   votre ami (niveau 1) investit {currency} 10 000 → vous recevez{" "}
-                  <span className="font-bold text-[#F59E0B]">
+                  <span className="font-bold text-[#1F2937]">
                     {currency} {(10000 * (Number(lv1Rate) / 100)).toLocaleString("fr-FR")}
                   </span>{" "}
                   ({lv1Rate}%).
@@ -305,17 +305,17 @@ export default function TeamPage() {
             {/* Niveau 2 */}
             <div className="pb-4 border-b border-gray-100">
               <div className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-[#F59E0B]/10 text-[#F59E0B] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
+                <span className="w-6 h-6 rounded-full bg-[#1F2937]/10 text-[#1F2937] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
                 <p className="text-sm text-gray-700 leading-relaxed">
                   Lorsqu'une personne invitée par votre filleul (niveau 2) investit à son tour, vous touchez{" "}
-                  <span className="font-bold text-[#F59E0B]">{lv2Rate}%</span> de son investissement, même si vous ne la connaissez pas directement.
+                  <span className="font-bold text-[#1F2937]">{lv2Rate}%</span> de son investissement, même si vous ne la connaissez pas directement.
                 </p>
               </div>
-              <div className="mt-2.5 ml-9 rounded-xl bg-[#F59E0B]/5 border border-[#F59E0B]/15 px-3 py-2.5">
+              <div className="mt-2.5 ml-9 rounded-xl bg-[#1F2937]/5 border border-[#1F2937]/15 px-3 py-2.5">
                 <p className="text-xs text-gray-600 leading-relaxed">
                   <span className="font-bold text-gray-800">Exemple : </span>
                   un filleul de niveau 2 investit {currency} 10 000 → vous recevez{" "}
-                  <span className="font-bold text-[#F59E0B]">
+                  <span className="font-bold text-[#1F2937]">
                     {currency} {(10000 * (Number(lv2Rate) / 100)).toLocaleString("fr-FR")}
                   </span>{" "}
                   ({lv2Rate}%).
@@ -326,17 +326,17 @@ export default function TeamPage() {
             {/* Niveau 3 */}
             <div>
               <div className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-[#F59E0B]/10 text-[#F59E0B] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
+                <span className="w-6 h-6 rounded-full bg-[#1F2937]/10 text-[#1F2937] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
                 <p className="text-sm text-gray-700 leading-relaxed">
                   Le réseau continue de vous rapporter jusqu'au niveau 3 : pour chaque investissement réalisé à ce niveau, vous percevez{" "}
-                  <span className="font-bold text-[#F59E0B]">{lv3Rate}%</span>, sans aucune action supplémentaire de votre part.
+                  <span className="font-bold text-[#1F2937]">{lv3Rate}%</span>, sans aucune action supplémentaire de votre part.
                 </p>
               </div>
-              <div className="mt-2.5 ml-9 rounded-xl bg-[#F59E0B]/5 border border-[#F59E0B]/15 px-3 py-2.5">
+              <div className="mt-2.5 ml-9 rounded-xl bg-[#1F2937]/5 border border-[#1F2937]/15 px-3 py-2.5">
                 <p className="text-xs text-gray-600 leading-relaxed">
                   <span className="font-bold text-gray-800">Exemple : </span>
                   un filleul de niveau 3 investit {currency} 10 000 → vous recevez{" "}
-                  <span className="font-bold text-[#F59E0B]">
+                  <span className="font-bold text-[#1F2937]">
                     {currency} {(10000 * (Number(lv3Rate) / 100)).toLocaleString("fr-FR")}
                   </span>{" "}
                   ({lv3Rate}%).
@@ -345,7 +345,7 @@ export default function TeamPage() {
             </div>
 
             <div className="rounded-xl bg-gray-50 px-3 py-2.5 flex items-start gap-2">
-              <span className="text-[#F59E0B] text-sm mt-0.5">💡</span>
+              <span className="text-[#1F2937] text-sm mt-0.5">💡</span>
               <p className="text-xs text-gray-500 leading-relaxed">
                 Plus votre équipe s'agrandit sur les 3 niveaux, plus vos revenus de parrainage augmentent chaque fois qu'un membre investit.
               </p>
