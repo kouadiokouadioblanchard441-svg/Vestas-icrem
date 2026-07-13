@@ -49,7 +49,7 @@ export default function ProductsPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user/products"] });
       refreshUser();
-      toast({ title: "Produit acheté !", description: "Vous commencerez à recevoir des gains demain." });
+      toast({ title: "Félicitations pour l'achat de votre produit", description: "Vous commencerez à recevoir des gains demain.", variant: "default" });
     },
     onError: (error: any) => {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
