@@ -61,7 +61,7 @@ export default function HomePage() {
         >
           <div
             className="w-full max-w-[340px] rounded-3xl overflow-hidden shadow-2xl"
-            style={{ background: "#111827" }}
+            style={{ background: "#87CEEB" }}
             onClick={e => e.stopPropagation()}
           >
             {/* Bell icon */}
@@ -70,7 +70,7 @@ export default function HomePage() {
             </div>
 
             {/* Title */}
-            <p className="text-white font-extrabold text-xl text-center tracking-widest mb-4">NOTIFICATION</p>
+            <p className="text-gray-900 font-extrabold text-xl text-center tracking-widest mb-4">NOTIFICATION</p>
 
             {/* Numbered list */}
             <div className="px-6 pb-2 space-y-2">
@@ -82,8 +82,8 @@ export default function HomePage() {
                 `SpolarPV attache une grande importance au marché.`,
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-2">
-                  <span className="text-white/60 text-xs font-bold mt-0.5 shrink-0">{i + 1}.</span>
-                  <p className="text-white/85 text-xs leading-relaxed">{item}</p>
+                  <span className="text-gray-700/70 text-xs font-bold mt-0.5 shrink-0">{i + 1}.</span>
+                  <p className="text-gray-800/90 text-xs leading-relaxed">{item}</p>
                 </div>
               ))}
             </div>
