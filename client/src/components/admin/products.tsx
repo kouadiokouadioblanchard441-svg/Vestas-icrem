@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Edit, Loader2, TrendingUp, Plus, Trash2 } from "lucide-react";
+import { Edit, Loader2, TrendingUp, Plus, Trash2, ImagePlus, X } from "lucide-react";
 import type { Product } from "@shared/schema";
 
 const productSchema = z.object({
@@ -149,6 +149,78 @@ export default function AdminProducts() {
     createMutation.mutate(data);
   };
 
+  const ImageUploadField = ({ form }: { form: any }) => {
+    const fileRef = useRef<HTMLInputElement>(null);
+    const currentValue: string = form.watch("imageUrl") || "";
+
+    const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) {
+        toast({ title: "Image trop lourde", description: "Maximum 2 Mo", variant: "destructive" });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        form.setValue("imageUrl", reader.result as string, { shouldValidate: true });
+      };
+      reader.readAsDataURL(file);
+      e.target.value = "";
+    };
+
+    return (
+      <FormField control={form.control} name="imageUrl" render={({ field }) => (
+        <FormItem>
+          <FormLabel>Image <span className="text-muted-foreground font-normal">(optionnel)</span></FormLabel>
+          <div className="space-y-2">
+            {/* Preview */}
+            {currentValue && (
+              <div className="relative w-full h-28 rounded-xl border border-border overflow-hidden bg-secondary/30">
+                <img src={currentValue} alt="Aperçu" className="w-full h-full object-contain" />
+                <button
+                  type="button"
+                  onClick={() => form.setValue("imageUrl", "", { shouldValidate: true })}
+                  className="absolute top-1 right-1 bg-destructive text-white rounded-full p-0.5"
+                  data-testid="button-clear-image"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+            {/* Upload button */}
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFile}
+              data-testid="input-file-image"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={() => fileRef.current?.click()}
+            >
+              <ImagePlus className="w-4 h-4 mr-2" />
+              {currentValue ? "Changer l'image" : "Choisir depuis la galerie"}
+            </Button>
+            {/* URL fallback */}
+            <FormControl>
+              <Input
+                {...field}
+                placeholder="Ou coller une URL https://..."
+                value={currentValue.startsWith("data:") ? "" : currentValue}
+                onChange={(e) => form.setValue("imageUrl", e.target.value, { shouldValidate: true })}
+              />
+            </FormControl>
+          </div>
+          <FormMessage />
+        </FormItem>
+      )} />
+    );
+  };
+
   const ProductFormFields = ({ form, isPending, submitLabel }: { form: any; isPending: boolean; submitLabel: string }) => (
     <form onSubmit={form.handleSubmit(submitLabel === "Créer" ? handleCreate : handleUpdate)} className="space-y-4">
       <FormField control={form.control} name="name" render={({ field }) => (
@@ -181,13 +253,7 @@ export default function AdminProducts() {
           <FormMessage />
         </FormItem>
       )} />
-      <FormField control={form.control} name="imageUrl" render={({ field }) => (
-        <FormItem>
-          <FormLabel>URL de l'image <span className="text-muted-foreground font-normal">(optionnel)</span></FormLabel>
-          <FormControl><Input {...field} placeholder="https://..." /></FormControl>
-          <FormMessage />
-        </FormItem>
-      )} />
+      <ImageUploadField form={form} />
       {form.watch("price") && form.watch("dailyEarnings") && form.watch("cycleDays") && (
         <div className="bg-primary/10 rounded-lg p-3 text-sm">
           <p className="text-muted-foreground">Retour total estimé :</p>
