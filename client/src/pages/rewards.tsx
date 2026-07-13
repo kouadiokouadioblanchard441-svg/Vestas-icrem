@@ -7,6 +7,7 @@ import { ArrowLeft, HelpCircle, Users } from "lucide-react";
 import { getCountryByCode } from "@/lib/countries";
 
 import globeImg from "@/assets/images/elf-station-2.jpeg";
+import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 
 export default function RewardsPage() {
   const { user } = useAuth();
@@ -53,7 +54,7 @@ export default function RewardsPage() {
   const currentInvites = tasks?.[0]?.currentInvites || 0;
 
   return (
-    <div className="flex flex-col min-h-full bg-gray-100">
+    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
       <div className="flex-1 overflow-y-auto pb-24">
 
         <div className="relative px-4 pt-4 pb-6" style={{ background: "linear-gradient(180deg, #e3f2fd 0%, #f5f5f5 100%)" }}>
@@ -133,6 +134,7 @@ export default function RewardsPage() {
         </div>
 
       </div>
+      <img src={landscapeImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

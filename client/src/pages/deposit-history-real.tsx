@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { getCountryByCode } from "@/lib/countries";
 import { Skeleton } from "@/components/ui/skeleton";
+import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 
 interface Deposit {
   id: number;
@@ -49,7 +50,7 @@ export default function DepositHistoryRealPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#f5f0e8" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
       <header className="flex items-center px-4 py-3 border-b bg-white">
         <Link href="/deposit">
           <button className="p-2" data-testid="button-back">
@@ -97,6 +98,7 @@ export default function DepositHistoryRealPage() {
           })
         )}
       </div>
+      <img src={landscapeImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

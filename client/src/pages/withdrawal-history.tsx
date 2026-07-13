@@ -4,6 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import { Link } from "wouter";
 import { getCountryByCode } from "@/lib/countries";
 import { Skeleton } from "@/components/ui/skeleton";
+import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 
 interface Withdrawal {
   id: number;
@@ -35,7 +36,7 @@ export default function WithdrawalHistoryPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
       {/* Header */}
       <header className="flex items-center px-4 py-3 bg-white border-b border-gray-200">
         <Link href="/account">
@@ -90,6 +91,7 @@ export default function WithdrawalHistoryPage() {
           })
         )}
       </div>
+      <img src={landscapeImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

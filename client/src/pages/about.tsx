@@ -1,9 +1,10 @@
 import { ChevronLeft } from "lucide-react";
 import { Link } from "wouter";
+import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 
 export default function AboutPage() {
   return (
-    <div className="flex flex-col min-h-full bg-white">
+    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
       <header className="flex items-center px-4 py-3 border-b bg-white">
         <Link href="/account">
           <button className="p-1" data-testid="button-back">
@@ -45,6 +46,7 @@ export default function AboutPage() {
           </p>
         </div>
       </div>
+      <img src={landscapeImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

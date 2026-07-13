@@ -77,7 +77,7 @@ export default function TasksPage() {
   const claimableCount = tasks?.filter(t => t.canClaim && !t.isCompleted).length || 0;
 
   return (
-    <div className="flex flex-col min-h-full bg-gray-50">
+    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
 
       {/* Hero Section — tall enough so bottom text clears the stats card overlap */}
       <div className="relative overflow-hidden" style={{ height: "260px" }}>
@@ -269,6 +269,7 @@ export default function TasksPage() {
           </div>
         )}
       </div>
+      <img src={landscapeImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

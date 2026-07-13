@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 import { useAuth } from "@/lib/auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -139,7 +140,7 @@ export default function DepositPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
 
       {/* ── STEP 1 : Saisir le montant ── */}
       {step === "amount" && (

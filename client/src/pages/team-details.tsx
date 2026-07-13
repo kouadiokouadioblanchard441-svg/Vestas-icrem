@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 import { useLocation } from "wouter";
 import { ChevronLeft, User } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -83,7 +84,7 @@ export default function TeamDetailsPage() {
   const totalInvested = activeData.totalInvested;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
 
       {/* ── Header ── */}
       <div className="bg-white flex items-center px-4 py-4 shadow-sm">
@@ -210,6 +211,7 @@ export default function TeamDetailsPage() {
         )}
       </div>
 
+      <img src={landscapeImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

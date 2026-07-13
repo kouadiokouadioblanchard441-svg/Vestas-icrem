@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Eye, EyeOff, ChevronLeft } from "lucide-react";
@@ -53,7 +54,7 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
 
       {/* ── Green header ── */}
       <header
@@ -167,6 +168,7 @@ export default function ChangePasswordPage() {
         </div>
       </div>
 
+      <img src={landscapeImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

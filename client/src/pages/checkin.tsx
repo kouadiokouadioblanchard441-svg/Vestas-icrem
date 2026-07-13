@@ -6,6 +6,7 @@ import { getCountryByCode } from "@/lib/countries";
 import { ChevronLeft, Loader2, Gift } from "lucide-react";
 import { Link } from "wouter";
 import robotGift from "@assets/file_00000000168c7246a166e7a2da1eb7ba_1773319220043.png";
+import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 
 interface BonusStatus {
   canClaim: boolean;
@@ -50,7 +51,7 @@ export default function CheckinPage() {
   const daysPointed = bonusStatus?.daysPointed || 0;
 
   return (
-    <div className="flex flex-col min-h-full bg-white">
+    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
       <div className="flex-1 overflow-y-auto pb-24">
 
         {/* Header */}
@@ -150,6 +151,7 @@ export default function CheckinPage() {
         </div>
 
       </div>
+      <img src={landscapeImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

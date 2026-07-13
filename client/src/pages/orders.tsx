@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
+import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -29,7 +30,7 @@ export default function OrdersPage() {
   ) || [];
 
   return (
-    <div className="flex flex-col min-h-full bg-white">
+    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
       <header className="px-4 py-3 border-b">
         <h1 className="text-lg font-semibold text-gray-800 text-center">Mes commandes</h1>
       </header>
@@ -157,6 +158,7 @@ export default function OrdersPage() {
           </div>
         )}
       </div>
+      <img src={landscapeImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

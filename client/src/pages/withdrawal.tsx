@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
+import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -119,7 +120,7 @@ export default function WithdrawalPage() {
 
   if (walletsLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#87CEEB" }}>
         <Loader2 className="w-8 h-8 animate-spin text-[#00A651]" />
       </div>
     );
@@ -131,7 +132,7 @@ export default function WithdrawalPage() {
   const hasWallets = wallets.length > 0;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
 
       {/* ── Header ── */}
       <header className="flex items-center justify-between px-4 py-4 bg-white border-b border-gray-100">

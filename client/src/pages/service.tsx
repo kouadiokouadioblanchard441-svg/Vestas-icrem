@@ -11,6 +11,7 @@ import {
 } from "react-icons/si";
 
 import heroImg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
+import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 
 interface LinksSettings {
   supportLink: string;
@@ -123,7 +124,7 @@ export default function ServicePage() {
   const links = allLinks.filter(l => l.enabled);
 
   return (
-    <div className="flex flex-col min-h-full bg-gray-100">
+    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
 
       {/* ── Header ── */}
       <div className="flex items-center bg-white px-4 py-3 shadow-sm">
