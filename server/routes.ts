@@ -881,11 +881,13 @@ export async function registerRoutes(
         status: "processing",
       });
 
-      // Build callback URL — WestPay appends ?status=...&amount=...&ref=... to it
+      // Build callback URL using PATH segment (no query params in redirect URL).
+      // WestPay appends "?status=success&amount=X&ref=OP-xxx" to whatever URL we give.
+      // If our URL already contained "?...", WestPay would produce a broken double-? URL.
       const baseUrl = process.env.REPLIT_DEV_DOMAIN
         ? `https://${process.env.REPLIT_DEV_DOMAIN}`
         : `https://${req.headers.host}`;
-      const redirectUrl = `${baseUrl}/deposit-callback?depositId=${deposit.id}`;
+      const redirectUrl = `${baseUrl}/deposit-callback/${deposit.id}`;
       const westpayUrl = buildPaymentUrl(merchantSlug, Number(amount), user.country, redirectUrl);
 
       console.log(`[westpay] Deposit #${deposit.id} initiated for user ${user.id}, amount ${amount}`);
@@ -897,72 +899,74 @@ export async function registerRoutes(
   });
 
   // ── WestPay: webhook (server-to-server, HMAC-signed) ─────────────────────
-  // Must receive raw body for HMAC verification — placed BEFORE json middleware applies
-  app.post("/api/webhook/westpay", (req, res, next) => {
-    // Collect raw body
-    let raw = "";
-    req.on("data", (chunk) => { raw += chunk.toString(); });
-    req.on("end", async () => {
-      try {
-        const signature = (req.headers["x-robotpay-signature"] as string) || "";
-        const event = (req.headers["x-robotpay-event"] as string) || "";
-        const webhookSecret = process.env.WESTPAY_WEBHOOK_SECRET;
+  // express.json() already consumed the stream AND saved the raw buffer on req.rawBody
+  // (via the "verify" callback in server/index.ts). We use that for HMAC verification.
+  app.post("/api/webhook/westpay", async (req, res) => {
+    try {
+      const signature = (req.headers["x-robotpay-signature"] as string) || "";
+      const event = (req.headers["x-robotpay-event"] as string) || "";
+      const webhookSecret = process.env.WESTPAY_WEBHOOK_SECRET;
 
-        if (!webhookSecret) {
-          console.error("[westpay webhook] WESTPAY_WEBHOOK_SECRET not set");
-          return res.json({ received: true });
-        }
-
-        if (!signature || !verifyWebhookSignature(raw, signature, webhookSecret)) {
-          console.error("[westpay webhook] Invalid HMAC signature");
-          return res.status(401).json({ error: "Signature invalide" });
-        }
-
-        if (event !== "payment.confirmed") {
-          return res.json({ received: true });
-        }
-
-        const payload = JSON.parse(raw);
-        const { txId, amount, payer } = payload;
-        console.log(`[westpay webhook] payment.confirmed txId=${txId} amount=${amount} payer=${payer}`);
-
-        // Find the most recent unconfirmed WestPay deposit with matching amount
-        const deposit = await storage.findProcessingWestpayDeposit(Number(amount));
-        if (!deposit) {
-          console.error(`[westpay webhook] No matching deposit for amount=${amount} txId=${txId}`);
-          return res.json({ received: true });
-        }
-
-        // Approve and credit user
-        await storage.updateDeposit(deposit.id, {
-          status: "approved",
-          reference: txId,
-          processedAt: new Date(),
-        });
-
-        const user = await storage.getUser(deposit.userId);
-        if (user) {
-          const newBalance = parseFloat(user.balance) + deposit.amount;
-          await storage.updateUser(deposit.userId, {
-            balance: newBalance.toFixed(2),
-            hasDeposited: true,
-          });
-          await storage.createTransaction({
-            userId: deposit.userId,
-            type: "deposit",
-            amount: deposit.amount.toString(),
-            description: `Dépôt WestPay #${deposit.id} (${txId})`,
-          });
-          await storage.processDepositReferralCommissions(deposit.userId, deposit.amount);
-        }
-
-        console.log(`[westpay webhook] Deposit #${deposit.id} approved — user ${deposit.userId} +${deposit.amount}`);
+      if (!webhookSecret) {
+        console.error("[westpay webhook] WESTPAY_WEBHOOK_SECRET not set");
         return res.json({ received: true });
-      } catch (err: any) {
-        console.error("[westpay webhook] Error:", err);
-        return res.json({ received: true }); // Always 200 to WestPay
       }
-    });
+
+      // Raw body stored by express.json verify callback in server/index.ts
+      const rawBody: Buffer | undefined = (req as any).rawBody;
+      const bodyStr = rawBody ? rawBody.toString("utf8") : JSON.stringify(req.body);
+
+      if (!signature || !verifyWebhookSignature(bodyStr, signature, webhookSecret)) {
+        console.error("[westpay webhook] Invalid HMAC signature — rejecting");
+        return res.status(401).json({ error: "Signature invalide" });
+      }
+
+      if (event !== "payment.confirmed") {
+        return res.json({ received: true });
+      }
+
+      // req.body is already parsed by express.json()
+      const { txId, amount, payer } = req.body as {
+        txId: string; amount: number; payer: string;
+      };
+      console.log(`[westpay webhook] payment.confirmed txId=${txId} amount=${amount} payer=${payer}`);
+
+      // Find the most recent processing WestPay deposit with matching amount
+      const deposit = await storage.findProcessingWestpayDeposit(Number(amount));
+      if (!deposit) {
+        console.error(`[westpay webhook] No matching deposit for amount=${amount} txId=${txId}`);
+        return res.json({ received: true });
+      }
+
+      // Approve and credit user balance
+      await storage.updateDeposit(deposit.id, {
+        status: "approved",
+        reference: txId,
+        processedAt: new Date(),
+      });
+
+      const user = await storage.getUser(deposit.userId);
+      if (user) {
+        const newBalance = parseFloat(user.balance) + deposit.amount;
+        await storage.updateUser(deposit.userId, {
+          balance: newBalance.toFixed(2),
+          hasDeposited: true,
+        });
+        await storage.createTransaction({
+          userId: deposit.userId,
+          type: "deposit",
+          amount: deposit.amount.toString(),
+          description: `Dépôt WestPay #${deposit.id} (${txId})`,
+        });
+        await storage.processDepositReferralCommissions(deposit.userId, deposit.amount);
+      }
+
+      console.log(`[westpay webhook] Deposit #${deposit.id} approved — user ${deposit.userId} +${deposit.amount}`);
+      return res.json({ received: true });
+    } catch (err: any) {
+      console.error("[westpay webhook] Error:", err);
+      return res.json({ received: true }); // Always return 200 to WestPay
+    }
   });
 
   // Withdrawals

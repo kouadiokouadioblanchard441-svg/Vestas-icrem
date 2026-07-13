@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
-import { useLocation, Link } from "wouter";
+import { Link, useParams } from "wouter";
 import { CheckCircle, Loader2, XCircle, Headphones } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 
 export default function DepositCallbackPage() {
   const { refreshUser } = useAuth();
-  const [location] = useLocation();
 
-  // Parse query params from the current URL
+  // depositId comes from the URL path (/deposit-callback/:id)
+  const { id: depositId } = useParams<{ id: string }>();
+
+  // WestPay appends ?status=success|failed&amount=X&ref=OP-xxx to our redirect URL
   const search = typeof window !== "undefined" ? window.location.search : "";
   const params = new URLSearchParams(search);
-  const depositId = params.get("depositId");
-  const westpayStatus = params.get("status");
-  const ref = params.get("ref");
+  const westpayStatus = params.get("status");   // "success" | "failed" | null
+  const ref = params.get("ref");                // "OP-abc123" | null
 
   const [depositStatus, setDepositStatus] = useState<
     "polling" | "approved" | "rejected" | "timeout"
@@ -21,14 +22,14 @@ export default function DepositCallbackPage() {
   useEffect(() => {
     if (!depositId) return;
 
-    // WestPay redirected with explicit failure
+    // WestPay explicitly told us the payment failed → stop immediately
     if (westpayStatus === "failed" || westpayStatus === "failure") {
       setDepositStatus("rejected");
       return;
     }
 
     let attempts = 0;
-    const MAX_ATTEMPTS = 60; // 60 × 5 s = 5 minutes
+    const MAX_ATTEMPTS = 60; // 60 × 5 s = 5 min
     let timer: ReturnType<typeof setTimeout>;
 
     const poll = async () => {
@@ -51,6 +52,7 @@ export default function DepositCallbackPage() {
       } catch {
         // network error — keep polling
       }
+
       attempts++;
       if (attempts >= MAX_ATTEMPTS) {
         setDepositStatus("timeout");
@@ -59,7 +61,7 @@ export default function DepositCallbackPage() {
       timer = setTimeout(poll, 5000);
     };
 
-    // First check after 2 s to give WestPay webhook time to fire
+    // Give WestPay webhook ~2 s to reach our server before first poll
     timer = setTimeout(poll, 2000);
     return () => clearTimeout(timer);
   }, [depositId, westpayStatus]);
@@ -74,12 +76,15 @@ export default function DepositCallbackPage() {
           Votre solde a été crédité avec succès.
         </p>
         {ref && (
-          <p className="text-xs text-gray-400 font-mono bg-gray-50 rounded-lg px-3 py-1">
+          <p className="text-xs text-gray-400 font-mono bg-gray-50 rounded-lg px-3 py-1.5">
             Réf : {ref}
           </p>
         )}
         <Link href="/deposit-history">
-          <button className="w-full py-3.5 rounded-full text-white font-bold shadow-md" style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)" }}>
+          <button
+            className="w-full py-3.5 rounded-full text-white font-bold shadow-md"
+            style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)" }}
+          >
             Voir mes dépôts
           </button>
         </Link>
@@ -99,10 +104,14 @@ export default function DepositCallbackPage() {
         <XCircle className="w-16 h-16 text-red-400 mx-auto" />
         <h1 className="text-xl font-bold text-gray-800">Paiement échoué</h1>
         <p className="text-gray-500 text-sm">
-          Votre paiement n'a pas pu être traité. Aucun montant n'a été débité de votre compte.
+          Votre paiement n'a pas pu être traité. Aucun montant n'a été débité
+          de votre compte.
         </p>
         <Link href="/deposit">
-          <button className="w-full py-3.5 rounded-full text-white font-bold shadow-md" style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)" }}>
+          <button
+            className="w-full py-3.5 rounded-full text-white font-bold shadow-md"
+            style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)" }}
+          >
             Réessayer
           </button>
         </Link>
@@ -122,15 +131,19 @@ export default function DepositCallbackPage() {
         <Headphones className="w-16 h-16 text-amber-400 mx-auto" />
         <h1 className="text-xl font-bold text-gray-800">En attente de confirmation</h1>
         <p className="text-gray-500 text-sm">
-          Votre paiement est en cours de traitement. Si votre solde n'est pas crédité dans 10 minutes, contactez le support avec votre référence de paiement.
+          Votre paiement est en cours de traitement. Si votre solde n'est pas
+          crédité dans 10 minutes, contactez le support avec votre référence.
         </p>
         {ref && (
-          <p className="text-xs text-gray-400 font-mono bg-gray-50 rounded-lg px-3 py-1">
+          <p className="text-xs text-gray-400 font-mono bg-gray-50 rounded-lg px-3 py-1.5">
             Réf : {ref}
           </p>
         )}
         <Link href="/service">
-          <button className="w-full py-3.5 rounded-full text-white font-bold shadow-md" style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)" }}>
+          <button
+            className="w-full py-3.5 rounded-full text-white font-bold shadow-md"
+            style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)" }}
+          >
             Contacter le support
           </button>
         </Link>
@@ -149,7 +162,8 @@ export default function DepositCallbackPage() {
       <Loader2 className="w-16 h-16 text-[#F59E0B] animate-spin mx-auto" />
       <h1 className="text-xl font-bold text-gray-800">Vérification en cours…</h1>
       <p className="text-gray-500 text-sm">
-        Nous confirmons votre paiement auprès de WestPay. Merci de patienter quelques secondes.
+        Nous confirmons votre paiement auprès de WestPay. Merci de patienter
+        quelques secondes.
       </p>
       <div className="flex gap-2 justify-center pt-1">
         {[0, 1, 2].map((i) => (
@@ -164,7 +178,6 @@ export default function DepositCallbackPage() {
   );
 }
 
-/* Shared layout wrapper */
 function Screen({ children }: { children: React.ReactNode }) {
   return (
     <div

@@ -46,7 +46,8 @@ export function buildPaymentUrl(
 
 /**
  * Verify the HMAC-SHA256 signature sent by WestPay on webhook calls.
- * bodyStr must be the raw request body as a string (not re-parsed JSON).
+ * bodyStr = raw request body string (preserved by express.json verify callback in server/index.ts).
+ * Matches the WestPay doc: HMAC-SHA256(rawBody, secret), constant-time comparison.
  */
 export function verifyWebhookSignature(
   bodyStr: string,
@@ -58,11 +59,16 @@ export function verifyWebhookSignature(
       .createHmac("sha256", secret)
       .update(bodyStr)
       .digest("hex");
-    // Use constant-time comparison to prevent timing attacks
-    return crypto.timingSafeEqual(
-      Buffer.from(signature.padEnd(64, "0"), "hex"),
-      Buffer.from(expected.padEnd(64, "0"), "hex")
-    );
+
+    // Both HMAC-SHA256 digests are exactly 64 hex chars = 32 bytes
+    const sigBuf = Buffer.from(signature, "hex");
+    const expBuf = Buffer.from(expected, "hex");
+
+    // Guard: lengths must match before timingSafeEqual (throws if not)
+    if (sigBuf.length !== expBuf.length || sigBuf.length === 0) {
+      return false;
+    }
+    return crypto.timingSafeEqual(sigBuf, expBuf);
   } catch {
     return false;
   }
