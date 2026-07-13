@@ -77,15 +77,15 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-full" style={{ background: "#f0f2f5" }}>
+    <div className="flex flex-col min-h-full" style={{ background: "#87CEEB" }}>
 
       {/* Header */}
       <div
         className="flex items-center justify-between px-4 py-3 shadow-sm"
-        style={{ background: "linear-gradient(135deg, #00A651 0%, #001a40 100%)" }}
+        style={{ background: "#87CEEB" }}
       >
-        <img src={vestasLogo} alt="SpolarPV" className="h-8 w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} />
-        <p className="text-white font-bold text-base">Nos Produits</p>
+        <img src={vestasLogo} alt="SpolarPV" className="h-8 w-auto object-contain" />
+        <p className="text-gray-800 font-bold text-base">Nos Produits</p>
         <button onClick={() => navigate("/service")} className="flex items-center justify-center" data-testid="button-service">
           <img src={serviceIcon} alt="Service client" className="w-8 h-8 object-contain" />
         </button>
