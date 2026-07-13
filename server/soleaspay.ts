@@ -36,13 +36,13 @@ export const SOLEASPAY_SERVICE_MAP: Record<string, Record<string, number>> = {
 };
 
 export const CURRENCY_MAP: Record<string, string> = {
-  CM: "XAF",
+  CM: "XOF",
   BF: "XOF",
   TG: "XOF",
   BJ: "XOF",
   CI: "XOF",
-  CG: "XAF",
-  CD: "CDF",
+  CG: "XOF",
+  CD: "XOF",
 };
 
 interface SoleaspayPaymentRequest {
@@ -98,7 +98,7 @@ export function getServiceId(country: string, paymentMethod: string): number | n
 }
 
 export function getCurrency(country: string): string {
-  return CURRENCY_MAP[country] || "XAF";
+  return CURRENCY_MAP[country] || "XOF";
 }
 
 export function isSoleaspaySupported(country: string, paymentMethod: string): boolean {

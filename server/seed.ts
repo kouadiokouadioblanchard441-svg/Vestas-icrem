@@ -64,7 +64,7 @@ export async function seed() {
     {
       code: "TD",
       name: "Tchad",
-      currency: "XAF",
+      currency: "XOF",
       phonePrefix: "235",
       operators: JSON.stringify(["Airtel Tchad", "Moov Africa Tchad"]),
       isActive: true,
@@ -72,7 +72,7 @@ export async function seed() {
     {
       code: "CM",
       name: "Cameroun",
-      currency: "XAF",
+      currency: "XOF",
       phonePrefix: "237",
       operators: JSON.stringify(["Orange Cameroun", "MTN Cameroun"]),
       isActive: true,
