@@ -139,7 +139,7 @@ export default function MyProductsPage() {
                   {/* Top header */}
                   <div
                     className="flex items-center justify-between px-4 py-2.5"
-                    style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+                    style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
                   >
                     <p className="text-white font-bold text-sm">{up.product?.name || "Produit"}</p>
                     <span className="text-white/70 text-xs">{formatDateTime(up.purchasedAt)}</span>
@@ -193,7 +193,7 @@ export default function MyProductsPage() {
                   {/* Bottom bar */}
                   <div
                     className="px-4 py-2.5 text-center text-white text-xs font-semibold"
-                    style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+                    style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
                   >
                     Revenus reçus : {currency} {earnedSoFar.toLocaleString("fr-FR")}
                   </div>
