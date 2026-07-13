@@ -149,8 +149,8 @@ export default function DepositPage() {
     }
   };
 
-  // WestPay countries = tout sauf Cameroun (CM), Tchad (TD) et Niger (NE)
-  const WESTPAY_EXCLUDED = ["CM", "TD", "NE"];
+  // WestPay countries = tout sauf Cameroun (CM)
+  const WESTPAY_EXCLUDED = ["CM"];
   const isWestpayEligible = westpayEnabled && !WESTPAY_EXCLUDED.includes(user?.country ?? "");
 
   const handleAmountNext = () => {
@@ -162,7 +162,7 @@ export default function DepositPage() {
       });
       return;
     }
-    // Pays WestPay (hors CM, TD, NE) → redirection directe sans passer par le step "select"
+    // Pays WestPay (hors CM) → redirection directe sans passer par le step "select"
     if (isWestpayEligible) {
       handleWestpay();
       return;

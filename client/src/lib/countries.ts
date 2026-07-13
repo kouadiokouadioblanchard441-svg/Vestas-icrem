@@ -1,13 +1,9 @@
 // Fallback country data (used if API not available)
 export const COUNTRIES = [
-  { code: "TD", name: "Tchad", flag: "TD", currency: "XOF", paymentMethods: ["Airtel Tchad", "Moov Africa Tchad"] },
-  { code: "NE", name: "Niger", flag: "NE", currency: "XOF", paymentMethods: ["NITA TRANSFERT", "AMANA TRANSFERT"] },
   { code: "CF", name: "Centrafrique", flag: "CF", currency: "XOF", paymentMethods: ["Telecel Centrafrique", "Orange Centrafrique"] },
 ];
 
 export const FALLBACK_COUNTRIES = [
-  { code: "TD", name: "Tchad", currency: "XOF", phonePrefix: "235", operators: ["Airtel Tchad", "Moov Africa Tchad"] },
-  { code: "NE", name: "Niger", currency: "XOF", phonePrefix: "227", operators: ["NITA TRANSFERT", "AMANA TRANSFERT"] },
   { code: "CF", name: "Centrafrique", currency: "XOF", phonePrefix: "236", operators: ["Telecel Centrafrique", "Orange Centrafrique"] },
 ];
 

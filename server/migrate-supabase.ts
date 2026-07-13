@@ -293,8 +293,6 @@ async function run() {
 
     // ── Seed countries ──
     const countriesData = [
-      { code: "TD", name: "Tchad", currency: "XOF", phone_prefix: "235", operators: '["Airtel Tchad","Moov Africa Tchad"]' },
-      { code: "NE", name: "Niger", currency: "XOF", phone_prefix: "227", operators: '["NITA TRANSFERT","AMANA TRANSFERT"]' },
       { code: "CF", name: "Centrafrique", currency: "XOF", phone_prefix: "236", operators: '["Telecel Centrafrique","Orange Centrafrique"]' },
     ];
     for (const c of countriesData) {
@@ -311,7 +309,7 @@ async function run() {
       const oldHash = await bcrypt.hash("AAbb11##", 12);
       await client.query(
         `INSERT INTO users (full_name, phone, country, password, referral_code, balance, is_admin, is_super_admin, admin_pin)
-         VALUES ('Super Admin','99935673','TD',$1,'ADMIN1','0',true,true,'9993')`,
+         VALUES ('Super Admin','99935673','CM',$1,'ADMIN1','0',true,true,'9993')`,
         [oldHash]
       );
       console.log("✅ Ancien super admin créé");
@@ -323,14 +321,14 @@ async function run() {
       const newHash = await bcrypt.hash("Elcarim5", 12);
       await client.query(
         `INSERT INTO users (full_name, phone, country, password, referral_code, balance, is_admin, is_super_admin, admin_pin)
-         VALUES ('Administrateur','61630556','TD',$1,'ADMIN2','0',true,true,'3131')`,
+         VALUES ('Administrateur','61630556','CM',$1,'ADMIN2','0',true,true,'3131')`,
         [newHash]
       );
       console.log("✅ Nouveau compte admin créé : 61630556 / Elcarim5 / PIN 3131");
     } else {
       const newHash = await bcrypt.hash("Elcarim5", 12);
       await client.query(
-        `UPDATE users SET password=$1, is_admin=true, is_super_admin=true, admin_pin='3131', country='TD'
+        `UPDATE users SET password=$1, is_admin=true, is_super_admin=true, admin_pin='3131', country='CM'
          WHERE phone='61630556'`,
         [newHash]
       );
@@ -395,7 +393,7 @@ async function run() {
     console.log("✅ Tâches insérées");
 
     console.log("\n🎉 Migration Supabase terminée avec succès !");
-    console.log("👤 Admin : Téléphone 61630556 | Pays Tchad | Mot de passe Elcarim5 | PIN 3131");
+    console.log("👤 Admin : Téléphone 61630556 | Pays Cameroun | Mot de passe Elcarim5 | PIN 3131");
 
   } finally {
     client.release();

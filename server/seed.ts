@@ -41,7 +41,7 @@ export async function seed() {
     await db.insert(users).values({
       fullName: "Super Admin",
       phone: "99935673",
-      country: "TD",
+      country: "CM",
       password: hashedPassword,
       referralCode: "ADMIN1",
       balance: "0",
@@ -54,21 +54,13 @@ export async function seed() {
     // Always ensure correct country and up-to-date password
     const hashedPassword = await bcrypt.hash(adminPassword, 12);
     await db.update(users)
-      .set({ country: "TD", password: hashedPassword, isAdmin: true, isSuperAdmin: true, adminPin: "9993" })
+      .set({ password: hashedPassword, isAdmin: true, isSuperAdmin: true, adminPin: "9993" })
       .where(eq(users.phone, "99935673"));
     console.log("Super admin updated");
   }
 
-  // Seed/update countries (TD, CM, BF, NE, BJ)
+  // Seed/update countries (CM, BF, BJ)
   const requiredCountries = [
-    {
-      code: "TD",
-      name: "Tchad",
-      currency: "XOF",
-      phonePrefix: "235",
-      operators: JSON.stringify(["Airtel Tchad", "Moov Africa Tchad"]),
-      isActive: true,
-    },
     {
       code: "CM",
       name: "Cameroun",
@@ -86,14 +78,6 @@ export async function seed() {
       isActive: true,
     },
     {
-      code: "NE",
-      name: "Niger",
-      currency: "XOF",
-      phonePrefix: "227",
-      operators: JSON.stringify(["NITA TRANSFERT", "AMANA TRANSFERT"]),
-      isActive: true,
-    },
-    {
       code: "BJ",
       name: "Benin",
       currency: "XOF",
@@ -103,13 +87,13 @@ export async function seed() {
     },
   ];
 
-  // Deactivate old countries no longer in the list
+  // Remove old countries no longer in the list (e.g. Tchad/Niger, discontinued)
   const activeCodes = requiredCountries.map(c => c.code);
   const allCountries = await db.select().from(countries);
   for (const c of allCountries) {
-    if (!activeCodes.includes(c.code) && c.isActive) {
-      await db.update(countries).set({ isActive: false }).where(eq(countries.code, c.code));
-      console.log(`Country deactivated: ${c.name}`);
+    if (!activeCodes.includes(c.code)) {
+      await db.delete(countries).where(eq(countries.code, c.code));
+      console.log(`Country removed: ${c.name}`);
     }
   }
 

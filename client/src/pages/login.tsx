@@ -34,7 +34,7 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
     defaultValues: {
       phone: parsedCredentials?.phone || "",
-      country: parsedCredentials?.country || "TD",
+      country: parsedCredentials?.country || "CM",
       password: parsedCredentials?.password || "",
     },
   });

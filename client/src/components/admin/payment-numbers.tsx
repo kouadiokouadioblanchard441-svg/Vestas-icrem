@@ -22,7 +22,7 @@ interface Country {
 
 const COUNTRY_FLAGS: Record<string, string> = {
   CM: "🇨🇲", BF: "🇧🇫", TG: "🇹🇬", BJ: "🇧🇯", CI: "🇨🇮", CG: "🇨🇬",
-  TD: "🇹🇩", NE: "🇳🇪", CD: "🇨🇩", CF: "🇨🇫",
+  CD: "🇨🇩", CF: "🇨🇫",
 };
 
 const emptyForm = { ownerName: "", phone: "", operatorName: "", country: "", logoUrl: "", isActive: true };

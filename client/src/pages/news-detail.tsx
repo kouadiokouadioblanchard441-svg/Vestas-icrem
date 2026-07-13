@@ -48,7 +48,7 @@ Investir dans SpolarPV, c'est choisir la technologie la plus avancée au monde a
       "SpolarPV accélère son développement en Afrique de l'Ouest et Centrale. Un plan ambitieux pour apporter l'énergie propre et des opportunités d'investissement à toute la région.",
     body: `SpolarPV annonce un plan d'expansion ambitieux pour l'Afrique francophone couvrant la période 2026–2027.
 
-Ce plan prévoit l'installation de 200 nouvelles fermes solaires dans des pays clés comme le Sénégal, la Côte d'Ivoire, le Tchad, le Cameroun et le Burkina Faso, pour une capacité totale de 690 MW.
+Ce plan prévoit l'installation de 200 nouvelles fermes solaires dans des pays clés comme le Sénégal, la Côte d'Ivoire, le Cameroun et le Burkina Faso, pour une capacité totale de 690 MW.
 
 L'objectif est double : contribuer à la transition énergétique du continent africain et offrir à nos investisseurs locaux des opportunités de rendement exceptionnelles, directement liées à la performance de nos installations.
 

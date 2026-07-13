@@ -199,11 +199,11 @@ export default function AdminCountries() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Code pays (ex: TD)</Label>
+                <Label>Code pays (ex: CM)</Label>
                 <Input
                   value={form.code}
                   onChange={e => setForm({ ...form, code: e.target.value.toUpperCase() })}
-                  placeholder="TD"
+                  placeholder="CM"
                   maxLength={3}
                   disabled={!!editingId}
                   required
@@ -227,7 +227,7 @@ export default function AdminCountries() {
               <Input
                 value={form.name}
                 onChange={e => setForm({ ...form, name: e.target.value })}
-                placeholder="Tchad"
+                placeholder="Cameroun"
                 required
                 data-testid="input-country-name"
               />
