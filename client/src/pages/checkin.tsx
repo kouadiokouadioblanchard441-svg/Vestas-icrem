@@ -66,7 +66,7 @@ export default function CheckinPage() {
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
-      <div className="flex-1 overflow-y-auto pb-24">
+      <div className="flex-1 overflow-y-auto pb-16">
 
         {/* Header */}
         <header className="flex items-center px-4 py-3 bg-white border-b border-gray-100">

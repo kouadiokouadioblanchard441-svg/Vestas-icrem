@@ -151,7 +151,7 @@ export default function TasksPage() {
       </div>
 
       {/* Tasks Section */}
-      <div className="mx-4 mt-4 mb-24">
+      <div className="mx-4 mt-4 mb-16">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Trophy className="w-4 h-4 text-[#16A34A]" />

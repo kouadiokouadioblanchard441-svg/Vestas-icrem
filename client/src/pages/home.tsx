@@ -187,7 +187,7 @@ export default function HomePage() {
         ))}
       </div>
 
-      <div className="pb-24" />
+      <div className="pb-16" />
     </div>
   );
 }

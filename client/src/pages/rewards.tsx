@@ -55,7 +55,7 @@ export default function RewardsPage() {
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
-      <div className="flex-1 overflow-y-auto pb-24">
+      <div className="flex-1 overflow-y-auto pb-16">
 
         <div className="relative px-4 pt-4 pb-6" style={{ background: "linear-gradient(180deg, #e3f2fd 0%, #f5f5f5 100%)" }}>
           <button onClick={() => navigate("/account")} className="mb-3" data-testid="button-back">

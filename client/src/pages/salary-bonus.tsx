@@ -54,7 +54,7 @@ export default function SalaryBonusPage() {
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-24 px-4 pt-4 space-y-3">
+      <div className="flex-1 overflow-y-auto pb-16 px-4 pt-4 space-y-3">
 
         {/* ── Stats card ── */}
         <div

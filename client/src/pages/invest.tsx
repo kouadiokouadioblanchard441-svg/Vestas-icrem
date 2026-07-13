@@ -70,7 +70,7 @@ export default function InvestPage() {
       </div>
 
       {/* Products grid */}
-      <div className="flex-1 overflow-y-auto pb-24 px-2 pt-3">
+      <div className="flex-1 overflow-y-auto pb-16 px-2 pt-3">
         {isLoading ? (
           <div className="grid grid-cols-2 gap-2">
             {Array(6).fill(0).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-2xl" />)}

@@ -89,7 +89,7 @@ export default function ProductsPage() {
       </div>
 
       {/* Products list */}
-      <div className="flex-1 overflow-y-auto pb-24 px-3 pt-3 space-y-3">
+      <div className="flex-1 overflow-y-auto pb-16 px-3 pt-3 space-y-3">
         {isLoading ? (
           <>
             {Array(5).fill(0).map((_, i) => (
