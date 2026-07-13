@@ -5,18 +5,9 @@ import { ChevronLeft, Loader2, Wind } from "lucide-react";
 import { Link } from "wouter";
 
 import heroBanner from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
-import productImg1 from "@assets/vestas_112v_closeup_1783210181172.jpg";
-import productImg2 from "@assets/vestas_112v_closeup_(1)_1783210181118.jpg";
-import productImg3 from "@assets/vestas_112v_closeup_(2)_1783210180090.jpg";
-import productImg4 from "@assets/images_(50)_1783210180466.jpeg";
-import productImg5 from "@assets/images_(41)_1783210181134.jpeg";
-import productImg6 from "@assets/images_(49)_1783210181155.jpeg";
-import productImg7 from "@assets/images_(40)_1783210181193.jpeg";
-import productImg8 from "@assets/images_(39)_1783210181215.jpeg";
+import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
 import iconWallet from "@assets/portefeuille-chaud-3d-icon-png-download-9878550_1783248791774.png";
 import iconRevenu from "@assets/3309927_1783248791847.png";
-
-const PRODUCT_IMAGES = [productImg1, productImg2, productImg3, productImg4, productImg5, productImg6, productImg7, productImg8];
 
 export default function MyProductsPage() {
   const { user } = useAuth();
@@ -122,7 +113,7 @@ export default function MyProductsPage() {
               <p className="text-gray-400 text-sm">Achetez des produits pour commencer à gagner</p>
             </div>
           ) : (
-            allProducts.map((up: any, index: number) => {
+            allProducts.map((up: any) => {
               const cycleDays = up.product?.cycleDays || 60;
               const daysRemaining = up.daysRemaining || 0;
               const daysCompleted = Math.max(0, cycleDays - daysRemaining);
@@ -149,7 +140,7 @@ export default function MyProductsPage() {
                   <div className="flex items-center gap-3 p-4">
                     <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
                       <img
-                        src={PRODUCT_IMAGES[index % PRODUCT_IMAGES.length]}
+                        src={up.product?.imageUrl || productImgFallback}
                         alt={up.product?.name || "Produit"}
                         className="w-full h-full object-cover"
                       />

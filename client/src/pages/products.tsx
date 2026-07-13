@@ -11,16 +11,7 @@ import type { Product } from "@shared/schema";
 
 const vestasLogo = "/spolarpv-logo.png";
 import serviceIcon from "@assets/20260311_214852_1773265973964.png";
-import productImg1 from "@assets/vestas_112v_closeup_1783210181172.jpg";
-import productImg2 from "@assets/vestas_112v_closeup_(1)_1783210181118.jpg";
-import productImg3 from "@assets/vestas_112v_closeup_(2)_1783210180090.jpg";
-import productImg4 from "@assets/images_(50)_1783210180466.jpeg";
-import productImg5 from "@assets/images_(41)_1783210181134.jpeg";
-import productImg6 from "@assets/images_(49)_1783210181155.jpeg";
-import productImg7 from "@assets/images_(40)_1783210181193.jpeg";
-import productImg8 from "@assets/images_(39)_1783210181215.jpeg";
-
-const PRODUCT_IMAGES = [productImg1, productImg2, productImg3, productImg4, productImg5, productImg6, productImg7, productImg8];
+import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
 
 interface ProductWithOwnership extends Product {
   isOwned: boolean;
@@ -106,8 +97,8 @@ export default function ProductsPage() {
             ))}
           </>
         ) : paidProducts.length > 0 ? (
-          paidProducts.map((product, idx) => {
-            const img = PRODUCT_IMAGES[idx % PRODUCT_IMAGES.length];
+          paidProducts.map((product) => {
+            const img = product.imageUrl || productImgFallback;
             const isPending = purchaseMutation.isPending;
             return (
               <div

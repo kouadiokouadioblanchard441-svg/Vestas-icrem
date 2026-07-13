@@ -20,3 +20,8 @@ The SpolarPV client (French-language solar investment app) was re-themed away fr
 Added `countries.autoPaymentEnabled` (boolean, default false) so admins choose per-country whether deposits are automatic (WestPay) or manual (payment numbers), instead of a hardcoded country exclusion list.
 **Why:** the old logic hardcoded `WESTPAY_EXCLUDED = ["CM"]` in deposit.tsx, which wasn't admin-configurable and didn't scale as countries are added/removed.
 **How to apply:** gating requires BOTH `platform_settings.westpayEnabled === "true"` (global switch) AND the user's country row having `autoPaymentEnabled = true`. Enforced in both the frontend (`isWestpayEligible` in deposit.tsx, controls whether "Rechargez maintenant" redirects straight to WestPay vs. shows manual operator selection) and the backend (`/api/deposits/westpay/initiate` re-checks both before issuing a WestPay URL, since frontend gating alone is bypassable). `WESTPAY_WEBHOOK_SECRET` must also be set for automatic confirmation to actually complete (webhook silently no-ops without it).
+
+## Product images were bypassing admin edits (fixed 2026-07-13)
+`products.tsx`, `my-products.tsx`, and `invest.tsx` displayed products via a hardcoded static image array indexed by position, completely ignoring the `imageUrl` field editable in Admin > Produits.
+**Why:** the admin form always saved `imageUrl` correctly to the DB, but the storefront pages never read it — so uploading a new product image in the admin panel had zero visible effect for users.
+**How to apply:** any product image anywhere in the app must render `product.imageUrl || <fallback>`, never a static array indexed by position/sortOrder. Check for reintroduced `PRODUCT_IMAGES`-style arrays if this bug resurfaces.
