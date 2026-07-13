@@ -93,6 +93,10 @@ Preferred communication style: Simple, everyday language.
 - `DATABASE_URL`: PostgreSQL connection string
 - `SESSION_SECRET`: Secret for session encryption (optional, has fallback)
 
+## Recent Changes (July 2026)
+- Re-imported project: installed dependencies, pushed DB schema (`npm run db:push --force`), confirmed the `Start application` workflow seeds data and serves on port 5000
+- Fixed a leftover-from-rebranding bug: `client/src/pages/tasks.tsx` referenced an undefined `landscapeImg` (missing import); added the same import used elsewhere (`@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp`)
+
 ## Recent Changes (February 2026)
 - Deposit system now uses dual approach: Soleaspay (automatic) per-country OR manual recharge channels
 - Admin can enable Soleaspay globally and select specific countries for automatic payment

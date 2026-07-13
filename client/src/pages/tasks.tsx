@@ -8,6 +8,7 @@ import { ChevronLeft, Loader2, Trophy, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import type { Task } from "@shared/schema";
 import jollibeeImg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
+import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 import jollibeeLogo from "@assets/vestas-logo_1783210030332.png";
 import iconBronze from "@assets/344464_1773318022355.png";
 import iconArgent from "@assets/817729_1773318022328.png";
@@ -269,7 +270,6 @@ export default function TasksPage() {
           </div>
         )}
       </div>
-      <img src={landscapeImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }
