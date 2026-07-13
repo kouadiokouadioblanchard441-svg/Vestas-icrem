@@ -51,7 +51,7 @@ export default function SalaryBonusPage() {
         {/* ── Stats card ── */}
         <div
           className="rounded-2xl px-6 py-5 flex items-center"
-          style={{ background: "linear-gradient(120deg, #003087, #0047AB)" }}
+          style={{ background: "linear-gradient(120deg, #00A651, #00C853)" }}
         >
           <div className="flex-1 text-center">
             <p className="text-white font-extrabold text-2xl">{currency} {totalCommission.toFixed(0)}</p>
@@ -80,7 +80,7 @@ export default function SalaryBonusPage() {
               {/* Purple left bar */}
               <div
                 className="flex items-center justify-center px-4 py-5"
-                style={{ background: "linear-gradient(160deg, #003087, #0047AB)", minWidth: 72 }}
+                style={{ background: "linear-gradient(160deg, #00A651, #00C853)", minWidth: 72 }}
               >
                 <p className="text-white font-extrabold text-lg">Lv{lv}</p>
               </div>
@@ -89,7 +89,7 @@ export default function SalaryBonusPage() {
               <div className="flex-1 px-4 py-4">
                 <p className="text-gray-700 text-xs text-center leading-snug mb-3">
                   Invitez <span className="font-bold text-gray-900">{required}</span> investisseurs de niveau 1 pour obtenir :{" "}
-                  <span className="font-bold" style={{ color: "#0047AB" }}>{currency} {reward.toLocaleString()}</span>
+                  <span className="font-bold" style={{ color: "#00A651" }}>{currency} {reward.toLocaleString()}</span>
                 </p>
 
                 {/* Stats row */}
@@ -114,7 +114,7 @@ export default function SalaryBonusPage() {
                     className="h-full rounded-full transition-all"
                     style={{
                       width: `${(progress / required) * 100}%`,
-                      background: "linear-gradient(90deg, #0047AB, #1a6fd4)",
+                      background: "linear-gradient(90deg, #00C853, #4ADE80)",
                     }}
                   />
                 </div>
@@ -123,7 +123,7 @@ export default function SalaryBonusPage() {
                 <button
                   className="w-full py-2.5 rounded-xl text-sm font-bold transition-all"
                   style={reached
-                    ? { background: "linear-gradient(90deg, #003087, #0047AB)", color: "#fff" }
+                    ? { background: "linear-gradient(90deg, #00A651, #00C853)", color: "#fff" }
                     : { background: "#F3F4F6", color: "#6B7280" }
                   }
                   data-testid={`button-level-${lv}`}
