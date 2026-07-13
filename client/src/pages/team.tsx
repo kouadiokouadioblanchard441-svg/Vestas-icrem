@@ -273,9 +273,39 @@ export default function TeamPage() {
         </div>
 
         {/* ── Info ── */}
-        <div className="bg-white rounded-2xl shadow-sm px-5 py-4 text-sm text-gray-600 leading-relaxed space-y-2">
-          <p>Invitez un ami → il investit → vous recevez <span className="font-bold text-[#003087]">{lv1Rate}%</span> de son investissement.</p>
-          <p>Niveau 2 : <span className="font-bold text-[#003087]">{lv2Rate}%</span> — Niveau 3 : <span className="font-bold text-[#003087]">{lv3Rate}%</span></p>
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+          <div className="px-5 py-3.5 flex items-center gap-2.5" style={{ background: "linear-gradient(135deg, #F4920A, #D97A00)" }}>
+            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+              <img src={teamIcon} alt="" className="w-4.5 h-4.5 object-contain" />
+            </div>
+            <h3 className="text-white font-bold text-sm">Comment fonctionne le parrainage</h3>
+          </div>
+
+          <div className="px-5 py-4 space-y-3">
+            <div className="flex items-start gap-3 pb-3 border-b border-gray-100">
+              <span className="w-6 h-6 rounded-full bg-[#F4920A]/10 text-[#F4920A] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Invitez un ami → il investit → vous recevez{" "}
+                <span className="font-bold text-[#F4920A]">{lv1Rate}%</span> de son investissement.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="w-6 h-6 rounded-full bg-[#F4920A]/10 text-[#F4920A] text-xs font-bold flex items-center justify-center shrink-0">2</span>
+                <p className="text-sm text-gray-600">Niveau 2</p>
+              </div>
+              <span className="text-sm font-bold text-[#F4920A]">{lv2Rate}%</span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="w-6 h-6 rounded-full bg-[#F4920A]/10 text-[#F4920A] text-xs font-bold flex items-center justify-center shrink-0">3</span>
+                <p className="text-sm text-gray-600">Niveau 3</p>
+              </div>
+              <span className="text-sm font-bold text-[#F4920A]">{lv3Rate}%</span>
+            </div>
+          </div>
         </div>
 
       </div>
