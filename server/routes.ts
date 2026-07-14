@@ -952,12 +952,14 @@ export async function registerRoutes(
         return res.json({ received: true });
       }
 
-      // Approve and credit user balance
-      await storage.updateDeposit(deposit.id, {
-        status: "approved",
-        reference: txId,
-        processedAt: new Date(),
-      });
+      // Atomically claim the deposit (processing -> approved). If another
+      // request already claimed it (e.g. WestPay retried the webhook), this
+      // returns undefined and we must NOT credit the balance again.
+      const approved = await storage.approveWestpayDeposit(deposit.id, txId);
+      if (!approved) {
+        console.log(`[westpay webhook] Deposit #${deposit.id} already processed — ignoring duplicate webhook (txId=${txId})`);
+        return res.json({ received: true });
+      }
 
       const user = await storage.getUser(deposit.userId);
       if (user) {

@@ -41,6 +41,7 @@ export interface IStorage {
   getUserDeposits(userId: number): Promise<Deposit[]>;
   updateDeposit(id: number, data: Partial<Deposit>): Promise<Deposit>;
   findProcessingWestpayDeposit(amount: number, payerPhone?: string): Promise<Deposit | undefined>;
+  approveWestpayDeposit(id: number, txId: string): Promise<Deposit | undefined>;
   cleanupDepositScreenshots(): Promise<void>;
   
   // Withdrawals
@@ -554,6 +555,18 @@ export class DatabaseStorage implements IStorage {
       ))
       .orderBy(desc(deposits.createdAt))
       .limit(1);
+    return deposit;
+  }
+
+  // Atomically flips a deposit from "processing" -> "approved" only if it is
+  // still "processing". Returns undefined if another request already claimed
+  // it (e.g. a WestPay webhook retry / duplicate delivery), which prevents
+  // double-crediting the user's balance.
+  async approveWestpayDeposit(id: number, txId: string): Promise<Deposit | undefined> {
+    const [deposit] = await db.update(deposits)
+      .set({ status: "approved", reference: txId, processedAt: new Date() })
+      .where(and(eq(deposits.id, id), eq(deposits.status, "processing")))
+      .returning();
     return deposit;
   }
 
