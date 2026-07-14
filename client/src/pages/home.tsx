@@ -1,19 +1,122 @@
 import { useAuth } from "@/lib/auth";
 import { SiTelegram } from "react-icons/si";
 import { useLocation } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { NEWS_ARTICLES } from "@/pages/news-detail";
 import { getContent } from "@/lib/content";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const jollibeeLogo = "/spolarpv-logo.png";
-import heroImg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
 import bellIcon from "@assets/d7d9f6f6-dddc-4071-8bc2-d6e7e589fbae_(1)_1783248684110.png";
 import iconRecharger from "@assets/1-1_1783245823715.png";
 import iconRetraits from "@assets/2-1_1783245823825.png";
 import iconService from "@assets/3-1_1783245823860.png";
 
+// 7 real SpolarPV exhibition photos (from spolarpv.com official)
+const BANNER_SLIDES = [
+  { src: "/banner/banner1.jpg", label: "SpolarPV — SNEC Shanghai 2024" },
+  { src: "/banner/banner2.jpg", label: "SpolarPV — Thailand ASEW Expo" },
+  { src: "/banner/banner4.jpg", label: "SpolarPV — Future Energy Africa" },
+  { src: "/banner/banner5.jpg", label: "SpolarPV — Future Energy Show" },
+  { src: "/banner/banner6.jpg", label: "SpolarPV — Future Energy Show" },
+  { src: "/banner/banner7.jpg", label: "SpolarPV — International Meeting" },
+  { src: "/banner/banner3.jpg", label: "SpolarPV — Elmia Solar Sweden" },
+];
+
 const DARK_ICON = { filter: "brightness(0) saturate(100%)" } as React.CSSProperties;
+
+function HeroBanner() {
+  const [current, setCurrent] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const total = BANNER_SLIDES.length;
+
+  const next = useCallback(() => setCurrent(c => (c + 1) % total), [total]);
+  const prev = useCallback(() => setCurrent(c => (c - 1 + total) % total), [total]);
+
+  // Touch swipe support
+  const touchStartX = useRef<number | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    if (dx < -40) next();
+    else if (dx > 40) prev();
+    touchStartX.current = null;
+  };
+
+  useEffect(() => {
+    timerRef.current = setInterval(next, 4000);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [next]);
+
+  const resetTimer = (fn: () => void) => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    fn();
+    timerRef.current = setInterval(next, 4000);
+  };
+
+  return (
+    <div
+      className="relative w-full overflow-hidden rounded-2xl shadow-md"
+      style={{ height: 210 }}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
+      {/* Slides */}
+      <div
+        className="flex h-full transition-transform duration-500 ease-in-out"
+        style={{ transform: `translateX(-${current * 100}%)`, width: `${total * 100}%` }}
+      >
+        {BANNER_SLIDES.map((slide, i) => (
+          <div key={i} className="relative flex-shrink-0 h-full" style={{ width: `${100 / total}%` }}>
+            <img src={slide.src} alt={slide.label} className="w-full h-full object-cover" />
+            {/* Gradient overlay + label */}
+            <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%)" }} />
+            <p className="absolute bottom-3 left-3 right-3 text-white text-xs font-semibold drop-shadow leading-tight">
+              {slide.label}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Prev / Next arrows */}
+      <button
+        onClick={() => resetTimer(prev)}
+        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full flex items-center justify-center"
+        style={{ background: "rgba(0,0,0,0.35)", width: 28, height: 28 }}
+        aria-label="Précédent"
+      >
+        <ChevronLeft className="w-4 h-4 text-white" />
+      </button>
+      <button
+        onClick={() => resetTimer(next)}
+        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full flex items-center justify-center"
+        style={{ background: "rgba(0,0,0,0.35)", width: 28, height: 28 }}
+        aria-label="Suivant"
+      >
+        <ChevronRight className="w-4 h-4 text-white" />
+      </button>
+
+      {/* Dot indicators */}
+      <div className="absolute bottom-2 right-3 flex gap-1">
+        {BANNER_SLIDES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => resetTimer(() => setCurrent(i))}
+            className="rounded-full transition-all duration-300"
+            style={{
+              width: i === current ? 18 : 6,
+              height: 6,
+              background: i === current ? "#fff" : "rgba(255,255,255,0.45)",
+            }}
+            aria-label={`Slide ${i + 1}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -121,11 +224,9 @@ export default function HomePage() {
         <img src={jollibeeLogo} alt="SpolarPV" className="h-10 w-auto object-contain" />
       </div>
 
-      {/* ── Hero Banner ── */}
+      {/* ── Hero Banner (carrousel défilant) ── */}
       <div className="mx-3 mt-2">
-        <div className="relative w-full rounded-2xl overflow-hidden" style={{ height: 210 }}>
-          <img src={heroImg} alt="SpolarPV" className="w-full h-full object-cover" />
-        </div>
+        <HeroBanner />
       </div>
 
       {/* ── Quick Actions ── */}
