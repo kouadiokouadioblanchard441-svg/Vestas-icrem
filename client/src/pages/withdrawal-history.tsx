@@ -16,7 +16,7 @@ interface Withdrawal {
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string }> = {
   approved: { label: "Succès",     bg: "bg-gray-900",         text: "text-white" },
-  pending:  { label: "En attente", bg: "bg-green-500",        text: "text-white" },
+  pending:  { label: "En attente", bg: "bg-red-600",           text: "text-white" },
   rejected: { label: "Rejeté",     bg: "bg-red-600",           text: "text-white" },
 };
 
@@ -64,12 +64,12 @@ export default function WithdrawalHistoryPage() {
             return (
               <div key={w.id} className="bg-white rounded-2xl overflow-hidden shadow-sm">
                 {/* Red top bar */}
-                <div className="h-3 rounded-t-2xl" style={{ backgroundColor: "#F59E0B" }} />
+                <div className="h-3 rounded-t-2xl" style={{ backgroundColor: "#ff0000" }} />
 
                 <div className="px-5 py-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-500 text-sm">Montant</span>
-                    <span className="text-[#F59E0B] font-bold text-base">
+                    <span className="font-bold text-base" style={{ color: "#ff0000" }}>
                       {parseFloat(w.amount).toLocaleString()}
                     </span>
                   </div>
