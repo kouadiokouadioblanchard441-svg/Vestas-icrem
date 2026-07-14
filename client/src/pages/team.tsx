@@ -213,7 +213,7 @@ export default function TeamPage() {
             {/* Card Lv1 */}
             <div className="relative rounded-2xl overflow-hidden" style={{ height: 160 }} data-testid="card-progress-lv1">
               <img src={solarPanelImg} alt="Lv1" className="absolute inset-0 w-full h-full object-cover" />
-              <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(91,33,182,0.85) 0%, rgba(0,0,0,0.1) 60%)" }} />
+              <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,100,40,0.88) 0%, rgba(0,0,0,0.10) 60%)" }} />
               <div className="absolute inset-0 p-3 flex flex-col justify-between">
                 <span className="text-white font-extrabold text-xs bg-green-900/60 px-2 py-0.5 rounded-full w-fit">VIP1</span>
                 <div>
@@ -240,7 +240,7 @@ export default function TeamPage() {
               {/* Lv2 */}
               <div className="relative rounded-2xl overflow-hidden" style={{ height: 74 }} data-testid="card-progress-lv2">
                 <img src={solarPanelImg} alt="Lv2" className="absolute inset-0 w-full h-full object-cover" />
-                <div className="absolute inset-0" style={{ background: "rgba(91,33,182,0.65)" }} />
+                <div className="absolute inset-0" style={{ background: "rgba(0,100,40,0.72)" }} />
                 <div className="absolute inset-0 p-2.5 flex flex-col justify-between">
                   <span className="text-white font-extrabold text-xs">VIP2</span>
                   <div className="flex justify-between items-end">
@@ -259,7 +259,7 @@ export default function TeamPage() {
               {/* Lv3 */}
               <div className="relative rounded-2xl overflow-hidden" style={{ height: 74 }} data-testid="card-progress-lv3">
                 <img src={solarPanelImg} alt="Lv3" className="absolute inset-0 w-full h-full object-cover" />
-                <div className="absolute inset-0" style={{ background: "rgba(124,58,237,0.65)" }} />
+                <div className="absolute inset-0" style={{ background: "rgba(31,41,55,0.72)" }} />
                 <div className="absolute inset-0 p-2.5 flex flex-col justify-between">
                   <span className="text-white font-extrabold text-xs">VIP3</span>
                   <div className="flex justify-between items-end">
