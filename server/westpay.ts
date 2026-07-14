@@ -23,39 +23,29 @@ export function getWestpayCountry(countryCode: string): string | null {
 }
 
 /**
- * Per-country credentials loaded from environment variables.
- * WESTPAY_SLUG_CM  → merchant slug for Cameroun
- * WESTPAY_KEY_CM   → API key for Cameroun
- * etc.
+ * Returns the per-country API key from environment variables.
+ * e.g. WESTPAY_KEY_CM, WESTPAY_KEY_BF, etc.
  */
-export interface WestpayCountryConfig {
-  slug: string;
-  apiKey: string;
-}
-
-export function getCountryConfig(countryCode: string): WestpayCountryConfig | null {
-  const code = countryCode.toUpperCase();
-  const slug = process.env[`WESTPAY_SLUG_${code}`];
-  const apiKey = process.env[`WESTPAY_KEY_${code}`];
-  if (!slug || !apiKey) return null;
-  return { slug, apiKey };
+export function getCountryApiKey(countryCode: string): string | null {
+  return process.env[`WESTPAY_KEY_${countryCode.toUpperCase()}`] || null;
 }
 
 /**
  * Build the hosted WestPay payment URL.
- * Uses the per-country merchant slug and API key.
+ * One shared merchant slug, one API key per country.
  * redirectUrl is where WestPay sends the user back after payment, with
  * ?status=success|failed&amount=XXX&ref=OP-abc appended.
  */
 export function buildPaymentUrl(
-  config: WestpayCountryConfig,
+  merchantSlug: string,
+  apiKey: string,
   amount: number,
   countryCode: string,
   redirectUrl: string
 ): string {
   const url = new URL(`${WESTPAY_BASE}/pay`);
-  url.searchParams.set("merchant", config.slug);
-  url.searchParams.set("api_key", config.apiKey);
+  url.searchParams.set("merchant", merchantSlug);
+  url.searchParams.set("api_key", apiKey);
   url.searchParams.set("amount", amount.toString());
   const country = getWestpayCountry(countryCode);
   if (country) url.searchParams.set("country", country);
@@ -66,7 +56,6 @@ export function buildPaymentUrl(
 /**
  * Verify the HMAC-SHA256 signature sent by WestPay on webhook calls.
  * bodyStr = raw request body string (preserved by express.json verify callback in server/index.ts).
- * Matches the WestPay doc: HMAC-SHA256(rawBody, secret), constant-time comparison.
  */
 export function verifyWebhookSignature(
   bodyStr: string,
@@ -79,11 +68,9 @@ export function verifyWebhookSignature(
       .update(bodyStr)
       .digest("hex");
 
-    // Both HMAC-SHA256 digests are exactly 64 hex chars = 32 bytes
     const sigBuf = Buffer.from(signature, "hex");
     const expBuf = Buffer.from(expected, "hex");
 
-    // Guard: lengths must match before timingSafeEqual (throws if not)
     if (sigBuf.length !== expBuf.length || sigBuf.length === 0) {
       return false;
     }

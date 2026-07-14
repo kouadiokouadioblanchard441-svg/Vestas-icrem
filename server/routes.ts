@@ -13,7 +13,7 @@ import {
   mapSoleaspayStatus,
   SOLEASPAY_SERVICE_MAP 
 } from "./soleaspay";
-import { buildPaymentUrl, verifyWebhookSignature, getCountryConfig } from "./westpay";
+import { buildPaymentUrl, verifyWebhookSignature, getCountryApiKey } from "./westpay";
 
 // --- Brute-force protection (in-memory) ---
 const loginAttempts = new Map<string, { count: number; blockedUntil: number }>();
@@ -873,9 +873,13 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Le paiement automatique n'est pas disponible pour votre pays" });
       }
 
-      // Load per-country credentials (slug + API key)
-      const countryConfig = getCountryConfig(user.country);
-      if (!countryConfig) {
+      // Load shared merchant slug + per-country API key
+      const merchantSlug = process.env.WESTPAY_MERCHANT_SLUG;
+      if (!merchantSlug) {
+        return res.status(500).json({ message: "WestPay non configuré (slug manquant)" });
+      }
+      const countryApiKey = getCountryApiKey(user.country);
+      if (!countryApiKey) {
         return res.status(500).json({ message: `WestPay non configuré pour ce pays (${user.country})` });
       }
 
@@ -898,7 +902,7 @@ export async function registerRoutes(
         ? `https://${process.env.REPLIT_DEV_DOMAIN}`
         : `https://${req.headers.host}`;
       const redirectUrl = `${baseUrl}/deposit-callback/${deposit.id}`;
-      const westpayUrl = buildPaymentUrl(countryConfig, Number(amount), user.country, redirectUrl);
+      const westpayUrl = buildPaymentUrl(merchantSlug, countryApiKey, Number(amount), user.country, redirectUrl);
 
       console.log(`[westpay] Deposit #${deposit.id} initiated for user ${user.id}, amount ${amount}`);
       return res.json({ depositId: deposit.id, westpayUrl });
