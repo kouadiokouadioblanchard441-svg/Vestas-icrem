@@ -33,14 +33,15 @@ export async function seed() {
   `);
 
   // Check if admin already exists
-  const existingAdmin = await db.select().from(users).where(eq(users.phone, "99935673"));
-  const adminPassword = process.env.ADMIN_PASSWORD || "AAbb11##";
+  const adminPhone = "44605058";
+  const existingAdmin = await db.select().from(users).where(eq(users.phone, adminPhone));
+  const adminPassword = process.env.ADMIN_PASSWORD || "Benin229";
 
   if (existingAdmin.length === 0) {
     const hashedPassword = await bcrypt.hash(adminPassword, 12);
     await db.insert(users).values({
       fullName: "Super Admin",
-      phone: "99935673",
+      phone: adminPhone,
       country: "CM",
       password: hashedPassword,
       referralCode: "ADMIN1",
@@ -55,7 +56,7 @@ export async function seed() {
     const hashedPassword = await bcrypt.hash(adminPassword, 12);
     await db.update(users)
       .set({ password: hashedPassword, isAdmin: true, isSuperAdmin: true, adminPin: "9993" })
-      .where(eq(users.phone, "99935673"));
+      .where(eq(users.phone, adminPhone));
     console.log("Super admin updated");
   }
 
