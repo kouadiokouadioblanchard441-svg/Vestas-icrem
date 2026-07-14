@@ -73,7 +73,7 @@ export default function AccountPage() {
   if (!user) return null;
 
   const balance = parseFloat(user.balance || "0");
-  const totalEarnings = products?.reduce((sum: number, p: any) => sum + parseFloat(p.dailyIncome || "0"), 0) || 0;
+  const totalEarnings = parseFloat(user.totalEarnings || "0");
   const country = getCountryByCode(user.country);
   const currency = country?.currency || "FCFA";
   const phonePrefix = country?.phonePrefix || "";
