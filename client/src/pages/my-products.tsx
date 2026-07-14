@@ -176,7 +176,7 @@ export default function MyProductsPage() {
                     <div className="w-full bg-gray-100 rounded-full h-2">
                       <div
                         className="h-2 rounded-full"
-                        style={{ width: `${progress}%`, background: "linear-gradient(90deg, #F59E0B, #FBBF24)" }}
+                        style={{ width: `${progress}%`, background: "#00A651" }}
                       />
                     </div>
                   </div>
