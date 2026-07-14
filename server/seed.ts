@@ -88,6 +88,24 @@ export async function seed() {
       isActive: true,
       autoPaymentEnabled: false,
     },
+    {
+      code: "CI",
+      name: "Côte d'Ivoire",
+      currency: "XOF",
+      phonePrefix: "225",
+      operators: JSON.stringify(["Orange CI", "MTN CI", "Moov Africa CI"]),
+      isActive: true,
+      autoPaymentEnabled: false,
+    },
+    {
+      code: "TG",
+      name: "Togo",
+      currency: "XOF",
+      phonePrefix: "228",
+      operators: JSON.stringify(["Togocel", "Moov Africa Togo"]),
+      isActive: true,
+      autoPaymentEnabled: false,
+    },
   ];
 
   // Remove old countries no longer in the list (e.g. Tchad/Niger, discontinued)
