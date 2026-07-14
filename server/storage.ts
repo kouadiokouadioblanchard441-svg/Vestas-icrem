@@ -42,7 +42,6 @@ export interface IStorage {
   updateDeposit(id: number, data: Partial<Deposit>): Promise<Deposit>;
   findProcessingWestpayDeposit(amount: number): Promise<Deposit | undefined>;
   cleanupDepositScreenshots(): Promise<void>;
-  processDepositReferralCommissions(userId: number, amount: number): Promise<void>;
   
   // Withdrawals
   createWithdrawal(data: Partial<Withdrawal>): Promise<Withdrawal>;
@@ -338,8 +337,8 @@ export class DatabaseStorage implements IStorage {
     if (!user || !user.referredBy) return;
 
     const settings = await this.getSettings();
-    const level1Rate = parseFloat(settings.level1Commission || "27") / 100;
-    const level2Rate = parseFloat(settings.level2Commission || "2") / 100;
+    const level1Rate = parseFloat(settings.level1Commission || "25") / 100;
+    const level2Rate = parseFloat(settings.level2Commission || "1") / 100;
     const level3Rate = parseFloat(settings.level3Commission || "1") / 100;
 
     // Level 1
@@ -560,67 +559,6 @@ export class DatabaseStorage implements IStorage {
       );
   }
 
-  async processDepositReferralCommissions(userId: number, amount: number): Promise<void> {
-    const user = await this.getUser(userId);
-    if (!user || !user.referredBy) return;
-
-    const settings = await this.getSettings();
-    const level1Rate = parseFloat(settings.depositCommissionLevel1 || "5") / 100;
-    const level2Rate = parseFloat(settings.depositCommissionLevel2 || "2") / 100;
-    const level3Rate = parseFloat(settings.depositCommissionLevel3 || "1") / 100;
-
-    const level1User = await this.getUserByReferralCode(user.referredBy);
-    if (level1User) {
-      const commission = Math.round(amount * level1Rate);
-      if (commission > 0) {
-        await this.updateUser(level1User.id, {
-          balance: (parseFloat(level1User.balance) + commission).toFixed(2),
-        });
-        await this.createTransaction({
-          userId: level1User.id,
-          type: "deposit_commission",
-          amount: commission.toString(),
-          description: `Commission depot niveau 1`,
-        });
-      }
-
-      if (level1User.referredBy) {
-        const level2User = await this.getUserByReferralCode(level1User.referredBy);
-        if (level2User) {
-          const comm2 = Math.round(amount * level2Rate);
-          if (comm2 > 0) {
-            await this.updateUser(level2User.id, {
-              balance: (parseFloat(level2User.balance) + comm2).toFixed(2),
-            });
-            await this.createTransaction({
-              userId: level2User.id,
-              type: "deposit_commission",
-              amount: comm2.toString(),
-              description: `Commission depot niveau 2`,
-            });
-          }
-
-          if (level2User.referredBy) {
-            const level3User = await this.getUserByReferralCode(level2User.referredBy);
-            if (level3User) {
-              const comm3 = Math.round(amount * level3Rate);
-              if (comm3 > 0) {
-                await this.updateUser(level3User.id, {
-                  balance: (parseFloat(level3User.balance) + comm3).toFixed(2),
-                });
-                await this.createTransaction({
-                  userId: level3User.id,
-                  type: "deposit_commission",
-                  amount: comm3.toString(),
-                  description: `Commission depot niveau 3`,
-                });
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 
   // Withdrawals
   async createWithdrawal(data: Partial<Withdrawal>): Promise<Withdrawal> {

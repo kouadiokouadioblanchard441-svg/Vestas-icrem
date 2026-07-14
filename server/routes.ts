@@ -815,7 +815,6 @@ export async function registerRoutes(
                   description: `Depot Soleaspay #${deposit.id}`,
                 });
 
-                await storage.processDepositReferralCommissions(deposit.userId, deposit.amount);
               }
             }
           }
@@ -969,7 +968,6 @@ export async function registerRoutes(
           amount: deposit.amount.toString(),
           description: `Dépôt WestPay #${deposit.id} (${txId})`,
         });
-        await storage.processDepositReferralCommissions(deposit.userId, deposit.amount);
       }
 
       console.log(`[westpay webhook] Deposit #${deposit.id} approved — user ${deposit.userId} +${deposit.amount}`);
