@@ -941,26 +941,28 @@ export async function registerRoutes(
       const bodyStr = rawBody ? rawBody.toString("utf8") : JSON.stringify(req.body);
 
       if (!signature || !verifyWebhookSignature(bodyStr, signature, webhookSecret)) {
-        console.error("[westpay webhook] Invalid HMAC signature — rejecting");
+        console.error(`[westpay webhook] Invalid HMAC signature — rejecting. event=${event} bodyLen=${bodyStr.length} sigPresent=${!!signature}`);
         return res.status(401).json({ error: "Signature invalide" });
       }
 
       if (event !== "payment.confirmed") {
+        console.log(`[westpay webhook] Ignoring event=${event} (not payment.confirmed)`);
         return res.json({ received: true });
       }
 
       // req.body is already parsed by express.json()
-      const { txId, amount, payer } = req.body as {
-        txId: string; amount: number; payer: string;
+      const { txId, amount, payer, country, merchantSlug } = req.body as {
+        txId: string; amount: number; payer: string; country?: string; merchantSlug?: string;
       };
-      console.log(`[westpay webhook] payment.confirmed txId=${txId} amount=${amount} payer=${payer}`);
+      console.log(`[westpay webhook] payment.confirmed txId=${txId} amount=${amount} payer=${payer} country=${country} merchantSlug=${merchantSlug}`);
 
       // Find the deposit: match by amount + payer phone (precise), fallback to amount only
       const deposit = await storage.findProcessingWestpayDeposit(Number(amount), payer);
       if (!deposit) {
-        console.error(`[westpay webhook] No matching deposit for amount=${amount} txId=${txId}`);
+        console.error(`[westpay webhook] No matching PROCESSING deposit found for amount=${amount} txId=${txId} payer=${payer} — it may have already been approved/rejected manually, or no deposit for that amount was ever initiated.`);
         return res.json({ received: true });
       }
+      console.log(`[westpay webhook] Matched deposit #${deposit.id} (stored phone=${deposit.accountNumber}) for txId=${txId}`);
 
       // Atomically claim the deposit (processing -> approved). If another
       // request already claimed it (e.g. WestPay retried the webhook), this

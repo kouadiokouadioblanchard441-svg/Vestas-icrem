@@ -10,6 +10,12 @@ import { db } from "./db";
 import { eq, and, desc, sql, gte, lte, or } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
+// Compares phone numbers regardless of local vs international MSISDN format
+// (e.g. "0150839909" vs "+22990150839909") by matching on the last 8 digits.
+function normalizePhoneSuffix(phone: string | null | undefined): string {
+  return (phone || "").replace(/\D/g, "").slice(-8);
+}
+
 export interface IStorage {
   // Users
   getUser(id: number): Promise<User | undefined>;
@@ -565,29 +571,32 @@ export class DatabaseStorage implements IStorage {
   }
 
   async findProcessingWestpayDeposit(amount: number, payerPhone?: string): Promise<Deposit | undefined> {
-    // Try exact match: amount + payer phone (most precise, avoids race conditions)
-    if (payerPhone) {
-      const [byPhone] = await db.select().from(deposits)
-        .where(and(
-          eq(deposits.channelName, "westpay"),
-          eq(deposits.status, "processing"),
-          eq(deposits.amount, amount),
-          eq(deposits.accountNumber, payerPhone),
-        ))
-        .orderBy(desc(deposits.createdAt))
-        .limit(1);
-      if (byPhone) return byPhone;
-    }
-    // Fallback: amount only (for cases where payer phone differs from registered phone)
-    const [deposit] = await db.select().from(deposits)
+    // Load all still-processing WestPay deposits for this amount, oldest first (FIFO).
+    // We can't do an exact SQL match on phone because WestPay's "payer" webhook field
+    // arrives as a full MSISDN (e.g. "+22990150839909"), while our stored accountNumber
+    // is whatever local format the user registered with (e.g. "0150839909") — these
+    // never match char-for-char. Comparing the last 8 digits handles both formats.
+    const candidates = await db.select().from(deposits)
       .where(and(
         eq(deposits.channelName, "westpay"),
         eq(deposits.status, "processing"),
         eq(deposits.amount, amount),
       ))
-      .orderBy(desc(deposits.createdAt))
-      .limit(1);
-    return deposit;
+      .orderBy(deposits.createdAt);
+
+    if (candidates.length === 0) return undefined;
+
+    if (payerPhone) {
+      const targetSuffix = normalizePhoneSuffix(payerPhone);
+      if (targetSuffix) {
+        const match = candidates.find(d => normalizePhoneSuffix(d.accountNumber) === targetSuffix);
+        if (match) return match;
+      }
+    }
+
+    // Fallback: oldest processing deposit of this amount (FIFO — safest guess when the
+    // payer number doesn't match anything on file, e.g. someone paid from a different phone).
+    return candidates[0];
   }
 
   // Atomically flips a deposit from "processing" -> "approved" only if it is
