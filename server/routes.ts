@@ -13,7 +13,7 @@ import {
   mapSoleaspayStatus,
   SOLEASPAY_SERVICE_MAP 
 } from "./soleaspay";
-import { buildPaymentUrl, verifyWebhookSignature } from "./westpay";
+import { buildPaymentUrl, verifyWebhookSignature, getCountryConfig } from "./westpay";
 
 // --- Brute-force protection (in-memory) ---
 const loginAttempts = new Map<string, { count: number; blockedUntil: number }>();
@@ -456,7 +456,6 @@ export async function registerRoutes(
       const soleaspayEnabled = settings.soleaspayEnabled === "true";
       const soleaspayChannelName = settings.soleaspayChannelName || "Westpay";
       const westpayEnabled = settings.westpayEnabled === "true";
-      const westpayMerchantSlug = process.env.WESTPAY_MERCHANT_SLUG;
 
       // Build virtual gateway channels when enabled in settings
       const virtualChannels: any[] = [];
@@ -470,7 +469,7 @@ export async function registerRoutes(
           gateway: "soleaspay",
         });
       }
-      if (westpayEnabled && westpayMerchantSlug) {
+      if (westpayEnabled) {
         virtualChannels.push({
           id: -2,
           name: "WestPay",
@@ -863,11 +862,6 @@ export async function registerRoutes(
         return res.status(400).json({ message: `Montant minimum : ${minDeposit.toLocaleString()} FCFA` });
       }
 
-      const merchantSlug = process.env.WESTPAY_MERCHANT_SLUG;
-      if (!merchantSlug) {
-        return res.status(500).json({ message: "WestPay non configuré (slug manquant)" });
-      }
-
       const westpayEnabled = settings.westpayEnabled === "true";
       if (!westpayEnabled) {
         return res.status(400).json({ message: "WestPay n'est pas activé sur la plateforme" });
@@ -877,6 +871,12 @@ export async function registerRoutes(
       const userCountry = allCountries.find(c => c.code === user.country);
       if (!userCountry?.autoPaymentEnabled) {
         return res.status(400).json({ message: "Le paiement automatique n'est pas disponible pour votre pays" });
+      }
+
+      // Load per-country credentials (slug + API key)
+      const countryConfig = getCountryConfig(user.country);
+      if (!countryConfig) {
+        return res.status(500).json({ message: `WestPay non configuré pour ce pays (${user.country})` });
       }
 
       // Create deposit record in "processing" state (will be approved by webhook)
@@ -898,7 +898,7 @@ export async function registerRoutes(
         ? `https://${process.env.REPLIT_DEV_DOMAIN}`
         : `https://${req.headers.host}`;
       const redirectUrl = `${baseUrl}/deposit-callback/${deposit.id}`;
-      const westpayUrl = buildPaymentUrl(merchantSlug, Number(amount), user.country, redirectUrl);
+      const westpayUrl = buildPaymentUrl(countryConfig, Number(amount), user.country, redirectUrl);
 
       console.log(`[westpay] Deposit #${deposit.id} initiated for user ${user.id}, amount ${amount}`);
       return res.json({ depositId: deposit.id, westpayUrl });

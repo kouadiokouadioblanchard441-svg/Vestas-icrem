@@ -23,18 +23,39 @@ export function getWestpayCountry(countryCode: string): string | null {
 }
 
 /**
+ * Per-country credentials loaded from environment variables.
+ * WESTPAY_SLUG_CM  → merchant slug for Cameroun
+ * WESTPAY_KEY_CM   → API key for Cameroun
+ * etc.
+ */
+export interface WestpayCountryConfig {
+  slug: string;
+  apiKey: string;
+}
+
+export function getCountryConfig(countryCode: string): WestpayCountryConfig | null {
+  const code = countryCode.toUpperCase();
+  const slug = process.env[`WESTPAY_SLUG_${code}`];
+  const apiKey = process.env[`WESTPAY_KEY_${code}`];
+  if (!slug || !apiKey) return null;
+  return { slug, apiKey };
+}
+
+/**
  * Build the hosted WestPay payment URL.
+ * Uses the per-country merchant slug and API key.
  * redirectUrl is where WestPay sends the user back after payment, with
  * ?status=success|failed&amount=XXX&ref=OP-abc appended.
  */
 export function buildPaymentUrl(
-  merchantSlug: string,
+  config: WestpayCountryConfig,
   amount: number,
   countryCode: string,
   redirectUrl: string
 ): string {
   const url = new URL(`${WESTPAY_BASE}/pay`);
-  url.searchParams.set("merchant", merchantSlug);
+  url.searchParams.set("merchant", config.slug);
+  url.searchParams.set("api_key", config.apiKey);
   url.searchParams.set("amount", amount.toString());
   const country = getWestpayCountry(countryCode);
   if (country) url.searchParams.set("country", country);
