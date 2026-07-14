@@ -63,22 +63,20 @@ function HeroBanner() {
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      {/* Slides */}
-      <div
-        className="flex h-full transition-transform duration-500 ease-in-out"
-        style={{ transform: `translateX(-${current * 100}%)`, width: `${total * 100}%` }}
-      >
-        {BANNER_SLIDES.map((slide, i) => (
-          <div key={i} className="relative flex-shrink-0 h-full" style={{ width: `${100 / total}%` }}>
-            <img src={slide.src} alt={slide.label} className="w-full h-full object-cover" />
-            {/* Gradient overlay + label */}
-            <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%)" }} />
-            <p className="absolute bottom-3 left-3 right-3 text-white text-xs font-semibold drop-shadow leading-tight">
-              {slide.label}
-            </p>
-          </div>
-        ))}
-      </div>
+      {/* Slides — absolute stacking with opacity cross-fade */}
+      {BANNER_SLIDES.map((slide, i) => (
+        <div
+          key={i}
+          className="absolute inset-0 transition-opacity duration-700 ease-in-out"
+          style={{ opacity: i === current ? 1 : 0, zIndex: i === current ? 1 : 0 }}
+        >
+          <img src={slide.src} alt={slide.label} className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.60) 0%, transparent 55%)" }} />
+          <p className="absolute bottom-8 left-3 right-10 text-white text-xs font-semibold drop-shadow leading-tight">
+            {slide.label}
+          </p>
+        </div>
+      ))}
 
       {/* Prev / Next arrows */}
       <button
