@@ -64,8 +64,8 @@ export default function WithdrawalPage() {
   const withdrawalInstruction4 = getContent(allSettings, "content_withdrawal_instruction4", "4. Les retraits seront disponibles sous 2 heures, et exceptionnellement sous 24 heures.");
   const withdrawalInstruction5 = getContent(allSettings, "content_withdrawal_instruction5", "5. Si le retrait échoue, vérifiez que vos informations bancaires sont correctes, puis soumettez à nouveau la demande.");
   const withdrawalInstruction6 = getContent(allSettings, "content_withdrawal_instruction6", "6. Effectuez votre première recharge et achetez des produits SpolarPV pour activer la fonction de retrait.");
-  const withdrawalWarningNoHours = getContent(allSettings, "content_withdrawal_warningNoHours", `⏰ Horaires de retrait : ${withdrawalStartHour}h00 – ${withdrawalEndHour}h00 (Fermé actuellement)`);
-  const withdrawalWarningNoProduct = getContent(allSettings, "content_withdrawal_warningNoProduct", "⚠️ Vous devez avoir un produit actif pour effectuer un retrait.");
+  const withdrawalWarningNoHours = getContent(allSettings, "content_withdrawal_warningNoHours", `Horaires de retrait : ${withdrawalStartHour}h00 – ${withdrawalEndHour}h00 (Fermé actuellement)`);
+  const withdrawalWarningNoProduct = getContent(allSettings, "content_withdrawal_warningNoProduct", "Vous devez avoir un produit actif pour effectuer un retrait.");
 
   const amountAfterFees = amount ? Math.floor(Number(amount) * (1 - withdrawalFee / 100)) : 0;
   const currentHour = new Date().getHours();
