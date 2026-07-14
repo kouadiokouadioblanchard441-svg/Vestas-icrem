@@ -44,6 +44,10 @@ export default function DepositPage() {
   });
   const MIN_DEPOSIT = parseInt(platformSettings?.minDeposit || "4000");
   const westpayEnabled = platformSettings?.westpayEnabled === "true";
+  const presetAmounts = (platformSettings?.depositPresetAmounts || "3500,5000,7000,10000,15000,20000,50000,70000")
+    .split(",")
+    .map((v) => parseInt(v.trim()))
+    .filter((v) => !isNaN(v) && v > 0);
 
   const depositInfoText = getContent(platformSettings, "content_deposit_infoText", `Les services de dépôt sont disponibles 24h/24 et 7j/7. Le dépôt minimum est de ${MIN_DEPOSIT.toLocaleString()} francs CFA, sans limite maximale.`);
   const depositWarning1 = getContent(platformSettings, "content_deposit_warning1", "Remarque importante : Ne divulguez à personne les captures d'écran de vos dépôts ni vos identifiants de transaction, car cela pourrait entraîner le vol de vos fonds.");
@@ -230,7 +234,7 @@ export default function DepositPage() {
 
               {/* Montants rapides */}
               <div className="grid grid-cols-4 gap-2 mt-3">
-                {[3500, 5000, 7000, 10000, 15000, 20000, 50000, 70000].map((preset) => (
+                {presetAmounts.map((preset) => (
                   <button
                     key={preset}
                     type="button"

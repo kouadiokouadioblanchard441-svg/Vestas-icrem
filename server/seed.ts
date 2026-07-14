@@ -209,6 +209,7 @@ export async function seed() {
     { key: "channelEnabled", value: "true" },
     { key: "groupEnabled", value: "true" },
     { key: "minDeposit", value: "3000" },
+    { key: "depositPresetAmounts", value: "3500,5000,7000,10000,15000,20000,50000,70000" },
     { key: "minWithdrawal", value: "1000" },
     { key: "withdrawalFees", value: "15" },
     { key: "withdrawalStartHour", value: "9" },

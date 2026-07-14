@@ -43,6 +43,7 @@ const settingsSchema = z.object({
   groupEnabled: z.boolean(),
   signupBonus: z.string().min(1, "Bonus requis"),
   minDeposit: z.string().min(1, "Montant requis"),
+  depositPresetAmounts: z.string().min(1, "Montants requis"),
   minWithdrawal: z.string().min(1, "Montant requis"),
   withdrawalFees: z.string().min(1, "Frais requis"),
   maxWithdrawalsPerDay: z.string().min(1, "Requis"),
@@ -89,6 +90,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
       groupEnabled: true,
       signupBonus: "200",
       minDeposit: "4000",
+      depositPresetAmounts: "3500,5000,7000,10000,15000,20000,50000,70000",
       minWithdrawal: "1500",
       withdrawalFees: "18",
       maxWithdrawalsPerDay: "1",
@@ -123,6 +125,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         groupEnabled: settings.groupEnabled !== "false",
         signupBonus: settings.signupBonus || "200",
         minDeposit: settings.minDeposit || "4000",
+        depositPresetAmounts: settings.depositPresetAmounts || "3500,5000,7000,10000,15000,20000,50000,70000",
         minWithdrawal: settings.minWithdrawal || "1500",
         withdrawalFees: settings.withdrawalFees || "18",
         maxWithdrawalsPerDay: settings.maxWithdrawalsPerDay || "1",
@@ -414,6 +417,14 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
                 <FormItem>
                   <FormLabel>Dépôt minimum (FCFA)</FormLabel>
                   <FormControl><Input {...field} type="number" min="0" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="depositPresetAmounts" render={({ field }) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Montants rapides de dépôt (FCFA)</FormLabel>
+                  <FormControl><Input {...field} placeholder="3500,5000,7000,10000,15000,20000,50000,70000" /></FormControl>
+                  <FormDescription>Liste de montants séparés par des virgules, affichés en boutons rapides sur la page de dépôt.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )} />
