@@ -148,13 +148,13 @@ export default function MyProductsPage() {
                     <div className="flex-1 space-y-1.5">
                       <div className="flex justify-between">
                         <span className="text-gray-400 text-xs">Revenu/jour</span>
-                        <span className="font-bold text-sm" style={{ color: "#F59E0B" }}>
+                        <span className="font-bold text-sm text-gray-900">
                           {currency} {dailyEarnings.toLocaleString("fr-FR")}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400 text-xs">Gagné</span>
-                        <span className="font-bold text-sm" style={{ color: "#F59E0B" }}>
+                        <span className="font-bold text-sm text-gray-900">
                           {currency} {earnedSoFar.toLocaleString("fr-FR")}
                         </span>
                       </div>
@@ -171,7 +171,7 @@ export default function MyProductsPage() {
                   <div className="px-4 pb-4">
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-gray-400 text-xs">Progression</span>
-                      <span className="text-xs font-bold" style={{ color: "#F59E0B" }}>{progress}%</span>
+                      <span className="text-xs font-bold text-gray-900">{progress}%</span>
                     </div>
                     <div className="w-full bg-gray-100 rounded-full h-2">
                       <div
