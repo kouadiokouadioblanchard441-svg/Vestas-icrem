@@ -4,7 +4,7 @@ import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystallin
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { ChevronLeft, ChevronRight, Info, Loader2, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Plus } from "lucide-react";
 import { getContent } from "@/lib/content";
 import { Link, useLocation } from "wouter";
 import { getCountryByCode } from "@/lib/countries";
@@ -158,12 +158,7 @@ export default function WithdrawalPage() {
             <span className="font-semibold text-base">Retrait</span>
           </button>
         </Link>
-        <button
-          className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center"
-          data-testid="button-info"
-        >
-          <Info className="w-5 h-5 text-gray-600" />
-        </button>
+        <div className="w-9 h-9" />
       </header>
 
       {/* ── Banner with balance ── */}

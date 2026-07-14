@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { ChevronLeft, Info, Copy, CheckCircle, Upload, Phone, Loader2, ImageIcon, ArrowRight } from "lucide-react";
+import { ChevronLeft, Copy, CheckCircle, Upload, Phone, Loader2, ImageIcon, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 import { COUNTRIES, type ApiCountry } from "@/lib/countries";
 import type { PaymentNumber } from "@shared/schema";
@@ -197,13 +197,7 @@ export default function DepositPage() {
               </button>
             </Link>
             <h1 className="flex-1 text-center text-gray-800 font-bold text-base">Recharger</h1>
-            <button
-              className="w-9 h-9 rounded-full flex items-center justify-center"
-              style={{ background: "rgba(255,255,255,0.5)" }}
-              data-testid="button-info"
-            >
-              <Info className="w-5 h-5 text-gray-700" />
-            </button>
+            <div className="w-9 h-9" />
           </div>
 
           <div className="px-4 pt-2 pb-6 space-y-4">
