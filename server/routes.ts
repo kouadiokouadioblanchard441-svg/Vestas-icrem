@@ -1508,6 +1508,33 @@ export async function registerRoutes(
     }
   });
 
+  app.delete("/api/admin/users/:id", requireAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const adminUser = await storage.getUser(req.session.userId!);
+      const targetUser = await storage.getUser(userId);
+
+      if (!targetUser) {
+        return res.status(404).json({ message: "Utilisateur introuvable" });
+      }
+      if (userId === req.session.userId) {
+        return res.status(400).json({ message: "Vous ne pouvez pas supprimer votre propre compte" });
+      }
+      if ((targetUser.isAdmin || targetUser.isSuperAdmin) && !adminUser?.isSuperAdmin) {
+        return res.status(403).json({ message: "Seul un super admin peut supprimer un administrateur" });
+      }
+      if (targetUser.isSuperAdmin) {
+        return res.status(403).json({ message: "Impossible de supprimer un super administrateur" });
+      }
+
+      await storage.deleteUser(userId);
+      await storage.logAdminAction(req.session.userId!, "delete_user", userId, `Utilisateur ${targetUser.phone} supprimé définitivement`);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   app.get("/api/admin/users/:id/team", requireAdmin, async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
@@ -1613,6 +1640,10 @@ export async function registerRoutes(
             bankerSetBy: newBankerStatus ? req.session.userId : null,
           });
           await storage.logAdminAction(req.session.userId!, "toggle_banker", userId, `Bankier: ${newBankerStatus}`);
+          break;
+        case "total-earnings":
+          await storage.updateUser(userId, { totalEarnings: Number(value).toFixed(2) });
+          await storage.logAdminAction(req.session.userId!, "update_total_earnings", userId, `Solde des gains modifié: ${value}F`);
           break;
         default:
           return res.status(400).json({ message: "Action invalide" });

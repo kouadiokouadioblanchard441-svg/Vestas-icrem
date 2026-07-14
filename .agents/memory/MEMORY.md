@@ -1,2 +1,3 @@
 - [Vestas Platform Setup](vestas-platform.md) — Platform rebranded from Intel/Jollibee → Vestas (wind energy). Key colors, assets, and DB quirks documented.
 - [SpolarPV brand color migration](spolarpv-branding.md) — green (#00A651 family) brand replaced by orange + sky-blue (#87CEEB); semantic green-* Tailwind classes left untouched.
+- [SpolarPV user deletion / FK cascade](spolarpv-user-deletion.md) — no ON DELETE CASCADE anywhere on users.id FKs; hard-deleting a user needs manual multi-table cleanup in a transaction.

@@ -118,7 +118,9 @@ export default function AdminUsers({ isSuperAdmin }: AdminUsersProps) {
   const [statusFilter, setStatusFilter] = useState<"all" | "banned" | "blocked" | "promoter">("all");
   const [selectedUser, setSelectedUser] = useState<UserWithTeam | null>(null);
   const [editBalance, setEditBalance] = useState("");
+  const [editTotalEarnings, setEditTotalEarnings] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmDeleteUser, setConfirmDeleteUser] = useState<UserWithTeam | null>(null);
   const [selectedProduct, setSelectedProduct] = useState("");
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [teamUserId, setTeamUserId] = useState<number | null>(null);
@@ -214,6 +216,26 @@ export default function AdminUsers({ isSuperAdmin }: AdminUsersProps) {
     },
   });
 
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: number) => {
+      const response = await apiRequest("DELETE", `/api/admin/users/${userId}`, {});
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Erreur");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({ title: "Utilisateur supprimé" });
+      setConfirmDeleteUser(null);
+      setSelectedUser(null);
+    },
+    onError: (error: any) => {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    },
+  });
+
   // Client-side status filter only (search is now server-side)
   const filteredUsers = users.filter(u => {
     if (statusFilter === "all") return true;
@@ -226,6 +248,12 @@ export default function AdminUsers({ isSuperAdmin }: AdminUsersProps) {
   const openTeamModal = (userId: number) => {
     setTeamUserId(userId);
     setShowTeamModal(true);
+  };
+
+  const openUserEdit = (user: UserWithTeam) => {
+    setSelectedUser(user);
+    setEditBalance("");
+    setEditTotalEarnings("");
   };
 
   return (
@@ -300,7 +328,7 @@ export default function AdminUsers({ isSuperAdmin }: AdminUsersProps) {
                       <Users className="w-4 h-4 mr-1" />
                       Equipe
                     </Button>
-                    <Button size="icon" variant="ghost" onClick={() => setSelectedUser(user)}>
+                    <Button size="icon" variant="ghost" onClick={() => openUserEdit(user)}>
                       <Edit className="w-4 h-4" />
                     </Button>
                   </div>
@@ -477,17 +505,41 @@ export default function AdminUsers({ isSuperAdmin }: AdminUsersProps) {
 
               <div className="space-y-3">
                 <div>
-                  <label className="text-sm font-medium">Modifier le solde</label>
+                  <label className="text-sm font-medium">Modifier le solde (disponible)</label>
+                  <p className="text-xs text-muted-foreground mb-1">Actuel: {formatCurrency(parseFloat(selectedUser.balance), selectedUser.country)}</p>
                   <div className="flex gap-2 mt-1">
                     <Input
                       type="number"
                       value={editBalance}
                       onChange={(e) => setEditBalance(e.target.value)}
                       placeholder="Nouveau solde"
+                      data-testid="input-edit-balance"
                     />
                     <Button
                       onClick={() => updateMutation.mutate({ userId: selectedUser.id, action: "balance", value: parseFloat(editBalance) })}
                       disabled={updateMutation.isPending || !editBalance}
+                      data-testid="button-save-balance"
+                    >
+                      {updateMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "OK"}
+                    </Button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Modifier le solde des gains (total)</label>
+                  <p className="text-xs text-muted-foreground mb-1">Actuel: {formatCurrency(parseFloat((selectedUser as any).totalEarnings || "0"), selectedUser.country)}</p>
+                  <div className="flex gap-2 mt-1">
+                    <Input
+                      type="number"
+                      value={editTotalEarnings}
+                      onChange={(e) => setEditTotalEarnings(e.target.value)}
+                      placeholder="Nouveau solde des gains"
+                      data-testid="input-edit-total-earnings"
+                    />
+                    <Button
+                      onClick={() => updateMutation.mutate({ userId: selectedUser.id, action: "total-earnings", value: parseFloat(editTotalEarnings) })}
+                      disabled={updateMutation.isPending || !editTotalEarnings}
+                      data-testid="button-save-total-earnings"
                     >
                       {updateMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "OK"}
                     </Button>
@@ -696,9 +748,47 @@ export default function AdminUsers({ isSuperAdmin }: AdminUsersProps) {
                     </div>
                   )}
                 </div>
+
+                {!selectedUser.isSuperAdmin && (!selectedUser.isAdmin || isSuperAdmin) && (
+                  <div className="pt-2 border-t">
+                    <Button
+                      variant="destructive"
+                      className="w-full"
+                      onClick={() => setConfirmDeleteUser(selectedUser)}
+                      data-testid="button-delete-user"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Supprimer cet utilisateur
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!confirmDeleteUser} onOpenChange={(v) => { if (!v) setConfirmDeleteUser(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmer la suppression</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            L'utilisateur <span className="font-medium">{confirmDeleteUser?.fullName}</span> ({confirmDeleteUser?.phone}) sera supprimé définitivement, avec tout son historique (dépôts, retraits, produits, commissions). Cette action est irréversible.
+          </p>
+          <div className="flex gap-3 mt-2">
+            <Button variant="outline" className="flex-1" onClick={() => setConfirmDeleteUser(null)}>Annuler</Button>
+            <Button
+              variant="destructive"
+              className="flex-1"
+              disabled={deleteUserMutation.isPending}
+              onClick={() => confirmDeleteUser && deleteUserMutation.mutate(confirmDeleteUser.id)}
+              data-testid="button-confirm-delete-user"
+            >
+              {deleteUserMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Supprimer
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

@@ -17,6 +17,7 @@ export interface IStorage {
   getUserByReferralCode(code: string): Promise<User | undefined>;
   createUser(data: Partial<User>): Promise<User>;
   updateUser(id: number, data: Partial<User>): Promise<User>;
+  deleteUser(id: number): Promise<void>;
   getAllUsers(filter?: string, limit?: number, offset?: number): Promise<{ users: User[], total: number }>;
   
   // Products
@@ -186,6 +187,33 @@ export class DatabaseStorage implements IStorage {
     }
     const [user] = await db.update(users).set(data).where(eq(users.id, id)).returning();
     return user;
+  }
+
+  async deleteUser(id: number): Promise<void> {
+    await db.transaction(async (tx) => {
+      // Gift codes created by this user (createdBy is NOT NULL FK) must be
+      // removed along with their claims before the user row can go.
+      const createdCodes = await tx.select({ id: giftCodes.id }).from(giftCodes).where(eq(giftCodes.createdBy, id));
+      for (const code of createdCodes) {
+        await tx.delete(giftCodeClaims).where(eq(giftCodeClaims.giftCodeId, code.id));
+      }
+      await tx.delete(giftCodes).where(eq(giftCodes.createdBy, id));
+
+      await tx.delete(giftCodeClaims).where(eq(giftCodeClaims.userId, id));
+      await tx.delete(userTasks).where(eq(userTasks.userId, id));
+      await tx.delete(referralCommissions).where(or(eq(referralCommissions.userId, id), eq(referralCommissions.fromUserId, id)));
+      await tx.delete(userStakings).where(eq(userStakings.userId, id));
+      await tx.delete(withdrawals).where(eq(withdrawals.userId, id));
+      await tx.delete(deposits).where(eq(deposits.userId, id));
+      await tx.delete(userProducts).where(eq(userProducts.userId, id));
+      await tx.delete(withdrawalWallets).where(eq(withdrawalWallets.userId, id));
+      await tx.delete(transactions).where(eq(transactions.userId, id));
+      // Admin action history performed BY this user (adminId is a NOT NULL FK).
+      // Actions performed ON this user (targetUserId, not a FK) are left intact.
+      await tx.delete(adminAuditLog).where(eq(adminAuditLog.adminId, id));
+
+      await tx.delete(users).where(eq(users.id, id));
+    });
   }
 
   async getAllUsers(filter?: string, limit: number = 50, offset: number = 0): Promise<{ users: User[], total: number }> {
