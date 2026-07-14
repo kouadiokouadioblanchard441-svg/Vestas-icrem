@@ -173,7 +173,7 @@ export default function MyProductsPage() {
                       <span className="text-gray-400 text-xs">Progression</span>
                       <span className="text-xs font-bold text-gray-900">{progress}%</span>
                     </div>
-                    <div className="w-full bg-gray-100 rounded-full h-2">
+                    <div className="w-full rounded-full h-2" style={{ background: "#e5e5e5" }}>
                       <div
                         className="h-2 rounded-full"
                         style={{ width: `${progress}%`, background: "#00A651" }}
