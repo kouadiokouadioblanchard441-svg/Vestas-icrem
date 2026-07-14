@@ -100,10 +100,14 @@ export async function registerRoutes(
   // Trust proxy for production HTTPS (Replit deployment)
   app.set("trust proxy", 1);
 
+  const sessionDbUrl = process.env.SUPABASE_DATABASE_URL || process.env.DATABASE_URL;
   app.use(
     session({
       store: new PgSession({
-        conString: process.env.DATABASE_URL,
+        conString: sessionDbUrl,
+        conObject: process.env.SUPABASE_DATABASE_URL
+          ? { connectionString: sessionDbUrl, ssl: { rejectUnauthorized: false } }
+          : undefined,
         tableName: "session",
         createTableIfMissing: false,
         pruneSessionInterval: 60 * 60,
@@ -699,6 +703,9 @@ export async function registerRoutes(
           });
         }
         try {
+          const soleaspayBaseUrl = process.env.REPLIT_DEV_DOMAIN
+            ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+            : `https://${req.headers.host}`;
           const paymentResult = await initiatePayment(
             accountNumber,
             amount,
@@ -706,7 +713,8 @@ export async function registerRoutes(
             paymentMethod,
             orderId,
             accountName,
-            `user${user.id}@intel.com`
+            `user${user.id}@intel.com`,
+            soleaspayBaseUrl
           );
 
           if (paymentResult.success && paymentResult.data) {
