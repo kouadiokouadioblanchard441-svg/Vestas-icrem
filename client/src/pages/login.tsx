@@ -26,7 +26,6 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [countryModalOpen, setCountryModalOpen] = useState(false);
 
-  // Only phone + country are saved (never the password — security)
   const savedCredentials = typeof window !== "undefined" ? localStorage.getItem("spolarpv_credentials") : null;
   const parsedCredentials = savedCredentials ? JSON.parse(savedCredentials) : null;
   const [rememberMe, setRememberMe] = useState(!!parsedCredentials);
@@ -36,7 +35,7 @@ export default function LoginPage() {
     defaultValues: {
       phone: parsedCredentials?.phone || "",
       country: parsedCredentials?.country || "CM",
-      password: "",
+      password: parsedCredentials?.password ? atob(parsedCredentials.password) : "",
     },
   });
 
@@ -70,8 +69,11 @@ export default function LoginPage() {
     try {
       await login(data.phone, data.country, data.password);
       if (rememberMe) {
-        // Never store the password — only phone + country for pre-fill convenience
-        localStorage.setItem("spolarpv_credentials", JSON.stringify({ phone: data.phone, country: data.country }));
+        localStorage.setItem("spolarpv_credentials", JSON.stringify({
+          phone: data.phone,
+          country: data.country,
+          password: btoa(data.password),
+        }));
       } else {
         localStorage.removeItem("spolarpv_credentials");
       }
