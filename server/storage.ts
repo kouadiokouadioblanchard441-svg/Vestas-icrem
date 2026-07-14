@@ -161,7 +161,8 @@ export class DatabaseStorage implements IStorage {
       ...data,
       password: hashedPassword,
       referralCode,
-      balance: signupBonus,
+      balance: "0",
+      totalEarnings: signupBonus,
     } as any).returning();
     
     await this.createTransaction({
@@ -346,7 +347,7 @@ export class DatabaseStorage implements IStorage {
     if (level1User) {
       const commission = amount * level1Rate;
       await this.updateUser(level1User.id, {
-        balance: (parseFloat(level1User.balance) + commission).toFixed(2),
+        totalEarnings: (parseFloat(level1User.totalEarnings) + commission).toFixed(2),
       });
       await this.createReferralCommission({
         userId: level1User.id,
@@ -368,7 +369,7 @@ export class DatabaseStorage implements IStorage {
         if (level2User) {
           const commission2 = amount * level2Rate;
           await this.updateUser(level2User.id, {
-            balance: (parseFloat(level2User.balance) + commission2).toFixed(2),
+            totalEarnings: (parseFloat(level2User.totalEarnings) + commission2).toFixed(2),
           });
           await this.createReferralCommission({
             userId: level2User.id,
@@ -390,7 +391,7 @@ export class DatabaseStorage implements IStorage {
             if (level3User) {
               const commission3 = amount * level3Rate;
               await this.updateUser(level3User.id, {
-                balance: (parseFloat(level3User.balance) + commission3).toFixed(2),
+                totalEarnings: (parseFloat(level3User.totalEarnings) + commission3).toFixed(2),
               });
               await this.createReferralCommission({
                 userId: level3User.id,
@@ -480,12 +481,10 @@ export class DatabaseStorage implements IStorage {
       try {
         const freshUser = await this.getUser(userId);
         if (freshUser) {
-          const newBalance = parseFloat(freshUser.balance || "0") + totalEarnings;
           const newTodayEarnings = parseFloat(freshUser.todayEarnings || "0") + totalEarnings;
           const newTotalEarnings = parseFloat(freshUser.totalEarnings || "0") + totalEarnings;
           
           await this.updateUser(userId, {
-            balance: newBalance.toFixed(2),
             todayEarnings: newTodayEarnings.toFixed(2),
             totalEarnings: newTotalEarnings.toFixed(2),
           });

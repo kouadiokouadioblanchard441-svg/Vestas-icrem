@@ -144,7 +144,7 @@ export default function WithdrawalPage() {
 
   if (!user) return null;
 
-  const balance = parseFloat(user?.balance || "0");
+  const balance = parseFloat(user?.totalEarnings || "0");
   const hasWallets = wallets.length > 0;
 
   return (
@@ -179,7 +179,7 @@ export default function WithdrawalPage() {
             <span className="text-sm font-semibold mr-1">{currency}</span>
             {balance.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}
           </p>
-          <p className="text-white/80 text-xs mt-0.5">Solde du compte</p>
+          <p className="text-white/80 text-xs mt-0.5">Solde des revenus</p>
         </div>
       </div>
 

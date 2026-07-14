@@ -311,9 +311,9 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Déjà réclamé aujourd'hui" });
       }
 
-      const newBalance = parseFloat(user.balance) + product.dailyEarnings;
+      const newTotalEarnings = parseFloat(user.totalEarnings || "0") + product.dailyEarnings;
       await storage.updateUser(user.id, { 
-        balance: newBalance.toFixed(2),
+        totalEarnings: newTotalEarnings.toFixed(2),
         lastFreeProductClaim: new Date(),
       });
 
@@ -1009,7 +1009,7 @@ export async function registerRoutes(
         }
       }
 
-      const balance = parseFloat(user.balance);
+      const balance = parseFloat(user.totalEarnings || "0");
       if (amount > balance) {
         return res.status(400).json({ message: "Solde insuffisant" });
       }
@@ -1031,9 +1031,9 @@ export async function registerRoutes(
       const feeAmount = Math.round(amount * fees / 100);
       const netAmount = amount - feeAmount;
 
-      // Deduct from balance
+      // Deduct from totalEarnings (solde des revenus)
       await storage.updateUser(user.id, {
-        balance: (balance - amount).toFixed(2),
+        totalEarnings: (balance - amount).toFixed(2),
       });
 
       const withdrawal = await storage.createWithdrawal({
@@ -1168,10 +1168,10 @@ export async function registerRoutes(
         }
       }
 
-      // Add 50 FCFA to balance
-      const newBalance = parseFloat(user.balance) + 50;
+      // Add 50 FCFA to totalEarnings (solde des revenus)
+      const newTotalEarnings = parseFloat(user.totalEarnings || "0") + 50;
       await storage.updateUser(user.id, { 
-        balance: newBalance.toString(),
+        totalEarnings: newTotalEarnings.toFixed(2),
         lastDailyBonusClaim: now
       });
 
