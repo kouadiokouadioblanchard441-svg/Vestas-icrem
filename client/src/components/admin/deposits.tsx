@@ -125,7 +125,10 @@ export default function AdminDeposits() {
           Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-52" />)
         ) : filteredDeposits.length > 0 ? (
           filteredDeposits.map((deposit) => {
-            const isManual = !!(deposit as any).paymentNumberId || !!(deposit as any).channelName;
+            // WestPay deposits are automated (confirmed via webhook) — only flag genuinely
+            // manually-submitted deposits (bank/mobile-money channel chosen by the user, awaiting
+            // human review) as "Paiement manuel". "westpay" is not a manual channel.
+            const isManual = ((deposit as any).paymentNumberId || (deposit as any).channelName) && (deposit as any).channelName !== "westpay";
             return (
               <Card key={deposit.id} className={deposit.status === "pending" ? "border-yellow-400/50" : deposit.status === "processing" ? "border-blue-400/50" : ""}>
                 <CardContent className="p-4 space-y-3">
