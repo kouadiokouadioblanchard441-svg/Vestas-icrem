@@ -24,7 +24,7 @@ interface DepositWithUser extends Deposit {
 export default function AdminDeposits() {
   const { toast } = useToast();
   const [filter, setFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
+  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "processing" | "approved" | "rejected">("pending");
   const [screenshotModal, setScreenshotModal] = useState<string | null>(null);
 
   const { data: allDeposits, isLoading } = useQuery<DepositWithUser[]>({
@@ -70,6 +70,7 @@ export default function AdminDeposits() {
   ) || [];
 
   const pendingCount = allDeposits?.filter(d => d.status === "pending").length || 0;
+  const processingCount = allDeposits?.filter(d => d.status === "processing").length || 0;
 
   return (
     <div className="space-y-4">
@@ -78,6 +79,15 @@ export default function AdminDeposits() {
           <span className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
           <p className="text-sm font-medium text-yellow-700 dark:text-yellow-300">
             {pendingCount} dépôt{pendingCount > 1 ? "s" : ""} en attente de validation
+          </p>
+        </div>
+      )}
+
+      {processingCount > 0 && (
+        <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-xl p-3 flex items-center gap-2">
+          <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+          <p className="text-sm font-medium text-blue-700 dark:text-blue-300">
+            {processingCount} dépôt{processingCount > 1 ? "s" : ""} WestPay en attente de confirmation automatique
           </p>
         </div>
       )}
@@ -96,7 +106,7 @@ export default function AdminDeposits() {
       </div>
 
       <div className="flex gap-2 overflow-x-auto">
-        {(["pending", "approved", "rejected", "all"] as const).map((status) => (
+        {(["pending", "processing", "approved", "rejected", "all"] as const).map((status) => (
           <Button
             key={status}
             size="sm"
@@ -105,7 +115,7 @@ export default function AdminDeposits() {
             className="whitespace-nowrap"
             data-testid={`button-filter-${status}`}
           >
-            {status === "all" ? "Tous" : status === "pending" ? `En attente${pendingCount > 0 ? ` (${pendingCount})` : ""}` : status === "approved" ? "Approuvés" : "Rejetés"}
+            {status === "all" ? "Tous" : status === "pending" ? `En attente${pendingCount > 0 ? ` (${pendingCount})` : ""}` : status === "processing" ? `WestPay en cours${processingCount > 0 ? ` (${processingCount})` : ""}` : status === "approved" ? "Approuvés" : "Rejetés"}
           </Button>
         ))}
       </div>
@@ -117,7 +127,7 @@ export default function AdminDeposits() {
           filteredDeposits.map((deposit) => {
             const isManual = !!(deposit as any).paymentNumberId || !!(deposit as any).channelName;
             return (
-              <Card key={deposit.id} className={deposit.status === "pending" ? "border-yellow-400/50" : ""}>
+              <Card key={deposit.id} className={deposit.status === "pending" ? "border-yellow-400/50" : deposit.status === "processing" ? "border-blue-400/50" : ""}>
                 <CardContent className="p-4 space-y-3">
                   {/* Header */}
                   <div className="flex items-start justify-between">
@@ -133,8 +143,11 @@ export default function AdminDeposits() {
                       </div>
                       <p className="text-sm text-muted-foreground">{deposit.user.phone} · {deposit.user.country}</p>
                     </div>
-                    <Badge variant={deposit.status === "pending" ? "secondary" : deposit.status === "approved" ? "default" : "destructive"}>
-                      {deposit.status === "pending" ? "En attente" : deposit.status === "approved" ? "Approuvé" : "Rejeté"}
+                    <Badge
+                      variant={deposit.status === "pending" ? "secondary" : deposit.status === "approved" ? "default" : deposit.status === "processing" ? "outline" : "destructive"}
+                      className={deposit.status === "processing" ? "bg-blue-600 text-white border-blue-600" : ""}
+                    >
+                      {deposit.status === "pending" ? "En attente" : deposit.status === "processing" ? "En cours (WestPay)" : deposit.status === "approved" ? "Approuvé" : "Rejeté"}
                     </Badge>
                   </div>
 
@@ -211,7 +224,7 @@ export default function AdminDeposits() {
                   )}
 
                   {/* Actions */}
-                  {deposit.status === "pending" && (
+                  {(deposit.status === "pending" || deposit.status === "processing") && (
                     <div className="flex gap-2">
                       <Button
                         size="sm"
