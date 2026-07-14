@@ -242,19 +242,19 @@ export default function WithdrawalPage() {
               <span className="font-semibold">{currency} {amountAfterFees.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</span>
             </p>
           </div>
-          <p className="text-right text-xs mt-1 px-1" style={{ color: "#ff6b00" }}>
+          <p className="text-right text-xs mt-1 px-1" style={{ color: "#ff0000" }}>
             (Minimum {minWithdrawal.toLocaleString()} {currency})
           </p>
         </div>
 
         {/* ── Warnings ── */}
         {!isWithinWithdrawalHours && (
-          <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-[#F59E0B] text-xs">
+          <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-xs font-medium" style={{ color: "#ff0000" }}>
             {withdrawalWarningNoHours}
           </div>
         )}
         {!hasActiveProduct && (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-700 text-xs">
+          <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-xs font-medium" style={{ color: "#ff0000" }}>
             {withdrawalWarningNoProduct}
           </div>
         )}
