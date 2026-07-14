@@ -53,6 +53,7 @@ const settingsSchema = z.object({
   level2Commission: z.string().min(1, "Commission requise"),
   level3Commission: z.string().min(1, "Commission requise"),
   westpayEnabled: z.boolean(),
+  westpayWebhookSecret: z.string().optional(),
 });
 
 type SettingsForm = z.infer<typeof settingsSchema>;
@@ -100,6 +101,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
       level2Commission: "1",
       level3Commission: "1",
       westpayEnabled: false,
+      westpayWebhookSecret: "",
     },
   });
 
@@ -135,6 +137,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         level2Commission: settings.level2Commission || "1",
         level3Commission: settings.level3Commission || "1",
         westpayEnabled: settings.westpayEnabled === "true",
+        westpayWebhookSecret: settings.westpayWebhookSecret || "",
       });
     }
   }, [settings, form]);
@@ -148,6 +151,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         channelEnabled: String(data.channelEnabled),
         groupEnabled: String(data.groupEnabled),
         westpayEnabled: String(data.westpayEnabled),
+        westpayWebhookSecret: data.westpayWebhookSecret || "",
       };
       const response = await apiRequest("POST", "/api/admin/settings", serialized);
       if (!response.ok) {
@@ -533,6 +537,21 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
             <p className="text-xs text-gray-400 px-1">
               Slug marchand : <span className="font-mono font-semibold text-gray-600">business</span> (défini via variable d'environnement)
             </p>
+
+            <FormField control={form.control} name="westpayWebhookSecret" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Clé secrète du webhook WestPay</FormLabel>
+                <FormControl>
+                  <Input {...field} type="password" placeholder="Colle ici la clé secrète fournie par WestPay" autoComplete="off" />
+                </FormControl>
+                <FormDescription>
+                  WestPay signe chaque appel webhook avec cette clé (HMAC-SHA256). Sans elle, les dépôts automatiques
+                  ne sont jamais crédités, même si le webhook atteint bien le serveur. URL à enregistrer chez WestPay :{" "}
+                  <span className="font-mono text-[11px] break-all">https://tondomaine.com/api/webhook/westpay</span>
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )} />
           </CardContent>
         </Card>
 

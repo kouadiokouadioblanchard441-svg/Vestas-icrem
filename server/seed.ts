@@ -227,6 +227,7 @@ export async function seed() {
     { key: "omnipayChannelName", value: "OmniPay" },
     { key: "omnipayCallbackKey", value: "" },
     { key: "westpayEnabled", value: "false" },
+    { key: "westpayWebhookSecret", value: "" },
   ];
 
   for (const settingData of requiredSettings) {

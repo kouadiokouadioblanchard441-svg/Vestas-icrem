@@ -929,10 +929,14 @@ export async function registerRoutes(
     try {
       const signature = (req.headers["x-robotpay-signature"] as string) || "";
       const event = (req.headers["x-robotpay-event"] as string) || "";
-      const webhookSecret = process.env.WESTPAY_WEBHOOK_SECRET;
+      // Prefer the secret configured in the admin panel (platform_settings table,
+      // editable without redeploying/touching env vars on Plesk); fall back to
+      // the WESTPAY_WEBHOOK_SECRET env var for backward compatibility.
+      const settings = await storage.getSettings();
+      const webhookSecret = settings.westpayWebhookSecret || process.env.WESTPAY_WEBHOOK_SECRET;
 
       if (!webhookSecret) {
-        console.error("[westpay webhook] WESTPAY_WEBHOOK_SECRET not set");
+        console.error("[westpay webhook] No webhook secret configured (set it in Admin > Paramètres > WestPay, or WESTPAY_WEBHOOK_SECRET env var)");
         return res.json({ received: true });
       }
 
@@ -1257,7 +1261,9 @@ export async function registerRoutes(
   app.get("/api/settings", async (req, res) => {
     try {
       const settings = await storage.getSettings();
-      res.json(settings);
+      // Never expose secret keys via this public (unauthenticated) endpoint
+      const { westpayWebhookSecret, omnipayCallbackKey, ...publicSettings } = settings;
+      res.json(publicSettings);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
