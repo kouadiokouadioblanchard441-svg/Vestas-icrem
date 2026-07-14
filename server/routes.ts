@@ -1701,6 +1701,63 @@ export async function registerRoutes(
     }
   });
 
+  // ─── Admin Tasks CRUD ───────────────────────────────────────────────────────
+  app.get("/api/admin/tasks", requireAdmin, async (req, res) => {
+    try {
+      const allTasks = await storage.getAllTasksAdmin();
+      res.json(allTasks);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/tasks", requireAdmin, async (req, res) => {
+    try {
+      const { name, description, requiredInvites, reward, sortOrder } = req.body;
+      if (!name || !description || requiredInvites == null || reward == null) {
+        return res.status(400).json({ message: "Champs requis manquants" });
+      }
+      const task = await storage.createTask({
+        name,
+        description,
+        requiredInvites: parseInt(requiredInvites),
+        reward: parseInt(reward),
+        sortOrder: parseInt(sortOrder ?? 0),
+        isActive: true,
+      });
+      await storage.logAdminAction(req.session.userId!, "create_task", null, `Tâche "${name}" créée`);
+      res.json(task);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.patch("/api/admin/tasks/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const data = req.body;
+      if (data.requiredInvites != null) data.requiredInvites = parseInt(data.requiredInvites);
+      if (data.reward != null) data.reward = parseInt(data.reward);
+      if (data.sortOrder != null) data.sortOrder = parseInt(data.sortOrder);
+      const task = await storage.updateTask(id, data);
+      await storage.logAdminAction(req.session.userId!, "update_task", null, `Tâche ${id} modifiée`);
+      res.json(task);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/tasks/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteTask(id);
+      await storage.logAdminAction(req.session.userId!, "delete_task", null, `Tâche ${id} supprimée`);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   app.get("/api/admin/channels", requireAdmin, async (req, res) => {
     try {
       const channels = await storage.getPaymentChannels();

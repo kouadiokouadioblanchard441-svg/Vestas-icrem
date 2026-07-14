@@ -75,8 +75,12 @@ export interface IStorage {
   
   // Tasks
   getTasks(): Promise<Task[]>;
+  getAllTasksAdmin(): Promise<Task[]>;
   getTasksWithStatus(userId: number): Promise<(Task & { isCompleted: boolean; canClaim: boolean; currentInvites: number })[]>;
   claimTask(userId: number, taskId: number): Promise<void>;
+  createTask(data: Partial<Task>): Promise<Task>;
+  updateTask(id: number, data: Partial<Task>): Promise<Task>;
+  deleteTask(id: number): Promise<void>;
   
   // Transactions
   createTransaction(data: Partial<Transaction>): Promise<Transaction>;
@@ -875,6 +879,24 @@ export class DatabaseStorage implements IStorage {
   // Tasks
   async getTasks(): Promise<Task[]> {
     return await db.select().from(tasks).where(eq(tasks.isActive, true)).orderBy(tasks.sortOrder);
+  }
+
+  async getAllTasksAdmin(): Promise<Task[]> {
+    return await db.select().from(tasks).orderBy(tasks.sortOrder);
+  }
+
+  async createTask(data: Partial<Task>): Promise<Task> {
+    const [task] = await db.insert(tasks).values(data as any).returning();
+    return task;
+  }
+
+  async updateTask(id: number, data: Partial<Task>): Promise<Task> {
+    const [task] = await db.update(tasks).set(data as any).where(eq(tasks.id, id)).returning();
+    return task;
+  }
+
+  async deleteTask(id: number): Promise<void> {
+    await db.delete(tasks).where(eq(tasks.id, id));
   }
 
   async getTasksWithStatus(userId: number): Promise<(Task & { isCompleted: boolean; canClaim: boolean; currentInvites: number })[]> {
