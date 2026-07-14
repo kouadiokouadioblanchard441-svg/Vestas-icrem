@@ -227,6 +227,31 @@ export default function DepositPage() {
                   data-testid="input-deposit-amount"
                 />
               </div>
+
+              {/* Montants rapides */}
+              <div className="grid grid-cols-4 gap-2 mt-3">
+                {[3500, 5000, 7000, 10000, 15000, 20000, 50000, 70000].map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => setAmount(preset)}
+                    className={`py-3 rounded-xl text-sm font-semibold shadow-sm transition-colors ${
+                      amount === preset
+                        ? "text-white"
+                        : "text-gray-800"
+                    }`}
+                    style={{
+                      background:
+                        amount === preset
+                          ? "linear-gradient(135deg, #F59E0B, #D97706)"
+                          : "rgba(255,255,255,0.90)",
+                    }}
+                    data-testid={`button-preset-amount-${preset}`}
+                  >
+                    {preset.toLocaleString()}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* CTA Button */}
