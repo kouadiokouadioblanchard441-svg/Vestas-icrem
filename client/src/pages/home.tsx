@@ -153,7 +153,6 @@ export default function HomePage() {
   const popupTitle = getContent(settings, "content_home_popupTitle", "NOTIFICATION");
   const popupLines = [
     getContent(settings, "content_home_popupLine1", `Prime d'inscription : ${parseInt(signupBonus).toLocaleString()} FCFA.`),
-    getContent(settings, "content_home_popupLine2", "Récompense de connexion quotidienne : 50 FCFA."),
     getContent(settings, "content_home_popupLine3", `Invitez vos subordonnés à investir et recevez une récompense en espèces de ${level1Commission}% du montant de leur investissement.`),
     getContent(settings, "content_home_popupLine4", "Il n'y a aucune limite quant au temps de retrait ou au nombre de retraits. Vous pouvez retirer de l'argent à tout moment."),
     getContent(settings, "content_home_popupLine5", "SpolarPV attache une grande importance au marché."),
