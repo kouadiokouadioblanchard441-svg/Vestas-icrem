@@ -8,7 +8,7 @@ SpolarPV is a mobile-first investment platform targeting French-speaking African
 
 - `DATABASE_URL` (PostgreSQL) must be set — it is provisioned automatically by Replit.
 - On first run after import: `npm install`, then `npm run db:push` to create the schema (this prompts per-table; answer "create table" for each), then start the `Start application` workflow (`npm run dev`). The server seeds default data (super admin, countries, products, tasks, settings) automatically on first boot.
-- Super admin login: Phone `99935673`, Country Togo (TG), Password `pagetstudio`.
+- Super admin login: Phone `99935673`, Country Cameroun (CM), Password `AAbb11##` (default; override via `ADMIN_PASSWORD` env var). The seed script re-applies this password/country on every server boot, overriding any manual change to the admin account.
 
 ## Déploiement Plesk
 
@@ -118,6 +118,7 @@ Preferred communication style: Simple, everyday language.
 - `SESSION_SECRET`: Secret for session encryption (optional, has fallback)
 
 ## Recent Changes (July 2026)
+- Re-imported project (third time): reinstalled dependencies (`npm install`), pushed DB schema (`npm run db:push --force`), restarted the `Start application` workflow — it seeds data and serves on port 5000. Verified end-to-end: login page renders, and `POST /api/auth/login` succeeds with the actual super admin credentials (phone 99935673, country CM, password AAbb11##). Corrected this file: the previously documented admin country/password (Togo/pagetstudio) were stale — `server/seed.ts` actually seeds country `CM` and password from `ADMIN_PASSWORD` env var (default `AAbb11##`).
 - Re-imported project (second time): reinstalled dependencies (`npm install`), pushed DB schema (`npm run db:push --force`), verified `npm run build` succeeds and the `Start application` workflow seeds data and serves on port 5000. Login page renders correctly, no client console errors beyond an expected 401 on the unauthenticated session check.
 - Note: `npx tsc --noEmit` reports pre-existing type errors in `server/routes.ts` (req.query values typed as `string | string[]`) and `server/storage.ts` (Map iteration needs `--downlevelIteration`). These don't block the dev server (tsx) or the production build (esbuild/vite), but `npm run check` will fail until fixed.
 - Fixed a leftover-from-rebranding bug: `client/src/pages/tasks.tsx` referenced an undefined `landscapeImg` (missing import); added the same import used elsewhere (`@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp`)
@@ -141,7 +142,7 @@ Preferred communication style: Simple, everyday language.
 - Removed emoji usage in favor of text country codes
 
 ## Admin Credentials
-- **Super Admin**: Phone: 99935673, Country: Togo (TG), Password: pagetstudio
+- **Super Admin**: Phone: 99935673, Country: Cameroun (CM), Password: AAbb11## (default; set `ADMIN_PASSWORD` env var to override — seed.ts re-applies it on every boot)
 - Access the admin panel from Account page when logged in as admin
 
 ## Business Rules
