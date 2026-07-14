@@ -1,10 +1,11 @@
 import { useLocation, useParams } from "wouter";
 import { ChevronLeft } from "lucide-react";
 
-import img1 from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
-import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
-import img2 from "@assets/vestas_112v_closeup_1783210181172.jpg";
-import img3 from "@assets/vestas_112v_closeup_(1)_1783210181118.jpg";
+// Real SpolarPV event & meeting photos (served as static assets)
+const img1 = "/news-img-1.jpg";   // SpolarPV team — SNEC Shanghai exhibition
+const img2 = "/news-img-2.png";   // Solar & Storage Africa conference
+const img3 = "/news-img-3.jpg";   // IPP & PPA Conference
+const landscapeImg = "/news-img-1.jpg";
 
 export const NEWS_ARTICLES = [
   {
