@@ -1,4 +1,44 @@
-import { Switch, Route, useLocation, Redirect } from "wouter";
+import { Switch, Route, useLocation, Redirect, Router } from "wouter";
+import { useState, useEffect, useCallback } from "react";
+
+// Hash location hook — returns ONLY the path (strips query string) so
+// regexparam route matching works correctly with URLs like /#/register?invite_code=XYZ
+function useHashPath(_opts?: object): [string, (to: string, opts?: object) => void] {
+  const getPath = () => {
+    const hash = window.location.hash.replace(/^#?\/?/, "");
+    return "/" + (hash.split("?")[0] || "");
+  };
+  const [loc, setLoc] = useState(getPath);
+  useEffect(() => {
+    const handler = () => setLoc(getPath());
+    window.addEventListener("hashchange", handler);
+    return () => window.removeEventListener("hashchange", handler);
+  }, []);
+  const navigate = useCallback((to: string, opts?: any) => {
+    const method = opts?.replace ? "replaceState" : "pushState";
+    history[method](opts?.state ?? null, "", location.pathname + "#/" + to.replace(/^\//, ""));
+    window.dispatchEvent(new Event("hashchange"));
+  }, []);
+  return [loc, navigate];
+}
+// Expose hrefs formatter so <Link> and <Redirect> generate correct hash hrefs
+(useHashPath as any).hrefs = (href: string) => "#/" + href.replace(/^\//, "");
+
+// Search hook — reads query string from the hash (e.g. #/register?invite_code=XYZ → ?invite_code=XYZ)
+function useHashSearch(_opts?: object): string {
+  const getSearch = () => {
+    const hash = window.location.hash;
+    const q = hash.indexOf("?");
+    return q >= 0 ? hash.slice(q) : "";
+  };
+  const [search, setSearch] = useState(getSearch);
+  useEffect(() => {
+    const handler = () => setSearch(getSearch());
+    window.addEventListener("hashchange", handler);
+    return () => window.removeEventListener("hashchange", handler);
+  }, []);
+  return search;
+}
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -136,7 +176,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Router() {
+function RouterComponent() {
   return (
     <Switch>
       <Route path="/login">
@@ -336,7 +376,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
-          <Router />
+          <Router hook={useHashPath} searchHook={useHashSearch}>
+            <RouterComponent />
+          </Router>
           <Toaster />
         </AuthProvider>
       </TooltipProvider>

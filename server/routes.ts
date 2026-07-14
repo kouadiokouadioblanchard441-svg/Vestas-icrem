@@ -909,7 +909,7 @@ export async function registerRoutes(
       const baseUrl = process.env.REPLIT_DEV_DOMAIN
         ? `https://${process.env.REPLIT_DEV_DOMAIN}`
         : `https://${req.headers.host}`;
-      const redirectUrl = `${baseUrl}/deposit-callback/${deposit.id}`;
+      const redirectUrl = `${baseUrl}/#/deposit-callback/${deposit.id}`;
       const westpayUrl = buildPaymentUrl(merchantSlug, countryApiKey, Number(amount), user.country, redirectUrl);
 
       console.log(`[westpay] Deposit #${deposit.id} initiated for user ${user.id}, amount ${amount}`);

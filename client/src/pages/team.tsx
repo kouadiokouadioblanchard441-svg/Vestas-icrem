@@ -36,7 +36,7 @@ export default function TeamPage() {
 
   const countryInfo = getCountryByCode(user.country);
   const currency = countryInfo?.currency || "FCFA";
-  const referralLink = `${window.location.origin}/rejoindre?money=${user.referralCode}`;
+  const referralLink = `${window.location.origin}/#/register?invite_code=${user.referralCode}`;
 
   const copyCode = () => {
     navigator.clipboard.writeText(user.referralCode);
