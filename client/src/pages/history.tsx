@@ -53,19 +53,19 @@ export default function HistoryPage() {
     queryKey: ["/api/withdrawals/history"],
   });
 
-  const getStatusLabel = (status: string, type: "deposit" | "withdrawal") => {
+  const getStatusLabel = (status: string) => {
     switch (status) {
       case "completed":
       case "approved":
-        return type === "deposit" ? "Succès du dépôt" : "Succès du retrait";
+        return "SUCCÈS";
       case "rejected":
-        return "Échec";
+        return "REFUSÉ";
       case "processing":
-        return "En traitement";
+        return "EN TRAITEMENT";
       case "pending":
-        return "En attente";
+        return "EN ATTENTE";
       default:
-        return status;
+        return status.toUpperCase();
     }
   };
 
@@ -73,12 +73,20 @@ export default function HistoryPage() {
     switch (status) {
       case "completed":
       case "approved":
-        return "#00BCD4";
+        return "#16a34a";
       case "rejected":
-        return "#EF4444";
+        return "#dc2626";
       default:
-        return "#F59E0B";
+        return "#f59e0b";
     }
+  };
+
+  const generateTxId = (id: number, createdAt: string) => {
+    const d = new Date(createdAt);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const datePart = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+    const hexPart = ((id * 0x9e3779b9 + 0xdeadbeef) >>> 0).toString(16).toUpperCase().padStart(8, "0").slice(0, 8);
+    return `T${datePart}${hexPart}`;
   };
 
   const formatDate = (dateString: string) => {
@@ -187,91 +195,81 @@ export default function HistoryPage() {
         ) : activeTab === "deposits" ? (
           deposits.map((deposit) => {
             const statusColor = getStatusColor(deposit.status);
+            const txId = generateTxId(deposit.id, deposit.createdAt);
             return (
               <div
                 key={deposit.id}
-                className="bg-white rounded-2xl shadow-sm px-4 py-3.5"
+                className="bg-white rounded-2xl shadow-sm"
+                style={{ borderLeft: "4px solid #16a34a" }}
                 data-testid={`deposit-item-${deposit.id}`}
               >
-                <div className="flex items-center gap-3">
-                  {/* Icon */}
-                  <div
-                    className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
-                    style={{ background: "linear-gradient(135deg, #DBEAFE, #BFDBFE)" }}
-                  >
-                    <img src={iconRecharger} alt="" className="w-6 h-6 object-contain"
-                      style={{ filter: "brightness(0) saturate(100%) invert(27%) sepia(95%) saturate(1200%) hue-rotate(188deg) brightness(95%)" }}
-                    />
+                <div className="px-4 py-3.5">
+                  {/* TX ID */}
+                  <p className="text-gray-400 text-xs font-mono mb-1">{txId}</p>
+
+                  {/* Row: label+amount | status */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-sm" style={{ color: "#16a34a" }}>
+                        DÉPÔT {currency} {parseFloat(deposit.amount).toLocaleString("fr-FR")}
+                      </p>
+                      <p className="text-gray-400 text-xs mt-0.5">{formatDate(deposit.createdAt)}</p>
+                    </div>
+                    <span className="font-bold text-sm shrink-0" style={{ color: statusColor }}>
+                      {getStatusLabel(deposit.status)}
+                    </span>
                   </div>
 
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-gray-800 font-bold text-sm">Recharger</p>
-                    <p className="text-xs mt-0.5" style={{ color: statusColor }}>
-                      {getStatusLabel(deposit.status, "deposit")}
-                    </p>
-                    <p className="text-gray-400 text-xs mt-0.5">{formatDate(deposit.createdAt)}</p>
-                  </div>
-
-                  {/* Amount */}
-                  <div className="text-right shrink-0">
-                    <p className="font-bold text-sm" style={{ color: statusColor }}>
-                      +{parseFloat(deposit.amount).toLocaleString()}{currency}
-                    </p>
-                  </div>
+                  {isPendingDeposit(deposit) && (
+                    <button
+                      onClick={() => handleVerify(deposit.id)}
+                      disabled={verifyingId === deposit.id}
+                      className="mt-3 w-full py-2 text-white text-xs font-bold rounded-full flex items-center justify-center gap-2 disabled:opacity-50"
+                      style={{ background: "#4ADE80" }}
+                      data-testid={`button-verify-${deposit.id}`}
+                    >
+                      {verifyingId === deposit.id
+                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        : <RefreshCw className="w-3.5 h-3.5" />}
+                      Vérifier la transaction
+                    </button>
+                  )}
                 </div>
-
-                {isPendingDeposit(deposit) && (
-                  <button
-                    onClick={() => handleVerify(deposit.id)}
-                    disabled={verifyingId === deposit.id}
-                    className="mt-3 w-full py-2 text-white text-xs font-bold rounded-full flex items-center justify-center gap-2 disabled:opacity-50"
-                    style={{ background: "#4ADE80" }}
-                    data-testid={`button-verify-${deposit.id}`}
-                  >
-                    {verifyingId === deposit.id
-                      ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      : <RefreshCw className="w-3.5 h-3.5" />}
-                    Vérifier la transaction
-                  </button>
-                )}
               </div>
             );
           })
         ) : (
           withdrawals.map((withdrawal) => {
             const statusColor = getStatusColor(withdrawal.status);
+            const txId = generateTxId(withdrawal.id, withdrawal.createdAt);
+            const netNum = withdrawal.netAmount ? parseFloat(withdrawal.netAmount) : null;
             return (
               <div
                 key={withdrawal.id}
-                className="bg-white rounded-2xl shadow-sm px-4 py-3.5"
+                className="bg-white rounded-2xl shadow-sm"
+                style={{ borderLeft: "4px solid #dc2626" }}
                 data-testid={`withdrawal-item-${withdrawal.id}`}
               >
-                <div className="flex items-center gap-3">
-                  {/* Icon */}
-                  <div
-                    className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
-                    style={{ background: "linear-gradient(135deg, #DBEAFE, #BFDBFE)" }}
-                  >
-                    <img src={iconRetraits} alt="" className="w-6 h-6 object-contain"
-                      style={{ filter: "brightness(0) saturate(100%) invert(27%) sepia(95%) saturate(1200%) hue-rotate(188deg) brightness(95%)" }}
-                    />
-                  </div>
+                <div className="px-4 py-3.5">
+                  {/* TX ID */}
+                  <p className="text-gray-400 text-xs font-mono mb-1">{txId}</p>
 
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-gray-800 font-bold text-sm">Retirer</p>
-                    <p className="text-xs mt-0.5" style={{ color: statusColor }}>
-                      {getStatusLabel(withdrawal.status, "withdrawal")}
-                    </p>
-                    <p className="text-gray-400 text-xs mt-0.5">{formatDate(withdrawal.createdAt)}</p>
-                  </div>
-
-                  {/* Amount */}
-                  <div className="text-right shrink-0">
-                    <p className="font-bold text-sm" style={{ color: statusColor }}>
-                      -{parseFloat(withdrawal.amount).toLocaleString()}{currency}
-                    </p>
+                  {/* Row: label+amount | status */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-sm" style={{ color: "#dc2626" }}>
+                        RETRAIT {currency} {parseFloat(withdrawal.amount).toLocaleString("fr-FR")}
+                      </p>
+                      {netNum !== null && (
+                        <p className="text-gray-500 text-xs mt-0.5">
+                          {currency} {netNum.toLocaleString("fr-FR")}
+                        </p>
+                      )}
+                      <p className="text-gray-400 text-xs mt-0.5">{formatDate(withdrawal.createdAt)}</p>
+                    </div>
+                    <span className="font-bold text-sm shrink-0" style={{ color: statusColor }}>
+                      {getStatusLabel(withdrawal.status)}
+                    </span>
                   </div>
                 </div>
               </div>
