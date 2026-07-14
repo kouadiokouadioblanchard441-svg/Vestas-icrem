@@ -69,7 +69,7 @@ export async function seed() {
       phonePrefix: "237",
       operators: JSON.stringify(["Orange Cameroun", "MTN Cameroun"]),
       isActive: true,
-      autoPaymentEnabled: false,
+      autoPaymentEnabled: true,
     },
     {
       code: "BF",
@@ -78,7 +78,7 @@ export async function seed() {
       phonePrefix: "226",
       operators: JSON.stringify(["Orange Burkina", "Moov Africa Burkina"]),
       isActive: true,
-      autoPaymentEnabled: false,
+      autoPaymentEnabled: true,
     },
     {
       code: "BJ",
@@ -87,7 +87,7 @@ export async function seed() {
       phonePrefix: "229",
       operators: JSON.stringify(["MTN Benin", "Moov Africa Benin"]),
       isActive: true,
-      autoPaymentEnabled: false,
+      autoPaymentEnabled: true,
     },
     {
       code: "CI",
@@ -96,7 +96,7 @@ export async function seed() {
       phonePrefix: "225",
       operators: JSON.stringify(["Orange CI", "MTN CI", "Moov Africa CI"]),
       isActive: true,
-      autoPaymentEnabled: false,
+      autoPaymentEnabled: true,
     },
     {
       code: "TG",
@@ -105,7 +105,7 @@ export async function seed() {
       phonePrefix: "228",
       operators: JSON.stringify(["Togocel", "Moov Africa Togo"]),
       isActive: true,
-      autoPaymentEnabled: false,
+      autoPaymentEnabled: true,
     },
   ];
 
