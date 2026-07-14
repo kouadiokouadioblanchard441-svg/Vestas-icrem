@@ -4,27 +4,36 @@ import { ChevronLeft } from "lucide-react";
 import { Link } from "wouter";
 import { getCountryByCode } from "@/lib/countries";
 import { Skeleton } from "@/components/ui/skeleton";
-import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 
 interface Withdrawal {
   id: number;
   amount: string;
   netAmount?: string;
+  fees?: string;
   status: string;
   createdAt: string;
+  paymentMethod?: string;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string }> = {
-  approved: { label: "Succès",     bg: "bg-gray-900",         text: "text-white" },
-  pending:  { label: "En attente", bg: "bg-red-600",           text: "text-white" },
-  rejected: { label: "Rejeté",     bg: "bg-red-600",           text: "text-white" },
-};
+function generateTxId(id: number, createdAt: string) {
+  const d = new Date(createdAt);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const datePart = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+  const hexPart = (id * 0x9e3779b9 + 0xdeadbeef).toString(16).toUpperCase().padStart(8, "0").slice(0, 8);
+  return `T${datePart}${hexPart}`;
+}
 
 function formatDate(iso: string) {
   const d = new Date(iso);
   const pad = (n: number) => String(n).padStart(2, "0");
-  return `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
+
+const STATUS: Record<string, { label: string; color: string }> = {
+  approved: { label: "SUCCÈS",     color: "#16a34a" },
+  pending:  { label: "EN ATTENTE", color: "#f59e0b" },
+  rejected: { label: "REFUSÉ",     color: "#dc2626" },
+};
 
 export default function WithdrawalHistoryPage() {
   const { user } = useAuth();
@@ -36,62 +45,70 @@ export default function WithdrawalHistoryPage() {
   });
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
       <header className="flex items-center px-4 py-3 bg-white border-b border-gray-200">
         <Link href="/account">
           <button className="p-1 mr-2" data-testid="button-back">
-            <ChevronLeft className="w-5 h-5 text-[#F59E0B]" />
+            <ChevronLeft className="w-5 h-5 text-gray-700" />
           </button>
         </Link>
-        <h1 className="flex-1 text-center text-base font-bold text-gray-900 pr-8">
+        <h1 className="flex-1 text-center text-sm font-bold text-gray-900 pr-8 tracking-wide uppercase">
           Historique des retraits
         </h1>
       </header>
 
-      <div className="p-4 space-y-3">
+      <div className="flex-1">
         {isLoading ? (
-          Array(4).fill(0).map((_, i) => (
-            <Skeleton key={i} className="h-28 w-full rounded-2xl" />
-          ))
+          <div className="p-4 space-y-3">
+            {Array(4).fill(0).map((_, i) => (
+              <Skeleton key={i} className="h-20 w-full" />
+            ))}
+          </div>
         ) : withdrawals.length === 0 ? (
-          <div className="text-center py-16">
+          <div className="text-center py-20">
             <p className="text-gray-400 text-sm">Aucun retrait pour le moment</p>
           </div>
         ) : (
-          withdrawals.map((w) => {
-            const cfg = STATUS_CONFIG[w.status] || { label: w.status, bg: "bg-gray-500", text: "text-white" };
-            return (
-              <div key={w.id} className="bg-white rounded-2xl overflow-hidden shadow-sm">
-                {/* Red top bar */}
-                <div className="h-3 rounded-t-2xl" style={{ backgroundColor: "#ff0000" }} />
+          <div className="bg-white">
+            {withdrawals.map((w, idx) => {
+              const st = STATUS[w.status] || { label: w.status.toUpperCase(), color: "#6b7280" };
+              const txId = generateTxId(w.id, w.createdAt);
+              const amountNum = parseFloat(w.amount);
+              const netNum = w.netAmount ? parseFloat(w.netAmount) : null;
 
-                <div className="px-5 py-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500 text-sm">Montant</span>
-                    <span className="font-bold text-base" style={{ color: "#ff0000" }}>
-                      {parseFloat(w.amount).toLocaleString()}
+              return (
+                <div
+                  key={w.id}
+                  className="px-4 py-4"
+                  style={{ borderBottom: "1px solid #f0f0f0" }}
+                >
+                  {/* Transaction ID */}
+                  <p className="text-gray-400 text-xs mb-1 font-mono">{txId}</p>
+
+                  {/* Row: type+amount | status */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <p className="font-bold text-sm" style={{ color: "#dc2626" }}>
+                        RETRAIT {currency} {amountNum.toLocaleString("fr-FR")}
+                      </p>
+                      {netNum !== null && (
+                        <p className="text-gray-500 text-xs mt-0.5">
+                          {currency} {netNum.toLocaleString("fr-FR")}
+                        </p>
+                      )}
+                      <p className="text-gray-400 text-xs mt-0.5">{formatDate(w.createdAt)}</p>
+                    </div>
+                    <span className="font-bold text-sm ml-4 shrink-0" style={{ color: st.color }}>
+                      {st.label}
                     </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500 text-sm">État</span>
-                    <span className={`${cfg.bg} ${cfg.text} text-xs font-semibold px-4 py-1.5 rounded-full`}>
-                      {cfg.label}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500 text-sm">Date</span>
-                    <span className="text-gray-400 text-sm">{formatDate(w.createdAt)}</span>
                   </div>
                 </div>
-              </div>
-            );
-          })
+              );
+            })}
+          </div>
         )}
       </div>
-      <img src={landscapeImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

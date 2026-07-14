@@ -1,18 +1,36 @@
 import { useAuth } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Link } from "wouter";
 import { getCountryByCode } from "@/lib/countries";
 import { Skeleton } from "@/components/ui/skeleton";
-import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 
 interface Deposit {
   id: number;
-  userId: number;
   amount: string;
   status: string;
   createdAt: string;
 }
+
+function generateTxId(id: number, createdAt: string) {
+  const d = new Date(createdAt);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const datePart = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+  const hexPart = (id * 0x9e3779b9 + 0xdeadbeef).toString(16).toUpperCase().padStart(8, "0").slice(0, 8);
+  return `T${datePart}${hexPart}`;
+}
+
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+const STATUS: Record<string, { label: string; color: string }> = {
+  approved: { label: "SUCCÈS",     color: "#16a34a" },
+  pending:  { label: "EN ATTENTE", color: "#f59e0b" },
+  rejected: { label: "REFUSÉ",     color: "#dc2626" },
+};
 
 export default function DepositHistoryRealPage() {
   const { user } = useAuth();
@@ -23,82 +41,65 @@ export default function DepositHistoryRealPage() {
     queryKey: ["/api/deposits/history"],
   });
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "approved":
-        return "text-green-600 bg-green-100";
-      case "pending":
-        return "text-green-600 bg-green-100";
-      case "rejected":
-        return "text-red-600 bg-red-100";
-      default:
-        return "text-gray-600 bg-gray-100";
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "approved":
-        return "Approuve";
-      case "pending":
-        return "En attente";
-      case "rejected":
-        return "Rejete";
-      default:
-        return status;
-    }
-  };
-
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
-      <header className="flex items-center px-4 py-3 border-b bg-white">
+    <div className="flex flex-col min-h-screen bg-white">
+      {/* Header */}
+      <header className="flex items-center px-4 py-3 bg-white border-b border-gray-200">
         <Link href="/deposit">
-          <button className="p-2" data-testid="button-back">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button className="p-1 mr-2" data-testid="button-back">
+            <ChevronLeft className="w-5 h-5 text-gray-700" />
           </button>
         </Link>
-        <h1 className="flex-1 text-center text-lg font-semibold text-gray-800 pr-8">Historique des depots</h1>
+        <h1 className="flex-1 text-center text-sm font-bold text-gray-900 pr-8 tracking-wide uppercase">
+          Historique des dépôts
+        </h1>
       </header>
 
-      <div className="p-4 space-y-4">
+      <div className="flex-1">
         {isLoading ? (
-          <div className="space-y-3">
-            {Array(5).fill(0).map((_, i) => (
-              <Skeleton key={i} className="h-20 w-full rounded-lg" />
+          <div className="p-4 space-y-3">
+            {Array(4).fill(0).map((_, i) => (
+              <Skeleton key={i} className="h-20 w-full" />
             ))}
           </div>
         ) : deposits.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500">Aucun depot effectue</p>
+          <div className="text-center py-20">
+            <p className="text-gray-400 text-sm">Aucun dépôt pour le moment</p>
           </div>
         ) : (
-          deposits.map((deposit) => {
-            const date = new Date(deposit.createdAt);
-            return (
-              <div
-                key={deposit.id}
-                className="bg-white rounded-lg p-4 border"
-                data-testid={`deposit-item-${deposit.id}`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      {parseFloat(deposit.amount).toLocaleString()} {currency}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {date.toLocaleDateString('fr-FR')} a {date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                    </p>
+          <div className="bg-white">
+            {deposits.map((dep) => {
+              const st = STATUS[dep.status] || { label: dep.status.toUpperCase(), color: "#6b7280" };
+              const txId = generateTxId(dep.id, dep.createdAt);
+              const amountNum = parseFloat(dep.amount);
+
+              return (
+                <div
+                  key={dep.id}
+                  className="px-4 py-4"
+                  style={{ borderBottom: "1px solid #f0f0f0" }}
+                >
+                  {/* Transaction ID */}
+                  <p className="text-gray-400 text-xs mb-1 font-mono">{txId}</p>
+
+                  {/* Row: type+amount | status */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <p className="font-bold text-sm" style={{ color: "#16a34a" }}>
+                        DÉPÔT {currency} {amountNum.toLocaleString("fr-FR")}
+                      </p>
+                      <p className="text-gray-400 text-xs mt-0.5">{formatDate(dep.createdAt)}</p>
+                    </div>
+                    <span className="font-bold text-sm ml-4 shrink-0" style={{ color: st.color }}>
+                      {st.label}
+                    </span>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(deposit.status)}`}>
-                    {getStatusText(deposit.status)}
-                  </span>
                 </div>
-              </div>
-            );
-          })
+              );
+            })}
+          </div>
         )}
       </div>
-      <img src={landscapeImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }
