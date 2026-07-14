@@ -135,14 +135,22 @@ export async function seed() {
     }
   }
 
+  // Always sync VIP product images (safe — only touches imageUrl, never prices or earnings)
+  const vipImages = ['/solar-panel-1.webp', '/solar-panel-2.webp', '/solar-panel-3.jpg'];
+  const allProducts = await db.select().from(products);
+  const paidProducts = allProducts.filter(p => !p.isFree).sort((a, b) => a.sortOrder - b.sortOrder);
+  for (let i = 0; i < paidProducts.length; i++) {
+    await db.update(products).set({ imageUrl: vipImages[i % 3] }).where(eq(products.id, paidProducts[i].id));
+  }
+
   // Seed products only if table is empty (first install only — never overwrite admin changes)
-  const existingProducts = await db.select().from(products);
+  const existingProducts = allProducts;
   if (existingProducts.length === 0) {
     const defaultProducts = [
       { name: "Bonus Gratuit", price: 0, dailyEarnings: 50, cycleDays: 1, totalReturn: 50, isFree: true, sortOrder: 0 },
-      { name: "VIP 1", price: 4000, dailyEarnings: 300, cycleDays: 90, totalReturn: 27000, sortOrder: 1 },
-      { name: "VIP 2", price: 10000, dailyEarnings: 800, cycleDays: 90, totalReturn: 72000, sortOrder: 2 },
-      { name: "VIP 3", price: 15000, dailyEarnings: 1500, cycleDays: 90, totalReturn: 135000, sortOrder: 3 },
+      { name: "VIP 1", price: 4000, dailyEarnings: 300, cycleDays: 90, totalReturn: 27000, imageUrl: '/solar-panel-1.webp', sortOrder: 1 },
+      { name: "VIP 2", price: 10000, dailyEarnings: 800, cycleDays: 90, totalReturn: 72000, imageUrl: '/solar-panel-2.webp', sortOrder: 2 },
+      { name: "VIP 3", price: 15000, dailyEarnings: 1500, cycleDays: 90, totalReturn: 135000, imageUrl: '/solar-panel-3.jpg', sortOrder: 3 },
       { name: "VIP 4", price: 25000, dailyEarnings: 2000, cycleDays: 90, totalReturn: 180000, sortOrder: 4 },
       { name: "VIP 5", price: 40000, dailyEarnings: 3500, cycleDays: 90, totalReturn: 315000, sortOrder: 5 },
       { name: "VIP 6", price: 100000, dailyEarnings: 10000, cycleDays: 90, totalReturn: 900000, sortOrder: 6 },
