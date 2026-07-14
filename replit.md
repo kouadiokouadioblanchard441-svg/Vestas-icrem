@@ -10,6 +10,30 @@ SpolarPV is a mobile-first investment platform targeting French-speaking African
 - On first run after import: `npm install`, then `npm run db:push` to create the schema (this prompts per-table; answer "create table" for each), then start the `Start application` workflow (`npm run dev`). The server seeds default data (super admin, countries, products, tasks, settings) automatically on first boot.
 - Super admin login: Phone `99935673`, Country Togo (TG), Password `pagetstudio`.
 
+## Déploiement Plesk
+
+### Structure de build
+- `npm run build` produit deux artefacts :
+  - `dist/public/` — frontend React compilé (Vite)
+  - `dist/index.cjs` — backend Express bundlé (esbuild, ~1.1 MB)
+- `dist/index.cjs` sert à la fois l'API Express (`/api/*`) et le frontend compilé (catch-all → `dist/public/index.html`)
+
+### Étapes de déploiement sur Plesk
+1. `npm install`
+2. `npm run build`
+3. Plesk pointe l'entrée Node.js sur `dist/index.cjs`
+4. Configurer les variables d'environnement dans Plesk :
+   - `DATABASE_URL` — connexion PostgreSQL
+   - `SESSION_SECRET` — secret pour les sessions Express
+   - `NODE_ENV=production`
+   - `PORT` — port d'écoute (défaut : 5000)
+5. Au premier démarrage, le serveur seed automatiquement la base de données
+
+### Points importants
+- Pas de proxy Vite en production — Express sert directement les fichiers statiques
+- Le frontend et le backend tournent sur le même process Node.js / même port
+- `server/static.ts` sert `dist/public/` et renvoie `index.html` pour toutes les routes non-API
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
