@@ -6,8 +6,8 @@ SpolarPV is a mobile-first investment platform targeting French-speaking African
 
 ## Running Locally on Replit
 
-- `DATABASE_URL` (PostgreSQL) must be set — it is provisioned automatically by Replit.
-- On first run after import: `npm install`, then `npm run db:push` to create the schema (this prompts per-table; answer "create table" for each), then start the `Start application` workflow (`npm run dev`). The server seeds default data (super admin, countries, products, tasks, settings) automatically on first boot.
+- Database: `server/db.ts` prefers `SUPABASE_DATABASE_URL` over `DATABASE_URL` if set. This project is currently configured to use an external Supabase Postgres database via the `SUPABASE_DATABASE_URL` secret (SSL enabled automatically when that var is set), instead of Replit's built-in Postgres.
+- On first run after import: `npm install`, then `npm run db:push -- --force` to sync the schema, then start the `Start application` workflow (`npm run dev`). The server seeds default data (super admin, countries, products, tasks, settings) on boot, but preserves existing rows if they're already present (e.g. products/tasks/settings already seeded in the connected Supabase DB are left untouched).
 - Super admin login: Phone `99935673`, Country Cameroun (CM), Password `AAbb11##` (default; override via `ADMIN_PASSWORD` env var). The seed script re-applies this password/country on every server boot, overriding any manual change to the admin account.
 
 ## Déploiement Plesk
