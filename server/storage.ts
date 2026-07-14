@@ -40,7 +40,7 @@ export interface IStorage {
   getDeposits(status?: string): Promise<(Deposit & { user: User })[]>;
   getUserDeposits(userId: number): Promise<Deposit[]>;
   updateDeposit(id: number, data: Partial<Deposit>): Promise<Deposit>;
-  findProcessingWestpayDeposit(amount: number): Promise<Deposit | undefined>;
+  findProcessingWestpayDeposit(amount: number, payerPhone?: string): Promise<Deposit | undefined>;
   cleanupDepositScreenshots(): Promise<void>;
   
   // Withdrawals
@@ -531,7 +531,21 @@ export class DatabaseStorage implements IStorage {
     return deposit;
   }
 
-  async findProcessingWestpayDeposit(amount: number): Promise<Deposit | undefined> {
+  async findProcessingWestpayDeposit(amount: number, payerPhone?: string): Promise<Deposit | undefined> {
+    // Try exact match: amount + payer phone (most precise, avoids race conditions)
+    if (payerPhone) {
+      const [byPhone] = await db.select().from(deposits)
+        .where(and(
+          eq(deposits.channelName, "westpay"),
+          eq(deposits.status, "processing"),
+          eq(deposits.amount, amount),
+          eq(deposits.accountNumber, payerPhone),
+        ))
+        .orderBy(desc(deposits.createdAt))
+        .limit(1);
+      if (byPhone) return byPhone;
+    }
+    // Fallback: amount only (for cases where payer phone differs from registered phone)
     const [deposit] = await db.select().from(deposits)
       .where(and(
         eq(deposits.channelName, "westpay"),

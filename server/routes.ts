@@ -941,8 +941,8 @@ export async function registerRoutes(
       };
       console.log(`[westpay webhook] payment.confirmed txId=${txId} amount=${amount} payer=${payer}`);
 
-      // Find the most recent processing WestPay deposit with matching amount
-      const deposit = await storage.findProcessingWestpayDeposit(Number(amount));
+      // Find the deposit: match by amount + payer phone (precise), fallback to amount only
+      const deposit = await storage.findProcessingWestpayDeposit(Number(amount), payer);
       if (!deposit) {
         console.error(`[westpay webhook] No matching deposit for amount=${amount} txId=${txId}`);
         return res.json({ received: true });
