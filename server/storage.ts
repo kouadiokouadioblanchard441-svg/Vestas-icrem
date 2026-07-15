@@ -591,11 +591,20 @@ export class DatabaseStorage implements IStorage {
       if (targetSuffix) {
         const match = candidates.find(d => normalizePhoneSuffix(d.accountNumber) === targetSuffix);
         if (match) return match;
+        // A payer phone WAS provided by the gateway but it doesn't match any
+        // candidate's registered number. Do NOT fall back to FIFO here: with
+        // more than one processing deposit of the same amount, guessing risks
+        // crediting the wrong user's account (confirmed to happen in practice).
+        // Only fall back when there is exactly one candidate — matching amount
+        // alone is then unambiguous regardless of phone formatting differences.
+        if (candidates.length === 1) return candidates[0];
+        return undefined;
       }
     }
 
-    // Fallback: oldest processing deposit of this amount (FIFO — safest guess when the
-    // payer number doesn't match anything on file, e.g. someone paid from a different phone).
+    // No payer phone supplied at all (some gateways omit it): fall back to the
+    // oldest processing deposit of this amount (FIFO) — still a guess, but the
+    // best available signal when there's nothing else to disambiguate on.
     return candidates[0];
   }
 
