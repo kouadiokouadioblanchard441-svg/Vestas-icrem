@@ -1356,6 +1356,70 @@ export async function registerRoutes(
     }
   });
 
+  // ── Admin : test webhook WestPay ─────────────────────────────────────────
+  app.post("/api/admin/test-webhook", requireAdmin, async (req, res) => {
+    try {
+      const { targetUrl } = req.body as { targetUrl?: string };
+      if (!targetUrl || !targetUrl.startsWith("http")) {
+        return res.status(400).json({ success: false, error: "URL cible invalide" });
+      }
+
+      const settings = await storage.getSettings();
+      const webhookSecret = process.env.WESTPAY_WEBHOOK_SECRET || settings.westpayWebhookSecret;
+      if (!webhookSecret) {
+        return res.status(400).json({ success: false, error: "Aucun secret webhook configuré. Enregistre d'abord la clé secrète WestPay." });
+      }
+
+      const { createHmac } = await import("crypto");
+      const payload = JSON.stringify({
+        event: "test",
+        txId: `TEST-${Date.now()}`,
+        amount: 1000,
+        currency: "XOF",
+        payer: "+22890000000",
+        country: "Togo",
+        merchantSlug: process.env.WESTPAY_MERCHANT_SLUG || "business",
+        timestamp: new Date().toISOString(),
+        test: true,
+      });
+      const signature = createHmac("sha256", webhookSecret).update(payload).digest("hex");
+
+      const start = Date.now();
+      let httpStatus: number | null = null;
+      let responseBody = "";
+      let networkError: string | null = null;
+
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10_000);
+        const resp = await fetch(targetUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-robotpay-event": "test",
+            "x-robotpay-signature": signature,
+            "User-Agent": "WestPay-Webhook/1.0",
+          },
+          body: payload,
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+        httpStatus = resp.status;
+        responseBody = (await resp.text()).slice(0, 600);
+      } catch (fetchErr: any) {
+        networkError = fetchErr.name === "AbortError" ? "Timeout (10 s) — le serveur n'a pas répondu" : fetchErr.message;
+      }
+
+      const duration = Date.now() - start;
+      const success = httpStatus !== null && httpStatus >= 200 && httpStatus < 300;
+
+      console.log(`[test-webhook] targetUrl=${targetUrl} status=${httpStatus} duration=${duration}ms error=${networkError}`);
+      return res.json({ success, httpStatus, duration, responseBody, networkError });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
   // Admin routes
   app.get("/api/admin/stats", requireAdmin, async (req, res) => {
     try {

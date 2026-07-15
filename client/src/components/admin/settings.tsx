@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Loader2, Save, Link, Clock, Users } from "lucide-react";
+import { Loader2, Save, Link, Clock, Users, Send, CheckCircle2, XCircle, Wifi } from "lucide-react";
 
 const NETWORKS = [
   { value: "telegram", label: "Telegram" },
@@ -64,6 +64,38 @@ interface AdminSettingsProps {
 
 export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
   const { toast } = useToast();
+
+  // ── Test webhook WestPay ──────────────────────────────────────────────────
+  const [webhookTestUrl, setWebhookTestUrl] = useState("");
+  const [webhookTestResult, setWebhookTestResult] = useState<{
+    success: boolean;
+    httpStatus?: number | null;
+    duration?: number;
+    responseBody?: string;
+    networkError?: string | null;
+    error?: string;
+  } | null>(null);
+  const [webhookTesting, setWebhookTesting] = useState(false);
+
+  const runWebhookTest = async () => {
+    if (!webhookTestUrl) return;
+    setWebhookTesting(true);
+    setWebhookTestResult(null);
+    try {
+      const res = await fetch("/api/admin/test-webhook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetUrl: webhookTestUrl }),
+        credentials: "include",
+      });
+      const data = await res.json();
+      setWebhookTestResult(data);
+    } catch (e: any) {
+      setWebhookTestResult({ success: false, error: e.message });
+    } finally {
+      setWebhookTesting(false);
+    }
+  };
 
   const { data: settings, isLoading } = useQuery<Record<string, string>>({
     queryKey: ["/api/admin/settings"],
@@ -557,6 +589,87 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
                 <FormMessage />
               </FormItem>
             )} />
+
+            {/* ── Testeur de connexion webhook ── */}
+            <div className="rounded-xl border border-dashed border-gray-600 p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <Wifi className="w-4 h-4 text-blue-400" />
+                <p className="text-sm font-medium">Tester la connexion webhook (Plesk)</p>
+              </div>
+              <p className="text-xs text-gray-400">
+                Envoie un événement <span className="font-mono">test</span> signé vers l'URL de ton serveur Plesk
+                pour vérifier que WestPay peut atteindre ton webhook.
+              </p>
+              <div className="flex gap-2">
+                <Input
+                  value={webhookTestUrl}
+                  onChange={e => setWebhookTestUrl(e.target.value)}
+                  placeholder="https://tondomaine.com/api/webhook/westpay"
+                  className="text-xs font-mono flex-1"
+                />
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={runWebhookTest}
+                  disabled={webhookTesting || !webhookTestUrl}
+                  className="shrink-0"
+                >
+                  {webhookTesting
+                    ? <Loader2 className="w-4 h-4 animate-spin" />
+                    : <><Send className="w-3 h-3 mr-1" />Tester</>}
+                </Button>
+              </div>
+
+              {webhookTestResult && (
+                <div className={`rounded-lg p-3 text-xs space-y-1.5 ${webhookTestResult.success ? "bg-green-950 border border-green-700" : "bg-red-950 border border-red-700"}`}>
+                  <div className="flex items-center gap-2 font-semibold">
+                    {webhookTestResult.success
+                      ? <CheckCircle2 className="w-4 h-4 text-green-400" />
+                      : <XCircle className="w-4 h-4 text-red-400" />}
+                    <span className={webhookTestResult.success ? "text-green-300" : "text-red-300"}>
+                      {webhookTestResult.success ? "Connexion réussie ✓" : "Connexion échouée ✗"}
+                    </span>
+                  </div>
+
+                  {webhookTestResult.httpStatus != null && (
+                    <div className="text-gray-300">
+                      Statut HTTP : <span className="font-mono font-bold">{webhookTestResult.httpStatus}</span>
+                      {webhookTestResult.duration != null && (
+                        <span className="ml-3 text-gray-400">({webhookTestResult.duration} ms)</span>
+                      )}
+                    </div>
+                  )}
+
+                  {webhookTestResult.networkError && (
+                    <div className="text-red-300">
+                      Erreur réseau : <span className="font-mono">{webhookTestResult.networkError}</span>
+                    </div>
+                  )}
+
+                  {webhookTestResult.error && (
+                    <div className="text-red-300">
+                      Erreur : <span className="font-mono">{webhookTestResult.error}</span>
+                    </div>
+                  )}
+
+                  {webhookTestResult.responseBody && (
+                    <div>
+                      <span className="text-gray-400">Réponse du serveur :</span>
+                      <pre className="mt-1 font-mono text-[11px] bg-black/40 rounded p-2 overflow-x-auto whitespace-pre-wrap break-all text-gray-200">
+                        {webhookTestResult.responseBody}
+                      </pre>
+                    </div>
+                  )}
+
+                  {webhookTestResult.success && (
+                    <p className="text-green-400 text-[11px]">
+                      ✓ Le serveur Plesk est joignable et a bien reçu le webhook signé.
+                      Vérifie dans tes logs Plesk que l'événement "test" est bien traité.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
 
