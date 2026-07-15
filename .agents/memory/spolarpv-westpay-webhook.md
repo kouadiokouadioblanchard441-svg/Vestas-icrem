@@ -18,3 +18,7 @@ Correction (verified 2026-07-15): this Replit workspace's `SUPABASE_DATABASE_URL
 **Why:** guessing is unsafe when money is involved — the safe default when a payer phone doesn't match anyone is to NOT auto-approve, not to pick the closest thing.
 
 **How to apply:** the fixed rule (in `server/storage.ts`) only falls back to FIFO when either (a) the gateway didn't supply a payer phone at all, or (b) there is exactly one processing candidate for that amount (so amount alone is unambiguous). If a payer phone is supplied and doesn't match, and there are 2+ same-amount candidates, the deposit is left unmatched (requires manual admin review) rather than guessing. Apply the same caution to any other gateway matching logic (Soleaspay/OmniPay) if it has a similar blind FIFO fallback.
+
+Also fixed same day: `approveWestpayDeposit` now overwrites the deposit's `accountNumber` with the real payer phone reported by the webhook (previously it kept showing the account owner's registered phone, not the actual mobile-money number used to pay — confusing in the admin panel).
+
+Status: verified fixed and confirmed working end-to-end in production (Plesk) on 2026-07-15 — signature check, deposit matching, balance crediting, and payer-number display all confirmed via a live test deposit.
