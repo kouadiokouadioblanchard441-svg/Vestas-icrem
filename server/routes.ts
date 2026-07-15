@@ -935,10 +935,23 @@ export async function registerRoutes(
     let signatureValidForLog: boolean | null = null;
     const logWebhookCall = async (outcome: string) => {
       try {
+        // SECURITY: never store the full req.headers object — this server's
+        // reverse-proxy setup has been observed leaking internal Passenger/
+        // nginx env vars (secrets, DB credentials) into request headers on
+        // this exact route (discovered 2026-07-15). Only persist a safe,
+        // explicit whitelist of headers needed for diagnostics.
+        const safeHeaders = {
+          "x-robotpay-event": req.headers["x-robotpay-event"] ?? null,
+          "content-type": req.headers["content-type"] ?? null,
+          "content-length": req.headers["content-length"] ?? null,
+          "user-agent": req.headers["user-agent"] ?? null,
+          "x-forwarded-for": req.headers["x-forwarded-for"] ?? null,
+          signaturePresent: !!req.headers["x-robotpay-signature"],
+        };
         await db.insert(webhookLogs).values({
           source: "westpay",
           method: req.method,
-          headers: JSON.stringify(req.headers),
+          headers: JSON.stringify(safeHeaders),
           body: JSON.stringify(req.body ?? {}),
           signatureValid: signatureValidForLog,
           outcome,
