@@ -964,11 +964,15 @@ export async function registerRoutes(
     try {
       const signature = (req.headers["x-robotpay-signature"] as string) || "";
       const event = (req.headers["x-robotpay-event"] as string) || "";
-      // Prefer the secret configured in the admin panel (platform_settings table,
-      // editable without redeploying/touching env vars on Plesk); fall back to
-      // the WESTPAY_WEBHOOK_SECRET env var for backward compatibility.
+      // Plesk's WESTPAY_WEBHOOK_SECRET env var is the source of truth (set directly
+      // on the production server, outside this app's database) and always wins when
+      // present. The platform_settings DB value (editable from Admin > Paramètres)
+      // is only a fallback for environments where the env var isn't set (e.g. this
+      // Replit dev workspace). This priority was flipped on 2026-07-15 at the user's
+      // request, after a DB/dashboard secret mismatch caused silently-rejected
+      // webhooks — see .agents/memory/spolarpv-westpay-webhook.md.
       const settings = await storage.getSettings();
-      const webhookSecret = settings.westpayWebhookSecret || process.env.WESTPAY_WEBHOOK_SECRET;
+      const webhookSecret = process.env.WESTPAY_WEBHOOK_SECRET || settings.westpayWebhookSecret;
 
       if (!webhookSecret) {
         console.error("[westpay webhook] No webhook secret configured (set it in Admin > Paramètres > WestPay, or WESTPAY_WEBHOOK_SECRET env var)");

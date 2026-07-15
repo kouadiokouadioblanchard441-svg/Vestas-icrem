@@ -548,6 +548,11 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
                   WestPay signe chaque appel webhook avec cette clé (HMAC-SHA256). Sans elle, les dépôts automatiques
                   ne sont jamais crédités, même si le webhook atteint bien le serveur. URL à enregistrer chez WestPay :{" "}
                   <span className="font-mono text-[11px] break-all">https://tondomaine.com/api/webhook/westpay</span>
+                  <br />
+                  <span className="font-semibold">Priorité :</span> la variable d'environnement{" "}
+                  <span className="font-mono text-[11px]">WESTPAY_WEBHOOK_SECRET</span> configurée sur ton serveur Plesk
+                  fait toujours foi si elle est définie — cette valeur ici ne sert que si Plesk n'a pas cette variable.
+                  Garde les deux synchronisées pour éviter toute confusion.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
