@@ -253,6 +253,20 @@ export const adminAuditLog = pgTable("admin_audit_log", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Raw webhook delivery log (diagnostic: records every inbound call to the
+// WestPay webhook endpoint, before signature validation, so we can tell
+// whether the gateway actually reached our server vs. never called it).
+export const webhookLogs = pgTable("webhook_logs", {
+  id: serial("id").primaryKey(),
+  source: text("source").notNull(),
+  method: text("method").notNull(),
+  headers: text("headers").notNull(),
+  body: text("body").notNull(),
+  signatureValid: boolean("signature_valid"),
+  outcome: text("outcome").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 // Gift codes
 export const giftCodes = pgTable("gift_codes", {
   id: serial("id").primaryKey(),

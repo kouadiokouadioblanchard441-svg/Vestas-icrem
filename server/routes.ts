@@ -14,6 +14,8 @@ import {
   SOLEASPAY_SERVICE_MAP 
 } from "./soleaspay";
 import { buildPaymentUrl, verifyWebhookSignature, getWestpayCountry } from "./westpay";
+import { db } from "./db";
+import { webhookLogs } from "@shared/schema";
 
 // --- Brute-force protection (in-memory) ---
 const loginAttempts = new Map<string, { count: number; blockedUntil: number }>();
@@ -926,6 +928,26 @@ export async function registerRoutes(
   // express.json() already consumed the stream AND saved the raw buffer on req.rawBody
   // (via the "verify" callback in server/index.ts). We use that for HMAC verification.
   app.post("/api/webhook/westpay", async (req, res) => {
+    // DIAGNOSTIC: record every inbound call to this endpoint, before any
+    // validation, so we can tell from the DB whether WestPay's server ever
+    // actually reached ours (as opposed to failing silently at the network/
+    // reverse-proxy level, e.g. redirect not followed, DNS/TLS issue, etc).
+    let signatureValidForLog: boolean | null = null;
+    const logWebhookCall = async (outcome: string) => {
+      try {
+        await db.insert(webhookLogs).values({
+          source: "westpay",
+          method: req.method,
+          headers: JSON.stringify(req.headers),
+          body: JSON.stringify(req.body ?? {}),
+          signatureValid: signatureValidForLog,
+          outcome,
+        });
+      } catch (logErr) {
+        console.error("[westpay webhook] Failed to write diagnostic log:", logErr);
+      }
+    };
+
     try {
       const signature = (req.headers["x-robotpay-signature"] as string) || "";
       const event = (req.headers["x-robotpay-event"] as string) || "";
@@ -937,6 +959,7 @@ export async function registerRoutes(
 
       if (!webhookSecret) {
         console.error("[westpay webhook] No webhook secret configured (set it in Admin > Paramètres > WestPay, or WESTPAY_WEBHOOK_SECRET env var)");
+        await logWebhookCall("no_secret_configured");
         return res.json({ received: true });
       }
 
@@ -944,13 +967,17 @@ export async function registerRoutes(
       const rawBody: Buffer | undefined = (req as any).rawBody;
       const bodyStr = rawBody ? rawBody.toString("utf8") : JSON.stringify(req.body);
 
-      if (!signature || !verifyWebhookSignature(bodyStr, signature, webhookSecret)) {
+      const sigOk = !!signature && verifyWebhookSignature(bodyStr, signature, webhookSecret);
+      signatureValidForLog = sigOk;
+      if (!sigOk) {
         console.error(`[westpay webhook] Invalid HMAC signature — rejecting. event=${event} bodyLen=${bodyStr.length} sigPresent=${!!signature}`);
+        await logWebhookCall("invalid_signature");
         return res.status(401).json({ error: "Signature invalide" });
       }
 
       if (event !== "payment.confirmed") {
         console.log(`[westpay webhook] Ignoring event=${event} (not payment.confirmed)`);
+        await logWebhookCall(`ignored_event:${event}`);
         return res.json({ received: true });
       }
 
@@ -964,6 +991,7 @@ export async function registerRoutes(
       const deposit = await storage.findProcessingWestpayDeposit(Number(amount), payer);
       if (!deposit) {
         console.error(`[westpay webhook] No matching PROCESSING deposit found for amount=${amount} txId=${txId} payer=${payer} — it may have already been approved/rejected manually, or no deposit for that amount was ever initiated.`);
+        await logWebhookCall("no_matching_deposit");
         return res.json({ received: true });
       }
       console.log(`[westpay webhook] Matched deposit #${deposit.id} (stored phone=${deposit.accountNumber}) for txId=${txId}`);
@@ -974,6 +1002,7 @@ export async function registerRoutes(
       const approved = await storage.approveWestpayDeposit(deposit.id, txId, payer);
       if (!approved) {
         console.log(`[westpay webhook] Deposit #${deposit.id} already processed — ignoring duplicate webhook (txId=${txId})`);
+        await logWebhookCall(`duplicate_already_processed:deposit_${deposit.id}`);
         return res.json({ received: true });
       }
 
@@ -993,9 +1022,11 @@ export async function registerRoutes(
       }
 
       console.log(`[westpay webhook] Deposit #${deposit.id} approved — user ${deposit.userId} +${deposit.amount}`);
+      await logWebhookCall(`approved:deposit_${deposit.id}`);
       return res.json({ received: true });
     } catch (err: any) {
       console.error("[westpay webhook] Error:", err);
+      await logWebhookCall(`error:${err?.message || "unknown"}`);
       return res.json({ received: true }); // Always return 200 to WestPay
     }
   });
