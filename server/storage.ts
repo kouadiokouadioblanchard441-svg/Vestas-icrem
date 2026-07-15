@@ -48,7 +48,7 @@ export interface IStorage {
   getUserDeposits(userId: number): Promise<Deposit[]>;
   updateDeposit(id: number, data: Partial<Deposit>): Promise<Deposit>;
   findProcessingWestpayDeposit(amount: number, payerPhone?: string): Promise<Deposit | undefined>;
-  approveWestpayDeposit(id: number, txId: string): Promise<Deposit | undefined>;
+  approveWestpayDeposit(id: number, txId: string, payerPhone?: string): Promise<Deposit | undefined>;
   cleanupDepositScreenshots(): Promise<void>;
   
   // Withdrawals
@@ -612,9 +612,17 @@ export class DatabaseStorage implements IStorage {
   // still "processing". Returns undefined if another request already claimed
   // it (e.g. a WestPay webhook retry / duplicate delivery), which prevents
   // double-crediting the user's balance.
-  async approveWestpayDeposit(id: number, txId: string): Promise<Deposit | undefined> {
+  async approveWestpayDeposit(id: number, txId: string, payerPhone?: string): Promise<Deposit | undefined> {
     const [deposit] = await db.update(deposits)
-      .set({ status: "approved", reference: txId, processedAt: new Date() })
+      .set({
+        status: "approved",
+        reference: txId,
+        processedAt: new Date(),
+        // Overwrite with the real mobile-money number WestPay reports as having
+        // paid (may differ from the account's registered phone) so the admin
+        // panel shows what was actually used to pay, not just the account owner's number.
+        ...(payerPhone ? { accountNumber: payerPhone } : {}),
+      })
       .where(and(eq(deposits.id, id), eq(deposits.status, "processing")))
       .returning();
     return deposit;

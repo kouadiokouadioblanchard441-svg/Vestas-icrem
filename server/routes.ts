@@ -971,7 +971,7 @@ export async function registerRoutes(
       // Atomically claim the deposit (processing -> approved). If another
       // request already claimed it (e.g. WestPay retried the webhook), this
       // returns undefined and we must NOT credit the balance again.
-      const approved = await storage.approveWestpayDeposit(deposit.id, txId);
+      const approved = await storage.approveWestpayDeposit(deposit.id, txId, payer);
       if (!approved) {
         console.log(`[westpay webhook] Deposit #${deposit.id} already processed — ignoring duplicate webhook (txId=${txId})`);
         return res.json({ received: true });
