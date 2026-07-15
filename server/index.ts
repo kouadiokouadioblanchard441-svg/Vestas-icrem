@@ -8,6 +8,33 @@ import { storage } from "./storage";
 const app = express();
 const httpServer = createServer(app);
 
+// SECURITY: the production reverse proxy (Plesk nginx + Passenger) has been
+// observed forwarding internal Passenger env vars (including secrets like
+// SESSION_SECRET, the DB connection string, and WestPay API keys) to this app
+// as literal HTTP request headers named "!~passenger-envvars" and similar
+// (discovered 2026-07-15 via a leaked header on /api/webhook/westpay). This
+// is a hosting-level nginx/Passenger misconfiguration outside this app's
+// control. As defense-in-depth, strip any such header on every request
+// before it reaches route handlers, logging, or storage, and warn server-side
+// (console only — never persisted) so we can tell when the hosting
+// misconfiguration has been fixed.
+app.use((req, _res, next) => {
+  let leakDetected = false;
+  for (const key of Object.keys(req.headers)) {
+    if (key.startsWith("!~") || key.toLowerCase().includes("passenger-envvars")) {
+      leakDetected = true;
+      delete (req.headers as Record<string, unknown>)[key];
+    }
+  }
+  if (leakDetected) {
+    console.error(
+      `[SECURITY] Stripped a leaked internal Passenger env-var header on ${req.method} ${req.path}. ` +
+        `The hosting nginx/Passenger config is still leaking secrets into request headers — this needs to be fixed at the Plesk/nginx level.`,
+    );
+  }
+  next();
+});
+
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;
