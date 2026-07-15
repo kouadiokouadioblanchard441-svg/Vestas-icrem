@@ -6,9 +6,9 @@ SpolarPV is a mobile-first investment platform targeting French-speaking African
 
 ## Running Locally on Replit
 
-- Database: `server/db.ts` prefers `SUPABASE_DATABASE_URL` over `DATABASE_URL` if set. This project is currently configured to use an external Supabase Postgres database via the `SUPABASE_DATABASE_URL` secret (SSL enabled automatically when that var is set), instead of Replit's built-in Postgres.
+- Database: `server/db.ts` prefers `SUPABASE_DATABASE_URL` over `DATABASE_URL` if set. This project is configured to use an external Supabase Postgres database via the `SUPABASE_DATABASE_URL` secret (SSL enabled automatically when that var is set), instead of Replit's built-in Postgres.
 - On first run after import: `npm install`, then `npm run db:push -- --force` to sync the schema, then start the `Start application` workflow (`npm run dev`). The server seeds default data (super admin, countries, products, tasks, settings) on boot, but preserves existing rows if they're already present (e.g. products/tasks/settings already seeded in the connected Supabase DB are left untouched).
-- Super admin login: Phone `99935673`, Country Cameroun (CM), Password `AAbb11##` (default; override via `ADMIN_PASSWORD` env var). The seed script re-applies this password/country on every server boot, overriding any manual change to the admin account.
+- Super admin login: the account with `isSuperAdmin = true` in the connected DB's `users` table — do not assume a fixed phone/password here, since `server/seed.ts` only creates a brand-new super admin (with a hardcoded default phone/password) when none exists yet, and otherwise just re-applies the current `ADMIN_PASSWORD` env var / default to whichever row is already the super admin. **Never record the actual super admin phone or password in this file or any tracked file** — look it up via a direct DB query (`isSuperAdmin = true`) or ask the user, and keep the real password out of docs/commits. If you need to change it, set/rotate it via the `ADMIN_PASSWORD` secret rather than hardcoding it in code or docs. Note: the Supabase project's `public.users` table coexists with Supabase's own `auth.users` table (both named `users`, different schemas) — always query `public.users` explicitly when inspecting data directly.
 
 ## Déploiement Plesk
 
@@ -118,7 +118,8 @@ Preferred communication style: Simple, everyday language.
 - `SESSION_SECRET`: Secret for session encryption (optional, has fallback)
 
 ## Recent Changes (July 2026)
-- Re-imported project (third time): reinstalled dependencies (`npm install`), pushed DB schema (`npm run db:push --force`), restarted the `Start application` workflow — it seeds data and serves on port 5000. Verified end-to-end: login page renders, and `POST /api/auth/login` succeeds with the actual super admin credentials (phone 99935673, country CM, password AAbb11##). Corrected this file: the previously documented admin country/password (Togo/pagetstudio) were stale — `server/seed.ts` actually seeds country `CM` and password from `ADMIN_PASSWORD` env var (default `AAbb11##`).
+- Re-imported project (fourth time): reinstalled dependencies (`npm install`), added the `SUPABASE_DATABASE_URL` secret (user-provided), ran `npm run db:push -- --force` against that Supabase DB, restarted the `Start application` workflow. Verified end-to-end via a direct DB query and a login request that the pre-existing super admin row in Supabase (found via `isSuperAdmin = true`) logs in successfully — its phone/password differ from whatever this file previously (and incorrectly) hardcoded; removed those hardcoded values from this file since they are live credentials, not documentation. Confirmed 3 users, 8 products, 6 tasks, and settings already present in Supabase were preserved (not overwritten) by the seed step.
+- Re-imported project (third time): reinstalled dependencies (`npm install`), pushed DB schema (`npm run db:push --force`), restarted the `Start application` workflow — it seeds data and serves on port 5000. Verified end-to-end that the login page renders and admin login succeeds against the actual super admin row in the DB.
 - Re-imported project (second time): reinstalled dependencies (`npm install`), pushed DB schema (`npm run db:push --force`), verified `npm run build` succeeds and the `Start application` workflow seeds data and serves on port 5000. Login page renders correctly, no client console errors beyond an expected 401 on the unauthenticated session check.
 - Note: `npx tsc --noEmit` reports pre-existing type errors in `server/routes.ts` (req.query values typed as `string | string[]`) and `server/storage.ts` (Map iteration needs `--downlevelIteration`). These don't block the dev server (tsx) or the production build (esbuild/vite), but `npm run check` will fail until fixed.
 - Fixed a leftover-from-rebranding bug: `client/src/pages/tasks.tsx` referenced an undefined `landscapeImg` (missing import); added the same import used elsewhere (`@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp`)
@@ -138,11 +139,11 @@ Preferred communication style: Simple, everyday language.
 - Completed full frontend implementation with all pages and modals
 - Implemented complete backend with all API routes
 - Added database seeding for products, tasks, payment channels, and settings
-- Created super admin account (Togo +99935673 / password: pagetstudio)
+- Created initial super admin account (default credentials set via seed script, not recorded here)
 - Removed emoji usage in favor of text country codes
 
 ## Admin Credentials
-- **Super Admin**: Phone: 99935673, Country: Cameroun (CM), Password: AAbb11## (default; set `ADMIN_PASSWORD` env var to override — seed.ts re-applies it on every boot)
+- **Super Admin**: credentials are not recorded in this file. Look up the account with `isSuperAdmin = true` in the DB, or set/rotate it via the `ADMIN_PASSWORD` secret — `server/seed.ts` re-applies that password on every boot to whichever row is already the super admin. Ask the user if you need to log in as admin and don't already have the credentials.
 - Access the admin panel from Account page when logged in as admin
 
 ## Business Rules

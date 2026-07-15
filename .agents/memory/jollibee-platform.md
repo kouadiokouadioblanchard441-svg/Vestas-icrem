@@ -25,7 +25,7 @@ description: Key architecture decisions, country config, DB setup, and image ass
 - maxWithdrawalsPerDay is fetched from settings in withdrawal route.
 
 ## Admin Credentials
-- Super Admin: phone 99935673, country TG, password pagetstudio, PIN 9993
+- Do not record real super admin phone/password here — look it up via the DB (`isSuperAdmin = true`) or `server/seed.ts` defaults instead of hardcoding credentials in memory/docs.
 
 ## Admin Panel Tabs
 dashboard | deposits | withdrawals | users | products | channels | countries (NEW) | giftcodes | settings
