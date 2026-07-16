@@ -126,6 +126,41 @@ export async function registerRoutes(
     })
   );
 
+  // ── Mode Maintenance ─────────────────────────────────────────────────────
+  // Logique :
+  //   - Routes admin et auth → toujours accessibles (pour réactiver depuis le panel)
+  //   - Requête avec cookie connect.sid → utilisateur connecté, toujours libre
+  //   - Visiteur sans session + maintenanceMode=true → réponse vide (page blanche)
+  let _maintenanceCache: { value: boolean; expiry: number } = { value: false, expiry: 0 };
+
+  app.use(async (req: Request, res: Response, next: NextFunction) => {
+    // 1. Routes admin et auth → toujours libres
+    if (req.path.startsWith("/api/admin") || req.path.startsWith("/api/auth")) {
+      return next();
+    }
+    // 2. Utilisateur avec session active → laissé passer
+    // On vérifie directement le cookie connect.sid dans les headers.
+    // Cela couvre les admins et les membres connectés.
+    const cookieHeader = req.headers.cookie || "";
+    if (cookieHeader.includes("connect.sid=")) {
+      return next();
+    }
+    // 3. Pas de session → vérifier la maintenance (cache 5 s)
+    try {
+      const now = Date.now();
+      if (now > _maintenanceCache.expiry) {
+        const val = await storage.getSetting("maintenanceMode");
+        _maintenanceCache = { value: val === "true", expiry: now + 5000 };
+      }
+      if (_maintenanceCache.value) {
+        return res.status(200).send("");
+      }
+    } catch {
+      // Erreur DB → fail-open
+    }
+    next();
+  });
+
   // Auth routes
   app.post("/api/auth/register", async (req, res) => {
     try {
