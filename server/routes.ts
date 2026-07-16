@@ -963,7 +963,20 @@ export async function registerRoutes(
 
     try {
       const signature = (req.headers["x-robotpay-signature"] as string) || "";
-      const event = (req.headers["x-robotpay-event"] as string) || "";
+
+      // Raw body stored by express.json verify callback in server/index.ts.
+      // We MUST read rawBody before any await so the buffer is always available
+      // for both HMAC verification and event extraction.
+      const rawBody: Buffer | undefined = (req as any).rawBody;
+      const bodyStr = rawBody ? rawBody.toString("utf8") : JSON.stringify(req.body);
+
+      // WestPay puts "event" inside the JSON body (not in a header).
+      // Parse the raw body string directly so we don't depend on req.body timing.
+      // We also accept the x-robotpay-event header as fallback for local tests.
+      let bodyParsed: Record<string, any> = {};
+      try { bodyParsed = JSON.parse(bodyStr); } catch {}
+      const event = (req.headers["x-robotpay-event"] as string) || bodyParsed.event || "";
+
       // Plesk's WESTPAY_WEBHOOK_SECRET env var is the source of truth (set directly
       // on the production server, outside this app's database) and always wins when
       // present. The platform_settings DB value (editable from Admin > Paramètres)
@@ -979,10 +992,6 @@ export async function registerRoutes(
         await logWebhookCall("no_secret_configured");
         return res.json({ received: true });
       }
-
-      // Raw body stored by express.json verify callback in server/index.ts
-      const rawBody: Buffer | undefined = (req as any).rawBody;
-      const bodyStr = rawBody ? rawBody.toString("utf8") : JSON.stringify(req.body);
 
       const sigOk = !!signature && verifyWebhookSignature(bodyStr, signature, webhookSecret);
       signatureValidForLog = sigOk;
