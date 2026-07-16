@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Loader2, Save, Link, Clock, Users, Send, CheckCircle2, XCircle, Wifi } from "lucide-react";
+import { Loader2, Save, Link, Clock, Users, Send, CheckCircle2, XCircle, Wifi, PowerOff, Power } from "lucide-react";
 
 const NETWORKS = [
   { value: "telegram", label: "Telegram" },
@@ -64,6 +64,30 @@ interface AdminSettingsProps {
 
 export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
   const { toast } = useToast();
+
+  // ── Mode Maintenance ──────────────────────────────────────────────────────
+  const [maintenanceToggling, setMaintenanceToggling] = useState(false);
+
+  const toggleMaintenance = async (enable: boolean) => {
+    setMaintenanceToggling(true);
+    try {
+      const response = await apiRequest("POST", "/api/admin/settings", {
+        maintenanceMode: String(enable),
+      });
+      if (!response.ok) throw new Error("Erreur serveur");
+      await queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
+      toast({
+        title: enable ? "🔴 Site mis hors service" : "🟢 Site remis en ligne",
+        description: enable
+          ? "Le site est maintenant invisible pour les visiteurs."
+          : "Le site est de nouveau accessible.",
+      });
+    } catch (e: any) {
+      toast({ title: "Erreur", description: e.message, variant: "destructive" });
+    } finally {
+      setMaintenanceToggling(false);
+    }
+  };
 
   // ── Test webhook WestPay ──────────────────────────────────────────────────
   const [webhookTestUrl, setWebhookTestUrl] = useState("");
@@ -207,9 +231,65 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
     return <Skeleton className="h-96" />;
   }
 
+  const isMaintenance = settings?.maintenanceMode === "true";
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit((data) => updateMutation.mutate(data))} className="space-y-4">
+
+        {/* ── Mode Maintenance ── */}
+        <Card className={isMaintenance ? "border-red-500 bg-red-950/40" : "border-green-700/50 bg-green-950/20"}>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              {isMaintenance
+                ? <PowerOff className="w-5 h-5 text-red-400" />
+                : <Power className="w-5 h-5 text-green-400" />}
+              <span className={isMaintenance ? "text-red-300" : "text-green-300"}>
+                Mode Maintenance
+              </span>
+              <span className={`ml-auto text-xs font-semibold px-2 py-0.5 rounded-full ${
+                isMaintenance ? "bg-red-500/30 text-red-300" : "bg-green-500/30 text-green-300"
+              }`}>
+                {isMaintenance ? "HORS SERVICE" : "EN LIGNE"}
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-xs text-gray-400">
+              {isMaintenance
+                ? "⚠️ Le site est actuellement hors service. Les visiteurs voient une page blanche vide. Seul le panel admin reste accessible."
+                : "Le site est accessible normalement. Cliquez sur le bouton pour le mettre hors service instantanément."}
+            </p>
+            <div className="flex gap-2">
+              {isMaintenance ? (
+                <Button
+                  type="button"
+                  className="w-full bg-green-700 hover:bg-green-600 text-white"
+                  disabled={maintenanceToggling}
+                  onClick={() => toggleMaintenance(false)}
+                >
+                  {maintenanceToggling
+                    ? <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    : <Power className="w-4 h-4 mr-2" />}
+                  Remettre le site en ligne
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="w-full"
+                  disabled={maintenanceToggling}
+                  onClick={() => toggleMaintenance(true)}
+                >
+                  {maintenanceToggling
+                    ? <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    : <PowerOff className="w-4 h-4 mr-2" />}
+                  Mettre le site hors service
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* ── Liens & Réseaux sociaux ── */}
         <Card>

@@ -52,6 +52,36 @@ app.use(
 
 app.use(express.urlencoded({ extended: false, limit: "15mb" }));
 
+// ── Mode Maintenance ────────────────────────────────────────────────────────
+// Quand maintenanceMode=true, toutes les requêtes sont bloquées sauf les
+// routes admin/auth (pour que l'admin puisse réactiver le site).
+// La valeur est mise en cache 5 s pour éviter une requête DB à chaque hit.
+let _maintenanceCache: { value: boolean; expiry: number } = { value: false, expiry: 0 };
+
+app.use(async (req: Request, res: Response, next: NextFunction) => {
+  // Toujours laisser passer les routes admin et auth
+  if (
+    req.path.startsWith("/api/admin") ||
+    req.path.startsWith("/api/auth")
+  ) {
+    return next();
+  }
+  try {
+    const now = Date.now();
+    if (now > _maintenanceCache.expiry) {
+      const val = await storage.getSetting("maintenanceMode");
+      _maintenanceCache = { value: val === "true", expiry: now + 5000 };
+    }
+    if (_maintenanceCache.value) {
+      // Réponse vide — comme si le site n'existe pas
+      return res.status(200).send("");
+    }
+  } catch {
+    // En cas d'erreur DB on laisse passer (fail-open)
+  }
+  next();
+});
+
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
