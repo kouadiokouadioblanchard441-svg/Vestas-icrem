@@ -128,37 +128,56 @@ export async function registerRoutes(
 
   // ── Mode Maintenance ─────────────────────────────────────────────────────
   // Logique :
-  //   - Routes admin et auth → toujours accessibles (pour réactiver depuis le panel)
-  //   - Requête avec cookie connect.sid → utilisateur connecté, toujours libre
-  //   - Visiteur sans session + maintenanceMode=true → réponse vide (page blanche)
+  //   - Routes /api/admin et /api/auth → toujours accessibles
+  //   - Admin connecté (isAdmin=true en DB) → laissé passer
+  //   - Tout le reste (visiteurs + membres normaux) → page blanche si maintenance ON
   let _maintenanceCache: { value: boolean; expiry: number } = { value: false, expiry: 0 };
+  // Cache du statut admin par userId (TTL 30 s) pour éviter une requête DB à chaque hit
+  const _adminCache = new Map<number, { isAdmin: boolean; expiry: number }>();
 
   app.use(async (req: Request, res: Response, next: NextFunction) => {
     // 1. Routes admin et auth → toujours libres
     if (req.path.startsWith("/api/admin") || req.path.startsWith("/api/auth")) {
       return next();
     }
-    // 2. Utilisateur avec session active → laissé passer
-    // On vérifie directement le cookie connect.sid dans les headers.
-    // Cela couvre les admins et les membres connectés.
-    const cookieHeader = req.headers.cookie || "";
-    if (cookieHeader.includes("connect.sid=")) {
-      return next();
-    }
-    // 3. Pas de session → vérifier la maintenance (cache 5 s)
+
+    // 2. Vérifier d'abord si la maintenance est active (cache 5 s)
+    let maintenanceOn = false;
     try {
       const now = Date.now();
       if (now > _maintenanceCache.expiry) {
         const val = await storage.getSetting("maintenanceMode");
         _maintenanceCache = { value: val === "true", expiry: now + 5000 };
       }
-      if (_maintenanceCache.value) {
-        return res.status(200).send("");
-      }
+      maintenanceOn = _maintenanceCache.value;
     } catch {
-      // Erreur DB → fail-open
+      // Erreur DB → fail-open (ne pas bloquer le site)
     }
-    next();
+
+    if (!maintenanceOn) return next();
+
+    // 3. Maintenance active — vérifier si c'est un admin connecté
+    const userId = req.session?.userId;
+    if (userId) {
+      try {
+        const now = Date.now();
+        const cached = _adminCache.get(userId);
+        let isAdmin: boolean;
+        if (cached && now < cached.expiry) {
+          isAdmin = cached.isAdmin;
+        } else {
+          const user = await storage.getUser(userId);
+          isAdmin = !!(user?.isAdmin);
+          _adminCache.set(userId, { isAdmin, expiry: now + 30_000 });
+        }
+        if (isAdmin) return next(); // admin → laissé passer
+      } catch {
+        // Erreur DB → bloquer par sécurité
+      }
+    }
+
+    // 4. Pas admin → page blanche
+    return res.status(200).send("");
   });
 
   // Auth routes
