@@ -135,15 +135,12 @@ export default function RegisterPage() {
             <input type="hidden" {...form.register("country")} />
 
             {/* Phone field with inline country prefix */}
-            <div
-              className="w-full flex items-center px-3 rounded-full"
-              style={{ background: "rgba(255,255,255,0.12)", height: 52 }}
-            >
+            <div className="w-full h-14 bg-white rounded-lg flex items-center overflow-hidden">
               <button
                 type="button"
                 onClick={() => setCountryModalOpen(true)}
-                className="flex items-center gap-1 pr-3 font-bold text-sm shrink-0"
-                style={{ color: "#E8A020", borderRight: "1px solid rgba(255,255,255,0.3)" }}
+                className="flex items-center gap-1 px-3 h-full font-bold text-sm shrink-0 border-r border-gray-200"
+                style={{ color: "#E8A020" }}
               >
                 +{countryData?.phonePrefix || "1"}
                 <ChevronDown size={14} />
@@ -151,61 +148,52 @@ export default function RegisterPage() {
               <input
                 {...form.register("phone")}
                 type="tel"
-                className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm outline-none pl-3"
+                className="flex-1 h-full bg-transparent text-gray-800 placeholder:text-gray-400 text-base outline-none px-3"
                 data-testid="input-phone"
               />
             </div>
-            <p className="text-white/70 text-xs ml-3 mb-3">your number</p>
+            <p className="text-white/70 text-xs ml-1 mb-2">your number</p>
             {form.formState.errors.phone && (
-              <p className="text-red-400 text-xs -mt-2 ml-3 mb-1">{form.formState.errors.phone.message}</p>
+              <p className="text-red-400 text-xs -mt-1 ml-1 mb-1">{form.formState.errors.phone.message}</p>
             )}
 
             {/* Password field */}
-            <div
-              className="w-full flex items-center px-4 rounded-full"
-              style={{ background: "rgba(255,255,255,0.12)", height: 52 }}
-            >
+            <div className="w-full h-14 bg-white rounded-lg flex items-center px-4">
               <input
                 {...form.register("password")}
                 type="password"
-                className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm outline-none"
+                className="flex-1 bg-transparent text-gray-800 placeholder:text-gray-400 text-base outline-none"
                 data-testid="input-password"
               />
             </div>
-            <p className="text-white/70 text-xs ml-3 mb-3">your password</p>
+            <p className="text-white/70 text-xs ml-1 mb-2">your password</p>
             {form.formState.errors.password && (
-              <p className="text-red-400 text-xs -mt-2 ml-3 mb-1">{form.formState.errors.password.message}</p>
+              <p className="text-red-400 text-xs -mt-1 ml-1 mb-1">{form.formState.errors.password.message}</p>
             )}
 
             {/* Confirm password field */}
-            <div
-              className="w-full flex items-center px-4 rounded-full"
-              style={{ background: "rgba(255,255,255,0.12)", height: 52 }}
-            >
+            <div className="w-full h-14 bg-white rounded-lg flex items-center px-4">
               <input
                 {...form.register("confirmPassword")}
                 type="password"
-                className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm outline-none"
+                className="flex-1 bg-transparent text-gray-800 placeholder:text-gray-400 text-base outline-none"
                 data-testid="input-confirm-password"
               />
             </div>
-            <p className="text-white/70 text-xs ml-3 mb-3">repeat your password</p>
+            <p className="text-white/70 text-xs ml-1 mb-2">repeat your password</p>
             {form.formState.errors.confirmPassword && (
-              <p className="text-red-400 text-xs -mt-2 ml-3 mb-1">{form.formState.errors.confirmPassword.message}</p>
+              <p className="text-red-400 text-xs -mt-1 ml-1 mb-1">{form.formState.errors.confirmPassword.message}</p>
             )}
 
             {/* Referral code field */}
-            <div
-              className="w-full flex items-center px-4 rounded-full"
-              style={{ background: "rgba(255,255,255,0.12)", height: 52 }}
-            >
+            <div className="w-full h-14 bg-white rounded-lg flex items-center px-4">
               <input
                 {...form.register("invitationCode")}
-                className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm outline-none"
+                className="flex-1 bg-transparent text-gray-800 placeholder:text-gray-400 text-base outline-none"
                 data-testid="input-invitation-code"
               />
             </div>
-            <p className="text-white/70 text-xs ml-3 mb-3">referral code</p>
+            <p className="text-white/70 text-xs ml-1 mb-2">referral code</p>
 
             {/* Terms checkbox */}
             <div className="flex items-start gap-3 mt-1 mb-5">
