@@ -44,6 +44,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/lib/auth";
+import { I18nProvider } from "@/lib/i18n";
 import BottomNav from "@/components/bottom-nav";
 import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
@@ -374,14 +375,16 @@ function RouterComponent() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AuthProvider>
-          <Router hook={useHashPath} searchHook={useHashSearch}>
-            <RouterComponent />
-          </Router>
-          <Toaster />
-        </AuthProvider>
-      </TooltipProvider>
+      <I18nProvider>
+        <TooltipProvider>
+          <AuthProvider>
+            <Router hook={useHashPath} searchHook={useHashSearch}>
+              <RouterComponent />
+            </Router>
+            <Toaster />
+          </AuthProvider>
+        </TooltipProvider>
+      </I18nProvider>
     </QueryClientProvider>
   );
 }

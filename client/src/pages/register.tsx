@@ -9,34 +9,37 @@ import { useAuth } from "@/lib/auth";
 import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
 import { WORLD_COUNTRIES } from "@/lib/world-countries";
 import { CountrySelector } from "@/components/country-selector";
+import { LanguagePicker } from "@/components/language-picker";
+import { useI18n } from "@/lib/i18n";
 import { Loader2, ChevronDown } from "lucide-react";
-const intelLogo = "/spolarpv-logo.png";
 import { FloatingSupport } from "@/components/floating-support";
 
-const registerSchema = z.object({
-  phone: z.string().min(8, "Numéro de téléphone invalide"),
-  country: z.string().min(2, "Sélectionnez un pays"),
-  password: z.string().min(6, "Au moins 6 caractères"),
-  confirmPassword: z.string().min(1, "Confirmez le mot de passe"),
-  invitationCode: z.string().optional(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Les mots de passe ne correspondent pas",
-  path: ["confirmPassword"],
-});
-
-type RegisterForm = z.infer<typeof registerSchema>;
+const intelLogo = "/spolarpv-logo.png";
 
 export default function RegisterPage() {
   const [, navigate] = useLocation();
   const searchString = useSearch();
   const { register } = useAuth();
   const { toast } = useToast();
+  const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
   const [countryModalOpen, setCountryModalOpen] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const params = new URLSearchParams(searchString);
   const refCode = params.get("invite_code") || params.get("money") || params.get("reg") || "";
+
+  const registerSchema = z.object({
+    phone: z.string().min(8, t.errInvalidPhone),
+    country: z.string().min(2, "Sélectionnez un pays"),
+    password: z.string().min(6, t.errMinPassword),
+    confirmPassword: z.string().min(1, t.errConfirmPassword),
+    invitationCode: z.string().optional(),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: t.errPasswordMismatch,
+    path: ["confirmPassword"],
+  });
+  type RegisterForm = z.infer<typeof registerSchema>;
 
   const form = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
@@ -77,7 +80,7 @@ export default function RegisterPage() {
 
   async function onSubmit(data: RegisterForm) {
     if (!agreedToTerms) {
-      toast({ title: "Conditions requises", description: "Veuillez accepter les conditions d'utilisation", variant: "destructive" });
+      toast({ title: "Conditions requises", description: t.errTermsRequired, variant: "destructive" });
       return;
     }
     setIsLoading(true);
@@ -89,10 +92,10 @@ export default function RegisterPage() {
         password: data.password,
         invitationCode: data.invitationCode,
       });
-      toast({ title: "Inscription réussie !", description: "Bienvenue sur SpolarPV !" });
+      toast({ title: t.successRegister, description: t.welcomeMsg });
       navigate("/");
     } catch (error: any) {
-      toast({ title: "Erreur d'inscription", description: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: "Erreur d'inscription", description: error.message || t.errRegisterFailed, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -112,15 +115,16 @@ export default function RegisterPage() {
       <div style={{ position: "absolute", inset: 0, background: "rgba(5, 15, 35, 0.72)", zIndex: 0 }} />
       <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", flex: 1 }}>
 
-        {/* Top bar */}
-        <div className="flex items-center justify-end px-4 pt-4">
+        {/* Top bar — langue en haut à gauche, login en haut à droite */}
+        <div className="flex items-center justify-between px-4 pt-4">
+          <LanguagePicker align="left" />
           <button
             type="button"
             onClick={() => navigate("/login")}
             className="px-5 py-2 rounded-full font-bold text-white text-sm"
             style={{ background: "#E8A020", border: "none" }}
           >
-            Log in
+            {t.loginBtn}
           </button>
         </div>
 
@@ -155,7 +159,7 @@ export default function RegisterPage() {
                 data-testid="input-phone"
               />
             </div>
-            <p className="text-white/70 text-xs ml-1 mb-2">your number</p>
+            <p className="text-white/70 text-xs ml-1 mb-2">{t.yourNumber}</p>
             {form.formState.errors.phone && (
               <p className="text-red-400 text-xs -mt-1 ml-1 mb-1">{form.formState.errors.phone.message}</p>
             )}
@@ -169,7 +173,7 @@ export default function RegisterPage() {
                 data-testid="input-password"
               />
             </div>
-            <p className="text-white/70 text-xs ml-1 mb-2">your password</p>
+            <p className="text-white/70 text-xs ml-1 mb-2">{t.yourPassword}</p>
             {form.formState.errors.password && (
               <p className="text-red-400 text-xs -mt-1 ml-1 mb-1">{form.formState.errors.password.message}</p>
             )}
@@ -183,7 +187,7 @@ export default function RegisterPage() {
                 data-testid="input-confirm-password"
               />
             </div>
-            <p className="text-white/70 text-xs ml-1 mb-2">repeat your password</p>
+            <p className="text-white/70 text-xs ml-1 mb-2">{t.repeatPassword}</p>
             {form.formState.errors.confirmPassword && (
               <p className="text-red-400 text-xs -mt-1 ml-1 mb-1">{form.formState.errors.confirmPassword.message}</p>
             )}
@@ -196,7 +200,7 @@ export default function RegisterPage() {
                 data-testid="input-invitation-code"
               />
             </div>
-            <p className="text-white/70 text-xs ml-1 mb-2">referral code</p>
+            <p className="text-white/70 text-xs ml-1 mb-2">{t.referralCode}</p>
 
             {/* Terms checkbox */}
             <div className="flex items-start gap-3 mt-1 mb-5">
@@ -209,7 +213,7 @@ export default function RegisterPage() {
                 style={{ accentColor: "#E8A020" }}
               />
               <label htmlFor="terms" className="text-white text-sm cursor-pointer leading-snug">
-                By checking this box you agree to the SpolarPV Terms and Conditions
+                {t.terms}
               </label>
             </div>
 
@@ -224,9 +228,9 @@ export default function RegisterPage() {
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Inscription...
+                  {t.registerLoading}
                 </span>
-              ) : "register"}
+              ) : t.registerBtn}
             </button>
           </form>
         </div>

@@ -9,28 +9,30 @@ import { useAuth } from "@/lib/auth";
 import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
 import { WORLD_COUNTRIES } from "@/lib/world-countries";
 import { CountrySelector } from "@/components/country-selector";
+import { LanguagePicker } from "@/components/language-picker";
+import { useI18n } from "@/lib/i18n";
 import { Loader2, ChevronDown } from "lucide-react";
 import vestasLogo from "@/assets/vestas-logo_1783210030332.png";
 import { FloatingSupport } from "@/components/floating-support";
-
-const loginSchema = z.object({
-  phone: z.string().min(8, "Numéro de téléphone invalide"),
-  country: z.string().min(2, "Sélectionnez un pays"),
-  password: z.string().min(1, "Le mot de passe est requis"),
-});
-
-type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [, navigate] = useLocation();
   const { login } = useAuth();
   const { toast } = useToast();
+  const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
   const [countryModalOpen, setCountryModalOpen] = useState(false);
 
   const savedCredentials = typeof window !== "undefined" ? localStorage.getItem("spolarpv_credentials") : null;
   const parsedCredentials = savedCredentials ? JSON.parse(savedCredentials) : null;
   const [rememberMe, setRememberMe] = useState(!!parsedCredentials);
+
+  const loginSchema = z.object({
+    phone: z.string().min(8, t.errInvalidPhone),
+    country: z.string().min(2, "Sélectionnez un pays"),
+    password: z.string().min(1, t.errPasswordRequired),
+  });
+  type LoginForm = z.infer<typeof loginSchema>;
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -82,7 +84,7 @@ export default function LoginPage() {
       }
       navigate("/");
     } catch (error: any) {
-      toast({ title: "Erreur de connexion", description: error.message || "Vérifiez vos informations", variant: "destructive" });
+      toast({ title: "Erreur de connexion", description: error.message || t.errLoginFailed, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -99,10 +101,15 @@ export default function LoginPage() {
         position: "relative",
       }}
     >
-      {/* Overlay sombre pour lisibilité */}
       <div style={{ position: "absolute", inset: 0, background: "rgba(5, 15, 35, 0.72)", zIndex: 0 }} />
       <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", flex: 1 }}>
-        <div className="flex-1 flex flex-col px-6 pt-16 pb-10">
+
+        {/* Top bar — langue en haut à droite */}
+        <div className="flex items-center justify-end px-4 pt-4">
+          <LanguagePicker align="right" />
+        </div>
+
+        <div className="flex-1 flex flex-col px-6 pt-8 pb-10">
 
           {/* Logo */}
           <div className="flex justify-center mb-14">
@@ -132,7 +139,7 @@ export default function LoginPage() {
                 data-testid="input-phone"
               />
             </div>
-            <p className="text-white/70 text-xs ml-1 mb-2">your number</p>
+            <p className="text-white/70 text-xs ml-1 mb-2">{t.yourNumber}</p>
             {form.formState.errors.phone && (
               <p className="text-red-400 text-xs -mt-1 ml-1 mb-1">{form.formState.errors.phone.message}</p>
             )}
@@ -146,7 +153,7 @@ export default function LoginPage() {
                 data-testid="input-password"
               />
             </div>
-            <p className="text-white/70 text-xs ml-1 mb-2">your password</p>
+            <p className="text-white/70 text-xs ml-1 mb-2">{t.yourPassword}</p>
             {form.formState.errors.password && (
               <p className="text-red-400 text-xs -mt-1 ml-1 mb-1">{form.formState.errors.password.message}</p>
             )}
@@ -163,7 +170,7 @@ export default function LoginPage() {
                 data-testid="checkbox-remember"
               />
               <label htmlFor="remember" className="text-white text-sm cursor-pointer">
-                remember me
+                {t.rememberMe}
               </label>
             </div>
 
@@ -178,21 +185,21 @@ export default function LoginPage() {
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Connexion...
+                  {t.loginLoading}
                 </span>
-              ) : "Log in"}
+              ) : t.loginBtn}
             </button>
 
             {/* Lien inscription */}
             <div className="text-center mt-4">
-              <span className="text-white/70 text-sm">Je n'ai pas de compte.  </span>
+              <span className="text-white/70 text-sm">{t.noAccount}&nbsp;&nbsp;</span>
               <button
                 type="button"
                 onClick={() => navigate("/register")}
                 className="text-white font-bold text-sm underline"
                 data-testid="link-register"
               >
-                Créer un compte
+                {t.createAccount}
               </button>
             </div>
           </form>
