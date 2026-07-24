@@ -42,7 +42,7 @@ export default function RegisterPage() {
     resolver: zodResolver(registerSchema),
     defaultValues: {
       phone: "",
-      country: "CM",
+      country: "US",
       password: "",
       confirmPassword: "",
       invitationCode: refCode,
