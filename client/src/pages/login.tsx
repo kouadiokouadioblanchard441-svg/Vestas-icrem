@@ -9,7 +9,7 @@ import { useAuth } from "@/lib/auth";
 import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
 import { CountrySelector } from "@/components/country-selector";
 import { Loader2, ChevronDown } from "lucide-react";
-const intelLogo = "/spolarpv-logo.png";
+import vestasLogo from "@/assets/vestas-logo_1783210030332.png";
 
 const loginSchema = z.object({
   phone: z.string().min(8, "Numéro de téléphone invalide"),
@@ -96,44 +96,28 @@ export default function LoginPage() {
         position: "relative",
       }}
     >
+      {/* Overlay sombre pour lisibilité */}
       <div style={{ position: "absolute", inset: 0, background: "rgba(5, 15, 35, 0.72)", zIndex: 0 }} />
       <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", flex: 1 }}>
+        <div className="flex-1 flex flex-col px-6 pt-16 pb-10">
 
-        {/* Top bar */}
-        <div className="flex items-center justify-end px-4 pt-4">
-          <button
-            type="button"
-            onClick={() => navigate("/register")}
-            className="px-5 py-2 rounded-full font-bold text-white text-sm"
-            style={{ background: "var(--color-primary, #E8A020)", border: "none" }}
-          >
-            register
-          </button>
-        </div>
-
-        <div className="flex-1 flex flex-col px-6 pt-4 pb-10">
-
-          {/* Logo in white card */}
-          <div className="flex justify-center mb-10">
-            <div className="bg-white rounded-lg p-4 flex items-center justify-center" style={{ width: 180, height: 130 }}>
-              <img src={intelLogo} alt="Logo" style={{ width: 150, height: 100, objectFit: "contain" }} />
-            </div>
+          {/* Logo */}
+          <div className="flex justify-center mb-14">
+            <img src={vestasLogo} alt="Vestas" style={{ width: 200, height: 72, objectFit: "contain" }} />
           </div>
 
-          {/* Form */}
+          {/* Fields */}
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-1">
             <input type="hidden" {...form.register("country")} />
 
-            {/* Phone field with inline country prefix */}
-            <div
-              className="w-full flex items-center px-3 rounded-full"
-              style={{ background: "rgba(255,255,255,0.12)", height: 52, border: "none" }}
-            >
+            {/* Numéro de téléphone avec indicatif inline */}
+            <div className="w-full h-14 bg-white rounded-lg flex items-center overflow-hidden">
               <button
                 type="button"
                 onClick={() => setCountryModalOpen(true)}
-                className="flex items-center gap-1 pr-3 font-bold text-sm shrink-0"
-                style={{ color: "#E8A020", borderRight: "1px solid rgba(255,255,255,0.3)" }}
+                className="flex items-center gap-1 px-3 h-full font-bold text-sm shrink-0 border-r border-gray-200"
+                style={{ color: "#E8320A" }}
+                data-testid="button-select-country"
               >
                 +{countryData?.phonePrefix || "1"}
                 <ChevronDown size={14} />
@@ -141,41 +125,38 @@ export default function LoginPage() {
               <input
                 {...form.register("phone")}
                 type="tel"
-                className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm outline-none pl-3"
+                className="flex-1 h-full bg-transparent text-gray-800 placeholder:text-gray-400 text-base outline-none px-3"
                 data-testid="input-phone"
               />
             </div>
-            <p className="text-white/70 text-xs ml-3 mb-3">your number</p>
+            <p className="text-white/70 text-xs ml-1 mb-2">your number</p>
             {form.formState.errors.phone && (
-              <p className="text-red-400 text-xs -mt-2 ml-3 mb-1">{form.formState.errors.phone.message}</p>
+              <p className="text-red-400 text-xs -mt-1 ml-1 mb-1">{form.formState.errors.phone.message}</p>
             )}
 
-            {/* Password field */}
-            <div
-              className="w-full flex items-center px-4 rounded-full"
-              style={{ background: "rgba(255,255,255,0.12)", height: 52 }}
-            >
+            {/* Mot de passe */}
+            <div className="w-full h-14 bg-white rounded-lg flex items-center px-4">
               <input
                 {...form.register("password")}
                 type="password"
-                className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm outline-none"
+                className="flex-1 bg-transparent text-gray-800 placeholder:text-gray-400 text-base outline-none"
                 data-testid="input-password"
               />
             </div>
-            <p className="text-white/70 text-xs ml-3 mb-3">your password</p>
+            <p className="text-white/70 text-xs ml-1 mb-2">your password</p>
             {form.formState.errors.password && (
-              <p className="text-red-400 text-xs -mt-2 ml-3 mb-1">{form.formState.errors.password.message}</p>
+              <p className="text-red-400 text-xs -mt-1 ml-1 mb-1">{form.formState.errors.password.message}</p>
             )}
 
-            {/* Remember me */}
-            <div className="flex items-center gap-3 mt-1 mb-4">
+            {/* Se souvenir */}
+            <div className="flex items-center gap-2 mt-1">
               <input
                 type="checkbox"
                 id="remember"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-5 h-5 cursor-pointer rounded"
-                style={{ accentColor: "#E8A020" }}
+                className="w-5 h-5 cursor-pointer"
+                style={{ accentColor: "#16A34A" }}
                 data-testid="checkbox-remember"
               />
               <label htmlFor="remember" className="text-white text-sm cursor-pointer">
@@ -183,12 +164,12 @@ export default function LoginPage() {
               </label>
             </div>
 
-            {/* Login button */}
+            {/* Bouton connexion */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-14 rounded-full font-bold text-white text-lg disabled:opacity-50"
-              style={{ background: "#E8A020" }}
+              className="w-full h-14 rounded-full text-white font-bold text-base disabled:opacity-50 mt-4"
+              style={{ background: "#16A34A", border: "2px solid #15803D" }}
               data-testid="button-login"
             >
               {isLoading ? (
@@ -199,10 +180,18 @@ export default function LoginPage() {
               ) : "Log in"}
             </button>
 
-            {/* Tagline */}
-            <p className="text-white/60 text-xs text-center mt-8 italic underline leading-relaxed">
-              SpolarPV: One of the best investment platforms in the world; with SpolarPV, earn a comfortable living.
-            </p>
+            {/* Lien inscription */}
+            <div className="text-center mt-4">
+              <span className="text-white/70 text-sm">Je n'ai pas de compte.  </span>
+              <button
+                type="button"
+                onClick={() => navigate("/register")}
+                className="text-white font-bold text-sm underline"
+                data-testid="link-register"
+              >
+                Créer un compte
+              </button>
+            </div>
           </form>
         </div>
 
