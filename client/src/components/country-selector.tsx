@@ -1,76 +1,136 @@
-import { useQuery } from "@tanstack/react-query";
-import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
-import { ChevronLeft } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Search } from "lucide-react";
+import { WORLD_COUNTRIES, getFlagEmoji } from "@/lib/world-countries";
 
 interface CountrySelectorProps {
   open: boolean;
   onClose: () => void;
   onSelect: (countryCode: string) => void;
+  selectedCode?: string;
 }
 
-export function CountrySelector({ open, onClose, onSelect }: CountrySelectorProps) {
-  const { data: apiCountries } = useQuery<ApiCountry[]>({
-    queryKey: ["/api/countries"],
-    enabled: open,
-  });
+export function CountrySelector({ open, onClose, onSelect, selectedCode }: CountrySelectorProps) {
+  const [search, setSearch] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const displayCountries = (apiCountries && apiCountries.length > 0)
-    ? apiCountries.filter(c => c.isActive).map(c => ({
-        code: c.code,
-        name: c.name,
-        phonePrefix: c.phonePrefix,
-      }))
-    : FALLBACK_COUNTRIES.map(c => ({
-        code: c.code,
-        name: c.name,
-        phonePrefix: c.phonePrefix,
-      }));
+  useEffect(() => {
+    if (open) {
+      setSearch("");
+      setTimeout(() => inputRef.current?.focus(), 120);
+    }
+  }, [open]);
+
+  const filtered = WORLD_COUNTRIES.filter((c) => {
+    const q = search.toLowerCase().replace(/^\+/, "");
+    return (
+      c.name.toLowerCase().includes(q) ||
+      c.phonePrefix.includes(q) ||
+      c.code.toLowerCase().includes(q)
+    );
+  });
 
   if (!open) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-4"
-      style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-      onClick={onClose}
-    >
+    <>
+      {/* Dark overlay behind the sheet */}
       <div
-        className="w-full max-w-sm rounded-2xl overflow-hidden"
-        style={{ background: "#2e7d32" }}
-        onClick={(e) => e.stopPropagation()}
+        className="fixed inset-0 z-40"
+        style={{ background: "rgba(0,0,0,0.50)" }}
+        onClick={onClose}
+      />
+
+      {/* Bottom sheet */}
+      <div
+        className="fixed bottom-0 inset-x-0 z-50 bg-white flex flex-col"
+        style={{
+          borderRadius: "20px 20px 0 0",
+          maxHeight: "70vh",
+          boxShadow: "0 -4px 24px rgba(0,0,0,0.12)",
+        }}
       >
-        {/* Header */}
-        <div className="flex items-center px-4 py-4 gap-3">
-          <button
-            onClick={onClose}
-            className="text-white p-1"
-            data-testid="button-close-country"
+        {/* Search bar */}
+        <div className="shrink-0 px-4 pt-5 pb-3">
+          <div
+            className="flex items-center gap-3 px-4"
+            style={{
+              height: 48,
+              background: "#F2F2F2",
+              borderRadius: 999,
+            }}
           >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <h2 className="flex-1 text-center text-white font-bold text-base pr-8">
-            Sélectionnez votre pays
-          </h2>
+            <Search style={{ width: 18, height: 18, color: "#9CA3AF", flexShrink: 0 }} />
+            <input
+              ref={inputRef}
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder=""
+              className="flex-1 bg-transparent outline-none"
+              style={{ fontSize: 15, color: "#1a1a1a", letterSpacing: "0.03em" }}
+            />
+          </div>
         </div>
 
-        {/* Country list */}
-        <div className="flex flex-col gap-2 px-4 pb-5">
-          {displayCountries.map((country) => (
-            <button
-              key={country.code}
-              onClick={() => {
-                onSelect(country.code);
-                onClose();
-              }}
-              className="w-full bg-white rounded-xl flex items-center justify-between px-4 py-4"
-              data-testid={`country-option-${country.code}`}
-            >
-              <span className="text-gray-800 font-medium text-sm">+{country.phonePrefix}</span>
-              <span className="text-gray-800 font-medium text-sm">{country.name}</span>
-            </button>
-          ))}
+        {/* Country list — scrollable */}
+        <div className="flex-1 overflow-y-auto">
+          {filtered.map((country, index) => {
+            const isSelected = country.code === selectedCode;
+            return (
+              <button
+                key={country.code}
+                type="button"
+                onClick={() => {
+                  onSelect(country.code);
+                  onClose();
+                }}
+                className="w-full flex items-center justify-between px-4"
+                style={{
+                  height: 56,
+                  borderBottom:
+                    index < filtered.length - 1
+                      ? "1px dashed #BFDBFE"
+                      : "none",
+                  background: "transparent",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 500,
+                    letterSpacing: "0.04em",
+                    color: isSelected ? "#E8A020" : "#1a1a1a",
+                  }}
+                >
+                  {country.name} {getFlagEmoji(country.code)} (+{country.phonePrefix})
+                </span>
+
+                {isSelected && (
+                  <span
+                    className="flex items-center justify-center shrink-0"
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: "50%",
+                      background: "#E8A020",
+                    }}
+                  >
+                    <svg width="13" height="10" viewBox="0 0 13 10" fill="none">
+                      <path
+                        d="M1.5 5L5 8.5L11.5 1.5"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
-    </div>
+    </>
   );
 }

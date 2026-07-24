@@ -199,6 +199,7 @@ export default function LoginPage() {
           open={countryModalOpen}
           onClose={() => setCountryModalOpen(false)}
           onSelect={(code) => form.setValue("country", code, { shouldValidate: true })}
+          selectedCode={selectedCountry}
         />
       </div>
     </div>

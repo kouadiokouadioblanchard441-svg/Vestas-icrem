@@ -232,6 +232,7 @@ export default function RegisterPage() {
           open={countryModalOpen}
           onClose={() => setCountryModalOpen(false)}
           onSelect={(code) => form.setValue("country", code, { shouldValidate: true })}
+          selectedCode={selectedCountry}
         />
       </div>
     </div>
