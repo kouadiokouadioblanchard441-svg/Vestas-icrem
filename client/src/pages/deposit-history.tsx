@@ -17,7 +17,7 @@ interface Withdrawal {
 export default function DepositHistoryPage() {
   const { user } = useAuth();
   const countryInfo = user ? getCountryByCode(user.country) : null;
-  const currency = countryInfo?.currency || "FCFA";
+  const currency = countryInfo?.currency || "USDT";
 
   const { data: withdrawals = [], isLoading } = useQuery<Withdrawal[]>({
     queryKey: ["/api/withdrawals/history"],

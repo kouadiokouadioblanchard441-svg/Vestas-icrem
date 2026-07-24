@@ -364,7 +364,7 @@ export const loginSchema = z.object({
 });
 
 export const depositSchema = z.object({
-  amount: z.number().min(2000, "Le montant minimum est de 2000 FCFA"),
+  amount: z.number().min(1, "Le montant minimum est de 1 USDT"),
   accountName: z.string().min(2, "Le nom du compte est requis"),
   accountNumber: z.string().min(8, "Le numéro de paiement est requis"),
   country: z.string().min(2, "Le pays est requis"),
@@ -373,7 +373,7 @@ export const depositSchema = z.object({
 });
 
 export const withdrawalSchema = z.object({
-  amount: z.number().min(1000, "Le montant minimum est de 1000 FCFA"),
+  amount: z.number().min(1, "Le montant minimum est de 1 USDT"),
 });
 
 export const walletSchema = z.object({

@@ -56,7 +56,7 @@ export default function ProductsPage() {
 
   const balance = parseFloat(user.balance || "0");
   const country = getCountryByCode(user.country);
-  const currency = country?.currency || "FCFA";
+  const currency = country?.currency || "USDT";
   const paidProducts = products?.filter(p => !p.isFree) || [];
   const headerTitle = getContent(settings, "content_products_headerTitle", "Nos Produits");
 

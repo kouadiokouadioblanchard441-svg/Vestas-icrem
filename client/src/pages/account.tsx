@@ -75,7 +75,7 @@ export default function AccountPage() {
   const balance = parseFloat(user.balance || "0");
   const totalEarnings = parseFloat(user.totalEarnings || "0");
   const country = getCountryByCode(user.country);
-  const currency = country?.currency || "FCFA";
+  const currency = country?.currency || "USDT";
   const phonePrefix = country?.phonePrefix || "";
 
   const gridItems = [

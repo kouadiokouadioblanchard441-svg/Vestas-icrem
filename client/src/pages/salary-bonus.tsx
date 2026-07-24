@@ -23,7 +23,7 @@ export default function SalaryBonusPage() {
   const headerTitle = getContent(settings, "content_salarybonus_headerTitle", "Centre des tâches");
 
   const country = getCountryByCode(user.country);
-  const currency = country?.currency || "FCFA";
+  const currency = country?.currency || "USDT";
   const level1Count = teamStats?.level1Count || 0;
   const totalCommission = parseFloat(teamStats?.totalCommission || "0");
   const totalPeople = (teamStats?.level1Count || 0) + (teamStats?.level2Count || 0) + (teamStats?.level3Count || 0);

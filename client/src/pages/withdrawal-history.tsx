@@ -38,7 +38,7 @@ const STATUS: Record<string, { label: string; color: string }> = {
 export default function WithdrawalHistoryPage() {
   const { user } = useAuth();
   const countryInfo = user ? getCountryByCode(user.country) : null;
-  const currency = countryInfo?.currency || "FCFA";
+  const currency = countryInfo?.currency || "USDT";
 
   const { data: withdrawals = [], isLoading } = useQuery<Withdrawal[]>({
     queryKey: ["/api/withdrawals/history"],

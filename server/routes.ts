@@ -6,16 +6,7 @@ import bcrypt from "bcryptjs";
 import { registerSchema, loginSchema } from "@shared/schema";
 import { z } from "zod";
 import ConnectPgSimple from "connect-pg-simple";
-import { 
-  initiatePayment, 
-  verifyPayment, 
-  isSoleaspaySupported, 
-  mapSoleaspayStatus,
-  SOLEASPAY_SERVICE_MAP 
-} from "./soleaspay";
-import { buildPaymentUrl, verifyWebhookSignature, getWestpayCountry } from "./westpay";
 import { db } from "./db";
-import { webhookLogs } from "@shared/schema";
 
 // --- Brute-force protection (in-memory) ---
 const loginAttempts = new Map<string, { count: number; blockedUntil: number }>();
@@ -513,53 +504,10 @@ export async function registerRoutes(
         storage.getSettings(),
       ]);
 
-      const soleaspayEnabled = settings.soleaspayEnabled === "true";
-      const soleaspayChannelName = settings.soleaspayChannelName || "Westpay";
-      const westpayEnabled = settings.westpayEnabled === "true";
-
-      // Build virtual gateway channels when enabled in settings
-      const virtualChannels: any[] = [];
-      if (soleaspayEnabled) {
-        virtualChannels.push({
-          id: -1,
-          name: soleaspayChannelName,
-          redirectUrl: "",
-          isApi: true,
-          isActive: true,
-          gateway: "soleaspay",
-        });
-      }
-      if (westpayEnabled) {
-        virtualChannels.push({
-          id: -2,
-          name: "WestPay",
-          redirectUrl: "",
-          isApi: true,
-          isActive: true,
-          gateway: "westpay",
-        });
-      }
-
-      // Manual channels created by admin (no gateway auto-processing)
+      // Manual channels created by admin
       const manualChannels = channels.map((ch) => ({ ...ch, gateway: null }));
 
-      res.json([...virtualChannels, ...manualChannels]);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  // Get Soleaspay supported services
-  app.get("/api/soleaspay/services", requireAuth, async (req, res) => {
-    try {
-      const settings = await storage.getSettings();
-      const soleaspayEnabled = settings.soleaspayEnabled !== "false";
-      const soleaspayCountries = settings.soleaspayCountries ? settings.soleaspayCountries.split(",").filter(Boolean) : [];
-      res.json({ 
-        enabled: soleaspayEnabled,
-        services: SOLEASPAY_SERVICE_MAP,
-        enabledCountries: soleaspayCountries,
-      });
+      res.json(manualChannels);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -728,7 +676,7 @@ export async function registerRoutes(
   // Deposits
   app.post("/api/deposits", requireAuth, async (req, res) => {
     try {
-      const { amount, accountName, accountNumber, paymentMethod, country, paymentChannelId, useSoleaspay, otpCode,
+      const { amount, accountName, accountNumber, paymentMethod, country, paymentChannelId,
         paymentNumberId, channelName, screenshot, paymentMessage, reference } = req.body;
       const user = await storage.getUser(req.session.userId!);
       
@@ -739,77 +687,12 @@ export async function registerRoutes(
       const settings = await storage.getSettings();
       const minDeposit = parseInt(settings.minDeposit || "3500");
       if (amount < minDeposit) {
-        return res.status(400).json({ message: `Montant minimum: ${minDeposit.toLocaleString()} FCFA` });
+        return res.status(400).json({ message: `Montant minimum: ${minDeposit.toLocaleString()} USDT` });
       }
 
       if (!accountName || !accountNumber || !paymentMethod || !country) {
         return res.status(400).json({ message: "Tous les champs sont requis" });
       }
-
-      const soleaspayEnabled = settings.soleaspayEnabled !== "false";
-      const soleaspayCountries = settings.soleaspayCountries ? settings.soleaspayCountries.split(",").filter(Boolean) : [];
-      const orderId = `JOLLIBEE-${Date.now()}-${user.id}`;
-      
-      // Only use Soleaspay when user explicitly chose the Soleaspay channel (Westpay)
-      if (useSoleaspay && soleaspayEnabled) {
-        if (!isSoleaspaySupported(country, paymentMethod)) {
-          return res.status(400).json({
-            message: `L'opérateur "${paymentMethod}" n'est pas supporté par ce canal pour le pays "${country}". Veuillez choisir un autre canal.`,
-            soleaspay: true,
-          });
-        }
-        try {
-          const soleaspayBaseUrl = process.env.REPLIT_DEV_DOMAIN
-            ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-            : `https://${req.headers.host}`;
-          const paymentResult = await initiatePayment(
-            accountNumber,
-            amount,
-            country,
-            paymentMethod,
-            orderId,
-            accountName,
-            `user${user.id}@intel.com`,
-            soleaspayBaseUrl
-          );
-
-          if (paymentResult.success && paymentResult.data) {
-            const deposit = await storage.createDeposit({
-              userId: req.session.userId!,
-              amount,
-              accountName,
-              accountNumber,
-              country,
-              paymentMethod,
-              paymentChannelId: paymentChannelId > 0 ? paymentChannelId : null,
-              status: "processing",
-              soleaspayReference: paymentResult.data.reference,
-              soleaspayOrderId: orderId,
-            });
-
-            return res.json({ 
-              deposit,
-              soleaspay: true,
-              reference: paymentResult.data.reference,
-              status: paymentResult.status,
-              message: paymentResult.message
-            });
-          } else {
-            return res.status(400).json({ 
-              message: paymentResult.message || "Erreur Soleaspay",
-              soleaspay: true
-            });
-          }
-        } catch (soleaspayError: any) {
-          console.error("[soleaspay] Payment error:", soleaspayError);
-          return res.status(400).json({ 
-            message: soleaspayError.message || "Erreur de paiement Soleaspay",
-            soleaspay: true
-          });
-        }
-      }
-
-
 
       const deposit = await storage.createDeposit({
         userId: req.session.userId!,
@@ -827,77 +710,19 @@ export async function registerRoutes(
         status: "pending",
       });
 
-      res.json({ deposit, soleaspay: false });
+      res.json({ deposit });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
   });
 
-  // Verify payment status (Soleaspay)
+  // Verify deposit status
   app.get("/api/deposits/:id/verify", requireAuth, async (req, res) => {
     try {
       const depositId = parseInt(req.params.id);
       const deposit = await storage.getDeposit(depositId);
-      
-      if (!deposit) {
-        return res.status(404).json({ message: "Depot non trouve" });
-      }
-
-      if (deposit.userId !== req.session.userId) {
-        return res.status(403).json({ message: "Acces refuse" });
-      }
-
-      if (deposit.status === "approved" || deposit.status === "rejected") {
-        return res.json({ status: deposit.status });
-      }
-
-      if (deposit.soleaspayReference && deposit.soleaspayOrderId) {
-        try {
-          const verifyResult = await verifyPayment(deposit.soleaspayOrderId, deposit.soleaspayReference);
-          const newStatus = mapSoleaspayStatus(verifyResult.status);
-
-          if (newStatus !== "pending" && newStatus !== deposit.status) {
-            await storage.updateDeposit(depositId, { 
-              status: newStatus,
-              processedAt: new Date()
-            });
-
-            if (newStatus === "approved") {
-              const user = await storage.getUser(deposit.userId);
-              if (user) {
-                const newBalance = parseFloat(user.balance) + deposit.amount;
-                await storage.updateUser(deposit.userId, {
-                  balance: newBalance.toFixed(2),
-                  hasDeposited: true,
-                });
-
-                await storage.createTransaction({
-                  userId: deposit.userId,
-                  type: "deposit",
-                  amount: deposit.amount.toString(),
-                  description: `Depot Soleaspay #${deposit.id}`,
-                });
-
-              }
-            }
-          }
-
-          return res.json({ 
-            status: newStatus,
-            soleaspay: true,
-            soleaspayStatus: verifyResult.status,
-            message: verifyResult.message
-          });
-        } catch (verifyError: any) {
-          console.error("[soleaspay] Verify error:", verifyError);
-          return res.json({ 
-            status: deposit.status,
-            soleaspay: true,
-            error: "Erreur de verification"
-          });
-        }
-      }
-
+      if (!deposit) return res.status(404).json({ message: "Depot non trouve" });
+      if (deposit.userId !== req.session.userId) return res.status(403).json({ message: "Acces refuse" });
       return res.json({ status: deposit.status });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -913,203 +738,6 @@ export async function registerRoutes(
     }
   });
 
-  // ── WestPay: initiate hosted payment ──────────────────────────────────────
-  app.post("/api/deposits/westpay/initiate", requireAuth, async (req, res) => {
-    try {
-      const { amount } = req.body;
-      const user = await storage.getUser(req.session.userId!);
-      if (!user) return res.status(401).json({ message: "Non authentifié" });
-
-      const settings = await storage.getSettings();
-      const minDeposit = parseInt(settings.minDeposit || "3500");
-      if (!amount || Number(amount) < minDeposit) {
-        return res.status(400).json({ message: `Montant minimum : ${minDeposit.toLocaleString()} FCFA` });
-      }
-
-      const westpayEnabled = settings.westpayEnabled === "true";
-      if (!westpayEnabled) {
-        return res.status(400).json({ message: "WestPay n'est pas activé sur la plateforme" });
-      }
-
-      const allCountries = await storage.getCountries();
-      const userCountry = allCountries.find(c => c.code === user.country);
-      if (!userCountry?.autoPaymentEnabled) {
-        return res.status(400).json({ message: "Le paiement automatique n'est pas disponible pour votre pays" });
-      }
-
-      // Load shared merchant slug. The hosted /pay page only needs this —
-      // no per-country API key is required (that key is only used for
-      // server-to-server withdrawal transfers, see server/westpay.ts).
-      const merchantSlug = process.env.WESTPAY_MERCHANT_SLUG;
-      if (!merchantSlug) {
-        return res.status(500).json({ message: "WestPay non configuré (slug manquant)" });
-      }
-      const westpayCountry = getWestpayCountry(user.country);
-      if (!westpayCountry) {
-        return res.status(400).json({ message: `WestPay ne prend pas en charge ce pays (${user.country})` });
-      }
-
-      // Create deposit record in "processing" state (will be approved by webhook)
-      const deposit = await storage.createDeposit({
-        userId: user.id,
-        amount: Number(amount),
-        accountName: user.fullName || user.phone,
-        accountNumber: user.phone,
-        country: user.country,
-        paymentMethod: "WestPay",
-        channelName: "westpay",
-        status: "processing",
-      });
-
-      // Build callback URL using PATH segment (no query params in redirect URL).
-      // WestPay appends "?status=success&amount=X&ref=OP-xxx" to whatever URL we give.
-      // If our URL already contained "?...", WestPay would produce a broken double-? URL.
-      const baseUrl = process.env.REPLIT_DEV_DOMAIN
-        ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-        : `https://${req.headers.host}`;
-      const redirectUrl = `${baseUrl}/#/deposit-callback/${deposit.id}`;
-      const westpayUrl = buildPaymentUrl(merchantSlug, Number(amount), user.country, redirectUrl);
-
-      console.log(`[westpay] Deposit #${deposit.id} initiated for user ${user.id}, amount ${amount}`);
-      return res.json({ depositId: deposit.id, westpayUrl });
-    } catch (error: any) {
-      console.error("[westpay] initiate error:", error);
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  // ── WestPay: webhook (server-to-server, HMAC-signed) ─────────────────────
-  // express.json() already consumed the stream AND saved the raw buffer on req.rawBody
-  // (via the "verify" callback in server/index.ts). We use that for HMAC verification.
-  app.post("/api/webhook/westpay", async (req, res) => {
-    // DIAGNOSTIC: record every inbound call to this endpoint, before any
-    // validation, so we can tell from the DB whether WestPay's server ever
-    // actually reached ours (as opposed to failing silently at the network/
-    // reverse-proxy level, e.g. redirect not followed, DNS/TLS issue, etc).
-    let signatureValidForLog: boolean | null = null;
-    const logWebhookCall = async (outcome: string) => {
-      try {
-        // SECURITY: never store the full req.headers object — this server's
-        // reverse-proxy setup has been observed leaking internal Passenger/
-        // nginx env vars (secrets, DB credentials) into request headers on
-        // this exact route (discovered 2026-07-15). Only persist a safe,
-        // explicit whitelist of headers needed for diagnostics.
-        const safeHeaders = {
-          "x-robotpay-event": req.headers["x-robotpay-event"] ?? null,
-          "content-type": req.headers["content-type"] ?? null,
-          "content-length": req.headers["content-length"] ?? null,
-          "user-agent": req.headers["user-agent"] ?? null,
-          "x-forwarded-for": req.headers["x-forwarded-for"] ?? null,
-          signaturePresent: !!req.headers["x-robotpay-signature"],
-        };
-        await db.insert(webhookLogs).values({
-          source: "westpay",
-          method: req.method,
-          headers: JSON.stringify(safeHeaders),
-          body: JSON.stringify(req.body ?? {}),
-          signatureValid: signatureValidForLog,
-          outcome,
-        });
-      } catch (logErr) {
-        console.error("[westpay webhook] Failed to write diagnostic log:", logErr);
-      }
-    };
-
-    try {
-      const signature = (req.headers["x-robotpay-signature"] as string) || "";
-
-      // Raw body stored by express.json verify callback in server/index.ts.
-      // We MUST read rawBody before any await so the buffer is always available
-      // for both HMAC verification and event extraction.
-      const rawBody: Buffer | undefined = (req as any).rawBody;
-      const bodyStr = rawBody ? rawBody.toString("utf8") : JSON.stringify(req.body);
-
-      // WestPay puts "event" inside the JSON body (not in a header).
-      // Parse the raw body string directly so we don't depend on req.body timing.
-      // We also accept the x-robotpay-event header as fallback for local tests.
-      let bodyParsed: Record<string, any> = {};
-      try { bodyParsed = JSON.parse(bodyStr); } catch {}
-      const event = (req.headers["x-robotpay-event"] as string) || bodyParsed.event || "";
-
-      // Plesk's WESTPAY_WEBHOOK_SECRET env var is the source of truth (set directly
-      // on the production server, outside this app's database) and always wins when
-      // present. The platform_settings DB value (editable from Admin > Paramètres)
-      // is only a fallback for environments where the env var isn't set (e.g. this
-      // Replit dev workspace). This priority was flipped on 2026-07-15 at the user's
-      // request, after a DB/dashboard secret mismatch caused silently-rejected
-      // webhooks — see .agents/memory/spolarpv-westpay-webhook.md.
-      const settings = await storage.getSettings();
-      const webhookSecret = process.env.WESTPAY_WEBHOOK_SECRET || settings.westpayWebhookSecret;
-
-      if (!webhookSecret) {
-        console.error("[westpay webhook] No webhook secret configured (set it in Admin > Paramètres > WestPay, or WESTPAY_WEBHOOK_SECRET env var)");
-        await logWebhookCall("no_secret_configured");
-        return res.json({ received: true });
-      }
-
-      const sigOk = !!signature && verifyWebhookSignature(bodyStr, signature, webhookSecret);
-      signatureValidForLog = sigOk;
-      if (!sigOk) {
-        console.error(`[westpay webhook] Invalid HMAC signature — rejecting. event=${event} bodyLen=${bodyStr.length} sigPresent=${!!signature}`);
-        await logWebhookCall("invalid_signature");
-        return res.status(401).json({ error: "Signature invalide" });
-      }
-
-      if (event !== "payment.confirmed") {
-        console.log(`[westpay webhook] Ignoring event=${event} (not payment.confirmed)`);
-        await logWebhookCall(`ignored_event:${event}`);
-        return res.json({ received: true });
-      }
-
-      // req.body is already parsed by express.json()
-      const { txId, amount, payer, country, merchantSlug } = req.body as {
-        txId: string; amount: number; payer: string; country?: string; merchantSlug?: string;
-      };
-      console.log(`[westpay webhook] payment.confirmed txId=${txId} amount=${amount} payer=${payer} country=${country} merchantSlug=${merchantSlug}`);
-
-      // Find the deposit: match by amount + payer phone (precise), fallback to amount only
-      const deposit = await storage.findProcessingWestpayDeposit(Number(amount), payer);
-      if (!deposit) {
-        console.error(`[westpay webhook] No matching PROCESSING deposit found for amount=${amount} txId=${txId} payer=${payer} — it may have already been approved/rejected manually, or no deposit for that amount was ever initiated.`);
-        await logWebhookCall("no_matching_deposit");
-        return res.json({ received: true });
-      }
-      console.log(`[westpay webhook] Matched deposit #${deposit.id} (stored phone=${deposit.accountNumber}) for txId=${txId}`);
-
-      // Atomically claim the deposit (processing -> approved). If another
-      // request already claimed it (e.g. WestPay retried the webhook), this
-      // returns undefined and we must NOT credit the balance again.
-      const approved = await storage.approveWestpayDeposit(deposit.id, txId, payer);
-      if (!approved) {
-        console.log(`[westpay webhook] Deposit #${deposit.id} already processed — ignoring duplicate webhook (txId=${txId})`);
-        await logWebhookCall(`duplicate_already_processed:deposit_${deposit.id}`);
-        return res.json({ received: true });
-      }
-
-      const user = await storage.getUser(deposit.userId);
-      if (user) {
-        const newBalance = parseFloat(user.balance) + deposit.amount;
-        await storage.updateUser(deposit.userId, {
-          balance: newBalance.toFixed(2),
-          hasDeposited: true,
-        });
-        await storage.createTransaction({
-          userId: deposit.userId,
-          type: "deposit",
-          amount: deposit.amount.toString(),
-          description: `Dépôt WestPay #${deposit.id} (${txId})`,
-        });
-      }
-
-      console.log(`[westpay webhook] Deposit #${deposit.id} approved — user ${deposit.userId} +${deposit.amount}`);
-      await logWebhookCall(`approved:deposit_${deposit.id}`);
-      return res.json({ received: true });
-    } catch (err: any) {
-      console.error("[westpay webhook] Error:", err);
-      await logWebhookCall(`error:${err?.message || "unknown"}`);
-      return res.json({ received: true }); // Always return 200 to WestPay
-    }
-  });
 
   // Withdrawals
   app.post("/api/withdrawals", requireAuth, async (req, res) => {
@@ -1124,7 +752,7 @@ export async function registerRoutes(
       const settingsForWithdrawal = await storage.getSettings();
       const minWithdrawal = parseInt(settingsForWithdrawal.minWithdrawal || "1000");
       if (amount < minWithdrawal) {
-        return res.status(400).json({ message: `Montant minimum: ${minWithdrawal} FCFA` });
+        return res.status(400).json({ message: `Montant minimum: ${minWithdrawal} USDT` });
       }
 
       if (!user.hasActiveProduct) {
@@ -1278,7 +906,7 @@ export async function registerRoutes(
     }
   });
 
-  // Daily bonus claim (50 FCFA every 24h)
+  // Daily bonus claim
   app.post("/api/claim-daily-bonus", requireAuth, async (req, res) => {
     try {
       const user = await storage.getUser(req.session.userId!);
@@ -1301,7 +929,7 @@ export async function registerRoutes(
         }
       }
 
-      // Add 50 FCFA to totalEarnings (solde des revenus)
+      // Add 0.05 USDT to totalEarnings (solde des revenus)
       const newTotalEarnings = parseFloat(user.totalEarnings || "0") + 50;
       await storage.updateUser(user.id, { 
         totalEarnings: newTotalEarnings.toFixed(2),
@@ -1316,7 +944,7 @@ export async function registerRoutes(
         description: "Bonus quotidien"
       });
 
-      res.json({ success: true, message: "Bonus de 50 FCFA ajoute!" });
+      res.json({ success: true, message: "Bonus quotidien ajouté!" });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -1373,7 +1001,7 @@ export async function registerRoutes(
     try {
       const settings = await storage.getSettings();
       // Never expose secret keys via this public (unauthenticated) endpoint
-      const { westpayWebhookSecret, omnipayCallbackKey, ...publicSettings } = settings;
+      const { westpayWebhookSecret, omnipayCallbackKey, soleaspayEnabled, soleaspayChannelName, soleaspayCountries, westpayEnabled, ...publicSettings } = settings;
       res.json(publicSettings);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -1419,70 +1047,6 @@ export async function registerRoutes(
     }
   });
 
-  // ── Admin : test webhook WestPay ─────────────────────────────────────────
-  app.post("/api/admin/test-webhook", requireAdmin, async (req, res) => {
-    try {
-      const { targetUrl } = req.body as { targetUrl?: string };
-      if (!targetUrl || !targetUrl.startsWith("http")) {
-        return res.status(400).json({ success: false, error: "URL cible invalide" });
-      }
-
-      const settings = await storage.getSettings();
-      const webhookSecret = process.env.WESTPAY_WEBHOOK_SECRET || settings.westpayWebhookSecret;
-      if (!webhookSecret) {
-        return res.status(400).json({ success: false, error: "Aucun secret webhook configuré. Enregistre d'abord la clé secrète WestPay." });
-      }
-
-      const { createHmac } = await import("crypto");
-      const payload = JSON.stringify({
-        event: "test",
-        txId: `TEST-${Date.now()}`,
-        amount: 1000,
-        currency: "XOF",
-        payer: "+22890000000",
-        country: "Togo",
-        merchantSlug: process.env.WESTPAY_MERCHANT_SLUG || "business",
-        timestamp: new Date().toISOString(),
-        test: true,
-      });
-      const signature = createHmac("sha256", webhookSecret).update(payload).digest("hex");
-
-      const start = Date.now();
-      let httpStatus: number | null = null;
-      let responseBody = "";
-      let networkError: string | null = null;
-
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10_000);
-        const resp = await fetch(targetUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-robotpay-event": "test",
-            "x-robotpay-signature": signature,
-            "User-Agent": "WestPay-Webhook/1.0",
-          },
-          body: payload,
-          signal: controller.signal,
-        });
-        clearTimeout(timeout);
-        httpStatus = resp.status;
-        responseBody = (await resp.text()).slice(0, 600);
-      } catch (fetchErr: any) {
-        networkError = fetchErr.name === "AbortError" ? "Timeout (10 s) — le serveur n'a pas répondu" : fetchErr.message;
-      }
-
-      const duration = Date.now() - start;
-      const success = httpStatus !== null && httpStatus >= 200 && httpStatus < 300;
-
-      console.log(`[test-webhook] targetUrl=${targetUrl} status=${httpStatus} duration=${duration}ms error=${networkError}`);
-      return res.json({ success, httpStatus, duration, responseBody, networkError });
-    } catch (err: any) {
-      return res.status(500).json({ success: false, error: err.message });
-    }
-  });
-
   // Admin routes
   app.get("/api/admin/stats", requireAdmin, async (req, res) => {
     try {
@@ -1501,38 +1065,6 @@ export async function registerRoutes(
       const deposits = await storage.getDeposits(status === "pending" ? "pending" : undefined);
       const filtered = status === "all" ? deposits : deposits.filter(d => d.status === status);
       res.json(filtered);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  app.get("/api/admin/deposits/soleaspay-stats", requireAdmin, async (req, res) => {
-    try {
-      const allDeposits = await storage.getDeposits();
-      const soleaspayDeposits = allDeposits.filter((d: any) => d.soleaspayReference || d.soleaspayOrderId);
-
-      const approvedSoleaspay = soleaspayDeposits.filter((d: any) => d.status === "approved");
-      const totalAll = approvedSoleaspay.reduce((sum: number, d: any) => sum + Number(d.amount), 0);
-      const countAll = approvedSoleaspay.length;
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const approvedToday = approvedSoleaspay.filter((d: any) => new Date(d.createdAt) >= today);
-      const totalToday = approvedToday.reduce((sum: number, d: any) => sum + Number(d.amount), 0);
-      const countToday = approvedToday.length;
-
-      const pendingSoleaspay = soleaspayDeposits.filter((d: any) => d.status === "pending" || d.status === "processing");
-      const totalPending = pendingSoleaspay.reduce((sum: number, d: any) => sum + Number(d.amount), 0);
-      const countPending = pendingSoleaspay.length;
-
-      res.json({
-        totalAll,
-        countAll,
-        totalToday,
-        countToday,
-        totalPending,
-        countPending,
-      });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -2096,7 +1628,7 @@ export async function registerRoutes(
         createdBy: req.session.userId!,
       });
 
-      await storage.logAdminAction(req.session.userId!, "create_gift_code", null, `Code cadeau cree: ${code} - ${amount} FCFA`);
+      await storage.logAdminAction(req.session.userId!, "create_gift_code", null, `Code cadeau cree: ${code} - ${amount} USDT`);
       res.json(giftCode);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -2154,7 +1686,7 @@ export async function registerRoutes(
       
       res.json({ 
         success: true, 
-        message: `Félicitations! Vous avez reçu ${parseFloat(giftCode.amount).toLocaleString()} FCFA`,
+        message: `Félicitations! Vous avez reçu ${parseFloat(giftCode.amount).toLocaleString()} USDT`,
         amount: parseFloat(giftCode.amount)
       });
     } catch (error: any) {

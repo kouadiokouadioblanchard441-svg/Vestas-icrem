@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getCountryByCode } from "@/lib/countries";
-import { ChevronLeft, Loader2, RefreshCw } from "lucide-react";
+import { ChevronLeft, Loader2 } from "lucide-react";
 import { Link } from "wouter";
-import { useToast } from "@/hooks/use-toast";
+
 
 import nodataImg from "@assets/nodata-da225bbb_(1)_1783249133513.png";
 import iconRecharger from "@assets/1-1_1783245823715.png";
@@ -18,10 +18,6 @@ interface Deposit {
   status: string;
   paymentMethod: string;
   createdAt: string;
-  soleaspayReference?: string;
-  soleaspayOrderId?: string;
-  omnipayId?: string;
-  omnipayReference?: string;
 }
 
 interface Withdrawal {
@@ -36,14 +32,11 @@ interface Withdrawal {
 const BG = "#87CEEB";
 
 export default function HistoryPage() {
-  const { user, refreshUser } = useAuth();
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<"deposits" | "withdrawals">("deposits");
-  const [verifyingId, setVerifyingId] = useState<number | null>(null);
 
   const countryInfo = user ? getCountryByCode(user.country) : null;
-  const currency = countryInfo?.currency || "FCFA";
+  const currency = countryInfo?.currency || "USDT";
 
   const { data: deposits = [], isLoading: depositsLoading } = useQuery<Deposit[]>({
     queryKey: ["/api/deposits/history"],
@@ -101,38 +94,9 @@ export default function HistoryPage() {
   };
 
   const getReference = (deposit: Deposit) => {
-    if (deposit.omnipayReference) return deposit.omnipayReference;
-    if (deposit.omnipayId) return deposit.omnipayId;
-    if (deposit.soleaspayReference) return deposit.soleaspayReference;
-    if (deposit.soleaspayOrderId) return deposit.soleaspayOrderId;
     return `DEP${deposit.id.toString().padStart(10, "0")}`;
   };
 
-  const isPendingDeposit = (deposit: Deposit) =>
-    (deposit.status === "pending" || deposit.status === "processing") &&
-    (deposit.soleaspayReference || deposit.soleaspayOrderId || deposit.omnipayId || deposit.omnipayReference);
-
-  const handleVerify = async (depositId: number) => {
-    setVerifyingId(depositId);
-    try {
-      const res = await fetch(`/api/deposits/${depositId}/verify`, { credentials: "include" });
-      const data = await res.json();
-      if (data.status === "approved") {
-        toast({ title: "Paiement confirmé", description: "Votre compte a été crédité" });
-        refreshUser();
-        queryClient.invalidateQueries({ queryKey: ["/api/deposits/history"] });
-      } else if (data.status === "rejected") {
-        toast({ title: "Paiement échoué", description: "Le paiement a été refusé", variant: "destructive" });
-        queryClient.invalidateQueries({ queryKey: ["/api/deposits/history"] });
-      } else {
-        toast({ title: "En cours", description: "Le paiement est toujours en attente" });
-      }
-    } catch {
-      toast({ title: "Erreur", description: "Impossible de vérifier le paiement", variant: "destructive" });
-    } finally {
-      setVerifyingId(null);
-    }
-  };
 
   if (!user) return null;
 
@@ -220,20 +184,6 @@ export default function HistoryPage() {
                     </span>
                   </div>
 
-                  {isPendingDeposit(deposit) && (
-                    <button
-                      onClick={() => handleVerify(deposit.id)}
-                      disabled={verifyingId === deposit.id}
-                      className="mt-3 w-full py-2 text-white text-xs font-bold rounded-full flex items-center justify-center gap-2 disabled:opacity-50"
-                      style={{ background: "#4ADE80" }}
-                      data-testid={`button-verify-${deposit.id}`}
-                    >
-                      {verifyingId === deposit.id
-                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        : <RefreshCw className="w-3.5 h-3.5" />}
-                      Vérifier la transaction
-                    </button>
-                  )}
                 </div>
               </div>
             );

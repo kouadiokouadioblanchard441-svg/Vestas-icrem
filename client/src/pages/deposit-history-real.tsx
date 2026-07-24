@@ -35,7 +35,7 @@ const STATUS: Record<string, { label: string; color: string }> = {
 export default function DepositHistoryRealPage() {
   const { user } = useAuth();
   const countryInfo = user ? getCountryByCode(user.country) : null;
-  const currency = countryInfo?.currency || "FCFA";
+  const currency = countryInfo?.currency || "USDT";
 
   const { data: deposits = [], isLoading } = useQuery<Deposit[]>({
     queryKey: ["/api/deposits/history"],

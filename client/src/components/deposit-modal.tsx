@@ -101,7 +101,7 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
       setSelectedAmount(amount);
       setStep("details");
     } else {
-      toast({ title: "Montant invalide", description: "Le montant minimum est de 2000 FCFA", variant: "destructive" });
+      toast({ title: "Montant invalide", description: "Le montant minimum est de 2 USDT", variant: "destructive" });
     }
   };
 

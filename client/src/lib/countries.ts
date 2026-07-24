@@ -1,10 +1,10 @@
 // Fallback country data (used if API not available)
 export const COUNTRIES = [
-  { code: "CF", name: "Centrafrique", flag: "CF", currency: "XOF", paymentMethods: ["Telecel Centrafrique", "Orange Centrafrique"] },
+  { code: "CF", name: "Centrafrique", flag: "CF", currency: "USDT", paymentMethods: ["Telecel Centrafrique", "Orange Centrafrique"] },
 ];
 
 export const FALLBACK_COUNTRIES = [
-  { code: "CF", name: "Centrafrique", currency: "XOF", phonePrefix: "236", operators: ["Telecel Centrafrique", "Orange Centrafrique"] },
+  { code: "CF", name: "Centrafrique", currency: "USDT", phonePrefix: "236", operators: ["Telecel Centrafrique", "Orange Centrafrique"] },
 ];
 
 // Legacy compatibility - kept for places still using ELIGIBLE_COUNTRIES directly
@@ -25,7 +25,7 @@ export type ApiCountry = {
   phonePrefix: string;
   operators: string; // JSON string
   isActive: boolean;
-  autoPaymentEnabled: boolean; // true = WestPay automatic deposits, false = manual payment numbers
+  autoPaymentEnabled: boolean;
 };
 
 export function parseOperators(operatorsJson: string): string[] {
@@ -69,6 +69,6 @@ export function getPaymentMethodsForCountry(code: string, apiCountries?: ApiCoun
 
 export function formatCurrency(amount: number, countryCode: string, apiCountries?: ApiCountry[]): string {
   const country = getCountryByCode(countryCode, apiCountries);
-  const currency = country?.currency || "FCFA";
+  const currency = country?.currency || "USDT";
   return `${amount.toLocaleString()} ${currency}`;
 }

@@ -83,14 +83,6 @@ export default function AdminDeposits() {
         </div>
       )}
 
-      {processingCount > 0 && (
-        <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-xl p-3 flex items-center gap-2">
-          <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-          <p className="text-sm font-medium text-blue-700 dark:text-blue-300">
-            {processingCount} dépôt{processingCount > 1 ? "s" : ""} WestPay en attente de confirmation automatique
-          </p>
-        </div>
-      )}
 
       <div className="flex gap-2">
         <div className="flex-1 relative">
@@ -115,7 +107,7 @@ export default function AdminDeposits() {
             className="whitespace-nowrap"
             data-testid={`button-filter-${status}`}
           >
-            {status === "all" ? "Tous" : status === "pending" ? `En attente${pendingCount > 0 ? ` (${pendingCount})` : ""}` : status === "processing" ? `WestPay en cours${processingCount > 0 ? ` (${processingCount})` : ""}` : status === "approved" ? "Approuvés" : "Rejetés"}
+            {status === "all" ? "Tous" : status === "pending" ? `En attente${pendingCount > 0 ? ` (${pendingCount})` : ""}` : status === "processing" ? `En cours${processingCount > 0 ? ` (${processingCount})` : ""}` : status === "approved" ? "Approuvés" : "Rejetés"}
           </Button>
         ))}
       </div>
@@ -125,10 +117,7 @@ export default function AdminDeposits() {
           Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-52" />)
         ) : filteredDeposits.length > 0 ? (
           filteredDeposits.map((deposit) => {
-            // WestPay deposits are automated (confirmed via webhook) — only flag genuinely
-            // manually-submitted deposits (bank/mobile-money channel chosen by the user, awaiting
-            // human review) as "Paiement manuel". "westpay" is not a manual channel.
-            const isManual = ((deposit as any).paymentNumberId || (deposit as any).channelName) && (deposit as any).channelName !== "westpay";
+            const isManual = !!(deposit as any).paymentNumberId || !!(deposit as any).channelName;
             return (
               <Card key={deposit.id} className={deposit.status === "pending" ? "border-yellow-400/50" : deposit.status === "processing" ? "border-blue-400/50" : ""}>
                 <CardContent className="p-4 space-y-3">
@@ -150,7 +139,7 @@ export default function AdminDeposits() {
                       variant={deposit.status === "pending" ? "secondary" : deposit.status === "approved" ? "default" : deposit.status === "processing" ? "outline" : "destructive"}
                       className={deposit.status === "processing" ? "bg-blue-600 text-white border-blue-600" : ""}
                     >
-                      {deposit.status === "pending" ? "En attente" : deposit.status === "processing" ? "En cours (WestPay)" : deposit.status === "approved" ? "Approuvé" : "Rejeté"}
+                      {deposit.status === "pending" ? "En attente" : deposit.status === "processing" ? "En cours" : deposit.status === "approved" ? "Approuvé" : "Rejeté"}
                     </Badge>
                   </div>
 

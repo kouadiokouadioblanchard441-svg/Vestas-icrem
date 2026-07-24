@@ -148,7 +148,7 @@ export default function AdminTasks() {
         )} />
         <FormField control={form.control} name="reward" render={({ field }) => (
           <FormItem>
-            <FormLabel>Récompense (FCFA)</FormLabel>
+            <FormLabel>Récompense (USDT)</FormLabel>
             <FormControl><Input type="number" min="0" {...field} /></FormControl>
             <FormMessage />
           </FormItem>
@@ -210,7 +210,7 @@ export default function AdminTasks() {
                           👥 {task.requiredInvites} invitation{task.requiredInvites > 1 ? "s" : ""}
                         </span>
                         <span className="text-green-600 font-medium">
-                          🎁 {task.reward.toLocaleString()} FCFA
+                          🎁 {task.reward.toLocaleString()} USDT
                         </span>
                       </div>
                     </div>

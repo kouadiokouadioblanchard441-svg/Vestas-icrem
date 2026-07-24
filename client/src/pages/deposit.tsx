@@ -26,7 +26,6 @@ export default function DepositPage() {
   const [screenshotName, setScreenshotName] = useState("");
   const [paymentMessage, setPaymentMessage] = useState("");
   const [reference, setReference] = useState("");
-  const [westpayLoading, setWestpayLoading] = useState(false);
 
   const country = user?.country || "";
 
@@ -37,22 +36,21 @@ export default function DepositPage() {
   const countryInfo: ApiCountry | undefined = apiCountries.length > 0
     ? apiCountries.find(c => c.code === country && c.isActive)
     : COUNTRIES.find(c => c.code === country) as ApiCountry | undefined;
-  const currency = countryInfo?.currency || "FCFA";
+  const currency = countryInfo?.currency || "USDT";
 
   const { data: platformSettings } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
   });
   const MIN_DEPOSIT = parseInt(platformSettings?.minDeposit || "4000");
-  const westpayEnabled = platformSettings?.westpayEnabled === "true";
   const presetAmounts = (platformSettings?.depositPresetAmounts || "3500,5000,7000,10000,15000,20000,50000,70000")
     .split(",")
     .map((v) => parseInt(v.trim()))
     .filter((v) => !isNaN(v) && v > 0);
 
-  const depositInfoText = getContent(platformSettings, "content_deposit_infoText", `Les services de dépôt sont disponibles 24h/24 et 7j/7. Le dépôt minimum est de ${MIN_DEPOSIT.toLocaleString()} francs CFA, sans limite maximale.`);
+  const depositInfoText = getContent(platformSettings, "content_deposit_infoText", `Les services de dépôt sont disponibles 24h/24 et 7j/7. Le dépôt minimum est de ${MIN_DEPOSIT.toLocaleString()} USDT, sans limite maximale.`);
   const depositWarning1 = getContent(platformSettings, "content_deposit_warning1", "Remarque importante : Ne divulguez à personne les captures d'écran de vos dépôts ni vos identifiants de transaction, car cela pourrait entraîner le vol de vos fonds.");
   const depositWarning2 = getContent(platformSettings, "content_deposit_warning2", "Pour tout problème lié à vos dépôts, veuillez contacter immédiatement le service client de la plateforme.");
-  const depositInstruction1 = getContent(platformSettings, "content_deposit_instruction1", `1. Le dépôt minimum est de ${MIN_DEPOSIT.toLocaleString()} francs CFA.`);
+  const depositInstruction1 = getContent(platformSettings, "content_deposit_instruction1", `1. Le dépôt minimum est de ${MIN_DEPOSIT.toLocaleString()} USDT.`);
   const depositInstruction2 = getContent(platformSettings, "content_deposit_instruction2", "2. Veuillez vérifier attentivement les informations de votre compte avant d'effectuer un transfert afin d'éviter toute erreur de paiement.");
 
   const { data: paymentNumbersList = [], isLoading: numbersLoading } = useQuery<PaymentNumber[]>({
@@ -126,36 +124,6 @@ export default function DepositPage() {
     onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
   });
 
-  const handleWestpay = async () => {
-    if (!amount || Number(amount) < MIN_DEPOSIT) {
-      toast({
-        title: "Montant invalide",
-        description: `Le minimum est de ${MIN_DEPOSIT.toLocaleString()} ${currency}`,
-        variant: "destructive",
-      });
-      return;
-    }
-    setWestpayLoading(true);
-    try {
-      const res = await fetch("/api/deposits/westpay/initiate", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: Number(amount) }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Erreur WestPay");
-      // Redirect user to WestPay hosted payment page
-      window.location.href = data.westpayUrl;
-    } catch (e: any) {
-      toast({ title: "Erreur WestPay", description: e.message, variant: "destructive" });
-      setWestpayLoading(false);
-    }
-  };
-
-  // Paiement automatique WestPay = activé globalement ET pour le pays de l'utilisateur (géré dans Admin > Pays)
-  const isWestpayEligible = westpayEnabled && !!countryInfo?.autoPaymentEnabled;
-
   const handleAmountNext = () => {
     if (!amount || Number(amount) < MIN_DEPOSIT) {
       toast({
@@ -163,11 +131,6 @@ export default function DepositPage() {
         description: `Le minimum est de ${MIN_DEPOSIT.toLocaleString()} ${currency}`,
         variant: "destructive",
       });
-      return;
-    }
-    // Pays en paiement automatique (WestPay activé pour ce pays) → redirection directe sans passer par le step "select"
-    if (isWestpayEligible) {
-      handleWestpay();
       return;
     }
     setStep("select");
@@ -261,14 +224,11 @@ export default function DepositPage() {
             {/* CTA Button */}
             <button
               onClick={handleAmountNext}
-              disabled={westpayLoading}
-              className="w-full py-4 rounded-full text-white font-bold text-base shadow-md mt-2 flex items-center justify-center gap-2 disabled:opacity-70"
+              className="w-full py-4 rounded-full text-white font-bold text-base shadow-md mt-2 flex items-center justify-center gap-2"
               style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
               data-testid="button-recharge-now"
             >
-              {westpayLoading
-                ? <><Loader2 className="w-5 h-5 animate-spin" /> Redirection vers WestPay…</>
-                : "Rechargez maintenant"}
+              Rechargez maintenant
             </button>
 
             {/* Info blocks */}

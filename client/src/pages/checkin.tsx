@@ -41,7 +41,7 @@ export default function CheckinPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/daily-bonus-status"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      toast({ title: "Bonus reçu !", description: "50 FCFA ajoutés à votre solde" });
+      toast({ title: "Bonus reçu !", description: "Bonus quotidien ajouté à votre solde" });
     },
     onError: (error: Error) => {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
@@ -51,7 +51,7 @@ export default function CheckinPage() {
   if (!user) return null;
 
   const country = getCountryByCode(user.country);
-  const currency = country?.currency || "FCFA";
+  const currency = country?.currency || "USDT";
   const totalBonusClaimed = bonusStatus?.totalBonusClaimed || 0;
   const daysPointed = bonusStatus?.daysPointed || 0;
 
@@ -61,7 +61,7 @@ export default function CheckinPage() {
   const dailyRewardLabel = getContent(settings, "content_checkin_dailyRewardLabel", "Récompense du jour");
   const streakLabel = getContent(settings, "content_checkin_streakLabel", "Jours consécutifs");
   const totalLabel = getContent(settings, "content_checkin_totalLabel", "Récompenses cumulées");
-  const rule1 = getContent(settings, "content_checkin_rule1", "1. Récompense de connexion quotidienne : 50 FCFA");
+  const rule1 = getContent(settings, "content_checkin_rule1", "1. Récompense de connexion quotidienne : 0.05 USDT");
   const rule2 = getContent(settings, "content_checkin_rule2", "2. Connectez-vous une fois par jour pour accumuler des points.");
 
   return (

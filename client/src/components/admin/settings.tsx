@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Loader2, Save, Link, Clock, Users, Send, CheckCircle2, XCircle, Wifi, PowerOff, Power } from "lucide-react";
+import { Loader2, Save, Link, Clock, Users, PowerOff, Power } from "lucide-react";
 
 const NETWORKS = [
   { value: "telegram", label: "Telegram" },
@@ -52,8 +52,6 @@ const settingsSchema = z.object({
   level1Commission: z.string().min(1, "Commission requise"),
   level2Commission: z.string().min(1, "Commission requise"),
   level3Commission: z.string().min(1, "Commission requise"),
-  westpayEnabled: z.boolean(),
-  westpayWebhookSecret: z.string().optional(),
 });
 
 type SettingsForm = z.infer<typeof settingsSchema>;
@@ -86,38 +84,6 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
       toast({ title: "Erreur", description: e.message, variant: "destructive" });
     } finally {
       setMaintenanceToggling(false);
-    }
-  };
-
-  // ── Test webhook WestPay ──────────────────────────────────────────────────
-  const [webhookTestUrl, setWebhookTestUrl] = useState("");
-  const [webhookTestResult, setWebhookTestResult] = useState<{
-    success: boolean;
-    httpStatus?: number | null;
-    duration?: number;
-    responseBody?: string;
-    networkError?: string | null;
-    error?: string;
-  } | null>(null);
-  const [webhookTesting, setWebhookTesting] = useState(false);
-
-  const runWebhookTest = async () => {
-    if (!webhookTestUrl) return;
-    setWebhookTesting(true);
-    setWebhookTestResult(null);
-    try {
-      const res = await fetch("/api/admin/test-webhook", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ targetUrl: webhookTestUrl }),
-        credentials: "include",
-      });
-      const data = await res.json();
-      setWebhookTestResult(data);
-    } catch (e: any) {
-      setWebhookTestResult({ success: false, error: e.message });
-    } finally {
-      setWebhookTesting(false);
     }
   };
 
@@ -156,8 +122,6 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
       level1Commission: "25",
       level2Commission: "1",
       level3Commission: "1",
-      westpayEnabled: false,
-      westpayWebhookSecret: "",
     },
   });
 
@@ -192,8 +156,6 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         level1Commission: settings.level1Commission || "25",
         level2Commission: settings.level2Commission || "1",
         level3Commission: settings.level3Commission || "1",
-        westpayEnabled: settings.westpayEnabled === "true",
-        westpayWebhookSecret: settings.westpayWebhookSecret || "",
       });
     }
   }, [settings, form]);
@@ -206,8 +168,6 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         support2Enabled: String(data.support2Enabled),
         channelEnabled: String(data.channelEnabled),
         groupEnabled: String(data.groupEnabled),
-        westpayEnabled: String(data.westpayEnabled),
-        westpayWebhookSecret: data.westpayWebhookSecret || "",
       };
       const response = await apiRequest("POST", "/api/admin/settings", serialized);
       if (!response.ok) {
@@ -521,7 +481,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
           <CardContent className="space-y-4">
             <FormField control={form.control} name="signupBonus" render={({ field }) => (
               <FormItem>
-                <FormLabel>Bonus d'inscription (FCFA)</FormLabel>
+                <FormLabel>Bonus d'inscription (USDT)</FormLabel>
                 <FormControl><Input {...field} type="number" min="0" /></FormControl>
                 <FormDescription>Montant offert à chaque nouvel utilisateur à l'inscription.</FormDescription>
                 <FormMessage />
@@ -531,14 +491,14 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="minDeposit" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Dépôt minimum (FCFA)</FormLabel>
+                  <FormLabel>Dépôt minimum (USDT)</FormLabel>
                   <FormControl><Input {...field} type="number" min="0" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="depositPresetAmounts" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Montants rapides de dépôt (FCFA)</FormLabel>
+                  <FormLabel>Montants rapides de dépôt (USDT)</FormLabel>
                   <FormControl><Input {...field} placeholder="3500,5000,7000,10000,15000,20000,50000,70000" /></FormControl>
                   <FormDescription>Liste de montants séparés par des virgules, affichés en boutons rapides sur la page de dépôt.</FormDescription>
                   <FormMessage />
@@ -546,7 +506,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
               )} />
               <FormField control={form.control} name="minWithdrawal" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Retrait minimum (FCFA)</FormLabel>
+                  <FormLabel>Retrait minimum (USDT)</FormLabel>
                   <FormControl><Input {...field} type="number" min="0" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -620,135 +580,6 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
                   <FormMessage />
                 </FormItem>
               )} />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* ── WestPay ── */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <span className="text-lg">💳</span>
-              Passerelle WestPay (dépôts automatiques)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between rounded-xl border p-3">
-              <div>
-                <p className="text-sm font-medium">Activer WestPay</p>
-                <p className="text-xs text-gray-400">Redirige les utilisateurs vers la page de paiement WestPay</p>
-              </div>
-              <Controller
-                control={form.control}
-                name="westpayEnabled"
-                render={({ field }) => (
-                  <Switch checked={!!field.value} onCheckedChange={field.onChange} />
-                )}
-              />
-            </div>
-            <p className="text-xs text-gray-400 px-1">
-              Slug marchand : <span className="font-mono font-semibold text-gray-600">business</span> (défini via variable d'environnement)
-            </p>
-
-            <FormField control={form.control} name="westpayWebhookSecret" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Clé secrète du webhook WestPay</FormLabel>
-                <FormControl>
-                  <Input {...field} type="password" placeholder="Colle ici la clé secrète fournie par WestPay" autoComplete="off" />
-                </FormControl>
-                <FormDescription>
-                  WestPay signe chaque appel webhook avec cette clé (HMAC-SHA256). Sans elle, les dépôts automatiques
-                  ne sont jamais crédités, même si le webhook atteint bien le serveur. URL à enregistrer chez WestPay :{" "}
-                  <span className="font-mono text-[11px] break-all">https://tondomaine.com/api/webhook/westpay</span>
-                  <br />
-                  <span className="font-semibold">Priorité :</span> la variable d'environnement{" "}
-                  <span className="font-mono text-[11px]">WESTPAY_WEBHOOK_SECRET</span> configurée sur ton serveur Plesk
-                  fait toujours foi si elle est définie — cette valeur ici ne sert que si Plesk n'a pas cette variable.
-                  Garde les deux synchronisées pour éviter toute confusion.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )} />
-
-            {/* ── Testeur de connexion webhook ── */}
-            <div className="rounded-xl border border-dashed border-gray-600 p-4 space-y-3">
-              <div className="flex items-center gap-2">
-                <Wifi className="w-4 h-4 text-blue-400" />
-                <p className="text-sm font-medium">Tester la connexion webhook (Plesk)</p>
-              </div>
-              <p className="text-xs text-gray-400">
-                Envoie un événement <span className="font-mono">test</span> signé vers l'URL de ton serveur Plesk
-                pour vérifier que WestPay peut atteindre ton webhook.
-              </p>
-              <div className="flex gap-2">
-                <Input
-                  value={webhookTestUrl}
-                  onChange={e => setWebhookTestUrl(e.target.value)}
-                  placeholder="https://tondomaine.com/api/webhook/westpay"
-                  className="text-xs font-mono flex-1"
-                />
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={runWebhookTest}
-                  disabled={webhookTesting || !webhookTestUrl}
-                  className="shrink-0"
-                >
-                  {webhookTesting
-                    ? <Loader2 className="w-4 h-4 animate-spin" />
-                    : <><Send className="w-3 h-3 mr-1" />Tester</>}
-                </Button>
-              </div>
-
-              {webhookTestResult && (
-                <div className={`rounded-lg p-3 text-xs space-y-1.5 ${webhookTestResult.success ? "bg-green-950 border border-green-700" : "bg-red-950 border border-red-700"}`}>
-                  <div className="flex items-center gap-2 font-semibold">
-                    {webhookTestResult.success
-                      ? <CheckCircle2 className="w-4 h-4 text-green-400" />
-                      : <XCircle className="w-4 h-4 text-red-400" />}
-                    <span className={webhookTestResult.success ? "text-green-300" : "text-red-300"}>
-                      {webhookTestResult.success ? "Connexion réussie ✓" : "Connexion échouée ✗"}
-                    </span>
-                  </div>
-
-                  {webhookTestResult.httpStatus != null && (
-                    <div className="text-gray-300">
-                      Statut HTTP : <span className="font-mono font-bold">{webhookTestResult.httpStatus}</span>
-                      {webhookTestResult.duration != null && (
-                        <span className="ml-3 text-gray-400">({webhookTestResult.duration} ms)</span>
-                      )}
-                    </div>
-                  )}
-
-                  {webhookTestResult.networkError && (
-                    <div className="text-red-300">
-                      Erreur réseau : <span className="font-mono">{webhookTestResult.networkError}</span>
-                    </div>
-                  )}
-
-                  {webhookTestResult.error && (
-                    <div className="text-red-300">
-                      Erreur : <span className="font-mono">{webhookTestResult.error}</span>
-                    </div>
-                  )}
-
-                  {webhookTestResult.responseBody && (
-                    <div>
-                      <span className="text-gray-400">Réponse du serveur :</span>
-                      <pre className="mt-1 font-mono text-[11px] bg-black/40 rounded p-2 overflow-x-auto whitespace-pre-wrap break-all text-gray-200">
-                        {webhookTestResult.responseBody}
-                      </pre>
-                    </div>
-                  )}
-
-                  {webhookTestResult.success && (
-                    <p className="text-green-400 text-[11px]">
-                      ✓ Le serveur Plesk est joignable et a bien reçu le webhook signé.
-                      Vérifie dans tes logs Plesk que l'événement "test" est bien traité.
-                    </p>
-                  )}
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>
