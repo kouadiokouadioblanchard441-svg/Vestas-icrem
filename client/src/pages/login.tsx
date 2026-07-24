@@ -11,6 +11,7 @@ import { WORLD_COUNTRIES } from "@/lib/world-countries";
 import { CountrySelector } from "@/components/country-selector";
 import { Loader2, ChevronDown } from "lucide-react";
 import vestasLogo from "@/assets/vestas-logo_1783210030332.png";
+import { FloatingSupport } from "@/components/floating-support";
 
 const loginSchema = z.object({
   phone: z.string().min(8, "Numéro de téléphone invalide"),
@@ -204,6 +205,9 @@ export default function LoginPage() {
           selectedCode={selectedCountry}
         />
       </div>
+
+      {/* Floating service client button */}
+      <FloatingSupport bottomOffset={24} />
     </div>
   );
 }

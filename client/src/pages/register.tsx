@@ -11,6 +11,7 @@ import { WORLD_COUNTRIES } from "@/lib/world-countries";
 import { CountrySelector } from "@/components/country-selector";
 import { Loader2, ChevronDown } from "lucide-react";
 const intelLogo = "/spolarpv-logo.png";
+import { FloatingSupport } from "@/components/floating-support";
 
 const registerSchema = z.object({
   phone: z.string().min(8, "Numéro de téléphone invalide"),
@@ -237,6 +238,9 @@ export default function RegisterPage() {
           selectedCode={selectedCountry}
         />
       </div>
+
+      {/* Floating service client button */}
+      <FloatingSupport bottomOffset={24} />
     </div>
   );
 }

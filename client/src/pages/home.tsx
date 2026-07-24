@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { NEWS_ARTICLES } from "@/pages/news-detail";
 import { getContent } from "@/lib/content";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { FloatingSupport } from "@/components/floating-support";
 
 const jollibeeLogo = "/spolarpv-logo.png";
 import bellIcon from "@assets/d7d9f6f6-dddc-4071-8bc2-d6e7e589fbae_(1)_1783248684110.png";
@@ -286,6 +287,9 @@ export default function HomePage() {
       </div>
 
       <div className="pb-16" />
+
+      {/* Floating service client button — above bottom nav */}
+      <FloatingSupport bottomOffset={80} />
     </div>
   );
 }
