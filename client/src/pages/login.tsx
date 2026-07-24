@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth";
 import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
+import { WORLD_COUNTRIES } from "@/lib/world-countries";
 import { CountrySelector } from "@/components/country-selector";
 import { Loader2, ChevronDown } from "lucide-react";
 import vestasLogo from "@/assets/vestas-logo_1783210030332.png";
@@ -58,10 +59,11 @@ export default function LoginPage() {
     if (apiCountries && apiCountries.length > 0) {
       const c = apiCountries.find(ac => ac.code === selectedCountry && ac.isActive);
       if (c) return { phonePrefix: c.phonePrefix, name: c.name };
-      return null;
     }
     const f = FALLBACK_COUNTRIES.find(fc => fc.code === selectedCountry);
-    return f ? { phonePrefix: f.phonePrefix, name: f.name } : null;
+    if (f) return { phonePrefix: f.phonePrefix, name: f.name };
+    const w = WORLD_COUNTRIES.find(wc => wc.code === selectedCountry);
+    return w ? { phonePrefix: w.phonePrefix, name: w.name } : null;
   })();
 
   async function onSubmit(data: LoginForm) {
