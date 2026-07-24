@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth";
 import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
 import { CountrySelector } from "@/components/country-selector";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronDown } from "lucide-react";
 const intelLogo = "/spolarpv-logo.png";
 
 const registerSchema = z.object({
@@ -31,6 +31,7 @@ export default function RegisterPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [countryModalOpen, setCountryModalOpen] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const params = new URLSearchParams(searchString);
   const refCode = params.get("invite_code") || params.get("money") || params.get("reg") || "";
@@ -72,6 +73,10 @@ export default function RegisterPage() {
   })();
 
   async function onSubmit(data: RegisterForm) {
+    if (!agreedToTerms) {
+      toast({ title: "Conditions requises", description: "Veuillez accepter les conditions d'utilisation", variant: "destructive" });
+      return;
+    }
     setIsLoading(true);
     try {
       await register({
@@ -101,124 +106,146 @@ export default function RegisterPage() {
         position: "relative",
       }}
     >
-      {/* Overlay sombre pour lisibilité */}
       <div style={{ position: "absolute", inset: 0, background: "rgba(5, 15, 35, 0.72)", zIndex: 0 }} />
       <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", flex: 1 }}>
-      <div className="flex-1 flex flex-col px-6 pt-14 pb-10 overflow-y-auto">
 
-        {/* Logo */}
-        <div className="flex justify-center mb-10">
-          <img src={intelLogo} alt="SpolarPV" style={{ width: 190, height: 68, objectFit: "contain" }} />
-        </div>
-
-        {/* Fields */}
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-3">
-          <input type="hidden" {...form.register("country")} />
-
-          {/* Sélectionner pays */}
+        {/* Top bar */}
+        <div className="flex items-center justify-end px-4 pt-4">
           <button
             type="button"
-            onClick={() => setCountryModalOpen(true)}
-            className="w-full h-14 bg-white rounded-lg flex items-center px-4 text-left"
-            data-testid="button-select-country"
+            onClick={() => navigate("/login")}
+            className="px-5 py-2 rounded-full font-bold text-white text-sm"
+            style={{ background: "#E8A020", border: "none" }}
           >
-            <span className="text-gray-500 text-base flex-1">
-              {countryData ? `${countryData.name} (+${countryData.phonePrefix})` : "Sélectionnez votre pays >>"}
-            </span>
+            Log in
           </button>
-          {form.formState.errors.country && (
-            <p className="text-red-400 text-xs -mt-1 ml-1">{form.formState.errors.country.message}</p>
-          )}
+        </div>
 
-          {/* Numéro de téléphone */}
-          <div className="w-full h-14 bg-white rounded-lg flex items-center px-4">
-            <input
-              {...form.register("phone")}
-              type="tel"
-              placeholder="Saisissez votre numéro de mobile"
-              className="flex-1 bg-transparent text-gray-800 placeholder:text-gray-400 text-base outline-none"
-              data-testid="input-phone"
-            />
-          </div>
-          {form.formState.errors.phone && (
-            <p className="text-red-400 text-xs -mt-1 ml-1">{form.formState.errors.phone.message}</p>
-          )}
+        <div className="flex-1 flex flex-col px-6 pt-4 pb-10 overflow-y-auto">
 
-          {/* Mot de passe */}
-          <div className="w-full h-14 bg-white rounded-lg flex items-center px-4">
-            <input
-              {...form.register("password")}
-              type="password"
-              placeholder="Mot de passe de connexion"
-              className="flex-1 bg-transparent text-gray-800 placeholder:text-gray-400 text-base outline-none"
-              data-testid="input-password"
-            />
-          </div>
-          {form.formState.errors.password && (
-            <p className="text-red-400 text-xs -mt-1 ml-1">{form.formState.errors.password.message}</p>
-          )}
-
-          {/* Confirmer mot de passe */}
-          <div className="w-full h-14 bg-white rounded-lg flex items-center px-4">
-            <input
-              {...form.register("confirmPassword")}
-              type="password"
-              placeholder="Répéter le mot de passe"
-              className="flex-1 bg-transparent text-gray-800 placeholder:text-gray-400 text-base outline-none"
-              data-testid="input-confirm-password"
-            />
-          </div>
-          {form.formState.errors.confirmPassword && (
-            <p className="text-red-400 text-xs -mt-1 ml-1">{form.formState.errors.confirmPassword.message}</p>
-          )}
-
-          {/* Code d'invitation */}
-          <div className="w-full h-14 bg-white rounded-lg flex items-center px-4">
-            <input
-              {...form.register("invitationCode")}
-              placeholder="Code d'invitation"
-              className="flex-1 bg-transparent text-gray-800 placeholder:text-gray-400 text-base outline-none"
-              data-testid="input-invitation-code"
-            />
+          {/* Logo in white card */}
+          <div className="flex justify-center mb-8">
+            <div className="bg-white rounded-lg p-4 flex items-center justify-center" style={{ width: 180, height: 130 }}>
+              <img src={intelLogo} alt="Logo" style={{ width: 150, height: 100, objectFit: "contain" }} />
+            </div>
           </div>
 
-          {/* Bouton inscription */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full h-14 rounded-full text-white font-bold text-base disabled:opacity-50 mt-4"
-            style={{ background: "#16A34A", border: "2px solid #15803D" }}
-            data-testid="button-register"
-          >
-            {isLoading ? (
-              <span className="flex items-center justify-center gap-2">
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Inscription...
-              </span>
-            ) : "Créez un compte dès maintenant"}
-          </button>
+          {/* Form */}
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-1">
+            <input type="hidden" {...form.register("country")} />
 
-          {/* Lien connexion */}
-          <div className="text-center mt-4 pb-4">
-            <span className="text-white/70 text-sm">J'ai déjà créé un compte,  </span>
-            <button
-              type="button"
-              onClick={() => navigate("/login")}
-              className="text-white font-bold text-sm underline"
-              data-testid="link-login"
+            {/* Phone field with inline country prefix */}
+            <div
+              className="w-full flex items-center px-3 rounded-full"
+              style={{ background: "rgba(255,255,255,0.12)", height: 52 }}
             >
-              Je vais me connecter maintenant.
-            </button>
-          </div>
-        </form>
-      </div>
+              <button
+                type="button"
+                onClick={() => setCountryModalOpen(true)}
+                className="flex items-center gap-1 pr-3 font-bold text-sm shrink-0"
+                style={{ color: "#E8A020", borderRight: "1px solid rgba(255,255,255,0.3)" }}
+              >
+                +{countryData?.phonePrefix || "1"}
+                <ChevronDown size={14} />
+              </button>
+              <input
+                {...form.register("phone")}
+                type="tel"
+                className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm outline-none pl-3"
+                data-testid="input-phone"
+              />
+            </div>
+            <p className="text-white/70 text-xs ml-3 mb-3">your number</p>
+            {form.formState.errors.phone && (
+              <p className="text-red-400 text-xs -mt-2 ml-3 mb-1">{form.formState.errors.phone.message}</p>
+            )}
 
-      <CountrySelector
-        open={countryModalOpen}
-        onClose={() => setCountryModalOpen(false)}
-        onSelect={(code) => form.setValue("country", code, { shouldValidate: true })}
-      />
-      </div>{/* fin wrapper zIndex */}
+            {/* Password field */}
+            <div
+              className="w-full flex items-center px-4 rounded-full"
+              style={{ background: "rgba(255,255,255,0.12)", height: 52 }}
+            >
+              <input
+                {...form.register("password")}
+                type="password"
+                className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm outline-none"
+                data-testid="input-password"
+              />
+            </div>
+            <p className="text-white/70 text-xs ml-3 mb-3">your password</p>
+            {form.formState.errors.password && (
+              <p className="text-red-400 text-xs -mt-2 ml-3 mb-1">{form.formState.errors.password.message}</p>
+            )}
+
+            {/* Confirm password field */}
+            <div
+              className="w-full flex items-center px-4 rounded-full"
+              style={{ background: "rgba(255,255,255,0.12)", height: 52 }}
+            >
+              <input
+                {...form.register("confirmPassword")}
+                type="password"
+                className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm outline-none"
+                data-testid="input-confirm-password"
+              />
+            </div>
+            <p className="text-white/70 text-xs ml-3 mb-3">repeat your password</p>
+            {form.formState.errors.confirmPassword && (
+              <p className="text-red-400 text-xs -mt-2 ml-3 mb-1">{form.formState.errors.confirmPassword.message}</p>
+            )}
+
+            {/* Referral code field */}
+            <div
+              className="w-full flex items-center px-4 rounded-full"
+              style={{ background: "rgba(255,255,255,0.12)", height: 52 }}
+            >
+              <input
+                {...form.register("invitationCode")}
+                className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm outline-none"
+                data-testid="input-invitation-code"
+              />
+            </div>
+            <p className="text-white/70 text-xs ml-3 mb-3">referral code</p>
+
+            {/* Terms checkbox */}
+            <div className="flex items-start gap-3 mt-1 mb-5">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                className="w-5 h-5 cursor-pointer mt-0.5 shrink-0 rounded"
+                style={{ accentColor: "#E8A020" }}
+              />
+              <label htmlFor="terms" className="text-white text-sm cursor-pointer leading-snug">
+                By checking this box you agree to the SpolarPV Terms and Conditions
+              </label>
+            </div>
+
+            {/* Register button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-14 rounded-full font-bold text-white text-lg disabled:opacity-50"
+              style={{ background: "#E8A020" }}
+              data-testid="button-register"
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Inscription...
+                </span>
+              ) : "register"}
+            </button>
+          </form>
+        </div>
+
+        <CountrySelector
+          open={countryModalOpen}
+          onClose={() => setCountryModalOpen(false)}
+          onSelect={(code) => form.setValue("country", code, { shouldValidate: true })}
+        />
+      </div>
     </div>
   );
 }
