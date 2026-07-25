@@ -1,17 +1,14 @@
 import { defineConfig } from "drizzle-kit";
+import { getDatabaseConfig } from "./server/database-config";
 
-const databaseUrl = process.env.SUPABASE_DATABASE_URL || process.env.DATABASE_URL;
-
-if (!databaseUrl) {
-  throw new Error("No database URL configured.");
-}
+const database = getDatabaseConfig();
 
 export default defineConfig({
   out: "./migrations",
   schema: "./shared/schema.ts",
   dialect: "postgresql",
   dbCredentials: {
-    url: databaseUrl,
-    ssl: process.env.SUPABASE_DATABASE_URL ? { rejectUnauthorized: false } : undefined,
+    url: database.connectionString,
+    ssl: database.ssl,
   },
 });
