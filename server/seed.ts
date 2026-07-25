@@ -234,9 +234,13 @@ export async function seed() {
     const existing = existingSettings.find(s => s.key === settingData.key);
     if (!existing) {
       await db.insert(platformSettings).values(settingData);
-      console.log(`Setting added: ${settingData.key} = ${settingData.value}`);
+      // Never print configuration values: some settings contain webhook
+      // secrets or callback keys.
+      console.log(`Setting added: ${settingData.key}`);
     } else {
-      console.log(`Setting preserved: ${settingData.key} = ${existing.value}`);
+      // Never print configuration values: some settings contain webhook
+      // secrets or callback keys.
+      console.log(`Setting preserved: ${settingData.key}`);
     }
   }
   console.log("Settings check complete");
