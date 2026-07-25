@@ -78,11 +78,10 @@ export default function ProductsPage() {
 
       {/* Header */}
       <div
-        className="flex items-center justify-between px-4 py-3 shadow-sm"
-        style={{ background: "#315aab" }}
+        className="flex items-center justify-between px-4 py-3 shadow-sm bg-white"
       >
         <img src={poweraddLogo} alt="Power Add" className="h-8 w-auto object-contain" />
-        <p className="text-white font-bold text-base">{headerTitle}</p>
+        <p className="font-bold text-base" style={{ color: "#315aab" }}>{headerTitle}</p>
         <button onClick={() => navigate("/service")} className="flex items-center justify-center" data-testid="button-service">
           <img src={serviceIcon} alt="Service client" className="w-8 h-8 object-contain" />
         </button>
