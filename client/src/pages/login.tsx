@@ -11,7 +11,7 @@ import { WORLD_COUNTRIES } from "@/lib/world-countries";
 import { CountrySelector } from "@/components/country-selector";
 import { LanguagePicker } from "@/components/language-picker";
 import { useI18n } from "@/lib/i18n";
-import { Loader2, ChevronDown, Phone, Lock, Eye, EyeOff } from "lucide-react";
+import { Loader2, ChevronDown, Eye, EyeOff } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
 const poweraddLogo = "/poweradd/poweradd-logo-official.png";
 
@@ -91,6 +91,13 @@ export default function LoginPage() {
     }
   }
 
+  const fieldStyle: React.CSSProperties = {
+    background: "rgba(245, 232, 210, 0.92)",
+    borderRadius: "14px",
+    border: "none",
+    color: "#1a1a1a",
+  };
+
   return (
     <div
       className="min-h-screen flex flex-col"
@@ -107,7 +114,7 @@ export default function LoginPage() {
       }}
     >
       {/* Overlay */}
-      <div style={{ position: "absolute", inset: 0, background: "rgba(5,15,35,0.68)", zIndex: 0 }} />
+      <div style={{ position: "absolute", inset: 0, background: "rgba(5,15,35,0.72)", zIndex: 0 }} />
 
       <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", flex: 1 }}>
 
@@ -121,86 +128,57 @@ export default function LoginPage() {
           {/* Logo */}
           <img src={poweraddLogo} alt="Power Add" style={{ width: 180, height: 64, objectFit: "contain" }} className="mb-2" />
 
-          {/* Tagline */}
-          <p className="text-white/60 text-xs tracking-widest uppercase mb-8">Bienvenue</p>
+          {/* Greeting */}
+          <div className="w-full max-w-sm mb-4">
+            <p className="text-white font-bold text-2xl leading-tight">Bonjour</p>
+            <p className="text-white/70 text-base mt-1">Bienvenue, connectez-vous</p>
+          </div>
 
-          {/* Glass card */}
-          <div
-            className="w-full max-w-sm rounded-3xl px-6 py-8"
-            style={{
-              background: "rgba(255,255,255,0.08)",
-              backdropFilter: "blur(20px)",
-              border: "1px solid rgba(255,255,255,0.18)",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.32)",
-            }}
-          >
-            <h2 className="text-white font-bold text-xl mb-6 text-center">Connexion</h2>
-
+          {/* Form */}
+          <div className="w-full max-w-sm">
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
               <input type="hidden" {...form.register("country")} />
 
               {/* Phone */}
               <div>
-                <label className="text-white/70 text-xs font-semibold mb-1.5 block tracking-wide uppercase">
+                <label className="text-white font-semibold text-sm mb-2 block">
                   {t.yourNumber}
                 </label>
-                <div
-                  className="w-full h-13 flex items-center overflow-hidden"
-                  style={{
-                    background: "rgba(255,255,255,0.15)",
-                    border: "1.5px solid rgba(255,255,255,0.55)",
-                    borderRadius: "50px",
-                  }}
-                >
-                  {/* Phone icon */}
-                  <div className="pl-4 pr-2 flex items-center">
-                    <Phone size={16} className="text-white/70" />
-                  </div>
-                  {/* Country prefix button */}
+                <div className="w-full flex items-center overflow-hidden" style={{ ...fieldStyle, height: 56 }}>
                   <button
                     type="button"
                     onClick={() => setCountryModalOpen(true)}
-                    className="flex items-center gap-0.5 pr-3 h-full font-bold text-sm shrink-0 border-r"
-                    style={{ color: "#E8320A", borderColor: "rgba(255,255,255,0.18)" }}
+                    className="flex items-center gap-1 px-4 h-full font-bold text-sm shrink-0 border-r"
+                    style={{ color: "#c4260a", borderColor: "rgba(0,0,0,0.12)" }}
                     data-testid="button-select-country"
                   >
                     +{countryData?.phonePrefix || "1"}
-                    <ChevronDown size={13} />
+                    <ChevronDown size={14} />
                   </button>
                   <input
                     {...form.register("phone")}
                     type="tel"
                     placeholder="Numéro de téléphone"
-                    className="flex-1 h-full bg-transparent text-white placeholder:text-white/35 text-sm outline-none px-3"
+                    className="flex-1 h-full bg-transparent text-gray-800 placeholder:text-gray-400 text-sm outline-none px-4"
                     data-testid="input-phone"
                   />
                 </div>
                 {form.formState.errors.phone && (
-                  <p className="text-red-400 text-xs mt-1 ml-2">{form.formState.errors.phone.message}</p>
+                  <p className="text-red-400 text-xs mt-1 ml-1">{form.formState.errors.phone.message}</p>
                 )}
               </div>
 
               {/* Password */}
               <div>
-                <label className="text-white/70 text-xs font-semibold mb-1.5 block tracking-wide uppercase">
+                <label className="text-white font-semibold text-sm mb-2 block">
                   {t.yourPassword}
                 </label>
-                <div
-                  className="w-full h-13 flex items-center overflow-hidden"
-                  style={{
-                    background: "rgba(255,255,255,0.15)",
-                    border: "1.5px solid rgba(255,255,255,0.55)",
-                    borderRadius: "50px",
-                  }}
-                >
-                  <div className="pl-4 pr-3 flex items-center">
-                    <Lock size={16} className="text-white/70" />
-                  </div>
+                <div className="w-full flex items-center overflow-hidden" style={{ ...fieldStyle, height: 56 }}>
                   <input
                     {...form.register("password")}
                     type={showPassword ? "text" : "password"}
                     placeholder="Mot de passe"
-                    className="flex-1 h-full bg-transparent text-white placeholder:text-white/35 text-sm outline-none"
+                    className="flex-1 h-full bg-transparent text-gray-800 placeholder:text-gray-400 text-sm outline-none px-4"
                     data-testid="input-password"
                   />
                   <button
@@ -209,22 +187,22 @@ export default function LoginPage() {
                     className="pr-4 pl-2 flex items-center"
                   >
                     {showPassword
-                      ? <EyeOff size={16} className="text-white/40" />
-                      : <Eye size={16} className="text-white/40" />}
+                      ? <EyeOff size={18} className="text-gray-500" />
+                      : <Eye size={18} className="text-gray-500" />}
                   </button>
                 </div>
                 {form.formState.errors.password && (
-                  <p className="text-red-400 text-xs mt-1 ml-2">{form.formState.errors.password.message}</p>
+                  <p className="text-red-400 text-xs mt-1 ml-1">{form.formState.errors.password.message}</p>
                 )}
               </div>
 
               {/* Remember me */}
-              <div className="flex items-center gap-2.5 mt-1">
+              <div className="flex items-center gap-2.5">
                 <div
                   onClick={() => setRememberMe(v => !v)}
                   className="w-5 h-5 rounded-full border-2 flex items-center justify-center cursor-pointer shrink-0 transition-all"
                   style={{
-                    borderColor: rememberMe ? "#E8320A" : "rgba(255,255,255,0.35)",
+                    borderColor: rememberMe ? "#E8320A" : "rgba(255,255,255,0.45)",
                     background: rememberMe ? "#E8320A" : "transparent",
                   }}
                   data-testid="checkbox-remember"
@@ -243,8 +221,10 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-13 rounded-full text-white font-bold text-base disabled:opacity-50 mt-2 transition-all active:scale-95"
+                className="w-full font-bold text-white text-base disabled:opacity-50 mt-1 transition-all active:scale-95"
                 style={{
+                  height: 56,
+                  borderRadius: "14px",
                   background: "linear-gradient(135deg, #E8320A 0%, #c4260a 100%)",
                   boxShadow: "0 4px 20px rgba(232,50,10,0.45)",
                 }}

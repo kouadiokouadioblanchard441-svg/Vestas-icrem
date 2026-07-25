@@ -11,7 +11,7 @@ import { WORLD_COUNTRIES } from "@/lib/world-countries";
 import { CountrySelector } from "@/components/country-selector";
 import { LanguagePicker } from "@/components/language-picker";
 import { useI18n } from "@/lib/i18n";
-import { Loader2, ChevronDown, Phone, Lock, Eye, EyeOff, Gift } from "lucide-react";
+import { Loader2, ChevronDown, Eye, EyeOff, Phone } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
 const poweraddLogo = "/poweradd/poweradd-logo-official.png";
 
@@ -102,6 +102,13 @@ export default function RegisterPage() {
     }
   }
 
+  const fieldStyle: React.CSSProperties = {
+    background: "rgba(245, 232, 210, 0.92)",
+    borderRadius: "14px",
+    border: "none",
+    color: "#1a1a1a",
+  };
+
   return (
     <div
       className="min-h-screen flex flex-col"
@@ -118,7 +125,7 @@ export default function RegisterPage() {
       }}
     >
       {/* Overlay */}
-      <div style={{ position: "absolute", inset: 0, background: "rgba(5,15,35,0.68)", zIndex: 0 }} />
+      <div style={{ position: "absolute", inset: 0, background: "rgba(5,15,35,0.72)", zIndex: 0 }} />
 
       <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", flex: 1 }}>
 
@@ -128,10 +135,10 @@ export default function RegisterPage() {
           <button
             type="button"
             onClick={() => navigate("/login")}
-            className="px-5 py-2 rounded-full font-bold text-white text-sm transition-all active:scale-95"
+            className="px-5 py-2 rounded-xl font-bold text-white text-sm transition-all active:scale-95"
             style={{
               background: "rgba(255,255,255,0.12)",
-              border: "1.5px solid rgba(255,255,255,0.22)",
+              border: "1.5px solid rgba(255,255,255,0.30)",
               backdropFilter: "blur(10px)",
             }}
           >
@@ -139,165 +146,119 @@ export default function RegisterPage() {
           </button>
         </div>
 
-        <div className="flex-1 flex flex-col items-center justify-center px-5 py-6 overflow-y-auto">
+        <div className="flex-1 flex flex-col items-center justify-center px-5 py-4 overflow-y-auto">
 
           {/* Logo */}
-          <img src={poweraddLogo} alt="Power Add" style={{ width: 160, height: 56, objectFit: "contain" }} className="mb-1" />
-          <p className="text-white/60 text-xs tracking-widest uppercase mb-6">Créer un compte</p>
+          <img src={poweraddLogo} alt="Power Add" style={{ width: 160, height: 56, objectFit: "contain" }} className="mb-2" />
 
-          {/* Glass card */}
-          <div
-            className="w-full max-w-sm rounded-3xl px-6 py-7"
-            style={{
-              background: "rgba(255,255,255,0.08)",
-              backdropFilter: "blur(20px)",
-              border: "1px solid rgba(255,255,255,0.18)",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.32)",
-            }}
-          >
-            <h2 className="text-white font-bold text-xl mb-5 text-center">Inscription</h2>
+          {/* Greeting */}
+          <div className="w-full max-w-sm mb-4">
+            <p className="text-white font-bold text-2xl leading-tight">Bonjour</p>
+            <p className="text-white/70 text-base mt-1">Créer un compte</p>
+          </div>
 
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-3.5">
+          {/* Form */}
+          <div className="w-full max-w-sm">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
               <input type="hidden" {...form.register("country")} />
 
               {/* Phone */}
               <div>
-                <label className="text-white/70 text-xs font-semibold mb-1.5 block tracking-wide uppercase">
+                <label className="text-white font-semibold text-sm mb-2 block">
                   {t.yourNumber}
                 </label>
-                <div
-                  className="w-full flex items-center overflow-hidden"
-                  style={{
-                    height: 52,
-                    background: "rgba(255,255,255,0.15)",
-                    border: "1.5px solid rgba(255,255,255,0.55)",
-                    borderRadius: "50px",
-                  }}
-                >
-                  <div className="pl-4 pr-2 flex items-center shrink-0">
-                    <Phone size={15} className="text-white/70" />
-                  </div>
+                <div className="w-full flex items-center overflow-hidden" style={{ ...fieldStyle, height: 56 }}>
                   <button
                     type="button"
                     onClick={() => setCountryModalOpen(true)}
-                    className="flex items-center gap-0.5 pr-3 h-full font-bold text-sm shrink-0 border-r"
-                    style={{ color: "#E8320A", borderColor: "rgba(255,255,255,0.40)" }}
+                    className="flex items-center gap-1 px-4 h-full font-bold text-sm shrink-0 border-r"
+                    style={{ color: "#c4260a", borderColor: "rgba(0,0,0,0.12)" }}
                   >
                     +{countryData?.phonePrefix || "1"}
-                    <ChevronDown size={13} />
+                    <ChevronDown size={14} />
                   </button>
                   <input
                     {...form.register("phone")}
                     type="tel"
                     placeholder="Numéro de téléphone"
-                    className="flex-1 h-full bg-transparent text-white placeholder:text-white/35 text-sm outline-none px-3"
+                    className="flex-1 h-full bg-transparent text-gray-800 placeholder:text-gray-400 text-sm outline-none px-4"
                     data-testid="input-phone"
                   />
+                  <div className="pr-4">
+                    <Phone size={16} className="text-gray-400" />
+                  </div>
                 </div>
                 {form.formState.errors.phone && (
-                  <p className="text-red-400 text-xs mt-1 ml-2">{form.formState.errors.phone.message}</p>
+                  <p className="text-red-400 text-xs mt-1 ml-1">{form.formState.errors.phone.message}</p>
                 )}
               </div>
 
               {/* Password */}
               <div>
-                <label className="text-white/70 text-xs font-semibold mb-1.5 block tracking-wide uppercase">
+                <label className="text-white font-semibold text-sm mb-2 block">
                   {t.yourPassword}
                 </label>
-                <div
-                  className="w-full flex items-center overflow-hidden"
-                  style={{
-                    height: 52,
-                    background: "rgba(255,255,255,0.15)",
-                    border: "1.5px solid rgba(255,255,255,0.55)",
-                    borderRadius: "50px",
-                  }}
-                >
-                  <div className="pl-4 pr-3 flex items-center shrink-0">
-                    <Lock size={15} className="text-white/70" />
-                  </div>
+                <div className="w-full flex items-center overflow-hidden" style={{ ...fieldStyle, height: 56 }}>
                   <input
                     {...form.register("password")}
                     type={showPassword ? "text" : "password"}
                     placeholder="Mot de passe"
-                    className="flex-1 h-full bg-transparent text-white placeholder:text-white/35 text-sm outline-none"
+                    className="flex-1 h-full bg-transparent text-gray-800 placeholder:text-gray-400 text-sm outline-none px-4"
                     data-testid="input-password"
                   />
                   <button type="button" onClick={() => setShowPassword(v => !v)} className="pr-4 pl-2 flex items-center shrink-0">
-                    {showPassword ? <EyeOff size={15} className="text-white/40" /> : <Eye size={15} className="text-white/40" />}
+                    {showPassword ? <EyeOff size={18} className="text-gray-500" /> : <Eye size={18} className="text-gray-500" />}
                   </button>
                 </div>
                 {form.formState.errors.password && (
-                  <p className="text-red-400 text-xs mt-1 ml-2">{form.formState.errors.password.message}</p>
+                  <p className="text-red-400 text-xs mt-1 ml-1">{form.formState.errors.password.message}</p>
                 )}
               </div>
 
               {/* Confirm password */}
               <div>
-                <label className="text-white/70 text-xs font-semibold mb-1.5 block tracking-wide uppercase">
+                <label className="text-white font-semibold text-sm mb-2 block">
                   {t.repeatPassword}
                 </label>
-                <div
-                  className="w-full flex items-center overflow-hidden"
-                  style={{
-                    height: 52,
-                    background: "rgba(255,255,255,0.15)",
-                    border: "1.5px solid rgba(255,255,255,0.55)",
-                    borderRadius: "50px",
-                  }}
-                >
-                  <div className="pl-4 pr-3 flex items-center shrink-0">
-                    <Lock size={15} className="text-white/70" />
-                  </div>
+                <div className="w-full flex items-center overflow-hidden" style={{ ...fieldStyle, height: 56 }}>
                   <input
                     {...form.register("confirmPassword")}
                     type={showConfirm ? "text" : "password"}
                     placeholder="Confirmer le mot de passe"
-                    className="flex-1 h-full bg-transparent text-white placeholder:text-white/35 text-sm outline-none"
+                    className="flex-1 h-full bg-transparent text-gray-800 placeholder:text-gray-400 text-sm outline-none px-4"
                     data-testid="input-confirm-password"
                   />
                   <button type="button" onClick={() => setShowConfirm(v => !v)} className="pr-4 pl-2 flex items-center shrink-0">
-                    {showConfirm ? <EyeOff size={15} className="text-white/40" /> : <Eye size={15} className="text-white/40" />}
+                    {showConfirm ? <EyeOff size={18} className="text-gray-500" /> : <Eye size={18} className="text-gray-500" />}
                   </button>
                 </div>
                 {form.formState.errors.confirmPassword && (
-                  <p className="text-red-400 text-xs mt-1 ml-2">{form.formState.errors.confirmPassword.message}</p>
+                  <p className="text-red-400 text-xs mt-1 ml-1">{form.formState.errors.confirmPassword.message}</p>
                 )}
               </div>
 
               {/* Referral code */}
               <div>
-                <label className="text-white/70 text-xs font-semibold mb-1.5 block tracking-wide uppercase">
+                <label className="text-white font-semibold text-sm mb-2 block">
                   {t.referralCode}
                 </label>
-                <div
-                  className="w-full flex items-center overflow-hidden"
-                  style={{
-                    height: 52,
-                    background: "rgba(255,255,255,0.15)",
-                    border: "1.5px solid rgba(255,255,255,0.55)",
-                    borderRadius: "50px",
-                  }}
-                >
-                  <div className="pl-4 pr-3 flex items-center shrink-0">
-                    <Gift size={15} className="text-white/70" />
-                  </div>
+                <div className="w-full flex items-center overflow-hidden" style={{ ...fieldStyle, height: 56 }}>
                   <input
                     {...form.register("invitationCode")}
                     placeholder="Code de parrainage (optionnel)"
-                    className="flex-1 h-full bg-transparent text-white placeholder:text-white/35 text-sm outline-none"
+                    className="flex-1 h-full bg-transparent text-gray-800 placeholder:text-gray-400 text-sm outline-none px-4"
                     data-testid="input-invitation-code"
                   />
                 </div>
               </div>
 
               {/* Terms checkbox */}
-              <div className="flex items-start gap-3 mt-1">
+              <div className="flex items-start gap-3">
                 <div
                   onClick={() => setAgreedToTerms(v => !v)}
                   className="w-5 h-5 rounded-full border-2 flex items-center justify-center cursor-pointer shrink-0 mt-0.5 transition-all"
                   style={{
-                    borderColor: agreedToTerms ? "#E8320A" : "rgba(255,255,255,0.35)",
+                    borderColor: agreedToTerms ? "#E8320A" : "rgba(255,255,255,0.45)",
                     background: agreedToTerms ? "#E8320A" : "transparent",
                   }}
                 >
@@ -305,7 +266,7 @@ export default function RegisterPage() {
                 </div>
                 <label
                   onClick={() => setAgreedToTerms(v => !v)}
-                  className="text-white/60 text-xs cursor-pointer leading-snug"
+                  className="text-white/60 text-xs cursor-pointer leading-snug mt-0.5"
                 >
                   {t.terms}
                 </label>
@@ -315,9 +276,10 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full rounded-full font-bold text-white text-base disabled:opacity-50 mt-1 transition-all active:scale-95"
+                className="w-full font-bold text-white text-base disabled:opacity-50 transition-all active:scale-95"
                 style={{
-                  height: 52,
+                  height: 56,
+                  borderRadius: "14px",
                   background: "linear-gradient(135deg, #E8320A 0%, #c4260a 100%)",
                   boxShadow: "0 4px 20px rgba(232,50,10,0.45)",
                 }}
@@ -329,6 +291,21 @@ export default function RegisterPage() {
                     {t.registerLoading}
                   </span>
                 ) : t.registerBtn}
+              </button>
+
+              {/* Login link */}
+              <button
+                type="button"
+                onClick={() => navigate("/login")}
+                className="w-full font-semibold text-white/80 text-base transition-all active:scale-95"
+                style={{
+                  height: 56,
+                  borderRadius: "14px",
+                  background: "rgba(255,255,255,0.10)",
+                  border: "1.5px solid rgba(255,255,255,0.25)",
+                }}
+              >
+                {t.loginBtn}
               </button>
             </form>
           </div>
