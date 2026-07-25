@@ -219,19 +219,16 @@ export default function TeamPage() {
               alt=""
               className="absolute inset-0 w-full h-full object-cover"
             />
-            <div
-              className="absolute inset-0"
-              style={{ background: `linear-gradient(135deg, ${BLUE}e0 0%, ${BLUE_DARK}cc 100%)` }}
-            />
+            <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.28)" }} />
             <div className="relative z-10 p-4 flex flex-col justify-between h-full">
-              <p className="text-white/80 text-[11px] font-medium leading-tight">
+              <p className="text-white/90 text-[11px] font-semibold leading-tight drop-shadow">
                 Portefeuille de recharge
               </p>
               <div className="mt-3">
-                <p className="text-white font-extrabold text-xl leading-none">
+                <p className="text-white font-extrabold text-xl leading-none drop-shadow">
                   {Number(teamDeposits).toLocaleString("fr-FR")}
                 </p>
-                <p className="text-white/60 text-xs mt-0.5">{currency}</p>
+                <p className="text-white/80 text-xs mt-0.5 drop-shadow">{currency}</p>
               </div>
             </div>
           </div>
@@ -246,19 +243,16 @@ export default function TeamPage() {
               alt=""
               className="absolute inset-0 w-full h-full object-cover"
             />
-            <div
-              className="absolute inset-0"
-              style={{ background: "linear-gradient(135deg, #c0101ee0 0%, #a00a18cc 100%)" }}
-            />
+            <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.28)" }} />
             <div className="relative z-10 p-4 flex flex-col justify-between h-full">
-              <p className="text-white/80 text-[11px] font-medium leading-tight">
+              <p className="text-white/90 text-[11px] font-semibold leading-tight drop-shadow">
                 Portefeuille de retrait
               </p>
               <div className="mt-3">
-                <p className="text-white font-extrabold text-xl leading-none">
+                <p className="text-white font-extrabold text-xl leading-none drop-shadow">
                   {Number(teamWithdrawals).toLocaleString("fr-FR")}
                 </p>
-                <p className="text-white/60 text-xs mt-0.5">{currency}</p>
+                <p className="text-white/80 text-xs mt-0.5 drop-shadow">{currency}</p>
               </div>
             </div>
           </div>
