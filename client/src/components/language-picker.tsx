@@ -5,11 +5,15 @@ import { LANGUAGES, useI18n, type Lang } from "@/lib/i18n";
 interface LanguagePickerProps {
   /** "left" → globe button on the left side, "right" → on the right side */
   align?: "left" | "right";
+  /** "light" = white globe on dark/image bg (default); "dark" = dark globe on white bg */
+  variant?: "light" | "dark";
 }
 
-export function LanguagePicker({ align = "right" }: LanguagePickerProps) {
+export function LanguagePicker({ align = "right", variant = "light" }: LanguagePickerProps) {
   const { lang, setLang } = useI18n();
   const [open, setOpen] = useState(false);
+
+  const isDark = variant === "dark";
 
   return (
     <>
@@ -17,13 +21,13 @@ export function LanguagePicker({ align = "right" }: LanguagePickerProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Changer de langue"
+        aria-label="Change language"
         style={{
-          width: 40,
-          height: 40,
+          width: 38,
+          height: 38,
           borderRadius: "50%",
-          background: "rgba(255,255,255,0.18)",
-          border: "1.5px solid rgba(255,255,255,0.4)",
+          background: isDark ? "rgba(0,0,0,0.07)" : "rgba(255,255,255,0.18)",
+          border: isDark ? "1.5px solid rgba(0,0,0,0.15)" : "1.5px solid rgba(255,255,255,0.4)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -33,7 +37,7 @@ export function LanguagePicker({ align = "right" }: LanguagePickerProps) {
           flexShrink: 0,
         }}
       >
-        <Globe size={20} color="white" strokeWidth={1.8} />
+        <Globe size={20} color={isDark ? "#374151" : "white"} strokeWidth={1.8} />
       </button>
 
       {open && (

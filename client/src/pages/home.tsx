@@ -7,6 +7,7 @@ import { NEWS_ARTICLES } from "@/pages/news-detail";
 import { getContent } from "@/lib/content";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
+import { LanguagePicker } from "@/components/language-picker";
 
 const poweraddLogo = "/poweradd/poweradd-logo-official.png";
 import bellIcon from "@assets/d7d9f6f6-dddc-4071-8bc2-d6e7e589fbae_(1)_1783248684110.png";
@@ -16,11 +17,11 @@ import iconService from "@assets/3-1_1783245823860.png";
 
 // Official Power Add Inc. visuals — real company conference & factory photos.
 const BANNER_SLIDES = [
-  { src: "/poweradd/poweradd-news-cmef.jpg", label: "Power Add — Stand officiel au Salon Médical International CMEF" },
-  { src: "/poweradd/poweradd-factory-opening.jpg", label: "Power Add — Inauguration de l'usine de production d'Asie" },
-  { src: "/poweradd/poweradd-factory-lines.jpg", label: "Power Add — Lignes de production automatisées haute précision" },
-  { src: "/poweradd/poweradd-intl-exhibition.jpg", label: "Power Add — Présence aux expositions industrielles internationales" },
-  { src: "/poweradd/poweradd-pps180s.png", label: "Power Add — Solutions d'alimentation professionnelles certifiées" },
+  { src: "/poweradd/poweradd-news-cmef.jpg", label: "Power Add — Official booth at CMEF International Medical Exhibition" },
+  { src: "/poweradd/poweradd-factory-opening.jpg", label: "Power Add — Asia Production Facility Grand Opening" },
+  { src: "/poweradd/poweradd-factory-lines.jpg", label: "Power Add — High-precision Automated Production Lines" },
+  { src: "/poweradd/poweradd-intl-exhibition.jpg", label: "Power Add — Presence at International Industrial Exhibitions" },
+  { src: "/poweradd/poweradd-pps180s.png", label: "Power Add — Certified Professional Power Supply Solutions" },
 ];
 
 const DARK_ICON = { filter: "brightness(0) saturate(100%)" } as React.CSSProperties;
@@ -151,10 +152,10 @@ export default function HomePage() {
   const telegramGroupLink = settings?.groupLink || "https://t.me/vestasgroup";
   const popupTitle = getContent(settings, "content_home_popupTitle", "NOTIFICATION");
   const popupLines = [
-    getContent(settings, "content_home_popupLine1", "Power Add Inc. a été fondée en 1996 comme unité indépendante du groupe Tekman."),
-    getContent(settings, "content_home_popupLine3", "Les solutions Power Add couvrent les adaptateurs, alimentations open frame, alimentations en U, modèles box et convertisseurs DC/DC."),
-    getContent(settings, "content_home_popupLine4", "La recherche et la fabrication pilote sont réalisées à Taïwan ; la production de masse est réalisée à Taïwan et en Chine."),
-    getContent(settings, "content_home_popupLine5", "Power Add indique être certifiée ISO 9001 et ISO 14001 et met en avant l’amélioration continue."),
+    getContent(settings, "content_home_popupLine1", "Power Add Inc. was founded in 1996 as an independent unit of the Tekman Group."),
+    getContent(settings, "content_home_popupLine3", "Power Add solutions cover adapters, open-frame power supplies, U-chassis, box models, and DC/DC converters."),
+    getContent(settings, "content_home_popupLine4", "Research and pilot manufacturing are based in Taiwan; mass production is carried out in Taiwan and China."),
+    getContent(settings, "content_home_popupLine5", "Power Add is certified ISO 9001 and ISO 14001, with a commitment to continuous improvement."),
   ];
 
   return (
@@ -208,7 +209,7 @@ export default function HomePage() {
                 onClick={() => setShowPopup(false)}
               >
                 <SiTelegram className="w-4 h-4" />
-                Aller sur Telegram &gt;
+                Go to Telegram &gt;
               </a>
             </div>
           </div>
@@ -216,8 +217,9 @@ export default function HomePage() {
       )}
 
       {/* ── Header ── */}
-      <div className="flex items-center px-4 py-2 bg-white shadow-sm">
+      <div className="flex items-center justify-between px-4 py-2 bg-white shadow-sm">
         <img src={poweraddLogo} alt="Power Add" className="h-10 w-auto object-contain" />
+        <LanguagePicker variant="dark" />
       </div>
 
       {/* ── Hero Banner (carrousel défilant) ── */}
@@ -251,7 +253,7 @@ export default function HomePage() {
 
       {/* ── Info Cards ── */}
       <div className="mx-3 mt-3 space-y-3">
-        <p className="text-gray-700 font-bold text-sm px-1">Centre d'informations</p>
+        <p className="text-gray-700 font-bold text-sm px-1">Information Center</p>
         {NEWS_ARTICLES.map((article) => (
           <button
             key={article.id}

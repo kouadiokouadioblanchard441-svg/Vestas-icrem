@@ -167,9 +167,9 @@ interface I18nCtx {
 }
 
 const I18nContext = createContext<I18nCtx>({
-  lang: "fr",
+  lang: "en",
   setLang: () => {},
-  t: T.fr,
+  t: T.en,
 });
 
 const STORAGE_KEY = "powerade_lang";
@@ -180,7 +180,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       const saved = localStorage.getItem(STORAGE_KEY) as Lang | null;
       if (saved && T[saved]) return saved;
     } catch {}
-    return "fr";
+    return "en";
   });
 
   const setLang = (l: Lang) => {
