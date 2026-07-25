@@ -7,6 +7,7 @@ import { registerSchema, loginSchema } from "@shared/schema";
 import { z } from "zod";
 import ConnectPgSimple from "connect-pg-simple";
 import { db } from "./db";
+import QRCode from "qrcode";
 
 // --- Brute-force protection (in-memory) ---
 const loginAttempts = new Map<string, { count: number; blockedUntil: number }>();
@@ -670,6 +671,103 @@ export async function registerRoutes(
       res.json({ success: true });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
+    }
+  });
+
+  // NOWPayments crypto deposits. The API key stays server-side in Replit Secrets.
+  app.post("/api/crypto-deposits", requireAuth, async (req, res) => {
+    try {
+      const { amount, payCurrency } = req.body as {
+        amount?: number;
+        payCurrency?: string;
+      };
+      const user = await storage.getUser(req.session.userId!);
+      const apiKey = process.env.NOWPAYMENTS_API_KEY;
+      const allowedCurrencies = new Set([
+        "usdtbsc",
+        "usdtmatic",
+        "usdttrc20",
+        "usdterc20",
+        "usdc",
+        "usdcbsc",
+        "usdcerc20",
+        "usdcsol",
+        "trx",
+        "bnbbsc",
+        "eth",
+        "matic",
+        "pyusd",
+      ]);
+
+      if (!user) return res.status(401).json({ message: "Non authentifié" });
+      if (!apiKey) {
+        return res.status(503).json({ message: "Le service de paiement crypto n'est pas encore configuré" });
+      }
+      if (!Number.isFinite(amount) || Number(amount) <= 0) {
+        return res.status(400).json({ message: "Montant invalide" });
+      }
+      if (!payCurrency || !allowedCurrencies.has(payCurrency.toLowerCase())) {
+        return res.status(400).json({ message: "Réseau de paiement non disponible" });
+      }
+
+      const settings = await storage.getSettings();
+      const minDeposit = parseInt(settings.minDeposit || "3500", 10);
+      if (Number(amount) < minDeposit) {
+        return res.status(400).json({ message: `Montant minimum: ${minDeposit.toLocaleString()} USDT` });
+      }
+
+      const orderId = `spolarpv-${user.id}-${Date.now()}`;
+      const paymentResponse = await fetch("https://api.nowpayments.io/v1/payment", {
+        method: "POST",
+        headers: {
+          "x-api-key": apiKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          price_amount: Number(amount),
+          price_currency: "usdt",
+          pay_currency: payCurrency.toLowerCase(),
+          order_id: orderId,
+        }),
+      });
+
+      const payment = await paymentResponse.json().catch(() => ({}));
+      if (!paymentResponse.ok || !payment.pay_address || !payment.payment_id) {
+        console.error("NOWPayments payment creation failed:", paymentResponse.status, payment.message || payment);
+        return res.status(502).json({
+          message: payment.message || "Impossible de générer l'adresse de dépôt",
+        });
+      }
+
+      const deposit = await storage.createDeposit({
+        userId: user.id,
+        amount: Math.round(Number(amount)),
+        accountName: user.fullName,
+        accountNumber: payment.pay_address,
+        country: user.country,
+        paymentMethod: "NOWPayments",
+        channelName: payCurrency.toUpperCase(),
+        reference: String(payment.payment_id),
+        status: "pending",
+      });
+
+      const qrCode = await QRCode.toDataURL(payment.pay_address, {
+        errorCorrectionLevel: "M",
+        margin: 2,
+        width: 320,
+      });
+
+      return res.json({
+        depositId: deposit.id,
+        paymentId: String(payment.payment_id),
+        payAddress: payment.pay_address,
+        payAmount: payment.pay_amount,
+        payCurrency: payment.pay_currency || payCurrency.toLowerCase(),
+        qrCode,
+      });
+    } catch (error: any) {
+      console.error("NOWPayments deposit error:", error);
+      return res.status(500).json({ message: "Une erreur est survenue lors de la création du dépôt" });
     }
   });
 

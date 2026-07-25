@@ -1,519 +1,306 @@
-import { useState, useRef } from "react";
-import { getContent } from "@/lib/content";
-import landscapeImg from "@assets/71vdMjQS9sL._AC_UF1000,1000_QL80__1784966822182.jpg";
-import { useAuth } from "@/lib/auth";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { ChevronLeft, Copy, CheckCircle, Upload, Phone, Loader2, ImageIcon, ArrowRight } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ArrowRight, Check, ChevronLeft, Copy, Loader2, ShieldCheck } from "lucide-react";
 import { Link } from "wouter";
-import { COUNTRIES, type ApiCountry } from "@/lib/countries";
-import type { PaymentNumber } from "@shared/schema";
+import { useAuth } from "@/lib/auth";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { getContent } from "@/lib/content";
+import type { ApiCountry } from "@/lib/countries";
+import { COUNTRIES } from "@/lib/countries";
+
+import tetherLogo from "@/assets/crypto/tether.png";
+import usdcLogo from "@/assets/crypto/usd-coin.png";
+import tronLogo from "@/assets/crypto/tron.png";
+import bnbLogo from "@/assets/crypto/bnb.png";
+import polygonLogo from "@/assets/crypto/polygon.png";
+import ethereumLogo from "@/assets/crypto/ethereum.png";
+import pyusdLogo from "@/assets/crypto/paypal-usd.png";
+
+type Step = "amount" | "currency" | "address";
+
+type CryptoOption = {
+  code: string;
+  label: string;
+  network: string;
+  logo: string;
+  description: string;
+};
+
+type CryptoPayment = {
+  depositId: number;
+  paymentId: string;
+  payAddress: string;
+  payAmount: string | number;
+  payCurrency: string;
+  qrCode: string;
+};
+
+const CRYPTO_OPTIONS: CryptoOption[] = [
+  { code: "usdtbsc", label: "BEP20 — USDT", network: "BNB Smart Chain", logo: tetherLogo, description: "USDT sur BNB Smart Chain" },
+  { code: "usdtmatic", label: "POLYGON — USDT", network: "Polygon", logo: tetherLogo, description: "USDT sur Polygon" },
+  { code: "usdttrc20", label: "TRC20 — USDT", network: "TRON", logo: tetherLogo, description: "USDT sur TRON" },
+  { code: "usdterc20", label: "ETH — USDT", network: "Ethereum", logo: tetherLogo, description: "USDT sur Ethereum" },
+  { code: "usdcbsc", label: "BEP20 — USDC", network: "BNB Smart Chain", logo: usdcLogo, description: "USDC sur BNB Smart Chain" },
+  { code: "usdcsol", label: "SOLANA — USDC", network: "Solana", logo: usdcLogo, description: "USDC sur Solana" },
+  { code: "trx", label: "TRX", network: "TRON", logo: tronLogo, description: "TRON" },
+  { code: "bnbbsc", label: "BNB", network: "BNB Smart Chain", logo: bnbLogo, description: "BNB sur BNB Smart Chain" },
+  { code: "usdcerc20", label: "ETH — USDC", network: "Ethereum", logo: usdcLogo, description: "USDC sur Ethereum" },
+  { code: "eth", label: "ETH", network: "Ethereum", logo: ethereumLogo, description: "Ethereum" },
+  { code: "matic", label: "POLYGON", network: "Polygon", logo: polygonLogo, description: "Polygon" },
+  { code: "pyusd", label: "ETH — PYUSD", network: "Ethereum", logo: pyusdLogo, description: "PayPal USD sur Ethereum" },
+];
+
+function shortenAddress(address: string) {
+  if (address.length <= 28) return address;
+  return `${address.slice(0, 14)}…${address.slice(-10)}`;
+}
 
 export default function DepositPage() {
-  const { user, refreshUser } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const [step, setStep] = useState<"amount" | "select" | "form">("amount");
-  const [selectedNumber, setSelectedNumber] = useState<PaymentNumber | null>(null);
-  const [copiedId, setCopiedId] = useState<number | null>(null);
-
+  const [step, setStep] = useState<Step>("amount");
   const [amount, setAmount] = useState<number | "">("");
-  const [senderPhone, setSenderPhone] = useState(user?.phone || "");
-  const [screenshot, setScreenshot] = useState<string>("");
-  const [screenshotName, setScreenshotName] = useState("");
-  const [paymentMessage, setPaymentMessage] = useState("");
-  const [reference, setReference] = useState("");
-
-  const country = user?.country || "";
-
-  const { data: apiCountries = [] } = useQuery<ApiCountry[]>({
-    queryKey: ["/api/countries"],
-  });
-
-  const countryInfo: ApiCountry | undefined = apiCountries.length > 0
-    ? apiCountries.find(c => c.code === country && c.isActive)
-    : COUNTRIES.find(c => c.code === country) as ApiCountry | undefined;
-  const currency = countryInfo?.currency || "USDT";
+  const [selectedCurrency, setSelectedCurrency] = useState<CryptoOption | null>(null);
+  const [payment, setPayment] = useState<CryptoPayment | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const { data: platformSettings } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
   });
-  const MIN_DEPOSIT = parseInt(platformSettings?.minDeposit || "4000");
-  const presetAmounts = (platformSettings?.depositPresetAmounts || "3500,5000,7000,10000,15000,20000,50000,70000")
-    .split(",")
-    .map((v) => parseInt(v.trim()))
-    .filter((v) => !isNaN(v) && v > 0);
-
-  const depositInfoText = getContent(platformSettings, "content_deposit_infoText", `Les services de dépôt sont disponibles 24h/24 et 7j/7. Le dépôt minimum est de ${MIN_DEPOSIT.toLocaleString()} USDT, sans limite maximale.`);
-  const depositWarning1 = getContent(platformSettings, "content_deposit_warning1", "Remarque importante : Ne divulguez à personne les captures d'écran de vos dépôts ni vos identifiants de transaction, car cela pourrait entraîner le vol de vos fonds.");
-  const depositWarning2 = getContent(platformSettings, "content_deposit_warning2", "Pour tout problème lié à vos dépôts, veuillez contacter immédiatement le service client de la plateforme.");
-  const depositInstruction1 = getContent(platformSettings, "content_deposit_instruction1", `1. Le dépôt minimum est de ${MIN_DEPOSIT.toLocaleString()} USDT.`);
-  const depositInstruction2 = getContent(platformSettings, "content_deposit_instruction2", "2. Veuillez vérifier attentivement les informations de votre compte avant d'effectuer un transfert afin d'éviter toute erreur de paiement.");
-
-  const { data: paymentNumbersList = [], isLoading: numbersLoading } = useQuery<PaymentNumber[]>({
-    queryKey: ["/api/payment-numbers", country],
-    queryFn: async () => {
-      const res = await fetch(`/api/payment-numbers?country=${country}`, { credentials: "include" });
-      if (!res.ok) throw new Error("Erreur");
-      return res.json();
-    },
-    enabled: !!country,
+  const { data: apiCountries = [] } = useQuery<ApiCountry[]>({
+    queryKey: ["/api/countries"],
   });
 
-  const copyPhone = async (number: PaymentNumber) => {
-    try {
-      await navigator.clipboard.writeText(number.phone);
-      setCopiedId(number.id);
-      setTimeout(() => setCopiedId(null), 2000);
-      toast({ title: "Numéro copié !", description: `${number.phone} copié dans le presse-papiers` });
-    } catch {
-      toast({ title: "Numéro: " + number.phone, description: "Copiez ce numéro manuellement" });
-    }
-  };
+  const countryInfo = apiCountries.length > 0
+    ? apiCountries.find((country) => country.code === user?.country && country.isActive)
+    : COUNTRIES.find((country) => country.code === user?.country);
+  const currency = countryInfo?.currency || "USDT";
+  const minDeposit = parseInt(platformSettings?.minDeposit || "3500", 10);
+  const presetAmounts = useMemo(
+    () => (platformSettings?.depositPresetAmounts || "3500,5000,7000,10000,15000,20000,50000,70000")
+      .split(",")
+      .map((value) => parseInt(value.trim(), 10))
+      .filter((value) => Number.isFinite(value) && value > 0),
+    [platformSettings?.depositPresetAmounts],
+  );
+  const helpText = getContent(
+    platformSettings,
+    "content_deposit_cryptoHelp",
+    "Envoyez uniquement la devise et le réseau sélectionnés vers l'adresse affichée. Un mauvais réseau peut entraîner la perte des fonds.",
+  );
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: "Fichier trop grand", description: "Maximum 5 Mo", variant: "destructive" });
-      return;
-    }
-    setScreenshotName(file.name);
-    const reader = new FileReader();
-    reader.onload = (ev) => setScreenshot(ev.target?.result as string);
-    reader.readAsDataURL(file);
-  };
-
-  const depositMutation = useMutation({
-    mutationFn: async () => {
-      if (!selectedNumber) throw new Error("Aucun numéro sélectionné");
-      const res = await apiRequest("POST", "/api/deposits", {
+  const createPayment = useMutation({
+    mutationFn: async (payCurrency: string) => {
+      const response = await apiRequest("POST", "/api/crypto-deposits", {
         amount: Number(amount),
-        accountName: user?.fullName || "",
-        accountNumber: senderPhone,
-        paymentMethod: selectedNumber.operatorName,
-        country,
-        paymentNumberId: selectedNumber.id,
-        channelName: `${selectedNumber.operatorName} - ${selectedNumber.phone}`,
-        screenshot: screenshot || null,
-        paymentMessage: paymentMessage || null,
-        reference: reference || null,
+        payCurrency,
       });
-      if (!res.ok) {
-        const d = await res.json();
-        throw new Error(d.message || "Erreur");
-      }
-      return res.json();
+      return response.json() as Promise<CryptoPayment>;
     },
-    onSuccess: () => {
-      toast({ title: "Demande envoyée !", description: "Votre dépôt est en attente de validation par l'administrateur" });
+    onSuccess: (data) => {
+      setPayment(data);
+      setStep("address");
       queryClient.invalidateQueries({ queryKey: ["/api/deposits/history"] });
-      refreshUser();
-      setStep("amount");
-      setSelectedNumber(null);
-      setAmount("");
-      setSenderPhone(user?.phone || "");
-      setScreenshot("");
-      setScreenshotName("");
-      setPaymentMessage("");
-      setReference("");
     },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (error: Error) => {
+      toast({ title: "Impossible de créer le dépôt", description: error.message, variant: "destructive" });
+    },
   });
 
-  const handleAmountNext = () => {
-    if (!amount || Number(amount) < MIN_DEPOSIT) {
+  const selectAmount = (value: number) => {
+    setAmount(value);
+    setStep("currency");
+  };
+
+  const continueWithAmount = () => {
+    if (!amount || Number(amount) < minDeposit) {
       toast({
         title: "Montant invalide",
-        description: `Le minimum est de ${MIN_DEPOSIT.toLocaleString()} ${currency}`,
+        description: `Le minimum est de ${minDeposit.toLocaleString()} ${currency}`,
         variant: "destructive",
       });
       return;
     }
-    setStep("select");
+    setStep("currency");
   };
 
-  const handleSubmit = () => {
-    if (!senderPhone.trim()) {
-      toast({ title: "Numéro requis", description: "Entrez le numéro depuis lequel vous avez payé", variant: "destructive" });
-      return;
+  const selectCurrency = (option: CryptoOption) => {
+    setSelectedCurrency(option);
+    createPayment.mutate(option.code);
+  };
+
+  const copyAddress = async () => {
+    if (!payment) return;
+    try {
+      await navigator.clipboard.writeText(payment.payAddress);
+      setCopied(true);
+      toast({ title: "Adresse copiée", description: "L'adresse de dépôt est dans votre presse-papiers." });
+      window.setTimeout(() => setCopied(false), 2200);
+    } catch {
+      toast({ title: "Copie impossible", description: "Maintenez l'adresse appuyée pour la copier." });
     }
-    if (!screenshot) {
-      toast({ title: "Capture requise", description: "Veuillez joindre la capture d'écran du paiement", variant: "destructive" });
-      return;
-    }
-    depositMutation.mutate();
   };
 
   if (!user) return null;
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
-
-      {/* ── STEP 1 : Saisir le montant ── */}
-      {step === "amount" && (
-        <>
-          {/* Header — même style que la page d'ajout de carte */}
-          <div className="flex items-center justify-between px-4 pt-10 pb-4">
-            <Link href="/account">
-              <button className="w-9 h-9 flex items-center justify-center text-white" data-testid="button-back">
-                <ChevronLeft className="w-6 h-6" />
-              </button>
-            </Link>
-            <h1 className="flex-1 text-center text-white font-bold text-base">Recharger</h1>
-            <div className="w-9 h-9" />
-          </div>
-
-          <div className="px-4 pt-2 pb-6 space-y-4">
-            {/* Label */}
-            <div>
-              <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
-                Montant de la recharge{" "}
-                <span className="font-normal">
-                  (Minimum {MIN_DEPOSIT.toLocaleString()} {currency})
-                </span>
-              </p>
-
-              {/* Input — carte blanche translucide comme sur la page d'ajout de carte */}
-              <div
-                className="rounded-2xl shadow-sm flex items-center overflow-hidden"
-                style={{ background: "rgba(255,255,255,0.90)" }}
-              >
-                <span className="px-4 py-4 text-gray-800 font-semibold text-sm border-r border-black/10">
-                  {currency}
-                </span>
-                <input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value ? Number(e.target.value) : "")}
-                  placeholder="Veuillez saisir le montant de la recharge"
-                  className="flex-1 px-4 py-4 text-sm text-gray-700 outline-none bg-transparent placeholder:text-gray-400"
-                  data-testid="input-deposit-amount"
-                />
-              </div>
-
-              {/* Montants rapides */}
-              <div className="grid grid-cols-4 gap-2 mt-3">
-                {presetAmounts.map((preset) => (
-                  <button
-                    key={preset}
-                    type="button"
-                    onClick={() => setAmount(preset)}
-                    className={`py-3 rounded-xl text-sm font-semibold shadow-sm transition-colors ${
-                      amount === preset
-                        ? "text-white"
-                        : "text-gray-800"
-                    }`}
-                    style={{
-                      background:
-                        amount === preset
-                          ? "#E8192C"
-                          : "rgba(255,255,255,0.90)",
-                    }}
-                    data-testid={`button-preset-amount-${preset}`}
-                  >
-                    {preset.toLocaleString()}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* CTA Button */}
-            <button
-              onClick={handleAmountNext}
-              className="w-full py-4 rounded-full text-white font-bold text-base shadow-md mt-2 flex items-center justify-center gap-2"
-              style={{ background: "#E8192C" }}
-              data-testid="button-recharge-now"
-            >
-              Rechargez maintenant
-            </button>
-
-            {/* Info blocks */}
-            <div
-              className="rounded-2xl shadow-sm p-4 space-y-4 mt-2"
-              style={{ background: "rgba(255,255,255,0.90)" }}
-            >
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {depositInfoText}
-              </p>
-
-              <div className="space-y-3 text-sm text-gray-700 leading-relaxed">
-                <p>{depositWarning1}</p>
-                <p>{depositWarning2}</p>
-                <p>{depositInstruction1}</p>
-                <p>{depositInstruction2}</p>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* ── STEP 2 : Choisir un numéro ── */}
-      {step === "select" && (
-        <>
-          <div className="flex items-center justify-between px-4 pt-10 pb-4">
-            <button
-              className="w-9 h-9 flex items-center justify-center text-white"
-              onClick={() => setStep("amount")}
-              data-testid="button-back-to-amount"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <h1 className="flex-1 text-center text-white font-bold text-base">Choisir un opérateur</h1>
-            <Link href="/deposit-history">
-              <button
-                className="w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-semibold text-white"
-                style={{ background: "rgba(255,255,255,0.25)" }}
-                data-testid="button-history"
-              >
-                Hist.
-              </button>
-            </Link>
-          </div>
-
-          {/* Amount recap */}
-          <div
-            className="mx-4 rounded-2xl shadow-sm p-4 flex items-center justify-between"
-            style={{ background: "rgba(255,255,255,0.90)" }}
+    <main className="min-h-screen bg-[#315aab] text-white">
+      <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-white/10 bg-[#234781] px-4 shadow-lg">
+        {step === "amount" ? (
+          <Link href="/account" className="flex h-10 w-10 items-center justify-center" data-testid="button-back-account">
+            <ChevronLeft className="h-7 w-7" />
+          </Link>
+        ) : (
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center"
+            onClick={() => setStep(step === "address" ? "currency" : "amount")}
+            data-testid="button-deposit-back"
           >
-            <div>
-              <p className="text-xs text-gray-500">Montant à déposer</p>
-              <p className="text-xl font-bold text-[#E8192C]">
-                {Number(amount).toLocaleString()} {currency}
-              </p>
-            </div>
-            <button
-              onClick={() => setStep("amount")}
-              className="text-xs text-[#E8192C] underline"
-              data-testid="button-change-amount"
-            >
-              Modifier
-            </button>
-          </div>
+            <ChevronLeft className="h-7 w-7" />
+          </button>
+        )}
+        <h1 className="text-lg font-bold tracking-wide">
+          {step === "currency" ? "Sélectionnez la devise" : "Dépôt"}
+        </h1>
+        <div className="w-10" />
+      </header>
 
-          <div className="p-4 space-y-3 pb-10">
-
-            <p className="text-sm font-semibold text-white mb-2">
-              Sélectionnez un numéro de paiement
-            </p>
-
-            {numbersLoading ? (
-              <div className="flex items-center justify-center py-16">
-                <Loader2 className="w-8 h-8 animate-spin text-[#E8192C]" />
-              </div>
-            ) : paymentNumbersList.length === 0 ? (
-              <div className="text-center py-14 text-white/70">
-                <Phone className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p className="text-sm">Aucun numéro disponible pour votre pays</p>
-                <p className="text-xs mt-1">Contactez le support</p>
-              </div>
-            ) : (
-              paymentNumbersList.map((num) => (
-                <div
-                  key={num.id}
-                  className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden"
-                  data-testid={`card-payment-number-${num.id}`}
-                >
-                  <div className="p-4 flex items-center gap-3">
-                    {num.logoUrl ? (
-                      <img src={num.logoUrl} alt={num.operatorName} className="w-12 h-12 rounded-xl object-contain border border-gray-100" />
-                    ) : (
-                      <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center">
-                        <Phone className="w-6 h-6 text-[#E8192C]" />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-gray-900 text-sm">{num.operatorName}</p>
-                      <p className="text-[#E8192C] font-mono font-bold text-lg">{num.phone}</p>
-                      <p className="text-gray-500 text-xs">{num.ownerName}</p>
-                    </div>
-                    <button
-                      onClick={() => copyPhone(num)}
-                      className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-                      data-testid={`button-copy-${num.id}`}
-                    >
-                      {copiedId === num.id
-                        ? <CheckCircle className="w-5 h-5 text-green-500" />
-                        : <Copy className="w-5 h-5 text-[#E8192C]" />}
-                    </button>
-                  </div>
-                  <button
-                    onClick={() => { setSelectedNumber(num); setStep("form"); }}
-                    className="w-full py-3.5 font-bold text-sm text-white flex items-center justify-center gap-2"
-                    style={{ background: "#E8192C" }}
-                    data-testid={`button-select-${num.id}`}
-                  >
-                    J'ai envoyé l'argent sur ce numéro <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
-        </>
-      )}
-
-      {/* ── STEP 3 : Formulaire de confirmation ── */}
-      {step === "form" && selectedNumber && (
-        <>
-          <div className="flex items-center px-4 pt-10 pb-4">
-            <button
-              className="w-9 h-9 flex items-center justify-center text-white"
-              onClick={() => setStep("select")}
-              data-testid="button-back-to-select"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <h1 className="flex-1 text-center text-white font-bold text-base mr-9">Confirmer le paiement</h1>
-          </div>
-
-          <div className="p-4 space-y-4 pb-10">
-            {/* Recap */}
-            <div
-              className="rounded-2xl shadow-sm p-4 flex items-center gap-3"
-              style={{ background: "rgba(255,255,255,0.90)" }}
-            >
-              {selectedNumber.logoUrl ? (
-                <img src={selectedNumber.logoUrl} alt={selectedNumber.operatorName} className="w-10 h-10 rounded-lg object-contain" />
-              ) : (
-                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center">
-                  <Phone className="w-5 h-5 text-[#E8192C]" />
-                </div>
-              )}
-              <div className="flex-1">
-                <p className="text-xs text-gray-500">Numéro destinataire</p>
-                <p className="font-bold text-[#E8192C] text-sm">{selectedNumber.operatorName} — {selectedNumber.phone}</p>
-                <p className="text-xs text-gray-500">{selectedNumber.ownerName}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-xs text-gray-500">Montant</p>
-                <p className="font-bold text-gray-800">{Number(amount).toLocaleString()} {currency}</p>
-              </div>
-            </div>
-
-            {/* Sender phone */}
-            <div>
-              <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">Votre numéro payeur</p>
-              <div
-                className="rounded-2xl shadow-sm flex items-center overflow-hidden"
-                style={{ background: "rgba(255,255,255,0.90)" }}
-              >
-                <Phone className="w-4 h-4 text-gray-400 ml-4" />
-                <input
-                  type="tel"
-                  value={senderPhone}
-                  onChange={(e) => setSenderPhone(e.target.value)}
-                  placeholder="Numéro depuis lequel vous avez payé"
-                  className="flex-1 px-3 py-4 text-sm text-gray-700 outline-none bg-transparent placeholder:text-gray-400"
-                  data-testid="input-sender-phone"
-                />
-              </div>
-            </div>
-
-            {/* Reference */}
-            <div>
-              <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
-                Référence / ID transaction{" "}
-                <span className="font-normal normal-case text-white/50">(optionnel)</span>
-              </p>
-              <div
-                className="rounded-2xl shadow-sm"
-                style={{ background: "rgba(255,255,255,0.90)" }}
-              >
-                <input
-                  type="text"
-                  value={reference}
-                  onChange={(e) => setReference(e.target.value)}
-                  placeholder="Numéro de référence de la transaction"
-                  className="w-full px-4 py-4 text-sm text-gray-700 outline-none bg-transparent placeholder:text-gray-400"
-                  data-testid="input-reference"
-                />
-              </div>
-            </div>
-
-            {/* Payment message */}
-            <div>
-              <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
-                Message reçu après paiement{" "}
-                <span className="font-normal normal-case text-white/50">(optionnel)</span>
-              </p>
-              <textarea
-                value={paymentMessage}
-                onChange={(e) => setPaymentMessage(e.target.value)}
-                placeholder="Collez ici le SMS ou message de confirmation reçu..."
-                rows={3}
-                className="w-full rounded-2xl shadow-sm px-4 py-3 text-sm text-gray-700 outline-none resize-none placeholder:text-gray-400"
-                style={{ background: "rgba(255,255,255,0.90)" }}
-                data-testid="input-payment-message"
+      {step === "amount" && (
+        <section className="mx-auto max-w-lg space-y-5 p-5">
+          <div className="rounded-3xl border border-white/15 bg-[#234781] p-5 shadow-xl">
+            <p className="mb-1 text-sm font-semibold text-white/75">Montant de la recharge</p>
+            <p className="mb-4 text-xs text-white/60">Minimum {minDeposit.toLocaleString()} {currency}</p>
+            <div className="flex overflow-hidden rounded-2xl border border-white/15 bg-white text-[#173667]">
+              <span className="flex items-center border-r border-[#315aab]/20 px-4 font-bold">{currency}</span>
+              <input
+                type="number"
+                value={amount}
+                min={minDeposit}
+                onChange={(event) => setAmount(event.target.value ? Number(event.target.value) : "")}
+                placeholder="Saisissez le montant"
+                className="min-w-0 flex-1 bg-transparent px-4 py-4 outline-none placeholder:text-[#173667]/45"
+                data-testid="input-deposit-amount"
               />
             </div>
-
-            {/* Screenshot upload */}
-            <div>
-              <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
-                Capture d'écran du paiement <span className="text-red-300">*</span>
-              </p>
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" data-testid="input-screenshot" />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full rounded-2xl shadow-sm py-7 flex flex-col items-center gap-2 transition-colors"
-                style={{ background: screenshot ? "rgba(220,252,231,0.95)" : "rgba(255,255,255,0.90)" }}
-                data-testid="button-upload-screenshot"
-              >
-                {screenshot ? (
-                  <>
-                    <CheckCircle className="w-8 h-8 text-green-500" />
-                    <p className="text-sm font-medium text-green-600">{screenshotName}</p>
-                    <p className="text-xs text-gray-400">Appuyez pour changer</p>
-                  </>
-                ) : (
-                  <>
-                    <ImageIcon className="w-8 h-8 text-gray-400" />
-                    <p className="text-sm font-medium text-gray-600">Appuyez pour ajouter la capture</p>
-                    <p className="text-xs text-gray-400">JPG, PNG — max 5 Mo</p>
-                  </>
-                )}
-              </button>
-              {screenshot && (
-                <div className="mt-3 rounded-xl overflow-hidden shadow-sm">
-                  <img src={screenshot} alt="Capture" className="w-full max-h-52 object-contain bg-white/90" />
-                </div>
-              )}
+            <div className="mt-4 grid grid-cols-4 gap-2">
+              {presetAmounts.map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => setAmount(preset)}
+                  className={`rounded-xl border py-3 text-sm font-bold transition ${
+                    amount === preset ? "border-white bg-white text-[#315aab]" : "border-white/20 bg-white/10 text-white"
+                  }`}
+                  data-testid={`button-preset-amount-${preset}`}
+                >
+                  {preset.toLocaleString()}
+                </button>
+              ))}
             </div>
-
-            {/* Submit */}
             <button
-              onClick={handleSubmit}
-              disabled={depositMutation.isPending}
-              className="w-full py-4 rounded-full text-white font-bold text-base shadow-md disabled:opacity-40"
-              style={{ background: "#E8192C" }}
-              data-testid="button-submit-deposit"
+              type="button"
+              onClick={continueWithAmount}
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-white py-4 font-bold text-[#315aab] shadow-lg transition hover:bg-white/90"
+              data-testid="button-recharge-now"
             >
-              {depositMutation.isPending ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-5 h-5 animate-spin" /> Envoi en cours...
-                </span>
-              ) : (
-                <span className="flex items-center justify-center gap-2">
-                  <Upload className="w-5 h-5" /> Soumettre ma demande
-                </span>
-              )}
+              Rechargez maintenant <ArrowRight className="h-5 w-5" />
             </button>
           </div>
-        </>
+          <div className="rounded-3xl border border-white/15 bg-[#234781] p-5 text-sm leading-7 text-white/85 shadow-xl">
+            <p>{getContent(platformSettings, "content_deposit_infoText", "Les dépôts crypto sont disponibles 24h/24 et 7j/7.")}</p>
+            <p className="mt-3 text-white/65">Choisissez ensuite le réseau exact utilisé par votre portefeuille avant d'envoyer les fonds.</p>
+          </div>
+        </section>
       )}
 
-      {/* Paysage en bas — même que la page d'ajout de carte */}
-      <div className="mt-auto">
-        <img
-          src={landscapeImg}
-          alt="Powerade"
-          className="w-full object-cover object-top"
-          style={{ maxHeight: 300 }}
-        />
-      </div>
-    </div>
+      {step === "currency" && (
+        <section className="mx-auto max-w-lg p-4">
+          <div className="mb-4 flex items-center justify-between rounded-2xl border border-white/15 bg-[#234781] px-4 py-3 shadow-lg">
+            <div>
+              <p className="text-xs text-white/60">Montant du dépôt</p>
+              <p className="font-bold">{Number(amount).toLocaleString()} {currency}</p>
+            </div>
+            <button type="button" onClick={() => setStep("amount")} className="text-sm font-semibold underline">Modifier</button>
+          </div>
+          <p className="mb-3 px-1 text-sm font-semibold text-white/80">Sélectionnez le réseau de paiement</p>
+          <div className="overflow-hidden rounded-3xl border border-white/15 bg-[#234781] px-4 shadow-xl">
+            {CRYPTO_OPTIONS.map((option, index) => (
+              <button
+                key={option.code}
+                type="button"
+                disabled={createPayment.isPending}
+                onClick={() => selectCurrency(option)}
+                className={`flex w-full items-center gap-3 py-4 text-left transition hover:bg-white/10 disabled:opacity-60 ${
+                  index < CRYPTO_OPTIONS.length - 1 ? "border-b border-dashed border-white/30" : ""
+                }`}
+                data-testid={`button-currency-${option.code}`}
+              >
+                <img src={option.logo} alt="" className="h-10 w-10 rounded-full bg-white object-contain p-1 shadow-md" />
+                <span className="min-w-0 flex-1">
+                  <span className="block font-semibold">{option.label}</span>
+                  <span className="block text-xs text-white/55">{option.network}</span>
+                </span>
+                <ArrowRight className="h-5 w-5 text-white/70" />
+              </button>
+            ))}
+          </div>
+          {createPayment.isPending && (
+            <div className="mt-5 flex items-center justify-center gap-2 text-sm text-white/80">
+              <Loader2 className="h-5 w-5 animate-spin" /> Génération de votre adresse…
+            </div>
+          )}
+        </section>
+      )}
+
+      {step === "address" && payment && selectedCurrency && (
+        <section className="mx-auto max-w-lg space-y-4 p-4">
+          <div className="rounded-3xl border border-white/15 bg-[#234781] p-5 text-center shadow-xl">
+            <div className="mb-3 flex items-center justify-center gap-2">
+              <img src={selectedCurrency.logo} alt="" className="h-10 w-10 rounded-full bg-white object-contain p-1" />
+              <div className="text-left">
+                <p className="font-bold">{selectedCurrency.label}</p>
+                <p className="text-xs text-white/60">{selectedCurrency.network}</p>
+              </div>
+            </div>
+            <p className="text-sm text-white/70">Montant exact à envoyer</p>
+            <p className="mt-1 text-2xl font-black">{payment.payAmount} <span className="text-base">{payment.payCurrency.toUpperCase()}</span></p>
+            <div className="mx-auto my-5 w-fit rounded-2xl bg-white p-3 shadow-lg">
+              <img src={payment.qrCode} alt="QR code de l'adresse de dépôt" className="h-56 w-56" data-testid="img-deposit-qr" />
+            </div>
+            <p className="mb-2 text-lg font-bold">Adresse de dépôt</p>
+            <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-[#173667] p-2 pl-4">
+              <span className="min-w-0 flex-1 truncate text-left font-mono text-xs text-white/75">{shortenAddress(payment.payAddress)}</span>
+              <button
+                type="button"
+                onClick={copyAddress}
+                className="flex shrink-0 items-center gap-1 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#315aab]"
+                data-testid="button-copy-deposit-address"
+              >
+                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                {copied ? "Copié" : "Copier"}
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => toast({ title: "Dépôt enregistré", description: "Votre dépôt sera crédité après confirmation du paiement." })}
+              className="mt-5 w-full rounded-full bg-white py-4 font-bold text-[#315aab] shadow-lg"
+              data-testid="button-deposit-completed"
+            >
+              Dépôt effectué
+            </button>
+          </div>
+          <div className="rounded-3xl border border-white/15 bg-[#234781] p-5 text-sm leading-7 text-white/85 shadow-xl">
+            <div className="mb-2 flex items-center gap-2 font-bold"><ShieldCheck className="h-5 w-5" /> Instructions de sécurité</div>
+            <p>1. Copiez l'adresse ci-dessus ou scannez le QR code.</p>
+            <p>2. Envoyez uniquement {selectedCurrency.label} sur le réseau {selectedCurrency.network}.</p>
+            <p>3. Le solde sera crédité après la confirmation de la transaction par le réseau.</p>
+            <p className="mt-2 text-white/65">{helpText}</p>
+          </div>
+        </section>
+      )}
+    </main>
   );
 }
