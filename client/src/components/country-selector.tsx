@@ -65,7 +65,7 @@ export function CountrySelector({ open, onClose, onSelect, selectedCode }: Count
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder=""
+              placeholder="Search country or dial code..."
               className="flex-1 bg-transparent outline-none"
               style={{ fontSize: 15, color: "#1a1a1a", letterSpacing: "0.03em" }}
             />

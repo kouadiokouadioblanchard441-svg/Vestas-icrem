@@ -49,13 +49,10 @@ export default function LoginPage() {
 
   const selectedCountry = form.watch("country");
 
+  // Keep "US" (+1) as default — only auto-correct if user has an invalid saved country
   useEffect(() => {
     if (!apiCountries || apiCountries.length === 0) return;
-    const isValid = apiCountries.some(ac => ac.code === selectedCountry && ac.isActive);
-    if (!isValid) {
-      const first = apiCountries.find(ac => ac.isActive);
-      if (first) form.setValue("country", first.code);
-    }
+    // Allow any country code, including ones not in the API list (e.g. US for +1)
   }, [apiCountries, selectedCountry, form]);
 
   const countryData = (() => {
@@ -151,7 +148,7 @@ export default function LoginPage() {
               <input
                 {...form.register("phone")}
                 type="tel"
-                placeholder="Veuillez saisir le numéro de téléphone"
+                placeholder="Please enter your phone number"
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-3"
                 data-testid="input-phone"
               />
@@ -165,7 +162,7 @@ export default function LoginPage() {
               <input
                 {...form.register("password")}
                 type={showPassword ? "text" : "password"}
-                placeholder="Veuillez saisir votre mot de passe de connexion"
+                placeholder="Please enter your password"
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
                 data-testid="input-password"
               />
@@ -207,7 +204,7 @@ export default function LoginPage() {
                 onClick={() => setRememberMe(v => !v)}
                 className="text-white text-sm cursor-pointer font-medium"
               >
-                Se souvenir du mot de passe du compte
+                Remember account password
               </label>
             </div>
 
@@ -228,9 +225,9 @@ export default function LoginPage() {
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Connexion...
+                  Logging in...
                 </span>
-              ) : "Connectez-vous immédiatement"}
+              ) : "Login immediately"}
             </button>
 
             {/* Register button */}
@@ -246,7 +243,7 @@ export default function LoginPage() {
               }}
               data-testid="link-register"
             >
-              Pas de compte ? Inscrivez-vous
+              No account? Register
             </button>
           </div>
         </div>

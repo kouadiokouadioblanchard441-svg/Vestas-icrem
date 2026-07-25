@@ -62,13 +62,10 @@ export default function RegisterPage() {
 
   const selectedCountry = form.watch("country");
 
+  // Keep "US" (+1) as default — only auto-correct if user has an invalid saved country
   useEffect(() => {
     if (!apiCountries || apiCountries.length === 0) return;
-    const isValid = apiCountries.some(ac => ac.code === selectedCountry && ac.isActive);
-    if (!isValid) {
-      const first = apiCountries.find(ac => ac.isActive);
-      if (first) form.setValue("country", first.code);
-    }
+    // Allow any country code, including ones not in the API list (e.g. US for +1)
   }, [apiCountries, selectedCountry, form]);
 
   const countryData = (() => {
@@ -165,7 +162,7 @@ export default function RegisterPage() {
               <input
                 {...form.register("phone")}
                 type="tel"
-                placeholder="Veuillez saisir votre numéro de téléphone"
+                placeholder="Please enter your phone number"
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-3"
                 data-testid="input-phone"
               />
@@ -179,7 +176,7 @@ export default function RegisterPage() {
               <input
                 {...form.register("password")}
                 type={showPassword ? "text" : "password"}
-                placeholder="Veuillez saisir votre mot de passe"
+                placeholder="Please enter your password"
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
                 data-testid="input-password"
               />
@@ -196,7 +193,7 @@ export default function RegisterPage() {
               <input
                 {...form.register("confirmPassword")}
                 type={showConfirm ? "text" : "password"}
-                placeholder="Veuillez saisir confirmer votre mot de passe"
+                placeholder="Please confirm your password"
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
                 data-testid="input-confirm-password"
               />
@@ -213,7 +210,7 @@ export default function RegisterPage() {
               <input
                 {...form.register("transactionPassword")}
                 type={showTxPassword ? "text" : "password"}
-                placeholder="Veuillez saisir le mot de passe de transaction"
+                placeholder="Please enter your transaction password"
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
                 data-testid="input-transaction-password"
               />
@@ -226,7 +223,7 @@ export default function RegisterPage() {
             <div style={inputStyle}>
               <input
                 {...form.register("invitationCode")}
-                placeholder="Veuillez saisir le code d'invitation"
+                placeholder="Please enter invitation code"
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
                 data-testid="input-invitation-code"
               />
@@ -236,7 +233,7 @@ export default function RegisterPage() {
             <div style={inputStyle}>
               <input
                 {...form.register("telegram")}
-                placeholder="Télégramme"
+                placeholder="Telegram"
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
                 data-testid="input-telegram"
               />
@@ -259,9 +256,9 @@ export default function RegisterPage() {
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Inscription...
+                  Registering...
                 </span>
-              ) : "Inscrivez-vous maintenant"}
+              ) : "Register now"}
             </button>
 
             {/* Login link */}
@@ -277,7 +274,7 @@ export default function RegisterPage() {
               }}
               data-testid="link-login"
             >
-              Vous avez déjà un compte ? Connectez-vous
+              Already have an account? Login
             </button>
           </div>
         </div>
