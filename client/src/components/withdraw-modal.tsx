@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { formatCurrency, getCountryByCode } from "@/lib/countries";
 import { Loader2, AlertCircle, Clock, Wallet } from "lucide-react";
 import type { WithdrawalWallet } from "@shared/schema";
 
@@ -35,10 +34,12 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
   });
 
   const { data: withdrawalSettings } = useQuery<{ 
+    withdrawalEnabled: boolean;
     withdrawalFees: number; 
     withdrawalStartHour: number;
     withdrawalEndHour: number;
     maxWithdrawalsPerDay: number;
+    minWithdrawal: number;
   }>({
     queryKey: ["/api/settings/withdrawal"],
     enabled: open,
@@ -82,16 +83,18 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
 
   const balance = parseFloat(user.balance || "0");
   const defaultWallet = wallets?.find(w => w.isDefault);
+  const withdrawalEnabled = withdrawalSettings?.withdrawalEnabled ?? true;
   const fees = withdrawalSettings?.withdrawalFees || 15;
+  const minWithdrawal = withdrawalSettings?.minWithdrawal || 1000;
   const startHour = withdrawalSettings?.withdrawalStartHour || 8;
   const endHour = withdrawalSettings?.withdrawalEndHour || 17;
-  const country = getCountryByCode(user.country);
+  const currency = "USDT";
 
   const amount = parseInt(form.watch("amount") || "0");
   const feeAmount = Math.round(amount * fees / 100);
   const netAmount = amount - feeAmount;
 
-  const canWithdraw = user.hasDeposited && user.hasActiveProduct && !user.isWithdrawalBlocked && defaultWallet;
+  const canWithdraw = withdrawalEnabled && user.hasDeposited && user.hasActiveProduct && !user.isWithdrawalBlocked && defaultWallet;
   const isCameroonOrBenin = user.country === "CM" || user.country === "BJ";
   const actualStartHour = isCameroonOrBenin ? 9 : startHour;
   const actualEndHour = isCameroonOrBenin ? 18 : endHour;
@@ -105,7 +108,7 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
         <DialogHeader>
           <DialogTitle>Retrait</DialogTitle>
           <DialogDescription>
-            Minimum: {formatCurrency(1200, user.country)} | Frais: {fees}%
+             Minimum: {minWithdrawal} USDT | Frais: {fees}%
           </DialogDescription>
         </DialogHeader>
 
@@ -121,6 +124,7 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
                   {!defaultWallet && <li>- Enregistrez un portefeuille de retrait</li>}
                   {user.isWithdrawalBlocked && <li>- Votre retrait est bloqué</li>}
                   {user.mustInviteToWithdraw && <li>- Invitez quelqu'un qui investit</li>}
+                  {!withdrawalEnabled && <li>- Les retraits sont temporairement désactivés par l'administration</li>}
                 </ul>
               </div>
             </div>
@@ -147,12 +151,12 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
                   <span className="text-sm text-muted-foreground">Portefeuille de retrait</span>
                 </div>
                 <p className="font-medium text-foreground">{defaultWallet?.accountName}</p>
-                <p className="text-sm text-muted-foreground">{defaultWallet?.accountNumber} - {defaultWallet?.paymentMethod}</p>
+                <p className="text-sm text-muted-foreground">{defaultWallet?.accountNumber} - USDT BEP20</p>
               </div>
 
               <div className="bg-secondary rounded-lg p-3 text-center">
                 <p className="text-sm text-muted-foreground">Solde disponible</p>
-                <p className="text-xl font-bold text-foreground">{formatCurrency(balance, user.country)}</p>
+                <p className="text-xl font-bold text-foreground">{balance.toLocaleString("fr-FR")} {currency}</p>
               </div>
 
               <FormField
@@ -165,7 +169,7 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
                       <Input
                         {...field}
                         type="number"
-                        placeholder="Minimum 1200"
+                         placeholder={`Minimum ${minWithdrawal}`}
                         data-testid="input-withdraw-amount"
                       />
                     </FormControl>
@@ -174,19 +178,19 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
                 )}
               />
 
-              {amount >= 1200 && (
+              {amount >= 1 && (
                 <div className="bg-muted rounded-lg p-3 space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Montant</span>
-                    <span className="text-foreground">{formatCurrency(amount, user.country)}</span>
+                    <span className="text-foreground">{amount.toLocaleString("fr-FR")} {currency}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Frais ({fees}%)</span>
-                    <span className="text-destructive">-{formatCurrency(feeAmount, user.country)}</span>
+                    <span className="text-destructive">-{feeAmount.toLocaleString("fr-FR")} {currency}</span>
                   </div>
                   <div className="flex justify-between border-t pt-2">
                     <span className="font-medium text-foreground">Net à recevoir</span>
-                    <span className="font-bold text-primary">{formatCurrency(netAmount, user.country)}</span>
+                    <span className="font-bold text-primary">{netAmount.toLocaleString("fr-FR")} {currency}</span>
                   </div>
                 </div>
               )}
@@ -194,7 +198,7 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={withdrawMutation.isPending || amount < 1200 || amount > balance}
+                disabled={withdrawMutation.isPending || amount < minWithdrawal || amount > balance}
                 data-testid="button-submit-withdraw"
               >
                 {withdrawMutation.isPending ? (

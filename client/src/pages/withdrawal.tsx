@@ -7,7 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { ChevronLeft, ChevronRight, Loader2, Plus } from "lucide-react";
 import { getContent } from "@/lib/content";
 import { Link, useLocation } from "wouter";
-import { getCountryByCode } from "@/lib/countries";
 
 interface WalletData {
   id: number;
@@ -24,6 +23,8 @@ interface UserProduct {
   status: string;
 }
 
+const WITHDRAWAL_METHOD = "USDT BEP20";
+
 export default function WithdrawalPage() {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
@@ -32,11 +33,11 @@ export default function WithdrawalPage() {
   const [selectedWallet, setSelectedWallet] = useState<WalletData | null>(null);
   const [, navigate] = useLocation();
 
-  const countryInfo = user ? getCountryByCode(user.country) : null;
-  const currency = countryInfo?.currency || "USDT";
+  const currency = "USDT";
 
   const { data: withdrawalSettings } = useQuery<{
     withdrawalFees: number;
+    withdrawalEnabled: boolean;
     withdrawalStartHour: number;
     withdrawalEndHour: number;
     maxWithdrawalsPerDay: number;
@@ -52,6 +53,7 @@ export default function WithdrawalPage() {
   });
 
   const minWithdrawal = withdrawalSettings?.minWithdrawal ?? 1500;
+  const withdrawalEnabled = withdrawalSettings?.withdrawalEnabled ?? true;
   const withdrawalFee = withdrawalSettings?.withdrawalFees ?? 18;
   const withdrawalStartHour = withdrawalSettings?.withdrawalStartHour ?? 9;
   const withdrawalEndHour = withdrawalSettings?.withdrawalEndHour ?? 17;
@@ -62,7 +64,7 @@ export default function WithdrawalPage() {
   const withdrawalInstruction2 = getContent(allSettings, "content_withdrawal_instruction2", "2. Il n'y a pas de limite de temps pour les retraits, mais une limite de trois retraits par jour est autorisée.");
   const withdrawalInstruction3 = getContent(allSettings, "content_withdrawal_instruction3", `3. Des frais de traitement de ${withdrawalFee}% seront appliqués sur chaque retrait.`);
   const withdrawalInstruction4 = getContent(allSettings, "content_withdrawal_instruction4", "4. Les retraits seront disponibles sous 2 heures, et exceptionnellement sous 24 heures.");
-  const withdrawalInstruction5 = getContent(allSettings, "content_withdrawal_instruction5", "5. Si le retrait échoue, vérifiez que vos informations bancaires sont correctes, puis soumettez à nouveau la demande.");
+   const withdrawalInstruction5 = getContent(allSettings, "content_withdrawal_instruction5", "5. Si le retrait échoue, vérifiez que votre adresse USDT BEP20 est correcte, puis soumettez à nouveau la demande.");
   const withdrawalInstruction6 = getContent(allSettings, "content_withdrawal_instruction6", "6. Consultez les conditions de retrait affichées par la plateforme avant votre demande.");
   const withdrawalWarningNoHours = getContent(allSettings, "content_withdrawal_warningNoHours", `Horaires de retrait : ${withdrawalStartHour}h00 – ${withdrawalEndHour}h00 (Fermé actuellement)`);
   const withdrawalWarningNoProduct = getContent(allSettings, "content_withdrawal_warningNoProduct", "Vous devez avoir un produit actif pour effectuer un retrait.");
@@ -115,6 +117,10 @@ export default function WithdrawalPage() {
   });
 
   const handleSubmit = () => {
+    if (!withdrawalEnabled) {
+      toast({ title: "Retraits désactivés", description: "Les retraits sont temporairement désactivés par l'administration.", variant: "destructive" });
+      return;
+    }
     if (!isWithinWithdrawalHours) {
       toast({ title: "Horaires de retrait", description: `Les retraits sont disponibles de ${withdrawalStartHour}h à ${withdrawalEndHour}h`, variant: "destructive" });
       return;
@@ -124,11 +130,11 @@ export default function WithdrawalPage() {
       return;
     }
     if (!amount || amount < minWithdrawal) {
-      toast({ title: "Montant invalide", description: `Le montant minimum est de ${minWithdrawal} ${currency}`, variant: "destructive" });
+      toast({ title: "Montant invalide", description: `Le montant minimum est de ${minWithdrawal} USDT`, variant: "destructive" });
       return;
     }
     if (!selectedWallet) {
-      toast({ title: "Compte requis", description: "Veuillez sélectionner un compte bancaire", variant: "destructive" });
+      toast({ title: "Adresse requise", description: "Veuillez sélectionner une adresse USDT BEP20", variant: "destructive" });
       return;
     }
     withdrawMutation.mutate({ amount: Number(amount), walletId: selectedWallet.id });
@@ -187,7 +193,7 @@ export default function WithdrawalPage() {
 
         {/* ── Wallet selector ── */}
         <div>
-          <p className="text-white font-semibold text-sm mb-2">Compte de retrait</p>
+            <p className="text-white font-semibold text-sm mb-2">Adresse de retrait</p>
           <button
             onClick={() => {
               if (!hasWallets) {
@@ -201,9 +207,9 @@ export default function WithdrawalPage() {
           >
             <span className="text-sm text-gray-500">
               {selectedWallet
-                ? `${selectedWallet.accountName} · ${selectedWallet.accountNumber} · ${selectedWallet.paymentMethod}`
+                 ? `${selectedWallet.accountName} · ${selectedWallet.accountNumber} · ${WITHDRAWAL_METHOD}`
                 : hasWallets
-                  ? "Sélectionner un compte bancaire"
+                   ? "Sélectionner une adresse BEP20"
                   : (
                     <span className="flex items-center gap-2 text-[#F59E0B]">
                       <Plus className="w-4 h-4" /> Ajouter un portefeuille de retrait
@@ -253,6 +259,11 @@ export default function WithdrawalPage() {
             {withdrawalWarningNoHours}
           </div>
         )}
+        {!withdrawalEnabled && (
+          <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-xs font-medium" style={{ color: "#ff0000" }}>
+            Les retraits sont temporairement désactivés par l’administration.
+          </div>
+        )}
         {!hasActiveProduct && (
           <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-xs font-medium" style={{ color: "#ff0000" }}>
             {withdrawalWarningNoProduct}
@@ -262,7 +273,7 @@ export default function WithdrawalPage() {
         {/* ── CTA Button ── */}
         <button
           onClick={handleSubmit}
-          disabled={withdrawMutation.isPending}
+          disabled={withdrawMutation.isPending || !withdrawalEnabled}
           className="w-full py-5 rounded-full text-white font-bold text-base shadow-lg disabled:opacity-50"
           style={{
             background: "linear-gradient(135deg, #F59E0B 0%, #D97706 50%, #B45309 100%)",

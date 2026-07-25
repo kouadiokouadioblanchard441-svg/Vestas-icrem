@@ -35,8 +35,9 @@ export default function HistoryPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<"deposits" | "withdrawals">("deposits");
 
-  const countryInfo = user ? getCountryByCode(user.country) : null;
-  const currency = countryInfo?.currency || "USDT";
+  const country = getCountryByCode(user?.country || "");
+  const depositCurrency = country?.currency || "USDT";
+  const withdrawalCurrency = "USDT";
 
   const { data: deposits = [], isLoading: depositsLoading } = useQuery<Deposit[]>({
     queryKey: ["/api/deposits/history"],
@@ -175,7 +176,7 @@ export default function HistoryPage() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-sm" style={{ color: "#16a34a" }}>
-                        DÉPÔT {currency} {parseFloat(deposit.amount).toLocaleString("fr-FR")}
+                        DÉPÔT {depositCurrency} {parseFloat(deposit.amount).toLocaleString("fr-FR")}
                       </p>
                       <p className="text-gray-400 text-xs mt-0.5">{formatDate(deposit.createdAt)}</p>
                     </div>
@@ -208,11 +209,11 @@ export default function HistoryPage() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-sm" style={{ color: "#dc2626" }}>
-                        RETRAIT {currency} {parseFloat(withdrawal.amount).toLocaleString("fr-FR")}
+                         RETRAIT {withdrawalCurrency} {parseFloat(withdrawal.amount).toLocaleString("fr-FR")}
                       </p>
                       {netNum !== null && (
                         <p className="text-gray-500 text-xs mt-0.5">
-                          {currency} {netNum.toLocaleString("fr-FR")}
+                           {withdrawalCurrency} {netNum.toLocaleString("fr-FR")}
                         </p>
                       )}
                       <p className="text-gray-400 text-xs mt-0.5">{formatDate(withdrawal.createdAt)}</p>

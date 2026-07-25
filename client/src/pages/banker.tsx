@@ -270,7 +270,7 @@ export default function BankerPage() {
                       <div className="grid grid-cols-2 gap-2 text-sm bg-secondary/50 rounded-lg p-3 mb-3">
                         <div>
                           <p className="text-muted-foreground text-xs">Montant</p>
-                          <p className="font-bold text-lg text-primary">{Number(deposit.amount).toLocaleString()} F</p>
+                          <p className="font-bold text-lg text-primary">{Number(deposit.amount).toLocaleString()} USDT</p>
                         </div>
                         <div>
                           <p className="text-muted-foreground text-xs">Canal</p>
@@ -364,23 +364,23 @@ export default function BankerPage() {
                       <div className="grid grid-cols-2 gap-2 text-sm bg-secondary/50 rounded-lg p-3 mb-3">
                         <div>
                           <p className="text-muted-foreground text-xs">Montant brut</p>
-                          <p className="font-bold text-lg">{Number(w.amount).toLocaleString()} F</p>
+                           <p className="font-bold text-lg">{Number(w.amount).toLocaleString()} USDT</p>
                         </div>
                         <div>
                           <p className="text-muted-foreground text-xs">Montant net</p>
-                          <p className="font-bold text-lg text-primary">{Number(w.netAmount).toLocaleString()} F</p>
+                           <p className="font-bold text-lg text-primary">{Number(w.netAmount).toLocaleString()} USDT</p>
                         </div>
                         <div>
                           <p className="text-muted-foreground text-xs">Bénéficiaire</p>
                           <p className="font-medium">{w.accountName}</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground text-xs">Numéro</p>
+                           <p className="text-muted-foreground text-xs">Adresse BEP20</p>
                           <p className="font-mono font-medium">{w.accountNumber}</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground text-xs">Méthode</p>
-                          <p className="font-medium">{w.paymentMethod}</p>
+                           <p className="text-muted-foreground text-xs">Méthode</p>
+                           <p className="font-medium">USDT BEP20</p>
                         </div>
                         <div>
                           <p className="text-muted-foreground text-xs">Date</p>
@@ -468,7 +468,7 @@ export default function BankerPage() {
                         </div>
                         <div className="text-right">
                           <p className={`font-bold ${type === "deposit" ? "text-green-600" : "text-emerald-600"}`}>
-                            {type === "deposit" ? "+" : "-"}{Number(type === "deposit" ? item.amount : item.netAmount).toLocaleString()} F
+                             {type === "deposit" ? "+" : "-"}{Number(type === "deposit" ? item.amount : item.netAmount).toLocaleString()} {type === "deposit" ? "USDT" : "USDT"}
                           </p>
                           <StatusBadge status={item.status} />
                         </div>

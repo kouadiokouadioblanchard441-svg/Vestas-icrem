@@ -8,21 +8,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { getPaymentMethodsForCountry } from "@/lib/countries";
 import { Loader2, Plus, Trash2, CreditCard, Check } from "lucide-react";
 import type { WithdrawalWallet } from "@shared/schema";
 
 const walletSchema = z.object({
   accountName: z.string().min(2, "Nom du compte requis"),
-  accountNumber: z.string().min(8, "Numéro requis"),
-  paymentMethod: z.string().min(2, "Moyen de paiement requis"),
+  accountNumber: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Adresse BEP20 invalide"),
 });
 
 type WalletForm = z.infer<typeof walletSchema>;
+const WITHDRAWAL_METHOD = "USDT BEP20";
 
 interface WalletModalProps {
   open: boolean;
@@ -44,7 +42,6 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
     defaultValues: {
       accountName: "",
       accountNumber: "",
-      paymentMethod: "",
     },
   });
 
@@ -52,6 +49,7 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
     mutationFn: async (data: WalletForm) => {
       const response = await apiRequest("POST", "/api/wallets", {
         ...data,
+        paymentMethod: WITHDRAWAL_METHOD,
         country: user!.country,
       });
       if (!response.ok) {
@@ -109,8 +107,6 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
 
   if (!user) return null;
 
-  const paymentMethods = getPaymentMethodsForCountry(user.country);
-
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
@@ -135,7 +131,7 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
                       <div>
                         <p className="font-medium text-foreground">{wallet.accountName}</p>
                         <p className="text-sm text-muted-foreground">{wallet.accountNumber}</p>
-                        <p className="text-xs text-muted-foreground">{wallet.paymentMethod}</p>
+                        <p className="text-xs text-muted-foreground">USDT BEP20</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -196,39 +192,18 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
                   name="accountNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Numéro</FormLabel>
+                        <FormLabel>Adresse du portefeuille BEP20</FormLabel>
                       <FormControl>
-                        <Input {...field} type="tel" placeholder="Votre numéro" data-testid="input-wallet-number" />
+                          <Input {...field} type="text" placeholder="0x..." data-testid="input-wallet-number" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="paymentMethod"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Moyen de paiement</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger data-testid="select-wallet-method">
-                            <SelectValue placeholder="Choisir" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {paymentMethods.map((method) => (
-                            <SelectItem key={method} value={method}>
-                              {method}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
+                  Moyen unique : <span className="font-semibold text-foreground">USDT BEP20</span>
+                </div>
 
                 <div className="flex gap-2">
                   <Button type="button" variant="outline" onClick={() => setShowForm(false)} className="flex-1">

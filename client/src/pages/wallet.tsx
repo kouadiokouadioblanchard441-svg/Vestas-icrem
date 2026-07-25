@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { getPaymentMethodsForCountry, type ApiCountry } from "@/lib/countries";
 import { Loader2, Plus, Trash2, CreditCard, ChevronLeft, ChevronRight, Shield, Check } from "lucide-react";
 import { Link, useLocation, useSearch } from "wouter";
 import type { WithdrawalWallet } from "@shared/schema";
@@ -19,11 +18,11 @@ function maskAccountNumber(num: string): string {
 
 const walletSchema = z.object({
   accountName: z.string().min(2, "Nom du titulaire requis"),
-  accountNumber: z.string().min(8, "Numéro requis"),
-  paymentMethod: z.string().min(2, "Moyen de paiement requis"),
+  accountNumber: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Adresse BEP20 invalide (format 0x + 40 caractères)"),
 });
 
 type WalletForm = z.infer<typeof walletSchema>;
+const WITHDRAWAL_METHOD = "USDT BEP20";
 
 export default function WalletPage() {
   const { user } = useAuth();
@@ -33,26 +32,21 @@ export default function WalletPage() {
   const params = new URLSearchParams(searchString);
   const selectMode = params.get("from") === "withdrawal";
   const [showForm, setShowForm] = useState(false);
-  const [showBankSheet, setShowBankSheet] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState("");
 
   const { data: wallets, isLoading } = useQuery<WithdrawalWallet[]>({
     queryKey: ["/api/wallets"],
   });
 
-  const { data: apiCountries = [] } = useQuery<ApiCountry[]>({
-    queryKey: ["/api/countries"],
-  });
-
   const form = useForm<WalletForm>({
     resolver: zodResolver(walletSchema),
-    defaultValues: { accountName: "", accountNumber: "", paymentMethod: "" },
+    defaultValues: { accountName: "", accountNumber: "" },
   });
 
   const addMutation = useMutation({
     mutationFn: async (data: WalletForm) => {
       const response = await apiRequest("POST", "/api/wallets", {
         ...data,
+        paymentMethod: WITHDRAWAL_METHOD,
         country: user!.country,
       });
       if (!response.ok) {
@@ -65,7 +59,6 @@ export default function WalletPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/wallets"] });
       toast({ title: "Portefeuille ajouté !" });
       form.reset();
-      setSelectedMethod("");
       setShowForm(false);
     },
     onError: (error: any) => {
@@ -115,19 +108,12 @@ export default function WalletPage() {
     }
   };
 
-  const handleChooseMethod = (method: string) => {
-    setSelectedMethod(method);
-    form.setValue("paymentMethod", method);
-    setShowBankSheet(false);
-  };
-
   const handleSubmit = () => {
     form.handleSubmit((data) => addMutation.mutate(data))();
   };
 
   if (!user) return null;
 
-  const paymentMethods = getPaymentMethodsForCountry(user.country, apiCountries);
   const backLink = selectMode ? "/withdrawal" : "/account";
 
   /* ─── ADD FORM VIEW ─── */
@@ -138,7 +124,7 @@ export default function WalletPage() {
         {/* Header — même style que la liste */}
         <div className="flex items-center px-4 pt-10 pb-4">
           <button
-            onClick={() => { setShowForm(false); form.reset(); setSelectedMethod(""); }}
+            onClick={() => { setShowForm(false); form.reset(); }}
             className="p-1"
             data-testid="button-back-form"
           >
@@ -152,23 +138,14 @@ export default function WalletPage() {
         {/* Champs de saisie */}
         <div className="px-4 space-y-3">
 
-          {/* Sélection opérateur */}
+          {/* Moyen unique */}
           <div>
             <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
-              Opérateur / Banque
+              Moyen de retrait
             </p>
-            <button
-              type="button"
-              onClick={() => setShowBankSheet(true)}
-              className="w-full flex items-center justify-between px-4 py-4 rounded-2xl shadow-sm"
-              style={{ background: "rgba(255,255,255,0.90)" }}
-              data-testid="button-select-bank"
-            >
-              <span className={`text-sm font-medium ${selectedMethod ? "text-gray-800" : "text-gray-400"}`}>
-                {selectedMethod || "Sélectionner un opérateur"}
-              </span>
-              <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
-            </button>
+            <div className="w-full px-4 py-4 rounded-2xl shadow-sm bg-white/90 text-sm font-semibold text-gray-800">
+              {WITHDRAWAL_METHOD}
+            </div>
           </div>
 
           {/* Nom du titulaire */}
@@ -192,10 +169,10 @@ export default function WalletPage() {
             )}
           </div>
 
-          {/* Numéro de compte / téléphone */}
+          {/* Adresse blockchain */}
           <div>
             <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
-              Numéro de téléphone / compte
+              Adresse du portefeuille BEP20
             </p>
             <div
               className="w-full flex items-center px-4 py-4 rounded-2xl shadow-sm"
@@ -203,8 +180,9 @@ export default function WalletPage() {
             >
               <input
                 {...form.register("accountNumber")}
-                type="tel"
-                placeholder="Ex : 6XXXXXXXX"
+                type="text"
+                inputMode="text"
+                placeholder="0x..."
                 className="flex-1 bg-transparent text-sm text-gray-800 placeholder:text-gray-400 outline-none"
                 data-testid="input-wallet-number"
               />
@@ -241,38 +219,6 @@ export default function WalletPage() {
           />
         </div>
 
-        {/* Bottom sheet opérateur */}
-        {showBankSheet && (
-          <div className="fixed inset-0 z-50" onClick={() => setShowBankSheet(false)}>
-            <div className="absolute inset-0 bg-black/50" />
-            <div
-              className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex justify-center pt-3 pb-1">
-                <div className="w-10 h-1 bg-gray-200 rounded-full" />
-              </div>
-              <h2 className="text-center font-bold text-gray-800 text-base pt-3 pb-4 border-b border-gray-100">
-                Choisir un opérateur
-              </h2>
-              <div className="pb-10 max-h-80 overflow-y-auto">
-                {paymentMethods.map((method) => (
-                  <button
-                    key={method}
-                    onClick={() => handleChooseMethod(method)}
-                    className="w-full py-4 px-5 flex items-center justify-between border-b border-gray-50 last:border-0 active:bg-gray-50"
-                    data-testid={`button-bank-${method}`}
-                  >
-                    <span className="text-gray-800 font-medium text-sm">{method}</span>
-                    {selectedMethod === method && (
-                      <Check className="w-4 h-4 text-[#F59E0B]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     );
   }
@@ -359,7 +305,7 @@ export default function WalletPage() {
                   {/* Bottom row: name + chip */}
                   <div className="flex items-end justify-between mt-3">
                     <div>
-                      <p className="text-white/60 text-xs mb-0.5">{wallet.paymentMethod}</p>
+                      <p className="text-white/60 text-xs mb-0.5">USDT BEP20</p>
                       <p className="text-white font-semibold text-sm">{wallet.accountName}</p>
                       {wallet.isDefault && (
                         <div className="flex items-center gap-1 mt-1">

@@ -173,11 +173,11 @@ export default function AdminStaking() {
                           <div className="grid grid-cols-3 gap-2 text-sm">
                             <div className="bg-secondary/50 rounded-lg p-2 text-center">
                               <p className="text-muted-foreground text-xs">Prix</p>
-                              <p className="font-bold text-primary">{sp.price.toLocaleString()} F</p>
+                              <p className="font-bold text-primary">{sp.price.toLocaleString()} USDT</p>
                             </div>
                             <div className="bg-secondary/50 rounded-lg p-2 text-center">
                               <p className="text-muted-foreground text-xs">Retour</p>
-                              <p className="font-bold text-green-600">{sp.returnAmount.toLocaleString()} F</p>
+                              <p className="font-bold text-green-600">{sp.returnAmount.toLocaleString()} USDT</p>
                             </div>
                             <div className="bg-secondary/50 rounded-lg p-2 text-center">
                               <p className="text-muted-foreground text-xs">Durée</p>
@@ -223,11 +223,11 @@ export default function AdminStaking() {
             </div>
             <div className="bg-secondary rounded-xl p-3 text-center">
               <p className="text-xs text-muted-foreground">Total bloqué</p>
-              <p className="font-bold text-green-600">{totalStaked.toLocaleString()} F</p>
+              <p className="font-bold text-green-600">{totalStaked.toLocaleString()} USDT</p>
             </div>
             <div className="bg-secondary rounded-xl p-3 text-center">
               <p className="text-xs text-muted-foreground">Total libéré</p>
-              <p className="font-bold text-green-600">{totalReleased.toLocaleString()} F</p>
+              <p className="font-bold text-green-600">{totalReleased.toLocaleString()} USDT</p>
             </div>
           </div>
 
@@ -250,7 +250,7 @@ export default function AdminStaking() {
                         </div>
                         <p className="text-xs text-muted-foreground">{s.user.phone} · {s.product.name}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                          {s.amountPaid.toLocaleString()} F → {s.returnAmount.toLocaleString()} F · Déblocage : {formatDate(s.releaseDate)}
+                          {s.amountPaid.toLocaleString()} USDT → {s.returnAmount.toLocaleString()} USDT · Déblocage : {formatDate(s.releaseDate)}
                         </p>
                       </div>
                       <div className="text-right">
@@ -292,12 +292,12 @@ export default function AdminStaking() {
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className="text-sm font-medium">Prix (F)</label>
+                    <label className="text-sm font-medium">Prix (USDT)</label>
                     <Input type="number" value={form.price} onChange={e => updateForm(i, "price", e.target.value)}
                       placeholder="5000" className="mt-1" data-testid={`input-price-${i}`} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Retour (F)</label>
+                    <label className="text-sm font-medium">Retour (USDT)</label>
                     <Input type="number" value={form.returnAmount} onChange={e => updateForm(i, "returnAmount", e.target.value)}
                       placeholder="7000" className="mt-1" data-testid={`input-return-${i}`} />
                   </div>

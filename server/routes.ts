@@ -750,6 +750,9 @@ export async function registerRoutes(
       }
 
       const settingsForWithdrawal = await storage.getSettings();
+      if (settingsForWithdrawal.withdrawalEnabled === "false") {
+        return res.status(400).json({ message: "Les retraits sont temporairement désactivés par l'administration" });
+      }
       const minWithdrawal = parseInt(settingsForWithdrawal.minWithdrawal || "1000");
       if (amount < minWithdrawal) {
         return res.status(400).json({ message: `Montant minimum: ${minWithdrawal} USDT` });
@@ -777,7 +780,10 @@ export async function registerRoutes(
 
       const wallet = await storage.getDefaultWallet(user.id);
       if (!wallet) {
-        return res.status(400).json({ message: "Enregistrez un portefeuille de retrait" });
+        return res.status(400).json({ message: "Enregistrez une adresse USDT BEP20" });
+      }
+      if (wallet.paymentMethod !== "USDT BEP20" || !/^0x[a-fA-F0-9]{40}$/.test(wallet.accountNumber)) {
+        return res.status(400).json({ message: "L'adresse de retrait doit être une adresse USDT BEP20 valide" });
       }
 
       const todayCount = await storage.getUserWithdrawalCountToday(user.id);
@@ -804,8 +810,8 @@ export async function registerRoutes(
         fees: feeAmount,
         accountName: wallet.accountName,
         accountNumber: wallet.accountNumber,
-        country: wallet.country,
-        paymentMethod: wallet.paymentMethod,
+        country: user.country,
+        paymentMethod: "USDT BEP20",
         status: "pending",
       });
 
@@ -827,7 +833,8 @@ export async function registerRoutes(
   // Wallets
   app.get("/api/wallets", requireAuth, async (req, res) => {
     try {
-      const wallets = await storage.getWallets(req.session.userId!);
+      const wallets = (await storage.getWallets(req.session.userId!))
+        .filter(wallet => wallet.paymentMethod === "USDT BEP20" && /^0x[a-fA-F0-9]{40}$/.test(wallet.accountNumber));
       res.json(wallets);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -836,13 +843,16 @@ export async function registerRoutes(
 
   app.post("/api/wallets", requireAuth, async (req, res) => {
     try {
-      const { accountName, accountNumber, paymentMethod, country } = req.body;
+      const { accountName, accountNumber } = req.body;
+      if (!accountName || !/^0x[a-fA-F0-9]{40}$/.test(accountNumber || "")) {
+        return res.status(400).json({ message: "Saisissez une adresse USDT BEP20 valide (0x + 40 caractères)" });
+      }
       const wallet = await storage.createWallet({
         userId: req.session.userId!,
         accountName,
         accountNumber,
-        paymentMethod,
-        country,
+        paymentMethod: "USDT BEP20",
+        country: "USDT",
       });
       res.json(wallet);
     } catch (error: any) {
@@ -1036,6 +1046,8 @@ export async function registerRoutes(
     try {
       const settings = await storage.getSettings();
       res.json({
+        withdrawalMethod: "USDT BEP20",
+        withdrawalEnabled: settings.withdrawalEnabled !== "false",
         withdrawalFees: parseFloat(settings.withdrawalFees || "18"),
         withdrawalStartHour: parseInt(settings.withdrawalStartHour || "9"),
         withdrawalEndHour: parseInt(settings.withdrawalEndHour || "17"),
@@ -1094,7 +1106,7 @@ export async function registerRoutes(
         });
       }
 
-      await storage.logAdminAction(req.session.userId!, "approve_deposit", deposit.userId, `Dépôt ${deposit.id} approuvé: ${deposit.amount}F`);
+      await storage.logAdminAction(req.session.userId!, "approve_deposit", deposit.userId, `Dépôt ${deposit.id} approuvé: ${deposit.amount} USDT`);
       res.json(deposit);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -1178,7 +1190,7 @@ export async function registerRoutes(
         processedBy: req.session.userId,
       });
 
-      await storage.logAdminAction(req.session.userId!, "approve_withdrawal", withdrawalData.userId, `Retrait ${withdrawal.id} approuvé: ${withdrawalData.netAmount}F`);
+      await storage.logAdminAction(req.session.userId!, "approve_withdrawal", withdrawalData.userId, `Retrait ${withdrawal.id} approuvé: ${withdrawalData.netAmount} USDT`);
       res.json(withdrawal);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -1272,7 +1284,7 @@ export async function registerRoutes(
       switch (action) {
         case "balance":
           await storage.updateUser(userId, { balance: value.toFixed(2) });
-          await storage.logAdminAction(req.session.userId!, "update_balance", userId, `Solde modifié: ${value}F`);
+          await storage.logAdminAction(req.session.userId!, "update_balance", userId, `Solde modifié: ${value} USDT`);
           break;
         case "password":
           await storage.updateUser(userId, { password: value });
@@ -1360,7 +1372,7 @@ export async function registerRoutes(
           break;
         case "total-earnings":
           await storage.updateUser(userId, { totalEarnings: Number(value).toFixed(2) });
-          await storage.logAdminAction(req.session.userId!, "update_total_earnings", userId, `Solde des gains modifié: ${value}F`);
+          await storage.logAdminAction(req.session.userId!, "update_total_earnings", userId, `Solde des gains modifié: ${value} USDT`);
           break;
         default:
           return res.status(400).json({ message: "Action invalide" });
@@ -1797,7 +1809,7 @@ export async function registerRoutes(
         await storage.updateUser(user.id, { balance: newBalance.toFixed(2), hasDeposited: true });
         await storage.createTransaction({ userId: user.id, type: "deposit", amount: deposit.amount.toString(), description: "Dépôt validé par bankier" });
       }
-      await storage.logAdminAction(req.session.userId!, "approve_deposit", deposit.userId, `Dépôt ${deposit.id} approuvé par bankier: ${deposit.amount}F`);
+      await storage.logAdminAction(req.session.userId!, "approve_deposit", deposit.userId, `Dépôt ${deposit.id} approuvé par bankier: ${deposit.amount} USDT`);
       res.json(deposit);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -1829,7 +1841,7 @@ export async function registerRoutes(
         processedAt: new Date(),
         processedBy: req.session.userId,
       });
-      await storage.logAdminAction(req.session.userId!, "approve_withdrawal", withdrawalData.userId, `Retrait ${withdrawal.id} approuvé par bankier: ${withdrawalData.netAmount}F`);
+      await storage.logAdminAction(req.session.userId!, "approve_withdrawal", withdrawalData.userId, `Retrait ${withdrawal.id} approuvé par bankier: ${withdrawalData.netAmount} USDT`);
       res.json(withdrawal);
     } catch (error: any) {
       res.status(400).json({ message: error.message });

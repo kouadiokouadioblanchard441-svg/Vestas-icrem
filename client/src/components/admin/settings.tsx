@@ -45,6 +45,7 @@ const settingsSchema = z.object({
   minDeposit: z.string().min(1, "Montant requis"),
   depositPresetAmounts: z.string().min(1, "Montants requis"),
   minWithdrawal: z.string().min(1, "Montant requis"),
+  withdrawalEnabled: z.boolean(),
   withdrawalFees: z.string().min(1, "Frais requis"),
   maxWithdrawalsPerDay: z.string().min(1, "Requis"),
   withdrawalStartHour: z.string().min(1, "Heure requise"),
@@ -115,6 +116,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
       minDeposit: "4000",
       depositPresetAmounts: "3500,5000,7000,10000,15000,20000,50000,70000",
       minWithdrawal: "1500",
+      withdrawalEnabled: true,
       withdrawalFees: "18",
       maxWithdrawalsPerDay: "1",
       withdrawalStartHour: "9",
@@ -149,6 +151,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         minDeposit: settings.minDeposit || "4000",
         depositPresetAmounts: settings.depositPresetAmounts || "3500,5000,7000,10000,15000,20000,50000,70000",
         minWithdrawal: settings.minWithdrawal || "1500",
+        withdrawalEnabled: settings.withdrawalEnabled !== "false",
         withdrawalFees: settings.withdrawalFees || "18",
         maxWithdrawalsPerDay: settings.maxWithdrawalsPerDay || "1",
         withdrawalStartHour: settings.withdrawalStartHour || "9",
@@ -168,6 +171,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         support2Enabled: String(data.support2Enabled),
         channelEnabled: String(data.channelEnabled),
         groupEnabled: String(data.groupEnabled),
+        withdrawalEnabled: String(data.withdrawalEnabled),
       };
       const response = await apiRequest("POST", "/api/admin/settings", serialized);
       if (!response.ok) {
@@ -479,6 +483,26 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
+              <p className="text-sm font-semibold text-foreground">Moyen de retrait actif</p>
+              <p className="mt-1 text-lg font-bold text-primary">USDT BEP20</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                C’est l’unique moyen disponible. Les utilisateurs doivent fournir une adresse BEP20 commençant par 0x.
+              </p>
+              <FormField control={form.control} name="withdrawalEnabled" render={({ field }) => (
+                <FormItem className="mt-3 flex items-center justify-between rounded-md border bg-background/60 p-3 space-y-0">
+                  <div>
+                    <FormLabel>Retraits actifs</FormLabel>
+                    <FormDescription>
+                      {field.value ? "Les utilisateurs peuvent envoyer de nouvelles demandes." : "Les nouvelles demandes sont bloquées."}
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                </FormItem>
+              )} />
+            </div>
             <FormField control={form.control} name="signupBonus" render={({ field }) => (
               <FormItem>
                 <FormLabel>Bonus d'inscription (USDT)</FormLabel>

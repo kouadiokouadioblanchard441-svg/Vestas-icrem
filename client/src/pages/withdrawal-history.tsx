@@ -2,7 +2,6 @@ import { useAuth } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { Link } from "wouter";
-import { getCountryByCode } from "@/lib/countries";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Withdrawal {
@@ -37,8 +36,7 @@ const STATUS: Record<string, { label: string; color: string }> = {
 
 export default function WithdrawalHistoryPage() {
   const { user } = useAuth();
-  const countryInfo = user ? getCountryByCode(user.country) : null;
-  const currency = countryInfo?.currency || "USDT";
+  const currency = "USDT";
 
   const { data: withdrawals = [], isLoading } = useQuery<Withdrawal[]>({
     queryKey: ["/api/withdrawals/history"],

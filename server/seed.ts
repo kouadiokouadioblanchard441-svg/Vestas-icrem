@@ -65,7 +65,7 @@ export async function seed() {
     {
       code: "CM",
       name: "Cameroun",
-      currency: "XOF",
+      currency: "USDT",
       phonePrefix: "237",
       operators: JSON.stringify(["Orange Cameroun", "MTN Cameroun"]),
       isActive: true,
@@ -74,7 +74,7 @@ export async function seed() {
     {
       code: "BF",
       name: "Burkina Faso",
-      currency: "XOF",
+      currency: "USDT",
       phonePrefix: "226",
       operators: JSON.stringify(["Orange Burkina", "Moov Africa Burkina"]),
       isActive: true,
@@ -83,7 +83,7 @@ export async function seed() {
     {
       code: "BJ",
       name: "Benin",
-      currency: "XOF",
+      currency: "USDT",
       phonePrefix: "229",
       operators: JSON.stringify(["MTN Benin", "Moov Africa Benin"]),
       isActive: true,
@@ -92,7 +92,7 @@ export async function seed() {
     {
       code: "CI",
       name: "Côte d'Ivoire",
-      currency: "XOF",
+      currency: "USDT",
       phonePrefix: "225",
       operators: JSON.stringify(["Orange CI", "MTN CI", "Moov Africa CI"]),
       isActive: true,
@@ -101,7 +101,7 @@ export async function seed() {
     {
       code: "TG",
       name: "Togo",
-      currency: "XOF",
+      currency: "USDT",
       phonePrefix: "228",
       operators: JSON.stringify(["Togocel", "Moov Africa Togo"]),
       isActive: true,
@@ -212,6 +212,7 @@ export async function seed() {
     { key: "minDeposit", value: "3000" },
     { key: "depositPresetAmounts", value: "3500,5000,7000,10000,15000,20000,50000,70000" },
     { key: "minWithdrawal", value: "1000" },
+    { key: "withdrawalEnabled", value: "true" },
     { key: "withdrawalFees", value: "15" },
     { key: "withdrawalStartHour", value: "9" },
     { key: "withdrawalEndHour", value: "17" },
