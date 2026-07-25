@@ -148,21 +148,22 @@ Preferred communication style: Simple, everyday language.
 - Access the admin panel from Account page when logged in as admin
 
 ## Business Rules
-- **Signup Bonus**: 500 FCFA
-- **Free Daily Product**: 50 FCFA per day
+- **Signup Bonus**: 500 USDT
+- **Free Daily Product**: 50 USDT per day
 - **Withdrawal Fees**: 15%
-- **Minimum Deposit**: 3000 FCFA
-- **Minimum Withdrawal**: 1200 FCFA
+- **Minimum Deposit**: 3000 USDT
+- **Minimum Withdrawal**: 1200 USDT
 - **Withdrawal Hours**: 8h-17h (9h-18h for Cameroon/Benin)
 - **Max Withdrawals/Day**: 2
 - **Referral Commissions**: Level 1 (27%), Level 2 (2%), Level 3 (1%)
 - **Product Cycle**: 80 days by default
 
 ## Supported Countries
-- Cameroun (CM) - XAF - Orange Money, MTN
-- Burkina Faso (BF) - XOF - Orange Money, Moov Money
-- Togo (TG) - XOF - Moov Money, Mixx by Yas
-- Benin (BJ) - XOF - Celtis, Moov Money, MTN, Momo
-- Cote d'Ivoire (CI) - XOF - Wave, MTN, Orange Money, Moov Money
-- Congo Brazzaville (CG) - XAF - MTN
-- RDC (CD) - CDF (4:1 conversion) - Airtel Money
+All countries use USDT as the platform currency.
+- Cameroun (CM) - USDT - Orange Money, MTN
+- Burkina Faso (BF) - USDT - Orange Money, Moov Money
+- Togo (TG) - USDT - Moov Money, Mixx by Yas
+- Benin (BJ) - USDT - Celtis, Moov Money, MTN, Momo
+- Cote d'Ivoire (CI) - USDT - Wave, MTN, Orange Money, Moov Money
+- Congo Brazzaville (CG) - USDT - MTN
+- RDC (CD) - USDT - Airtel Money

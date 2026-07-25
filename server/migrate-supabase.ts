@@ -293,7 +293,7 @@ async function run() {
 
     // ── Seed countries ──
     const countriesData = [
-      { code: "CF", name: "Centrafrique", currency: "XOF", phone_prefix: "236", operators: '["Telecel Centrafrique","Orange Centrafrique"]' },
+      { code: "CF", name: "Centrafrique", currency: "USDT", phone_prefix: "236", operators: '["Telecel Centrafrique","Orange Centrafrique"]' },
     ];
     for (const c of countriesData) {
       await client.query(
