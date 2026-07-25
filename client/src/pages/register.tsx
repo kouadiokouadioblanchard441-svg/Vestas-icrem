@@ -129,26 +129,7 @@ export default function RegisterPage() {
         {/* Top bar */}
         <div className="flex items-center justify-between px-4 pt-4 pb-3">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div
-              style={{
-                width: 38,
-                height: 38,
-                borderRadius: "50%",
-                background: "#D42B2B",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-              </svg>
-            </div>
-            <span style={{ color: "#D42B2B", fontWeight: 800, fontSize: 22, letterSpacing: -0.5 }}>
-              enercoop
-            </span>
-          </div>
+          <img src="/poweradd/poweradd-logo-official.png" alt="PowerAdd" style={{ height: 36, objectFit: "contain" }} />
 
           {/* Language */}
           <button
