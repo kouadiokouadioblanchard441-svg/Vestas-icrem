@@ -118,24 +118,14 @@ export default function TeamPage() {
           </div>
           <p className="text-white font-extrabold text-lg tracking-wide">Équipe</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => navigate("/members")}
-            className="px-4 py-1.5 rounded-full text-white text-xs font-bold"
-            style={{ background: RED }}
-            data-testid="button-membres"
-          >
-            Membres
-          </button>
-          <button
-            onClick={() => navigate("/salary-bonus")}
-            className="px-4 py-1.5 rounded-full text-xs font-bold"
-            style={{ background: "rgba(255,255,255,0.18)", color: "#fff" }}
-            data-testid="button-centre-taches"
-          >
-            {taskCenterButton}
-          </button>
-        </div>
+        <button
+          onClick={() => navigate("/salary-bonus")}
+          className="px-4 py-1.5 rounded-full text-xs font-bold"
+          style={{ background: "rgba(255,255,255,0.18)", color: "#fff" }}
+          data-testid="button-centre-taches"
+        >
+          {taskCenterButton}
+        </button>
       </div>
 
       <div className="px-3 pt-3 space-y-3">
