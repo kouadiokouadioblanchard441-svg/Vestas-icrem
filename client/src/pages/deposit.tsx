@@ -225,7 +225,7 @@ export default function DepositPage() {
             <button
               onClick={handleAmountNext}
               className="w-full py-4 rounded-full text-white font-bold text-base shadow-md mt-2 flex items-center justify-center gap-2"
-              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+              style={{ background: "#E8192C" }}
               data-testid="button-recharge-now"
             >
               Rechargez maintenant
@@ -343,7 +343,7 @@ export default function DepositPage() {
                   <button
                     onClick={() => { setSelectedNumber(num); setStep("form"); }}
                     className="w-full py-3.5 font-bold text-sm text-white flex items-center justify-center gap-2"
-                    style={{ background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)" }}
+                    style={{ background: "#E8192C" }}
                     data-testid={`button-select-${num.id}`}
                   >
                     J'ai envoyé l'argent sur ce numéro <ArrowRight className="w-4 h-4" />
@@ -488,7 +488,7 @@ export default function DepositPage() {
               onClick={handleSubmit}
               disabled={depositMutation.isPending}
               className="w-full py-4 rounded-full text-white font-bold text-base shadow-md disabled:opacity-40"
-              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+              style={{ background: "#E8192C" }}
               data-testid="button-submit-deposit"
             >
               {depositMutation.isPending ? (
