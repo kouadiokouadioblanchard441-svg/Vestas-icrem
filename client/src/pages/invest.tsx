@@ -62,7 +62,7 @@ export default function InvestPage() {
     <div className="flex flex-col min-h-full" style={{ background: "#315aab" }}>
 
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 shadow-sm" style={{ background: "linear-gradient(135deg, #F59E0B 0%, #001a40 100%)" }}>
+      <div className="flex items-center justify-between px-4 py-3 shadow-sm" style={{ background: "linear-gradient(135deg, #E8192C 0%, #001a40 100%)" }}>
         <img src={poweraddLogo} alt="Power Add" className="h-8 w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} />
         <button onClick={() => navigate("/service")} className="flex items-center justify-center" data-testid="button-service">
           <img src={serviceIcon} alt="Service client" className="w-8 h-8 object-contain" />
@@ -99,25 +99,25 @@ export default function InvestPage() {
                   <div className="px-3 pb-1 space-y-0.5">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[11px]">Prix</span>
-                      <span className="font-bold text-[11px]" style={{ color: "#F59E0B" }}>
+                      <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
                         {currency} {Number(product.price).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[11px]">Rev. quotidien</span>
-                      <span className="font-bold text-[11px]" style={{ color: "#F59E0B" }}>
+                      <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
                         {currency} {Number(product.dailyEarnings).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[11px]">Rev. total</span>
-                      <span className="font-bold text-[11px]" style={{ color: "#F59E0B" }}>
+                      <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
                         {currency} {Number(product.totalReturn).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[11px]">Période</span>
-                      <span className="font-bold text-[11px]" style={{ color: "#F59E0B" }}>
+                      <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
                         {product.cycleDays} jours
                       </span>
                     </div>
@@ -128,14 +128,16 @@ export default function InvestPage() {
                     <p className="text-gray-800 font-black text-base text-center mb-2">
                       {currency} {Number(product.price).toLocaleString("fr-FR")}
                     </p>
-                    <button
-                      onClick={() => setConfirmProduct(product)}
-                      className="w-full py-2 rounded-xl text-sm font-bold text-white shadow"
-                      style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
-                      data-testid={`button-purchase-${product.id}`}
-                    >
-                      Acheter
-                    </button>
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() => setConfirmProduct(product)}
+                        className="px-6 py-1.5 rounded-lg text-sm font-bold text-white shadow"
+                        style={{ background: "#E8192C" }}
+                        data-testid={`button-purchase-${product.id}`}
+                      >
+                        Acheter
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -157,7 +159,7 @@ export default function InvestPage() {
         >
           <div
             className="w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"
-            style={{ background: "linear-gradient(160deg, #F59E0B 0%, #001a40 100%)" }}
+            style={{ background: "linear-gradient(160deg, #E8192C 0%, #001a40 100%)" }}
             onClick={e => e.stopPropagation()}
           >
             {/* Title */}
@@ -227,7 +229,7 @@ export default function InvestPage() {
                 onClick={() => purchaseMutation.mutate(confirmProduct.id)}
                 disabled={purchaseMutation.isPending || balance < confirmProduct.price}
                 className="flex-1 py-3 rounded-full text-white font-bold text-sm flex items-center justify-center gap-1 disabled:opacity-50"
-                style={{ background: "linear-gradient(135deg, #FBBF24, #004499)" }}
+                style={{ background: "#E8192C" }}
                 data-testid="button-confirm-purchase"
               >
                 {purchaseMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
