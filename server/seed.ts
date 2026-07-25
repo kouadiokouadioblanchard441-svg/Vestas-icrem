@@ -137,7 +137,7 @@ export async function seed() {
   }
 
   // Always sync VIP product images (safe — only touches imageUrl, never prices or earnings)
-  const vipImages = ['/solar-panel-1.webp', '/solar-panel-2.webp', '/solar-panel-3.jpg'];
+  const vipImages = ['/poweradd/poweradd-pps180s.png', '/poweradd/poweradd-pps210s.jpg', '/poweradd/poweradd-pps350.jpg'];
   const allProducts = await db.select().from(products);
   const paidProducts = allProducts.filter(p => !p.isFree).sort((a, b) => a.sortOrder - b.sortOrder);
   for (let i = 0; i < paidProducts.length; i++) {

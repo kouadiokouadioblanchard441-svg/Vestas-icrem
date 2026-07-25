@@ -107,8 +107,8 @@ export default function RegisterPage() {
       style={{
         backgroundImage: [
           "linear-gradient(to bottom, rgba(5,15,35,0.55) 0%, rgba(5,15,35,0.30) 48%, rgba(5,15,35,0.30) 52%, rgba(5,15,35,0.55) 100%)",
-          "url('/solar-bg-top.jpg')",
-          "url('/solar-bg-bottom.png')",
+          "url('/poweradd/poweradd-factory-opening.jpg')",
+          "url('/poweradd/poweradd-about-dark.jpg')",
         ].join(", "),
         backgroundSize: "100% 100%, 100% 55%, 100% 55%",
         backgroundPosition: "0 0, center top, center bottom",
