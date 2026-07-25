@@ -69,7 +69,7 @@ export default function DepositHistoryPage() {
           </div>
         ) : withdrawals.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500">Aucun retrait effectue</p>
+            <p className="text-white/70">Aucun retrait effectue</p>
           </div>
         ) : (
           withdrawals.map((withdrawal) => {

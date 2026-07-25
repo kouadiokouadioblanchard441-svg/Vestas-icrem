@@ -115,7 +115,7 @@ export default function HistoryPage() {
             <ChevronLeft className="w-5 h-5 text-gray-700" />
           </button>
         </Link>
-        <p className="flex-1 text-center text-gray-800 font-extrabold text-lg pr-9">Détails</p>
+        <p className="flex-1 text-center text-white font-extrabold text-lg pr-9">Détails</p>
       </div>
 
       {/* ── Tabs ── */}
@@ -124,8 +124,8 @@ export default function HistoryPage() {
           onClick={() => setActiveTab("deposits")}
           className="pb-2 font-semibold text-base transition-all"
           style={{
-            color: activeTab === "deposits" ? "#1a1a1a" : "rgba(0,0,0,0.40)",
-            borderBottom: activeTab === "deposits" ? "3px solid #1a1a1a" : "3px solid transparent",
+            color: activeTab === "deposits" ? "#ffffff" : "rgba(255,255,255,0.45)",
+            borderBottom: activeTab === "deposits" ? "3px solid #ffffff" : "3px solid transparent",
           }}
           data-testid="tab-deposits"
         >
@@ -135,8 +135,8 @@ export default function HistoryPage() {
           onClick={() => setActiveTab("withdrawals")}
           className="pb-2 font-semibold text-base transition-all"
           style={{
-            color: activeTab === "withdrawals" ? "#1a1a1a" : "rgba(0,0,0,0.40)",
-            borderBottom: activeTab === "withdrawals" ? "3px solid #1a1a1a" : "3px solid transparent",
+            color: activeTab === "withdrawals" ? "#ffffff" : "rgba(255,255,255,0.45)",
+            borderBottom: activeTab === "withdrawals" ? "3px solid #ffffff" : "3px solid transparent",
           }}
           data-testid="tab-withdrawals"
         >
@@ -154,7 +154,7 @@ export default function HistoryPage() {
         ) : (activeTab === "deposits" ? deposits : withdrawals).length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
             <img src={nodataImg} alt="Aucune donnée" className="w-28 h-28 object-contain opacity-90" />
-            <p className="text-gray-600 text-sm">Aucune transaction pour le moment</p>
+            <p className="text-white/70 text-sm">Aucune transaction pour le moment</p>
           </div>
         ) : activeTab === "deposits" ? (
           deposits.map((deposit) => {

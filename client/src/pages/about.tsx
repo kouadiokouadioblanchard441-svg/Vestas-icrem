@@ -33,23 +33,23 @@ export default function AboutPage() {
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-[#F59E0B]">{s1Title}</h2>
-          <p className="text-gray-600 leading-relaxed">{s1Text1}</p>
-          <p className="text-gray-600 leading-relaxed">{s1Text2}</p>
+          <p className="text-white/90 leading-relaxed">{s1Text1}</p>
+          <p className="text-white/90 leading-relaxed">{s1Text2}</p>
         </div>
 
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-[#F59E0B]">{s2Title}</h2>
-          <p className="text-gray-600 leading-relaxed">{s2Text}</p>
+          <p className="text-white/90 leading-relaxed">{s2Text}</p>
         </div>
 
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-[#F59E0B]">{s3Title}</h2>
-          <p className="text-gray-600 leading-relaxed">{s3Text}</p>
+          <p className="text-white/90 leading-relaxed">{s3Text}</p>
         </div>
 
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-[#F59E0B]">{s4Title}</h2>
-          <p className="text-gray-600 leading-relaxed">{s4Text}</p>
+          <p className="text-white/90 leading-relaxed">{s4Text}</p>
         </div>
       </div>
       <img src="/poweradd/poweradd-about-dark.jpg" alt="Power Add — composants électroniques" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />

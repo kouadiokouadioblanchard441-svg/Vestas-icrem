@@ -83,7 +83,7 @@ export default function RewardsPage() {
         <div className="px-4 mt-2">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-1 h-5 rounded-full" style={{ backgroundColor: "#2196F3" }} />
-            <h2 className="text-base font-bold text-gray-900">Liste des taches</h2>
+            <h2 className="text-base font-bold text-white">Liste des taches</h2>
           </div>
 
           {isLoading ? (

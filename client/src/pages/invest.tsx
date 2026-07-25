@@ -143,8 +143,8 @@ export default function InvestPage() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <Settings className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-400">Aucun produit disponible</p>
+            <Settings className="w-16 h-16 text-white/40 mx-auto mb-4" />
+            <p className="text-white/70">Aucun produit disponible</p>
           </div>
         )}
       </div>

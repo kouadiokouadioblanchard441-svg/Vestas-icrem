@@ -160,8 +160,8 @@ export default function CheckinPage() {
 
         {/* Rules */}
         <div className="mx-4 mt-5 space-y-1.5">
-          <p className="text-gray-400 text-xs">{rule1}</p>
-          <p className="text-gray-400 text-xs">{rule2}</p>
+          <p className="text-white/60 text-xs">{rule1}</p>
+          <p className="text-white/60 text-xs">{rule2}</p>
         </div>
 
       </div>

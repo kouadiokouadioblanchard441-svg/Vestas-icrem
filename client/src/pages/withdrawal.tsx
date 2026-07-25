@@ -187,7 +187,7 @@ export default function WithdrawalPage() {
 
         {/* ── Wallet selector ── */}
         <div>
-          <p className="text-gray-900 font-semibold text-sm mb-2">Compte de retrait</p>
+          <p className="text-white font-semibold text-sm mb-2">Compte de retrait</p>
           <button
             onClick={() => {
               if (!hasWallets) {
@@ -218,8 +218,8 @@ export default function WithdrawalPage() {
         {/* ── Amount section ── */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-gray-900 font-semibold text-sm">Montant du retrait</p>
-            <p className="text-gray-500 text-sm">Impôt: {withdrawalFee}%</p>
+            <p className="text-white font-semibold text-sm">Montant du retrait</p>
+            <p className="text-white/70 text-sm">Impôt: {withdrawalFee}%</p>
           </div>
 
           <div className="border border-gray-300 rounded-md flex items-center overflow-hidden bg-white">
@@ -237,7 +237,7 @@ export default function WithdrawalPage() {
           </div>
 
           <div className="flex items-center justify-between mt-2 px-1">
-            <p className="text-gray-600 text-xs">
+            <p className="text-white/80 text-xs">
               Montant reçu:{" "}
               <span className="font-semibold">{currency} {amountAfterFees.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</span>
             </p>

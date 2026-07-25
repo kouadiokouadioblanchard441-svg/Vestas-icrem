@@ -275,8 +275,8 @@ export default function TasksPage() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <Trophy className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500">Aucune tâche disponible</p>
+            <Trophy className="w-12 h-12 text-white/40 mx-auto mb-3" />
+            <p className="text-white/70">Aucune tâche disponible</p>
           </div>
         )}
       </div>

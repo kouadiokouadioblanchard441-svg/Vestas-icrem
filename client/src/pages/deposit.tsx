@@ -159,11 +159,11 @@ export default function DepositPage() {
           {/* Header — même style que la page d'ajout de carte */}
           <div className="flex items-center justify-between px-4 pt-10 pb-4">
             <Link href="/account">
-              <button className="w-9 h-9 flex items-center justify-center text-gray-700" data-testid="button-back">
+              <button className="w-9 h-9 flex items-center justify-center text-white" data-testid="button-back">
                 <ChevronLeft className="w-6 h-6" />
               </button>
             </Link>
-            <h1 className="flex-1 text-center text-gray-800 font-bold text-base">Recharger</h1>
+            <h1 className="flex-1 text-center text-white font-bold text-base">Recharger</h1>
             <div className="w-9 h-9" />
           </div>
 
@@ -256,17 +256,17 @@ export default function DepositPage() {
         <>
           <div className="flex items-center justify-between px-4 pt-10 pb-4">
             <button
-              className="w-9 h-9 flex items-center justify-center text-gray-700"
+              className="w-9 h-9 flex items-center justify-center text-white"
               onClick={() => setStep("amount")}
               data-testid="button-back-to-amount"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
-            <h1 className="flex-1 text-center text-gray-800 font-bold text-base">Choisir un opérateur</h1>
+            <h1 className="flex-1 text-center text-white font-bold text-base">Choisir un opérateur</h1>
             <Link href="/deposit-history">
               <button
-                className="w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-semibold text-gray-700"
-                style={{ background: "rgba(255,255,255,0.5)" }}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-semibold text-white"
+                style={{ background: "rgba(255,255,255,0.25)" }}
                 data-testid="button-history"
               >
                 Hist.
@@ -296,7 +296,7 @@ export default function DepositPage() {
 
           <div className="p-4 space-y-3 pb-10">
 
-            <p className="text-sm font-semibold text-gray-800 mb-2">
+            <p className="text-sm font-semibold text-white mb-2">
               Sélectionnez un numéro de paiement
             </p>
 
@@ -305,7 +305,7 @@ export default function DepositPage() {
                 <Loader2 className="w-8 h-8 animate-spin text-[#F59E0B]" />
               </div>
             ) : paymentNumbersList.length === 0 ? (
-              <div className="text-center py-14 text-gray-400">
+              <div className="text-center py-14 text-white/70">
                 <Phone className="w-12 h-12 mx-auto mb-3 opacity-30" />
                 <p className="text-sm">Aucun numéro disponible pour votre pays</p>
                 <p className="text-xs mt-1">Contactez le support</p>
@@ -360,13 +360,13 @@ export default function DepositPage() {
         <>
           <div className="flex items-center px-4 pt-10 pb-4">
             <button
-              className="w-9 h-9 flex items-center justify-center text-gray-700"
+              className="w-9 h-9 flex items-center justify-center text-white"
               onClick={() => setStep("select")}
               data-testid="button-back-to-select"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
-            <h1 className="flex-1 text-center text-gray-800 font-bold text-base mr-9">Confirmer le paiement</h1>
+            <h1 className="flex-1 text-center text-white font-bold text-base mr-9">Confirmer le paiement</h1>
           </div>
 
           <div className="p-4 space-y-4 pb-10">
@@ -395,7 +395,7 @@ export default function DepositPage() {
 
             {/* Sender phone */}
             <div>
-              <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">Votre numéro payeur</p>
+              <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">Votre numéro payeur</p>
               <div
                 className="rounded-2xl shadow-sm flex items-center overflow-hidden"
                 style={{ background: "rgba(255,255,255,0.90)" }}
@@ -414,9 +414,9 @@ export default function DepositPage() {
 
             {/* Reference */}
             <div>
-              <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
+              <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
                 Référence / ID transaction{" "}
-                <span className="font-normal normal-case text-gray-400">(optionnel)</span>
+                <span className="font-normal normal-case text-white/50">(optionnel)</span>
               </p>
               <div
                 className="rounded-2xl shadow-sm"
@@ -435,9 +435,9 @@ export default function DepositPage() {
 
             {/* Payment message */}
             <div>
-              <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
+              <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
                 Message reçu après paiement{" "}
-                <span className="font-normal normal-case text-gray-400">(optionnel)</span>
+                <span className="font-normal normal-case text-white/50">(optionnel)</span>
               </p>
               <textarea
                 value={paymentMessage}
@@ -452,8 +452,8 @@ export default function DepositPage() {
 
             {/* Screenshot upload */}
             <div>
-              <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
-                Capture d'écran du paiement <span className="text-red-500">*</span>
+              <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
+                Capture d'écran du paiement <span className="text-red-300">*</span>
               </p>
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" data-testid="input-screenshot" />
               <button

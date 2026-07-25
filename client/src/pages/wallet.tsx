@@ -142,9 +142,9 @@ export default function WalletPage() {
             className="p-1"
             data-testid="button-back-form"
           >
-            <ChevronLeft className="w-6 h-6 text-gray-700" />
+            <ChevronLeft className="w-6 h-6 text-white" />
           </button>
-          <h1 className="flex-1 text-center text-gray-800 font-bold text-base mr-6">
+          <h1 className="flex-1 text-center text-white font-bold text-base mr-6">
             Ajouter un moyen de retrait
           </h1>
         </div>
@@ -154,7 +154,7 @@ export default function WalletPage() {
 
           {/* Sélection opérateur */}
           <div>
-            <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
+            <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
               Opérateur / Banque
             </p>
             <button
@@ -173,7 +173,7 @@ export default function WalletPage() {
 
           {/* Nom du titulaire */}
           <div>
-            <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
+            <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
               Nom du titulaire
             </p>
             <div
@@ -194,7 +194,7 @@ export default function WalletPage() {
 
           {/* Numéro de compte / téléphone */}
           <div>
-            <p className="text-gray-700 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
+            <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
               Numéro de téléphone / compte
             </p>
             <div
@@ -285,10 +285,10 @@ export default function WalletPage() {
       <div className="flex items-center px-4 pt-10 pb-4">
         <Link href={backLink}>
           <button className="p-1" data-testid="button-back">
-            <ChevronLeft className="w-6 h-6 text-gray-700" />
+            <ChevronLeft className="w-6 h-6 text-white" />
           </button>
         </Link>
-        <h1 className="flex-1 text-center text-gray-800 font-bold text-base mr-6">
+        <h1 className="flex-1 text-center text-white font-bold text-base mr-6">
           Moyen de retrait
         </h1>
       </div>

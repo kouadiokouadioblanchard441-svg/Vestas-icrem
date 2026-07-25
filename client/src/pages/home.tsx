@@ -253,7 +253,7 @@ export default function HomePage() {
 
       {/* ── Info Cards ── */}
       <div className="mx-3 mt-3 space-y-3">
-        <p className="text-gray-700 font-bold text-sm px-1">Information Center</p>
+        <p className="text-white font-bold text-sm px-1">Information Center</p>
         {NEWS_ARTICLES.map((article) => (
           <button
             key={article.id}

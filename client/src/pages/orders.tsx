@@ -40,33 +40,33 @@ export default function OrdersPage() {
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
-      <header className="px-4 py-3 border-b">
-        <h1 className="text-lg font-semibold text-gray-800 text-center">{headerTitle}</h1>
+      <header className="px-4 py-3 border-b border-white/20">
+        <h1 className="text-lg font-semibold text-white text-center">{headerTitle}</h1>
       </header>
 
-      <div className="flex border-b">
+      <div className="flex border-b border-white/20">
         <button
           onClick={() => setActiveTab("active")}
           className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors ${
             activeTab === "active"
-              ? "text-[#2196F3] border-b-2 border-[#2196F3]"
-              : "text-gray-500"
+              ? "text-white border-b-2 border-white"
+              : "text-white/50"
           }`}
           data-testid="orders-tab-active"
         >
-          <span className="w-2 h-2 rounded-full bg-[#2196F3]"></span>
+          <span className="w-2 h-2 rounded-full bg-white"></span>
           En cours
         </button>
         <button
           onClick={() => setActiveTab("completed")}
           className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors ${
             activeTab === "completed"
-              ? "text-gray-700 border-b-2 border-gray-500"
-              : "text-gray-500"
+              ? "text-white border-b-2 border-white"
+              : "text-white/50"
           }`}
           data-testid="orders-tab-completed"
         >
-          <span className="text-gray-400">&#10003;</span>
+          <span className={activeTab === "completed" ? "text-white" : "text-white/50"}>&#10003;</span>
           Termine
         </button>
       </div>
