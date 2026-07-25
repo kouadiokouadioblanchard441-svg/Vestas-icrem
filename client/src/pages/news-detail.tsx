@@ -1,11 +1,11 @@
 import { useLocation, useParams } from "wouter";
 import { ChevronLeft } from "lucide-react";
 
-// Official Power Add Inc. visuals from poweradd.com.
-const img1 = "/poweradd/poweradd-about.jpg";
-const img2 = "/poweradd/poweradd-pps180s.png";
-const img3 = "/poweradd/poweradd-handshake.jpg";
-const landscapeImg = "/poweradd/poweradd-about-dark.jpg";
+// Real Power Add / APD conference & factory photos.
+const img1 = "/poweradd/poweradd-news-cmef.jpg";
+const img2 = "/poweradd/poweradd-factory-lines.jpg";
+const img3 = "/poweradd/poweradd-factory-opening.jpg";
+const landscapeImg = "/poweradd/poweradd-intl-exhibition.jpg";
 
 export const NEWS_ARTICLES = [
   {

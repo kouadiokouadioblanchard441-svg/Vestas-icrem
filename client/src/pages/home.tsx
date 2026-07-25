@@ -14,13 +14,13 @@ import iconRecharger from "@assets/1-1_1783245823715.png";
 import iconRetraits from "@assets/2-1_1783245823825.png";
 import iconService from "@assets/3-1_1783245823860.png";
 
-// Official Power Add Inc. visuals from poweradd.com.
+// Official Power Add Inc. visuals — real company conference & factory photos.
 const BANNER_SLIDES = [
-  { src: "/poweradd/poweradd-tech-banner.jpg", label: "Power Add — Innovation et solutions d’alimentation" },
-  { src: "/poweradd/poweradd-about.jpg", label: "Power Add — Recherche et développement à Taïwan" },
-  { src: "/poweradd/poweradd-pps180s.png", label: "Power Add — Solutions d’alimentation professionnelles" },
-  { src: "/poweradd/poweradd-handshake.jpg", label: "Power Add — Engagement auprès de ses clients" },
-  { src: "/poweradd/poweradd-about-dark.jpg", label: "Power Add — Expertise en électronique de puissance" },
+  { src: "/poweradd/poweradd-news-cmef.jpg", label: "Power Add — Stand officiel au Salon Médical International CMEF" },
+  { src: "/poweradd/poweradd-factory-opening.jpg", label: "Power Add — Inauguration de l'usine de production d'Asie" },
+  { src: "/poweradd/poweradd-factory-lines.jpg", label: "Power Add — Lignes de production automatisées haute précision" },
+  { src: "/poweradd/poweradd-intl-exhibition.jpg", label: "Power Add — Présence aux expositions industrielles internationales" },
+  { src: "/poweradd/poweradd-pps180s.png", label: "Power Add — Solutions d'alimentation professionnelles certifiées" },
 ];
 
 const DARK_ICON = { filter: "brightness(0) saturate(100%)" } as React.CSSProperties;
