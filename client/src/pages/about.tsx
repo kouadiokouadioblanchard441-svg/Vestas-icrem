@@ -2,7 +2,6 @@ import { ChevronLeft } from "lucide-react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { getContent } from "@/lib/content";
-import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
 
 export default function AboutPage() {
   const { data: settings } = useQuery<Record<string, string>>({
@@ -11,14 +10,14 @@ export default function AboutPage() {
 
   const pageTitle = getContent(settings, "content_about_pageTitle", "A propos de nous");
   const s1Title = getContent(settings, "content_about_s1Title", "Qui sommes-nous ?");
-  const s1Text1 = getContent(settings, "content_about_s1Text1", "Powerade est le leader mondial du secteur de l'énergie solaire. L'entreprise conçoit, fabrique, installe et entretient des panneaux solaires terrestres et des solutions énergétiques dans le monde entier.");
-  const s1Text2 = getContent(settings, "content_about_s1Text2", "Grâce à notre expertise et à notre réseau mondial, nous offrons à nos utilisateurs des opportunités uniques de générer des revenus quotidiens en participant au financement et à l'expansion de la marque Powerade à l'échelle internationale.");
-  const s2Title = getContent(settings, "content_about_s2Title", "🏭 Fabrication et Installation");
-  const s2Text = getContent(settings, "content_about_s2Text", "Conception de panneaux solaires : Développement de solutions photovoltaïques de haute technologie adaptées à différents climats et conditions d'ensoleillement. Powerade produit industriellement les modules, les onduleurs et les composants clés de chaque installation.");
-  const s3Title = getContent(settings, "content_about_s3Title", "Notre héritage");
-  const s3Text = getContent(settings, "content_about_s3Text", "Aujourd'hui, Powerade est présente dans plus de 80 pays avec des milliers d'installations solaires à travers le monde, devenant ainsi la marque référence de l'énergie renouvelable à l'échelle internationale.");
-  const s4Title = getContent(settings, "content_about_s4Title", "Sécurité et Fiabilité");
-  const s4Text = getContent(settings, "content_about_s4Text", "La sécurité de vos fonds et la transparence de nos opérations sont nos priorités absolues. L'empreinte de Powerade dans le domaine de l'énergie solaire illustre parfaitement la capacité d'une entreprise à conjuguer qualité, innovation et stratégie de marque pérenne.");
+  const s1Text1 = getContent(settings, "content_about_s1Text1", "Power Add Inc. a été fondée en 1996 comme unité indépendante du groupe Tekman. L’entreprise est spécialisée dans les solutions d’alimentation électrique et dispose de capacités de recherche et développement à New Taipei City, à Taïwan.");
+  const s1Text2 = getContent(settings, "content_about_s1Text2", "Power Add réalise la recherche et la fabrication pilote à Taïwan, tandis que la production de masse est réalisée à Taïwan et en Chine.");
+  const s2Title = getContent(settings, "content_about_s2Title", "Produits et solutions");
+  const s2Text = getContent(settings, "content_about_s2Text", "La gamme comprend des adaptateurs, des alimentations open frame, des alimentations en U, des alimentations box, des convertisseurs DC/DC et des conceptions sur mesure de 1 W à 500 W.");
+  const s3Title = getContent(settings, "content_about_s3Title", "Capacités de fabrication");
+  const s3Text = getContent(settings, "content_about_s3Text", "Power Add présente deux sites de fabrication : un site à Taïwan pour la recherche et la production pilote, et un site à Guangdong, en Chine, pour la production de masse.");
+  const s4Title = getContent(settings, "content_about_s4Title", "Qualité et engagement");
+  const s4Text = getContent(settings, "content_about_s4Text", "Power Add indique être certifiée ISO 9001 depuis 1997 et ISO 14001 depuis 2006. L’entreprise met en avant l’amélioration continue, la qualité, la performance et le travail d’équipe.");
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
@@ -53,7 +52,7 @@ export default function AboutPage() {
           <p className="text-gray-600 leading-relaxed">{s4Text}</p>
         </div>
       </div>
-      <img src={landscapeImg} alt="Powerade" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
+      <img src="/poweradd/poweradd-about-dark.jpg" alt="Power Add — composants électroniques" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

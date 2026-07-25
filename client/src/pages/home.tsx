@@ -8,21 +8,19 @@ import { getContent } from "@/lib/content";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
 
-const poweradeLogo = "/powerade-logo.webp";
+const poweraddLogo = "/poweradd/poweradd-logo-official.png";
 import bellIcon from "@assets/d7d9f6f6-dddc-4071-8bc2-d6e7e589fbae_(1)_1783248684110.png";
 import iconRecharger from "@assets/1-1_1783245823715.png";
 import iconRetraits from "@assets/2-1_1783245823825.png";
 import iconService from "@assets/3-1_1783245823860.png";
 
-// 7 real Powerade exhibition photos (from powerade.com official)
+// Official Power Add Inc. visuals from poweradd.com.
 const BANNER_SLIDES = [
-  { src: "/banner/banner1.jpg", label: "Powerade — SNEC Shanghai 2024" },
-  { src: "/banner/banner2.jpg", label: "Powerade — Thailand ASEW Expo" },
-  { src: "/banner/banner4.jpg", label: "Powerade — Future Energy Africa" },
-  { src: "/banner/banner5.jpg", label: "Powerade — Future Energy Show" },
-  { src: "/banner/banner6.jpg", label: "Powerade — Future Energy Show" },
-  { src: "/banner/banner7.jpg", label: "Powerade — International Meeting" },
-  { src: "/banner/banner3.jpg", label: "Powerade — Elmia Solar Sweden" },
+  { src: "/poweradd/poweradd-tech-banner.jpg", label: "Power Add — Innovation et solutions d’alimentation" },
+  { src: "/poweradd/poweradd-about.jpg", label: "Power Add — Recherche et développement à Taïwan" },
+  { src: "/poweradd/poweradd-pps180s.png", label: "Power Add — Solutions d’alimentation professionnelles" },
+  { src: "/poweradd/poweradd-handshake.jpg", label: "Power Add — Engagement auprès de ses clients" },
+  { src: "/poweradd/poweradd-about-dark.jpg", label: "Power Add — Expertise en électronique de puissance" },
 ];
 
 const DARK_ICON = { filter: "brightness(0) saturate(100%)" } as React.CSSProperties;
@@ -153,10 +151,10 @@ export default function HomePage() {
   const telegramGroupLink = settings?.groupLink || "https://t.me/vestasgroup";
   const popupTitle = getContent(settings, "content_home_popupTitle", "NOTIFICATION");
   const popupLines = [
-    getContent(settings, "content_home_popupLine1", `Prime d'inscription : ${parseInt(signupBonus).toLocaleString()} USDT.`),
-    getContent(settings, "content_home_popupLine3", `Invitez vos subordonnés à investir et recevez une récompense en espèces de ${level1Commission}% du montant de leur investissement.`),
-    getContent(settings, "content_home_popupLine4", "Il n'y a aucune limite quant au temps de retrait ou au nombre de retraits. Vous pouvez retirer de l'argent à tout moment."),
-    getContent(settings, "content_home_popupLine5", "Powerade attache une grande importance au marché."),
+    getContent(settings, "content_home_popupLine1", "Power Add Inc. a été fondée en 1996 comme unité indépendante du groupe Tekman."),
+    getContent(settings, "content_home_popupLine3", "Les solutions Power Add couvrent les adaptateurs, alimentations open frame, alimentations en U, modèles box et convertisseurs DC/DC."),
+    getContent(settings, "content_home_popupLine4", "La recherche et la fabrication pilote sont réalisées à Taïwan ; la production de masse est réalisée à Taïwan et en Chine."),
+    getContent(settings, "content_home_popupLine5", "Power Add indique être certifiée ISO 9001 et ISO 14001 et met en avant l’amélioration continue."),
   ];
 
   return (
@@ -219,7 +217,7 @@ export default function HomePage() {
 
       {/* ── Header ── */}
       <div className="flex items-center px-4 py-2 bg-white shadow-sm">
-        <img src={poweradeLogo} alt="Powerade" className="h-10 w-auto object-contain" />
+        <img src={poweraddLogo} alt="Power Add" className="h-10 w-auto object-contain" />
       </div>
 
       {/* ── Hero Banner (carrousel défilant) ── */}

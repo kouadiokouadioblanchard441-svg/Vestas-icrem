@@ -1,63 +1,56 @@
 import { useLocation, useParams } from "wouter";
 import { ChevronLeft } from "lucide-react";
 
-// Real Powerade event & meeting photos (served as static assets)
-const img1 = "/news-img-1.jpg";   // Powerade team — SNEC Shanghai exhibition
-const img2 = "/news-img-2.png";   // Solar & Storage Africa conference
-const img3 = "/news-img-3.jpg";   // IPP & PPA Conference
-const landscapeImg = "/news-img-1.jpg";
+// Official Power Add Inc. visuals from poweradd.com.
+const img1 = "/poweradd/poweradd-about.jpg";
+const img2 = "/poweradd/poweradd-pps180s.png";
+const img3 = "/poweradd/poweradd-handshake.jpg";
+const landscapeImg = "/poweradd/poweradd-about-dark.jpg";
 
 export const NEWS_ARTICLES = [
   {
     id: "1",
-    title: "Powerade — Exposition Philippines 2026",
+    title: "Power Add Inc. : une expertise construite depuis 1996",
     summary:
-      "L'exposition de mai 2026 aux Philippines a été un succès retentissant pour Powerade. Des milliers de visiteurs ont découvert nos dernières innovations en énergie solaire.",
-    body: `L'exposition internationale de mai 2026 aux Philippines a marqué un tournant majeur pour Powerade sur le marché asiatique.
+      "Fondée en 1996 comme unité indépendante du groupe Tekman, Power Add développe des solutions d’alimentation et des convertisseurs pour ses clients.",
+    body: `Power Add Inc. a été fondée en 1996 comme unité indépendante du groupe Tekman.
 
-Pendant 5 jours, nos équipes ont présenté les toutes dernières solutions photovoltaïques de la gamme Powerade, capables de produire jusqu'à 3,45 MW d'énergie propre par installation.
+L’entreprise est spécialisée dans le développement de solutions d’alimentation électrique et dispose de capacités de recherche et développement ainsi que de fabrication pilote à New Taipei City, à Taïwan. La production de masse est réalisée à Taïwan et en Chine.
 
-Les investisseurs présents ont été particulièrement intéressés par notre programme de rendement journalier, qui garantit des revenus stables et prévisibles sur une période de 90 jours.
-
-Cette exposition confirme la position de Powerade comme leader mondial de l'énergie solaire durable, avec plus de 100 GW de capacité installée dans le monde entier.
-
-Rejoignez-nous dans cette aventure et commencez dès aujourd'hui à investir dans un avenir plus vert et plus rentable.`,
+Ces informations proviennent de la page officielle « About Us » de Power Add.`,
     image: img1,
-    date: "19 Mai 2026",
+    date: "Source officielle",
   },
   {
     id: "2",
-    title: "Nouvelle gamme Powerade — Performances record en 2026",
+    title: "Les solutions Power Add pour différents besoins",
     summary:
-      "Powerade établit de nouveaux records de production d'énergie solaire. Découvrez comment cette technologie révolutionne le secteur et booste vos investissements.",
-    body: `Powerade a établi en 2026 un nouveau record mondial de production d'énergie solaire en conditions réelles.
+      "Power Add propose des adaptateurs, alimentations open frame, alimentations en U, modèles box, convertisseurs DC/DC et conceptions sur mesure.",
+    body: `La gamme présentée par Power Add couvre plusieurs familles de produits :
 
-Avec un rendement moyen de 48 %, bien au-dessus de la moyenne du secteur (35 %), nos panneaux représentent l'état de l'art en matière d'ingénierie photovoltaïque.
+- Adaptateurs muraux et de bureau de 1 W à 50 W
+- Alimentations open frame de 30 W à 350 W
+- Alimentations en U de 60 W à 500 W
+- Alimentations box de 25 W à 150 W
+- Convertisseurs DC/DC de 1 W à 30 W
+- Solutions d’alimentation sur mesure de 1 W à 500 W
 
-Nos modules à haute densité capturent la lumière solaire de manière optimale, même par faible ensoleillement. Le système de contrôle intelligent ajuste automatiquement l'orientation des panneaux pour maximiser la production.
-
-Pour nos investisseurs, cela se traduit directement par des revenus quotidiens fiables et une rentabilité accrue sur toute la durée du cycle d'investissement.
-
-Investir dans Powerade, c'est choisir la technologie la plus avancée au monde au service de votre patrimoine financier.`,
+Ces catégories et puissances sont celles publiées sur le site officiel de Power Add.`,
     image: img2,
-    date: "10 Juin 2026",
+    date: "Produits officiels",
   },
   {
     id: "3",
-    title: "Expansion Powerade en Afrique francophone — Plan 2026–2027",
+    title: "Power Add : qualité, environnement et service",
     summary:
-      "Powerade accélère son développement en Afrique de l'Ouest et Centrale. Un plan ambitieux pour apporter l'énergie propre et des opportunités d'investissement à toute la région.",
-    body: `Powerade annonce un plan d'expansion ambitieux pour l'Afrique francophone couvrant la période 2026–2027.
+      "L’entreprise met en avant l’amélioration continue, le travail d’équipe et ses certifications ISO 9001:2015 et ISO 14001:2015.",
+    body: `Power Add indique être certifiée ISO 9001 depuis 1997 et ISO 14001 depuis 2006.
 
-Ce plan prévoit l'installation de 200 nouvelles fermes solaires dans des pays clés comme le Sénégal, la Côte d'Ivoire, le Cameroun et le Burkina Faso, pour une capacité totale de 690 MW.
+Sa politique qualité vise à mobiliser ses ressources internes et externes pour fournir une production de qualité et répondre aux attentes de ses clients.
 
-L'objectif est double : contribuer à la transition énergétique du continent africain et offrir à nos investisseurs locaux des opportunités de rendement exceptionnelles, directement liées à la performance de nos installations.
-
-Les investisseurs qui rejoignent notre plateforme bénéficient de revenus quotidiens issus directement de la production d'énergie de nos parcs solaires en exploitation.
-
-Ensemble, nous construisons un avenir énergétique durable pour l'Afrique tout en faisant fructifier votre épargne de façon sécurisée et transparente.`,
+L’entreprise présente également un engagement d’amélioration continue, d’initiative, de performance et de travail d’équipe. Consultez poweradd.com pour les informations et certificats à jour.`,
     image: img3,
-    date: "5 Juillet 2026",
+    date: "Qualité et service",
   },
 ];
 
@@ -114,7 +107,7 @@ export default function NewsDetailPage() {
           </p>
         ))}
       </div>
-      <img src={landscapeImg} alt="Powerade" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
+      <img src={landscapeImg} alt="Power Add — composants électroniques" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }
