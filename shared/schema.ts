@@ -243,6 +243,18 @@ export const platformSettings = pgTable("platform_settings", {
   modifiedAt: timestamp("modified_at"),
 });
 
+// Admin-managed content blocks displayed on the Company page
+export const companyContent = pgTable("company_content", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  body: text("body").notNull().default(""),
+  imageUrl: text("image_url"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at"),
+});
+
 // Admin audit log
 export const adminAuditLog = pgTable("admin_audit_log", {
   id: serial("id").primaryKey(),
@@ -406,6 +418,7 @@ export type Task = typeof tasks.$inferSelect;
 export type UserTask = typeof userTasks.$inferSelect;
 export type Transaction = typeof transactions.$inferSelect;
 export type PlatformSetting = typeof platformSettings.$inferSelect;
+export type CompanyContent = typeof companyContent.$inferSelect;
 export type AdminAuditLog = typeof adminAuditLog.$inferSelect;
 export type GiftCode = typeof giftCodes.$inferSelect;
 export type GiftCodeClaim = typeof giftCodeClaims.$inferSelect;

@@ -166,6 +166,14 @@ export const CONTENT_GROUPS: ContentGroup[] = [
     ],
   },
   {
+    id: "company",
+    title: "Page Compagnie",
+    fields: [
+      { key: "content_company_pageTitle", label: "Titre de la page", defaultValue: "Compagnie" },
+      { key: "content_company_intro", label: "Introduction", defaultValue: "Découvrez notre entreprise, nos plans d’investissement et les informations importantes de la plateforme.", multiline: true },
+    ],
+  },
+  {
     id: "service",
     title: "Page Service client",
     fields: [

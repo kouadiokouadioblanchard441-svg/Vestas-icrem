@@ -14,6 +14,7 @@ import AdminSettings from "@/components/admin/settings";
 import AdminGiftCodes from "@/components/admin/gift-codes";
 import AdminCountries from "@/components/admin/countries";
 import AdminContent from "@/components/admin/content";
+import AdminCompanyContent from "@/components/admin/company-content";
 import AdminTasks from "@/components/admin/tasks";
 
 export default function AdminPage() {
@@ -47,6 +48,7 @@ export default function AdminPage() {
               <TabsTrigger value="settings" data-testid="tab-settings">Parametres</TabsTrigger>
               <TabsTrigger value="tasks" data-testid="tab-tasks">Tâches</TabsTrigger>
               <TabsTrigger value="content" data-testid="tab-content">Contenu</TabsTrigger>
+              <TabsTrigger value="company" data-testid="tab-company">Compagnie</TabsTrigger>
             </TabsList>
           </div>
 
@@ -92,6 +94,10 @@ export default function AdminPage() {
 
           <TabsContent value="content" className="mt-4">
             <AdminContent />
+          </TabsContent>
+
+          <TabsContent value="company" className="mt-4">
+            <AdminCompanyContent />
           </TabsContent>
         </Tabs>
       </div>

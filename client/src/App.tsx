@@ -67,6 +67,7 @@ import ServicePage from "@/pages/service";
 import WalletPage from "@/pages/wallet";
 import ChangePasswordPage from "@/pages/change-password";
 import AboutPage from "@/pages/about";
+import CompanyPage from "@/pages/company";
 import RulesPage from "@/pages/rules";
 import GiftCodePage from "@/pages/gift-code";
 import TeamDetailsPage from "@/pages/team-details";
@@ -315,6 +316,11 @@ function RouterComponent() {
       <Route path="/about">
         <ProtectedRoute>
           <AboutPage />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/company">
+        <ProtectedRoute>
+          <CompanyPage />
         </ProtectedRoute>
       </Route>
       <Route path="/rules">

@@ -1116,6 +1116,15 @@ export async function registerRoutes(
     }
   });
 
+  // Company page content
+  app.get("/api/company-content", requireAuth, async (_req, res) => {
+    try {
+      res.json(await storage.getCompanyContent(true));
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   app.get("/api/settings/links", async (req, res) => {
     try {
       const settings = await storage.getSettings();
@@ -1677,6 +1686,63 @@ export async function registerRoutes(
         await storage.setSetting(key, value as string, req.session.userId);
       }
       await storage.logAdminAction(req.session.userId!, "update_settings", null, `Paramètres modifiés`);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // ─── Admin Company Content CRUD ───────────────────────────────────────────
+  app.get("/api/admin/company-content", requireAdmin, async (_req, res) => {
+    try {
+      res.json(await storage.getCompanyContent(false));
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/company-content", requireAdmin, async (req, res) => {
+    try {
+      const { title, body, imageUrl, sortOrder, isActive } = req.body;
+      if (!title || !String(title).trim()) {
+        return res.status(400).json({ message: "Le titre est requis" });
+      }
+      const content = await storage.createCompanyContent({
+        title: String(title).trim(),
+        body: String(body || ""),
+        imageUrl: imageUrl || null,
+        sortOrder: Number.isFinite(Number(sortOrder)) ? Number(sortOrder) : 0,
+        isActive: isActive !== false,
+      });
+      await storage.logAdminAction(req.session.userId!, "create_company_content", null, `Bloc compagnie "${content.title}" créé`);
+      res.json(content);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.patch("/api/admin/company-content/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id as string);
+      const data = { ...req.body };
+      if (data.title !== undefined && !String(data.title).trim()) {
+        return res.status(400).json({ message: "Le titre est requis" });
+      }
+      if (data.title !== undefined) data.title = String(data.title).trim();
+      if (data.sortOrder !== undefined) data.sortOrder = Number(data.sortOrder) || 0;
+      const content = await storage.updateCompanyContent(id, data);
+      await storage.logAdminAction(req.session.userId!, "update_company_content", null, `Bloc compagnie "${content.title}" modifié`);
+      res.json(content);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/company-content/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id as string);
+      await storage.deleteCompanyContent(id);
+      await storage.logAdminAction(req.session.userId!, "delete_company_content", null, `Bloc compagnie ${id} supprimé`);
       res.json({ success: true });
     } catch (error: any) {
       res.status(400).json({ message: error.message });

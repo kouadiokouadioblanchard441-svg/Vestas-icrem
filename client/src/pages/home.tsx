@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { NEWS_ARTICLES } from "@/pages/news-detail";
 import { getContent } from "@/lib/content";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Building2, ChevronLeft, ChevronRight } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
 import { LanguagePicker } from "@/components/language-picker";
 import { useI18n } from "@/lib/i18n";
@@ -250,6 +250,12 @@ export default function HomePage() {
               <img src={iconService} alt={t.customerService} className="w-8 h-8 object-contain" style={DARK_ICON} />
             </div>
             <span className="text-gray-700 text-xs font-medium">{t.customerService}</span>
+          </button>
+          <button onClick={() => navigate("/company")} className="flex flex-col items-center gap-2" data-testid="button-company">
+            <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
+              <Building2 className="w-8 h-8" style={{ color: "#315aab" }} />
+            </div>
+            <span className="text-gray-700 text-xs font-medium">Compagnie</span>
           </button>
         </div>
       </div>

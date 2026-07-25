@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { users, products, tasks, paymentChannels, platformSettings, countries, stakingProducts } from "@shared/schema";
+import { users, products, tasks, paymentChannels, platformSettings, companyContent, countries, stakingProducts } from "@shared/schema";
 import bcrypt from "bcryptjs";
 import { eq, sql } from "drizzle-orm";
 
@@ -18,6 +18,44 @@ export async function seed() {
   await db.execute(sql`
     CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire")
   `);
+
+  // Company page content blocks (admin-editable)
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS "company_content" (
+      "id" serial PRIMARY KEY,
+      "title" text NOT NULL,
+      "body" text NOT NULL DEFAULT '',
+      "image_url" text,
+      "sort_order" integer NOT NULL DEFAULT 0,
+      "is_active" boolean NOT NULL DEFAULT true,
+      "created_at" timestamp NOT NULL DEFAULT now(),
+      "updated_at" timestamp
+    )
+  `);
+  const existingCompanyContent = await db.select({ id: companyContent.id }).from(companyContent).limit(1);
+  if (existingCompanyContent.length === 0) {
+    await db.insert(companyContent).values([
+      {
+        title: "Qui sommes-nous ?",
+        body: "Découvrez notre entreprise, notre vision et les solutions que nous développons pour accompagner nos clients.",
+        sortOrder: 1,
+        isActive: true,
+      },
+      {
+        title: "Nos plans d'investissement",
+        body: "Retrouvez ici les informations sur nos plans d'investissement, leurs conditions et les opportunités proposées par la plateforme.",
+        sortOrder: 2,
+        isActive: true,
+      },
+      {
+        title: "Notre engagement",
+        body: "Nous mettons l'accent sur la transparence, la qualité du service et l'accompagnement de chaque membre.",
+        sortOrder: 3,
+        isActive: true,
+      },
+    ]);
+    console.log("Company content initialized");
+  }
 
   // Ensure countries table exists
   await db.execute(sql`
