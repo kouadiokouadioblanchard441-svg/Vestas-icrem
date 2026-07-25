@@ -133,7 +133,7 @@ export default function WalletPage() {
   /* ─── ADD FORM VIEW ─── */
   if (showForm) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+      <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
 
         {/* Header — même style que la liste */}
         <div className="flex items-center px-4 pt-10 pb-4">
@@ -279,7 +279,7 @@ export default function WalletPage() {
 
   /* ─── LIST VIEW ─── */
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
 
       {/* Header */}
       <div className="flex items-center px-4 pt-10 pb-4">

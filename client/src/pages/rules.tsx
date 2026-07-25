@@ -35,7 +35,7 @@ export default function RulesPage() {
   const rS5b3 = getContent(settings, "content_rulespage_s5b3", "Le service client officiel ne vous demandera jamais votre mot de passe.");
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
       <header className="flex items-center px-4 py-3 border-b bg-white">
         <Link href="/account">
           <button className="p-1" data-testid="button-back">

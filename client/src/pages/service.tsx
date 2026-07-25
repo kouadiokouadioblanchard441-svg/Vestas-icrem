@@ -133,7 +133,7 @@ export default function ServicePage() {
   const links = allLinks.filter(l => l.enabled);
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
 
       {/* ── Header ── */}
       <div className="flex items-center bg-white px-4 py-3 shadow-sm">

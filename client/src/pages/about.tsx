@@ -20,7 +20,7 @@ export default function AboutPage() {
   const s4Text = getContent(settings, "content_about_s4Text", "Power Add indique être certifiée ISO 9001 depuis 1997 et ISO 14001 depuis 2006. L’entreprise met en avant l’amélioration continue, la qualité, la performance et le travail d’équipe.");
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
       <header className="flex items-center px-4 py-3 border-b bg-white">
         <Link href="/account">
           <button className="p-1" data-testid="button-back">

@@ -136,7 +136,7 @@ export default function WithdrawalPage() {
 
   if (walletsLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "#87CEEB" }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#315aab" }}>
         <Loader2 className="w-8 h-8 animate-spin text-[#F59E0B]" />
       </div>
     );
@@ -148,7 +148,7 @@ export default function WithdrawalPage() {
   const hasWallets = wallets.length > 0;
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
 
       {/* ── Header ── */}
       <header className="flex items-center justify-between px-4 py-4 bg-white border-b border-gray-100">

@@ -39,7 +39,7 @@ export default function OrdersPage() {
   ) || [];
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
       <header className="px-4 py-3 border-b">
         <h1 className="text-lg font-semibold text-gray-800 text-center">{headerTitle}</h1>
       </header>

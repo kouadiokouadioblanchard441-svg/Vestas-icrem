@@ -84,7 +84,7 @@ export default function TeamDetailsPage() {
   const totalInvested = activeData.totalInvested;
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
 
       {/* ── Header ── */}
       <div className="bg-white flex items-center px-4 py-4 shadow-sm">

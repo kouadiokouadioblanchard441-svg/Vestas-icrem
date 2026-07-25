@@ -69,7 +69,7 @@ export default function NewsDetailPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
 
       {/* Hero image */}
       <div className="relative w-full" style={{ height: 240 }}>

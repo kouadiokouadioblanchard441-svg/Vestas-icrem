@@ -182,7 +182,7 @@ function Screen({ children }: { children: React.ReactNode }) {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-6"
-      style={{ background: "#87CEEB" }}
+      style={{ background: "#315aab" }}
     >
       <div className="bg-white rounded-3xl shadow-xl p-8 max-w-sm w-full text-center space-y-5">
         {children}

@@ -90,7 +90,7 @@ export default function AccountPage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
       <div className="flex-1 overflow-y-auto pb-16">
 
         {/* ── Profile top section (exhibition photo background) ── */}

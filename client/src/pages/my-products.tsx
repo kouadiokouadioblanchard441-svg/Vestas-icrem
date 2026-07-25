@@ -39,7 +39,7 @@ export default function MyProductsPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-full" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-full" style={{ background: "#315aab" }}>
       <div className="flex-1 overflow-y-auto pb-16">
 
         {/* Hero banner with back button */}

@@ -54,7 +54,7 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
 
       {/* ── Green header ── */}
       <header

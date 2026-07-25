@@ -151,7 +151,7 @@ export default function DepositPage() {
   if (!user) return null;
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
 
       {/* ── STEP 1 : Saisir le montant ── */}
       {step === "amount" && (

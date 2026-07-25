@@ -65,7 +65,7 @@ export default function CheckinPage() {
   const rule2 = getContent(settings, "content_checkin_rule2", "2. Connectez-vous une fois par jour pour accumuler des points.");
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
       <div className="flex-1 overflow-y-auto pb-16">
 
         {/* Header */}

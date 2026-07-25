@@ -88,7 +88,7 @@ export default function TasksPage() {
   const claimAllButton = getContent(settings, "content_tasks_claimAllButton", "Tout réclamer");
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
 
       {/* Hero Section — tall enough so bottom text clears the stats card overlap */}
       <div className="relative overflow-hidden" style={{ height: "260px" }}>

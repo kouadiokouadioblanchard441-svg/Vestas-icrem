@@ -38,7 +38,7 @@ export default function SalaryBonusPage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#87CEEB" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
 
       {/* ── Header ── */}
       <div className="flex items-center gap-3 px-4 pt-6 pb-4 bg-white shadow-sm">
