@@ -62,8 +62,8 @@ export default function NewsDetailPage() {
 
   if (!article) {
     return (
-      <div className="flex flex-col min-h-full items-center justify-center" style={{ background: "#f0f2f5" }}>
-        <p className="text-gray-400">Article introuvable</p>
+      <div className="flex flex-col min-h-full items-center justify-center" style={{ background: "#315aab" }}>
+        <p className="text-white/60">Article introuvable</p>
       </div>
     );
   }
@@ -71,42 +71,45 @@ export default function NewsDetailPage() {
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
 
-      {/* Hero image */}
-      <div className="relative w-full" style={{ height: 240 }}>
-        <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 100%)" }} />
-
-        {/* Back button */}
+      {/* Header blanc — même style que À propos */}
+      <header className="flex items-center px-4 py-3 border-b bg-white">
         <button
           onClick={() => navigate("/")}
-          className="absolute top-4 left-4 p-2 rounded-full backdrop-blur-sm"
-          style={{ background: "rgba(255,255,255,0.20)" }}
+          className="p-1"
           data-testid="button-back"
         >
-          <ChevronLeft className="w-5 h-5 text-white" />
+          <ChevronLeft className="w-6 h-6 text-gray-600" />
         </button>
-
-        {/* Date badge */}
-        <span
-          className="absolute top-4 right-4 text-white text-xs font-semibold px-3 py-1 rounded-full"
-          style={{ background: "rgba(0,166,81,0.85)" }}
-        >
-          {article.date}
-        </span>
-      </div>
-
-      {/* Content card */}
-      <div className="mx-3 -mt-6 relative z-10 bg-white rounded-2xl shadow-md px-4 pt-5 pb-6">
-        <h1 className="text-gray-900 font-extrabold text-base leading-snug mb-3">
+        <h1 className="flex-1 text-center text-lg font-semibold text-gray-800 pr-6 line-clamp-1">
           {article.title}
         </h1>
-        <div className="w-12 h-1 rounded-full mb-4" style={{ background: "#F59E0B" }} />
+      </header>
+
+      {/* Contenu directement sur le fond bleu */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+
+        {/* Image de l'article */}
+        <img
+          src={article.image}
+          alt={article.title}
+          className="w-full rounded-2xl object-cover shadow-md"
+          style={{ height: 200 }}
+        />
+
+        {/* Titre + date */}
+        <div className="space-y-2">
+          <h2 className="text-xl font-bold text-[#F59E0B]">{article.title}</h2>
+          <p className="text-white/50 text-xs font-semibold">{article.date}</p>
+        </div>
+
+        {/* Corps de l'article */}
         {article.body.split("\n\n").map((paragraph, i) => (
-          <p key={i} className="text-gray-600 text-sm leading-relaxed mb-3">
+          <p key={i} className="text-white/90 leading-relaxed">
             {paragraph}
           </p>
         ))}
       </div>
+
       <img src={landscapeImg} alt="Power Add — composants électroniques" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
