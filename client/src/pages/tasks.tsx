@@ -132,19 +132,19 @@ export default function TasksPage() {
 
       {/* Stats Row — overlaps bottom of hero */}
       <div className="mx-4 -mt-10 z-10 relative">
-        <div className="bg-white rounded-2xl shadow-lg p-4 flex items-center justify-between">
+        <div className="bg-white rounded-2xl shadow-lg p-3 flex items-center justify-between">
           <div className="flex-1 text-center border-r border-gray-100">
-            <p className="text-[#16A34A] text-xl font-bold" data-testid="text-total-rewards">
+            <p className="text-[#E8320A] text-lg font-bold" data-testid="text-total-rewards">
               {totalTaskRewards.toLocaleString()}
             </p>
             <p className="text-gray-500 text-[11px] mt-0.5">{currency} gagnés</p>
           </div>
           <div className="flex-1 text-center border-r border-gray-100">
-            <p className="text-[#16A34A] text-xl font-bold">{completedCount}</p>
+            <p className="text-[#E8320A] text-lg font-bold">{completedCount}</p>
             <p className="text-gray-500 text-[11px] mt-0.5">Terminées</p>
           </div>
           <div className="flex-1 text-center">
-            <p className="text-[#16A34A] text-xl font-bold">{claimableCount}</p>
+            <p className="text-[#E8320A] text-lg font-bold">{claimableCount}</p>
             <p className="text-gray-500 text-[11px] mt-0.5">À réclamer</p>
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function TasksPage() {
       <div className="mx-4 mt-4 mb-16">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-[#16A34A]" />
+            <Trophy className="w-4 h-4 text-[#E8320A]" />
             <h2 className="text-gray-800 font-bold text-sm">{tiersTitle}</h2>
           </div>
           {claimableCount > 0 && (
@@ -166,7 +166,7 @@ export default function TasksPage() {
                 }
               }}
               disabled={claimMutation.isPending}
-              className="text-xs text-[#16A34A] font-semibold bg-red-50 px-3 py-1.5 rounded-full"
+              className="text-xs text-[#E8320A] font-semibold bg-red-50 px-3 py-1.5 rounded-full"
               data-testid="button-claim-rewards"
             >
               {claimAllButton} ({claimableCount})
@@ -175,13 +175,13 @@ export default function TasksPage() {
         </div>
 
         {isLoading ? (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {Array(6).fill(0).map((_, i) => (
-              <Skeleton key={i} className="h-28 w-full rounded-2xl" />
+              <Skeleton key={i} className="h-20 w-full rounded-xl" />
             ))}
           </div>
         ) : tasks && tasks.length > 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {tasks.map((task, index) => {
               const tier = TIER_COLORS[index] || TIER_COLORS[0];
               const label = TIER_LABELS[index] || `Palier ${index + 1}`;
@@ -191,26 +191,26 @@ export default function TasksPage() {
               return (
                 <div
                   key={task.id}
-                  className={`bg-white rounded-2xl overflow-hidden shadow-sm border ${
+                  className={`bg-white rounded-xl overflow-hidden shadow-sm border ${
                     task.isCompleted
-                      ? "border-green-200"
+                      ? "border-red-200"
                       : task.canClaim
-                      ? "border-[#16A34A]/40"
+                      ? "border-[#E8320A]/40"
                       : "border-gray-100"
                   }`}
                   data-testid={`task-item-${task.id}`}
                 >
                   {/* Tier Header */}
-                  <div className={`bg-gradient-to-r ${tier.bg} px-4 py-2.5 flex items-center justify-between`}>
+                  <div className={`bg-gradient-to-r ${tier.bg} px-3 py-1.5 flex items-center justify-between`}>
                     <span className="text-white font-bold text-sm">{label}</span>
                     {task.isCompleted && <CheckCircle2 className="w-4 h-4 text-white" />}
                   </div>
 
                   {/* Task Body */}
-                  <div className="p-3 flex items-center gap-3">
+                  <div className="p-2.5 flex items-center gap-2.5">
                     {/* Icon */}
-                    <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gray-50 flex items-center justify-center">
-                      <img src={icon} alt={label} className="w-12 h-12 object-contain" />
+                    <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gray-50 flex items-center justify-center">
+                      <img src={icon} alt={label} className="w-8 h-8 object-contain" />
                     </div>
 
                     {/* Info */}
@@ -220,7 +220,7 @@ export default function TasksPage() {
                         <span className="font-bold text-gray-900">{task.requiredInvites}</span>{" "}
                         personnes à recharger
                       </p>
-                      <p className="text-[#16A34A] font-bold text-base">
+                      <p className="text-[#E8320A] font-bold text-sm">
                         {task.reward.toLocaleString()} {currency}
                       </p>
 
@@ -235,7 +235,7 @@ export default function TasksPage() {
                         <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all duration-500 ${
-                              task.isCompleted ? "bg-green-500" : "bg-[#16A34A]"
+                              task.isCompleted ? "bg-[#E8320A]" : "bg-[#E8320A]"
                             }`}
                             style={{ width: `${progress}%` }}
                           />
@@ -246,14 +246,14 @@ export default function TasksPage() {
                     {/* Action */}
                     <div className="flex-shrink-0">
                       {task.isCompleted ? (
-                        <span className="bg-green-100 text-green-700 text-[10px] font-semibold px-2.5 py-1.5 rounded-full block text-center">
+                        <span className="bg-red-50 text-[#E8320A] text-[10px] font-semibold px-2.5 py-1.5 rounded-full block text-center">
                           ✓ Fait
                         </span>
                       ) : task.canClaim ? (
                         <button
                           onClick={() => !claimMutation.isPending && claimMutation.mutate(task.id)}
                           disabled={claimMutation.isPending}
-                          className="bg-[#16A34A] text-white text-[11px] font-semibold px-3 py-1.5 rounded-full active:scale-95 transition-transform shadow-sm"
+                          className="bg-[#E8320A] text-white text-[11px] font-semibold px-3 py-1.5 rounded-full active:scale-95 transition-transform shadow-sm"
                           data-testid={`button-claim-${task.id}`}
                         >
                           {claimMutation.isPending ? (
