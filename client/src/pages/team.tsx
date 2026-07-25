@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { getCountryByCode } from "@/lib/countries";
 import { useLocation } from "wouter";
-import { Copy, Users, ChevronRight, TrendingUp, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
+import { Copy, Users, ChevronRight } from "lucide-react";
 import { getContent } from "@/lib/content";
 
 import teamIcon from "@assets/1244758_1783246767217.png";
@@ -132,37 +132,40 @@ export default function TeamPage() {
       <div className="px-3 pt-3 space-y-3">
 
         {/* ── Invitation ── */}
-        <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: "0 4px 20px rgba(49,90,171,0.18)" }}>
-          {/* En-tête avec bordure gauche rouge */}
-          <div className="px-4 py-3 flex items-center gap-3" style={{ borderLeft: `4px solid ${RED}` }}>
-            <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: `${BLUE}15` }}>
-              <img src={teamIcon} alt="" className="w-4 h-4 object-contain" style={{ filter: "brightness(0) saturate(100%) invert(25%) sepia(90%) saturate(500%) hue-rotate(200deg)" }} />
-            </div>
-            <div>
-              <p className="font-extrabold text-sm" style={{ color: BLUE }}>Code &amp; Lien d'invitation</p>
-              <p className="text-gray-400 text-[10px]">Partagez pour inviter vos filleuls</p>
-            </div>
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div
+            className="px-4 py-2.5 flex items-center gap-2"
+            style={{ background: `linear-gradient(135deg, ${BLUE} 0%, ${BLUE_DARK} 100%)` }}
+          >
+            <img
+              src={teamIcon}
+              alt=""
+              className="w-4 h-4 object-contain"
+              style={{ filter: "brightness(0) invert(1)" }}
+            />
+            <p className="text-white font-bold text-sm">Code &amp; Lien d'invitation</p>
           </div>
-
-          <div className="h-px" style={{ background: `linear-gradient(90deg, ${RED}, ${BLUE}40, transparent)` }} />
 
           <div className="px-4 py-4 space-y-3">
             {/* Code */}
             <div>
-              <p className="text-[11px] font-semibold mb-1.5" style={{ color: BLUE }}>Code d'invitation</p>
+              <p className="text-gray-400 text-[11px] mb-1.5 font-medium">Inviter :</p>
               <div className="flex items-center gap-2">
-                <div className="flex-1 min-w-0 px-3 py-3 rounded-xl flex items-center gap-2"
-                  style={{ background: `${BLUE}0d`, border: `1.5px solid ${BLUE}25` }}>
-                  <div className="w-2 h-2 rounded-full shrink-0" style={{ background: BLUE }} />
+                <div
+                  className="flex-1 min-w-0 px-3 py-2.5 rounded-xl"
+                  style={{ background: "#eef2fa", border: `1.5px solid ${BLUE}30` }}
+                >
                   <p className="font-bold text-sm truncate" style={{ color: BLUE }} data-testid="text-referral-code">
                     {user.referralCode}
                   </p>
                 </div>
-                <button onClick={copyCode}
-                  className="px-4 py-3 rounded-xl text-white text-xs font-bold shrink-0 flex items-center gap-1.5"
-                  style={{ background: `linear-gradient(135deg, ${RED}, #c0101e)`, boxShadow: `0 3px 10px ${RED}50` }}
-                  data-testid="button-copy-code">
-                  <Copy size={11} /> Copier
+                <button
+                  onClick={copyCode}
+                  className="px-4 py-2.5 rounded-xl text-white text-xs font-bold shrink-0 flex items-center gap-1"
+                  style={{ background: RED }}
+                  data-testid="button-copy-code"
+                >
+                  <Copy size={12} /> Copier
                 </button>
               </div>
             </div>
@@ -171,19 +174,23 @@ export default function TeamPage() {
 
             {/* Lien */}
             <div>
-              <p className="text-[11px] font-semibold mb-1.5" style={{ color: BLUE }}>Lien d'invitation</p>
+              <p className="text-gray-400 text-[11px] mb-1.5 font-medium">Inviter :</p>
               <div className="flex items-center gap-2">
-                <div className="flex-1 min-w-0 px-3 py-3 rounded-xl"
-                  style={{ background: `${BLUE}0d`, border: `1.5px solid ${BLUE}25` }}>
+                <div
+                  className="flex-1 min-w-0 px-3 py-2.5 rounded-xl"
+                  style={{ background: "#eef2fa", border: `1.5px solid ${BLUE}30` }}
+                >
                   <p className="text-xs truncate" style={{ color: BLUE_DARK }} data-testid="text-referral-link">
                     {referralLink}
                   </p>
                 </div>
-                <button onClick={copyLink}
-                  className="px-4 py-3 rounded-xl text-white text-xs font-bold shrink-0 flex items-center gap-1.5"
-                  style={{ background: `linear-gradient(135deg, ${RED}, #c0101e)`, boxShadow: `0 3px 10px ${RED}50` }}
-                  data-testid="button-copy-link">
-                  <Copy size={11} /> Copier
+                <button
+                  onClick={copyLink}
+                  className="px-4 py-2.5 rounded-xl text-white text-xs font-bold shrink-0 flex items-center gap-1"
+                  style={{ background: RED }}
+                  data-testid="button-copy-link"
+                >
+                  <Copy size={12} /> Copier
                 </button>
               </div>
             </div>
@@ -244,70 +251,47 @@ export default function TeamPage() {
 
         {/* ── Niveaux ── */}
         {levels.map((lvl, idx) => (
-          <div key={idx} className="bg-white rounded-2xl overflow-hidden"
-            style={{ boxShadow: "0 4px 20px rgba(49,90,171,0.14)" }}>
-
-            {/* En-tête niveau */}
-            <div className="px-4 py-3 flex items-center justify-between"
-              style={{ background: `linear-gradient(135deg, ${BLUE}08, ${BLUE}14)`, borderBottom: `1px solid ${BLUE}18` }}>
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-full flex items-center justify-center font-extrabold text-xs text-white"
-                  style={{ background: `linear-gradient(135deg, ${BLUE}, ${BLUE_DARK})` }}>
-                  {idx + 1}
-                </div>
-                <p className="font-extrabold text-sm" style={{ color: BLUE }}>{lvl.label}</p>
-              </div>
-              {/* Badge taux */}
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold text-white"
-                style={{ background: `linear-gradient(135deg, ${RED}, #c0101e)` }}>
-                {lvl.rate}
-              </span>
+          <div key={idx} className="bg-white rounded-2xl shadow-md overflow-hidden">
+            {/* Titre */}
+            <div className="relative px-4 py-3 text-center">
+              <p className="text-gray-800 font-bold text-sm">{lvl.label}</p>
+              <div
+                className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full"
+                style={{ width: 48, height: 2, background: RED }}
+              />
             </div>
 
-            {/* 3 colonnes stats */}
-            <div className="grid grid-cols-3 py-4 px-1">
+            <div className="h-px bg-gray-100" />
 
-              {/* Argent rechargé */}
-              <div className="flex flex-col items-center gap-1.5 px-2"
-                style={{ borderRight: `1px solid ${BLUE}18` }}>
-                <div className="w-7 h-7 rounded-full flex items-center justify-center"
-                  style={{ background: `${BLUE}12` }}>
-                  <ArrowDownCircle size={14} style={{ color: BLUE }} />
-                </div>
-                <p className="text-gray-400 text-[10px] text-center leading-tight">Argent rechargé</p>
+            {/* 3 colonnes */}
+            <div className="grid grid-cols-3 py-4">
+              <div className="flex flex-col items-center px-2 border-r border-gray-100">
+                <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
+                  Argent{"\n"}rechargé
+                </p>
                 <p className="font-extrabold text-sm" style={{ color: BLUE }}>
                   {Number(lvl.recharged).toLocaleString("fr-FR")}
                 </p>
-                <p className="text-gray-400 text-[10px]">{currency}</p>
+                <p className="text-gray-400 text-[10px] mt-0.5">{currency}</p>
               </div>
 
-              {/* Membres */}
-              <div className="flex flex-col items-center gap-1.5 px-2"
-                style={{ borderRight: `1px solid ${BLUE}18` }}>
-                <div className="w-7 h-7 rounded-full flex items-center justify-center"
-                  style={{ background: "#6b728012" }}>
-                  <Users size={14} className="text-gray-500" />
-                </div>
-                <p className="text-gray-400 text-[10px] text-center leading-tight">Total personnes</p>
-                <p className="font-extrabold text-sm text-gray-800">
+              <div className="flex flex-col items-center px-2 border-r border-gray-100">
+                <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
+                  Nombre total{"\n"}de personnes
+                </p>
+                <p className="font-extrabold text-sm text-gray-900">
                   {lvl.invested}/{lvl.total}
                 </p>
-                <p className="text-gray-400 text-[10px]">actifs/total</p>
               </div>
 
-              {/* Commission */}
-              <div className="flex flex-col items-center gap-1.5 px-2">
-                <div className="w-7 h-7 rounded-full flex items-center justify-center"
-                  style={{ background: `${RED}12` }}>
-                  <TrendingUp size={14} style={{ color: RED }} />
-                </div>
-                <p className="text-gray-400 text-[10px] text-center leading-tight">Commission</p>
+              <div className="flex flex-col items-center px-2">
+                <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
+                  Taux de{"\n"}commission
+                </p>
                 <p className="font-extrabold text-sm" style={{ color: RED }}>
                   {lvl.rate}
                 </p>
-                <p className="text-gray-400 text-[10px]">par dépôt</p>
               </div>
-
             </div>
           </div>
         ))}
