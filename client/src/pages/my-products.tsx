@@ -4,7 +4,7 @@ import { getCountryByCode } from "@/lib/countries";
 import { ChevronLeft, Loader2, Wind } from "lucide-react";
 import { Link } from "wouter";
 
-import heroBanner from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
+import heroBanner from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
 import iconWallet from "@assets/portefeuille-chaud-3d-icon-png-download-9878550_1783248791774.png";
 import iconRevenu from "@assets/3309927_1783248791847.png";

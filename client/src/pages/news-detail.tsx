@@ -5,7 +5,7 @@ import { ChevronLeft } from "lucide-react";
 const img1 = "/poweradd/poweradd-news-cmef.jpg";
 const img2 = "/poweradd/poweradd-factory-lines.jpg";
 const img3 = "/poweradd/poweradd-factory-opening.jpg";
-const landscapeImg = "/poweradd/poweradd-intl-exhibition.jpg";
+const landscapeImg = "/poweradd/poweradd-powerbank-banner.jpg";
 
 export const NEWS_ARTICLES = [
   {

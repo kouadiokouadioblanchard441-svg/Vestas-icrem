@@ -7,7 +7,7 @@ import { getContent } from "@/lib/content";
 import { ChevronLeft, Loader2, Gift } from "lucide-react";
 import { Link } from "wouter";
 import robotGift from "@assets/file_00000000168c7246a166e7a2da1eb7ba_1773319220043.png";
-import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
+import landscapeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 
 interface BonusStatus {
   canClaim: boolean;
