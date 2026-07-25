@@ -323,7 +323,7 @@ export async function registerRoutes(
 
   app.post("/api/products/:id/purchase", requireAuth, async (req, res) => {
     try {
-      const productId = parseInt(req.params.id);
+      const productId = parseInt(req.params.id as string);
       const product = await storage.getProduct(productId);
       
       if (!product) {
@@ -343,7 +343,7 @@ export async function registerRoutes(
 
   app.post("/api/products/:id/claim-free", requireAuth, async (req, res) => {
     try {
-      const productId = parseInt(req.params.id);
+      const productId = parseInt(req.params.id as string);
       const product = await storage.getProduct(productId);
       
       if (!product || !product.isFree) {
@@ -525,7 +525,7 @@ export async function registerRoutes(
 
   app.post("/api/staking/purchase/:id", requireAuth, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const staking = await storage.purchaseStaking(req.session.userId!, id);
       res.json(staking);
     } catch (error: any) {
@@ -576,7 +576,7 @@ export async function registerRoutes(
 
   app.put("/api/admin/staking/products/:id", requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const { name, description, price, returnAmount, lockDays, launchDate, imageUrl, isActive } = req.body;
       const sp = await storage.updateStakingProduct(id, {
         name, description,
@@ -594,7 +594,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/staking/products/:id", requireAdmin, async (req, res) => {
     try {
-      await storage.deleteStakingProduct(parseInt(req.params.id));
+      await storage.deleteStakingProduct(parseInt(req.params.id as string));
       res.json({ success: true });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -655,7 +655,7 @@ export async function registerRoutes(
 
   app.put("/api/admin/payment-numbers/:id", requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const { ownerName, phone, operatorName, country, logoUrl, isActive } = req.body;
       const num = await storage.updatePaymentNumber(id, { ownerName, phone, operatorName, country, logoUrl, isActive });
       res.json(num);
@@ -666,7 +666,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/payment-numbers/:id", requireAdmin, async (req, res) => {
     try {
-      await storage.deletePaymentNumber(parseInt(req.params.id));
+      await storage.deletePaymentNumber(parseInt(req.params.id as string));
       res.json({ success: true });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -719,7 +719,7 @@ export async function registerRoutes(
   // Verify deposit status
   app.get("/api/deposits/:id/verify", requireAuth, async (req, res) => {
     try {
-      const depositId = parseInt(req.params.id);
+      const depositId = parseInt(req.params.id as string);
       const deposit = await storage.getDeposit(depositId);
       if (!deposit) return res.status(404).json({ message: "Depot non trouve" });
       if (deposit.userId !== req.session.userId) return res.status(403).json({ message: "Acces refuse" });
@@ -862,7 +862,7 @@ export async function registerRoutes(
 
   app.delete("/api/wallets/:id", requireAuth, async (req, res) => {
     try {
-      await storage.deleteWallet(parseInt(req.params.id));
+      await storage.deleteWallet(parseInt(req.params.id as string));
       res.json({ success: true });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -871,7 +871,7 @@ export async function registerRoutes(
 
   app.patch("/api/wallets/:id/default", requireAuth, async (req, res) => {
     try {
-      await storage.setDefaultWallet(req.session.userId!, parseInt(req.params.id));
+      await storage.setDefaultWallet(req.session.userId!, parseInt(req.params.id as string));
       res.json({ success: true });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -909,7 +909,7 @@ export async function registerRoutes(
 
   app.post("/api/tasks/:id/claim", requireAuth, async (req, res) => {
     try {
-      await storage.claimTask(req.session.userId!, parseInt(req.params.id));
+      await storage.claimTask(req.session.userId!, parseInt(req.params.id as string));
       res.json({ success: true });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -1084,7 +1084,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/deposits/:id/approve", requireAdmin, async (req, res) => {
     try {
-      const deposit = await storage.updateDeposit(parseInt(req.params.id), {
+      const deposit = await storage.updateDeposit(parseInt(req.params.id as string), {
         status: "approved",
         processedAt: new Date(),
         processedBy: req.session.userId,
@@ -1116,7 +1116,7 @@ export async function registerRoutes(
   app.post("/api/admin/deposits/:id/reject", requireAdmin, async (req, res) => {
     try {
       const { ban } = req.body;
-      const deposit = await storage.updateDeposit(parseInt(req.params.id), {
+      const deposit = await storage.updateDeposit(parseInt(req.params.id as string), {
         status: "rejected",
         processedAt: new Date(),
         processedBy: req.session.userId,
@@ -1176,7 +1176,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/withdrawals/:id/approve", requireAdmin, async (req, res) => {
     try {
-      const withdrawalId = parseInt(req.params.id);
+      const withdrawalId = parseInt(req.params.id as string);
       const existingWithdrawal = await storage.getWithdrawals();
       const withdrawalData = existingWithdrawal.find(w => w.id === withdrawalId);
       
@@ -1199,7 +1199,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/withdrawals/:id/reject", requireAdmin, async (req, res) => {
     try {
-      const withdrawal = await storage.updateWithdrawal(parseInt(req.params.id), {
+      const withdrawal = await storage.updateWithdrawal(parseInt(req.params.id as string), {
         status: "rejected",
         processedAt: new Date(),
         processedBy: req.session.userId,
@@ -1239,7 +1239,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/users/:id", requireAdmin, async (req, res) => {
     try {
-      const userId = parseInt(req.params.id);
+      const userId = parseInt(req.params.id as string);
       const adminUser = await storage.getUser(req.session.userId!);
       const targetUser = await storage.getUser(userId);
 
@@ -1266,7 +1266,7 @@ export async function registerRoutes(
 
   app.get("/api/admin/users/:id/team", requireAdmin, async (req, res) => {
     try {
-      const userId = parseInt(req.params.id);
+      const userId = parseInt(req.params.id as string);
       const team = await storage.getDetailedTeam(userId);
       res.json(team);
     } catch (error: any) {
@@ -1276,7 +1276,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/users/:id/:action", requireAdmin, async (req, res) => {
     try {
-      const userId = parseInt(req.params.id);
+      const userId = parseInt(req.params.id as string);
       const action = req.params.action;
       const { value } = req.body;
       const adminUser = await storage.getUser(req.session.userId!);
@@ -1395,7 +1395,7 @@ export async function registerRoutes(
 
   app.get("/api/admin/users/:id/products", requireAdmin, async (req, res) => {
     try {
-      const userId = parseInt(req.params.id);
+      const userId = parseInt(req.params.id as string);
       const userProductsList = await storage.getAllUserProducts(userId);
       res.json(userProductsList.map(up => ({
         id: up.userProduct.id,
@@ -1442,7 +1442,7 @@ export async function registerRoutes(
 
   app.patch("/api/admin/products/:id", requireAdmin, async (req, res) => {
     try {
-      const product = await storage.updateProduct(parseInt(req.params.id), req.body);
+      const product = await storage.updateProduct(parseInt(req.params.id as string), req.body);
       await storage.logAdminAction(req.session.userId!, "update_product", null, `Produit ${product.id} modifié`);
       res.json(product);
     } catch (error: any) {
@@ -1452,7 +1452,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/products/:id", requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       await storage.deleteProduct(id);
       await storage.logAdminAction(req.session.userId!, "delete_product", null, `Produit ${id} supprimé`);
       res.json({ success: true });
@@ -1494,7 +1494,7 @@ export async function registerRoutes(
 
   app.patch("/api/admin/tasks/:id", requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const data = req.body;
       if (data.requiredInvites != null) data.requiredInvites = parseInt(data.requiredInvites);
       if (data.reward != null) data.reward = parseInt(data.reward);
@@ -1509,7 +1509,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/tasks/:id", requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       await storage.deleteTask(id);
       await storage.logAdminAction(req.session.userId!, "delete_task", null, `Tâche ${id} supprimée`);
       res.json({ success: true });
@@ -1542,7 +1542,7 @@ export async function registerRoutes(
 
   app.patch("/api/admin/channels/:id", requireAdmin, async (req, res) => {
     try {
-      const channel = await storage.updatePaymentChannel(parseInt(req.params.id), {
+      const channel = await storage.updatePaymentChannel(parseInt(req.params.id as string), {
         ...req.body,
         modifiedBy: req.session.userId,
       });
@@ -1555,7 +1555,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/channels/:id", requireAdmin, async (req, res) => {
     try {
-      await storage.deletePaymentChannel(parseInt(req.params.id));
+      await storage.deletePaymentChannel(parseInt(req.params.id as string));
       await storage.logAdminAction(req.session.userId!, "delete_channel", null, `Canal supprimé`);
       res.json({ success: true });
     } catch (error: any) {
@@ -1649,7 +1649,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/gift-codes/:id", requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       await storage.deleteGiftCode(id);
       await storage.logAdminAction(req.session.userId!, "delete_gift_code", null, `Code cadeau supprimé: #${id}`);
       res.json({ success: true });
@@ -1749,7 +1749,7 @@ export async function registerRoutes(
 
   app.put("/api/admin/countries/:id", requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const { name, currency, phonePrefix, operators, isActive, autoPaymentEnabled } = req.body;
       const updateData: any = {};
       if (name !== undefined) updateData.name = name;
@@ -1767,7 +1767,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/countries/:id", requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       await storage.deleteCountry(id);
       res.json({ success: true });
     } catch (error: any) {
@@ -1798,7 +1798,7 @@ export async function registerRoutes(
 
   app.post("/api/banker/deposits/:id/approve", requireBanker, async (req, res) => {
     try {
-      const deposit = await storage.updateDeposit(parseInt(req.params.id), {
+      const deposit = await storage.updateDeposit(parseInt(req.params.id as string), {
         status: "approved",
         processedAt: new Date(),
         processedBy: req.session.userId,
@@ -1818,7 +1818,7 @@ export async function registerRoutes(
 
   app.post("/api/banker/deposits/:id/reject", requireBanker, async (req, res) => {
     try {
-      const deposit = await storage.updateDeposit(parseInt(req.params.id), {
+      const deposit = await storage.updateDeposit(parseInt(req.params.id as string), {
         status: "rejected",
         processedAt: new Date(),
         processedBy: req.session.userId,
@@ -1834,9 +1834,9 @@ export async function registerRoutes(
   app.post("/api/banker/withdrawals/:id/approve", requireBanker, async (req, res) => {
     try {
       const allWithdrawals = await storage.getWithdrawals();
-      const withdrawalData = allWithdrawals.find(w => w.id === parseInt(req.params.id));
+      const withdrawalData = allWithdrawals.find(w => w.id === parseInt(req.params.id as string));
       if (!withdrawalData) return res.status(404).json({ message: "Retrait non trouvé" });
-      const withdrawal = await storage.updateWithdrawal(parseInt(req.params.id), {
+      const withdrawal = await storage.updateWithdrawal(parseInt(req.params.id as string), {
         status: "approved",
         processedAt: new Date(),
         processedBy: req.session.userId,
@@ -1850,7 +1850,7 @@ export async function registerRoutes(
 
   app.post("/api/banker/withdrawals/:id/reject", requireBanker, async (req, res) => {
     try {
-      const withdrawal = await storage.updateWithdrawal(parseInt(req.params.id), {
+      const withdrawal = await storage.updateWithdrawal(parseInt(req.params.id as string), {
         status: "rejected",
         processedAt: new Date(),
         processedBy: req.session.userId,

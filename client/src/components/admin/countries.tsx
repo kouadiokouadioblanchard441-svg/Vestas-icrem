@@ -19,6 +19,7 @@ interface CountryForm {
   phonePrefix: string;
   operators: string;
   isActive: boolean;
+  autoPaymentEnabled: boolean;
 }
 
 const emptyForm: CountryForm = {
@@ -28,6 +29,7 @@ const emptyForm: CountryForm = {
   phonePrefix: "",
   operators: "",
   isActive: true,
+  autoPaymentEnabled: false,
 };
 
 export default function AdminCountries() {

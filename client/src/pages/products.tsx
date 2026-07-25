@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { formatCurrency, getCountryByCode } from "@/lib/countries";
-import { Loader2, Headphones } from "lucide-react";
+import { Loader2, Headphones, Settings } from "lucide-react";
 import { useLocation } from "wouter";
 import { getContent } from "@/lib/content";
 import type { Product } from "@shared/schema";
