@@ -887,7 +887,7 @@ export class DatabaseStorage implements IStorage {
     const level2 = await this.getReferrals(userId, 2);
     const level3 = await this.getReferrals(userId, 3);
 
-    const enrichUser = async (user: User) => {
+    const enrichUser = async (user: User, vipLevel: number) => {
       const userProductsList = await db.select({ 
         productName: products.name,
         productPrice: products.price,
@@ -899,8 +899,17 @@ export class DatabaseStorage implements IStorage {
       .where(eq(userProducts.userId, user.id));
       
       const totalInvested = userProductsList
-        .filter(p => !p.isActive || p.isActive)
         .reduce((sum, p) => sum + p.productPrice, 0);
+
+      // Bonus earned by current user FROM this specific member
+      const bonusResult = await db
+        .select({ total: sql<string>`COALESCE(SUM(${referralCommissions.amount}), 0)` })
+        .from(referralCommissions)
+        .where(and(
+          eq(referralCommissions.userId, userId),
+          eq(referralCommissions.fromUserId, user.id),
+        ));
+      const bonusFromMember = parseFloat(bonusResult[0]?.total || "0");
 
       return {
         id: user.id,
@@ -912,13 +921,15 @@ export class DatabaseStorage implements IStorage {
         hasDeposited: user.hasDeposited,
         createdAt: user.createdAt,
         totalInvested,
+        vipLevel,
+        bonusFromMember,
         products: userProductsList,
       };
     };
 
-    const level1Details = await Promise.all(level1.map(enrichUser));
-    const level2Details = await Promise.all(level2.map(enrichUser));
-    const level3Details = await Promise.all(level3.map(enrichUser));
+    const level1Details = await Promise.all(level1.map(u => enrichUser(u, 1)));
+    const level2Details = await Promise.all(level2.map(u => enrichUser(u, 2)));
+    const level3Details = await Promise.all(level3.map(u => enrichUser(u, 3)));
 
     return {
       level1: level1Details,

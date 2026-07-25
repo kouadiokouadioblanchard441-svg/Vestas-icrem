@@ -70,6 +70,7 @@ import AboutPage from "@/pages/about";
 import RulesPage from "@/pages/rules";
 import GiftCodePage from "@/pages/gift-code";
 import TeamDetailsPage from "@/pages/team-details";
+import MembersPage from "@/pages/members";
 import MyProductsPage from "@/pages/my-products";
 import CheckinPage from "@/pages/checkin";
 import RewardsPage from "@/pages/rewards";
@@ -329,6 +330,11 @@ function RouterComponent() {
       <Route path="/team-details">
         <ProtectedRoute>
           <TeamDetailsPage />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/members">
+        <ProtectedRoute>
+          <MembersPage />
         </ProtectedRoute>
       </Route>
       <Route path="/daily-bonus">

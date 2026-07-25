@@ -94,14 +94,24 @@ export default function TeamPage() {
           />
           <p className="text-gray-900 font-extrabold text-lg">{headerTitle}</p>
         </div>
-        <button
-          onClick={() => navigate("/salary-bonus")}
-          className="px-4 py-2 rounded-full text-white text-xs font-bold"
-          style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
-          data-testid="button-centre-taches"
-        >
-          {taskCenterButton}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate("/members")}
+            className="px-4 py-2 rounded-full text-white text-xs font-bold"
+            style={{ background: "linear-gradient(135deg, #315aab, #254a91)" }}
+            data-testid="button-membres"
+          >
+            Membres
+          </button>
+          <button
+            onClick={() => navigate("/salary-bonus")}
+            className="px-4 py-2 rounded-full text-white text-xs font-bold"
+            style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
+            data-testid="button-centre-taches"
+          >
+            {taskCenterButton}
+          </button>
+        </div>
       </div>
 
       <div className="px-4 pt-4 space-y-4">
