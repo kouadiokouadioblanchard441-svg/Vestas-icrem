@@ -9,7 +9,7 @@ import { Loader2, AlertTriangle, Settings } from "lucide-react";
 import { useLocation } from "wouter";
 import type { Product } from "@shared/schema";
 
-const vestasLogo = "/powerade-logo.webp";
+const poweradeLogo = "/powerade-logo.webp";
 import serviceIcon from "@assets/20260311_214852_1773265973964.png";
 import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
 
@@ -63,7 +63,7 @@ export default function InvestPage() {
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 shadow-sm" style={{ background: "linear-gradient(135deg, #F59E0B 0%, #001a40 100%)" }}>
-        <img src={vestasLogo} alt="Powerade" className="h-8 w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} />
+        <img src={poweradeLogo} alt="Powerade" className="h-8 w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} />
         <button onClick={() => navigate("/service")} className="flex items-center justify-center" data-testid="button-service">
           <img src={serviceIcon} alt="Service client" className="w-8 h-8 object-contain" />
         </button>

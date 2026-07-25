@@ -12,7 +12,7 @@ import { CountrySelector } from "@/components/country-selector";
 import { LanguagePicker } from "@/components/language-picker";
 import { useI18n } from "@/lib/i18n";
 import { Loader2, ChevronDown } from "lucide-react";
-const vestasLogo = "/powerade-logo.webp";
+const poweradeLogo = "/powerade-logo.webp";
 import { FloatingSupport } from "@/components/floating-support";
 
 export default function LoginPage() {
@@ -117,7 +117,7 @@ export default function LoginPage() {
 
           {/* Logo */}
           <div className="flex justify-center mb-14">
-            <img src={vestasLogo} alt="Powerade" style={{ width: 200, height: 72, objectFit: "contain" }} />
+            <img src={poweradeLogo} alt="Powerade" style={{ width: 200, height: 72, objectFit: "contain" }} />
           </div>
 
           {/* Fields */}

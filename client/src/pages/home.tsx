@@ -8,7 +8,7 @@ import { getContent } from "@/lib/content";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
 
-const jollibeeLogo = "/powerade-logo.webp";
+const poweradeLogo = "/powerade-logo.webp";
 import bellIcon from "@assets/d7d9f6f6-dddc-4071-8bc2-d6e7e589fbae_(1)_1783248684110.png";
 import iconRecharger from "@assets/1-1_1783245823715.png";
 import iconRetraits from "@assets/2-1_1783245823825.png";
@@ -219,7 +219,7 @@ export default function HomePage() {
 
       {/* ── Header ── */}
       <div className="flex items-center px-4 py-2 bg-white shadow-sm">
-        <img src={jollibeeLogo} alt="Powerade" className="h-10 w-auto object-contain" />
+        <img src={poweradeLogo} alt="Powerade" className="h-10 w-auto object-contain" />
       </div>
 
       {/* ── Hero Banner (carrousel défilant) ── */}

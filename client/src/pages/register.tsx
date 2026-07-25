@@ -14,7 +14,7 @@ import { useI18n } from "@/lib/i18n";
 import { Loader2, ChevronDown } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
 
-const intelLogo = "/powerade-logo.webp";
+const poweradeLogo = "/powerade-logo.webp";
 
 export default function RegisterPage() {
   const [, navigate] = useLocation();
@@ -137,7 +137,7 @@ export default function RegisterPage() {
           {/* Logo in white card */}
           <div className="flex justify-center mb-8">
             <div className="bg-white rounded-lg p-4 flex items-center justify-center" style={{ width: 180, height: 130 }}>
-              <img src={intelLogo} alt="Logo" style={{ width: 150, height: 100, objectFit: "contain" }} />
+              <img src={poweradeLogo} alt="Powerade" style={{ width: 150, height: 100, objectFit: "contain" }} />
             </div>
           </div>
 

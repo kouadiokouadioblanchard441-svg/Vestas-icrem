@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-const vestasLogo = "/powerade-logo.webp";
+const poweradeLogo = "/powerade-logo.webp";
 
 interface AboutModalProps {
   open: boolean;
@@ -13,7 +13,7 @@ export default function AboutModal({ open, onClose }: AboutModalProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden">
-              <img src={vestasLogo} alt="Powerade" className="w-10 h-10 object-contain" />
+              <img src={poweradeLogo} alt="Powerade" className="w-10 h-10 object-contain" />
             </div>
             À propos de Powerade
           </DialogTitle>
