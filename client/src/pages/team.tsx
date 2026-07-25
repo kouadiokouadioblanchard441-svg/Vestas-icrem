@@ -7,7 +7,7 @@ import { Copy } from "lucide-react";
 import { getContent } from "@/lib/content";
 
 import teamIcon from "@assets/1244758_1783246767217.png";
-import solarPanelImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
+import solarPanelImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 
 interface TeamStats {
   level1Count: number;
