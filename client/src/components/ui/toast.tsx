@@ -22,12 +22,12 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex items-center overflow-hidden rounded-lg px-5 py-2.5 shadow-md transition-all data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-80 data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
+  "group pointer-events-auto relative flex items-center overflow-hidden rounded-xl px-5 py-3 shadow-2xl transition-all data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-80 data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
   {
     variants: {
       variant: {
-        default: "bg-white !text-black border border-gray-200",
-        destructive: "bg-white !text-black border border-gray-200",
+        default: "bg-black text-white",
+        destructive: "bg-black text-white",
       },
     },
     defaultVariants: {
@@ -45,7 +45,7 @@ const Toast = React.forwardRef<
     <ToastPrimitives.Root
       ref={ref}
       className={cn(toastVariants({ variant }), className)}
-      style={{ backgroundColor: '#ffffff', color: '#000000' }}
+      style={{ backgroundColor: '#000000', color: '#ffffff' }}
       {...props}
     />
   )
@@ -73,7 +73,7 @@ const ToastClose = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Close
     ref={ref}
-    className={cn("ml-1 rounded-full text-black/40 hover:text-black focus:outline-none", className)}
+    className={cn("ml-1 rounded-full text-white/60 hover:text-white focus:outline-none", className)}
     toast-close=""
     {...props}
   />
@@ -86,8 +86,8 @@ const ToastTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Title
     ref={ref}
-    className={cn("text-sm font-medium whitespace-nowrap !text-black", className)}
-    style={{ color: '#000000' }}
+    className={cn("text-sm font-semibold whitespace-pre-wrap", className)}
+    style={{ color: '#ffffff' }}
     {...props}
   />
 ))
@@ -99,8 +99,8 @@ const ToastDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Description
     ref={ref}
-    className={cn("text-xs opacity-80 whitespace-nowrap !text-black", className)}
-    style={{ color: '#000000' }}
+    className={cn("text-xs opacity-80 whitespace-pre-wrap", className)}
+    style={{ color: '#ffffff' }}
     {...props}
   />
 ))

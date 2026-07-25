@@ -331,13 +331,15 @@ nav button:active,
   transform: scale(0.9);
 }
 
-/* ===== TOAST — toujours fond blanc, texte noir, quoi qu'il arrive ===== */
+/* ===== TOAST — fond noir, texte blanc, quoi qu'il arrive ===== */
 ol[data-radix-toast-viewport] li {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  color-scheme: light !important;
-  border: 1px solid #e5e7eb !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  color-scheme: dark !important;
+  border: none !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
 }
 ol[data-radix-toast-viewport] li * {
-  color: #000000 !important;
+  color: #ffffff !important;
 }
