@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, Eye, EyeOff } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 interface ChangePasswordModalProps {
   open: boolean;
@@ -18,6 +19,7 @@ interface ChangePasswordModalProps {
 }
 
 export default function ChangePasswordModal({ open, onClose }: ChangePasswordModalProps) {
+  const { t } = useI18n();
   const { toast } = useToast();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -30,56 +32,35 @@ export default function ChangePasswordModal({ open, onClose }: ChangePasswordMod
       const res = await apiRequest("POST", "/api/change-password", data);
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.message || "Erreur lors du changement de mot de passe");
+        throw new Error(errorData.message || t.errorOccurred);
       }
       return res.json();
     },
     onSuccess: () => {
-      toast({
-        title: "Succes",
-        description: "Votre mot de passe a ete modifie avec succes",
-      });
+      toast({ title: t.passwordSuccess, description: t.passwordSuccessDesc });
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
       onClose();
     },
     onError: (error: Error) => {
-      toast({
-        title: error.message || "Une erreur est survenue",
-        variant: "destructive",
-      });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
   const handleSubmit = () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
-      toast({
-        title: "Champs requis",
-        description: "Veuillez remplir tous les champs",
-        variant: "destructive",
-      });
+      toast({ title: t.requiredFields, description: t.fillAllFields, variant: "destructive" });
       return;
     }
-
     if (newPassword.length < 6) {
-      toast({
-        title: "Mot de passe trop court",
-        description: "Le nouveau mot de passe doit contenir au moins 6 caracteres",
-        variant: "destructive",
-      });
+      toast({ title: t.passwordTooShort, description: t.minSixCharsRequired, variant: "destructive" });
       return;
     }
-
     if (newPassword !== confirmPassword) {
-      toast({
-        title: "Mots de passe differents",
-        description: "Les nouveaux mots de passe ne correspondent pas",
-        variant: "destructive",
-      });
+      toast({ title: t.errPasswordMismatch, variant: "destructive" });
       return;
     }
-
     changePasswordMutation.mutate({ currentPassword, newPassword });
   };
 
@@ -87,7 +68,7 @@ export default function ChangePasswordModal({ open, onClose }: ChangePasswordMod
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle className="text-center">Changer le mot de passe</DialogTitle>
+          <DialogTitle className="text-center">{t.changePassword}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="relative">
@@ -95,7 +76,7 @@ export default function ChangePasswordModal({ open, onClose }: ChangePasswordMod
               type={showCurrentPassword ? "text" : "password"}
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              placeholder="Mot de passe actuel"
+              placeholder={t.currentPasswordPlaceholder}
               data-testid="input-current-password"
             />
             <button
@@ -112,7 +93,7 @@ export default function ChangePasswordModal({ open, onClose }: ChangePasswordMod
               type={showNewPassword ? "text" : "password"}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Nouveau mot de passe"
+              placeholder={t.newPasswordPlaceholder}
               data-testid="input-new-password"
             />
             <button
@@ -128,7 +109,7 @@ export default function ChangePasswordModal({ open, onClose }: ChangePasswordMod
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirmer le nouveau mot de passe"
+            placeholder={t.confirmNewPasswordPlaceholder}
             data-testid="input-confirm-password"
           />
 
@@ -141,7 +122,7 @@ export default function ChangePasswordModal({ open, onClose }: ChangePasswordMod
             {changePasswordMutation.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin mr-2" />
             ) : null}
-            Changer le mot de passe
+            {t.changePassword}
           </Button>
         </div>
       </DialogContent>

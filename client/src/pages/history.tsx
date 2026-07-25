@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCountryByCode } from "@/lib/countries";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { Link } from "wouter";
+import { useI18n } from "@/lib/i18n";
 
 
 import nodataImg from "@assets/nodata-da225bbb_(1)_1783249133513.png";
@@ -33,6 +34,7 @@ const BG = "#315aab";
 
 export default function HistoryPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<"deposits" | "withdrawals">("deposits");
 
   const country = getCountryByCode(user?.country || "");
@@ -50,16 +52,11 @@ export default function HistoryPage() {
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "completed":
-      case "approved":
-        return "SUCCÈS";
-      case "rejected":
-        return "REFUSÉ";
+      case "approved":  return t.statusApproved;
+      case "rejected":  return t.statusRejected;
       case "processing":
-        return "EN TRAITEMENT";
-      case "pending":
-        return "EN ATTENTE";
-      default:
-        return status.toUpperCase();
+      case "pending":   return t.statusPending;
+      default:          return status.toUpperCase();
     }
   };
 
@@ -155,7 +152,7 @@ export default function HistoryPage() {
         ) : (activeTab === "deposits" ? deposits : withdrawals).length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
             <img src={nodataImg} alt="Aucune donnée" className="w-28 h-28 object-contain opacity-90" />
-            <p className="text-white/70 text-sm">Aucune transaction pour le moment</p>
+            <p className="text-white/70 text-sm">{t.noTransactions}</p>
           </div>
         ) : activeTab === "deposits" ? (
           deposits.map((deposit) => {

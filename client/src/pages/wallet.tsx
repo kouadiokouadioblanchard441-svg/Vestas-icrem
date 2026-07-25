@@ -10,28 +10,30 @@ import { Loader2, Plus, Trash2, CreditCard, ChevronLeft, ChevronRight, Shield, C
 import { Link, useLocation, useSearch } from "wouter";
 import type { WithdrawalWallet } from "@shared/schema";
 import landscapeImg from "@assets/71vdMjQS9sL._AC_UF1000,1000_QL80__1784966822182.jpg";
+import { useI18n } from "@/lib/i18n";
 
 function maskAccountNumber(num: string): string {
   if (num.length <= 6) return num;
   return num.slice(0, 2) + "****" + num.slice(6);
 }
 
-const walletSchema = z.object({
-  accountName: z.string().min(2, "Nom du titulaire requis"),
-  accountNumber: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Adresse BEP20 invalide (format 0x + 40 caractères)"),
-});
-
-type WalletForm = z.infer<typeof walletSchema>;
+type WalletForm = { accountName: string; accountNumber: string };
 const WITHDRAWAL_METHOD = "USDT BEP20";
 
 export default function WalletPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const searchString = useSearch();
   const params = new URLSearchParams(searchString);
   const selectMode = params.get("from") === "withdrawal";
   const [showForm, setShowForm] = useState(false);
+
+  const walletSchema = z.object({
+    accountName: z.string().min(2, t.walletHolderRequired),
+    accountNumber: z.string().regex(/^0x[a-fA-F0-9]{40}$/, t.walletAddressInvalid),
+  });
 
   const { data: wallets, isLoading } = useQuery<WithdrawalWallet[]>({
     queryKey: ["/api/wallets"],
@@ -148,10 +150,10 @@ export default function WalletPage() {
             </div>
           </div>
 
-          {/* Nom du titulaire */}
+          {/* Account holder name */}
           <div>
             <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
-              Nom du titulaire
+              {t.walletHolderName}
             </p>
             <div
               className="w-full flex items-center px-4 py-4 rounded-2xl shadow-sm"
@@ -159,7 +161,7 @@ export default function WalletPage() {
             >
               <input
                 {...form.register("accountName")}
-                placeholder="Entrez le nom du titulaire"
+                placeholder={t.walletHolderNamePlaceholder}
                 className="flex-1 bg-transparent text-sm text-gray-800 placeholder:text-gray-400 outline-none"
                 data-testid="input-wallet-name"
               />
@@ -169,10 +171,10 @@ export default function WalletPage() {
             )}
           </div>
 
-          {/* Adresse blockchain */}
+          {/* BEP20 address */}
           <div>
             <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
-              Adresse du portefeuille BEP20
+              {t.walletAddressLabel}
             </p>
             <div
               className="w-full flex items-center px-4 py-4 rounded-2xl shadow-sm"
@@ -203,9 +205,9 @@ export default function WalletPage() {
             {addMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Enregistrement...
+                {t.saving}
               </span>
-            ) : "Confirmer"}
+            ) : t.confirm}
           </button>
         </div>
 

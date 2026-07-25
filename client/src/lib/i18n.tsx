@@ -4,6 +4,11 @@ export type Lang = "fr" | "en" | "pt" | "es" | "ar" | "zh";
 
 export const LANGUAGES: { code: Lang; label: string; flag: string; nativeName: string }[] = [
   { code: "zh", label: "中文",      flag: "🇨🇳", nativeName: "中文" },
+  { code: "en", label: "English",  flag: "🇬🇧", nativeName: "English" },
+  { code: "fr", label: "Français", flag: "🇫🇷", nativeName: "Français" },
+  { code: "es", label: "Español",  flag: "🇪🇸", nativeName: "Español" },
+  { code: "pt", label: "Português",flag: "🇵🇹", nativeName: "Português" },
+  { code: "ar", label: "العربية",  flag: "🇸🇦", nativeName: "العربية" },
 ];
 
 export type Translations = {
@@ -81,6 +86,48 @@ export type Translations = {
   wallet: string;
   commonFunctions: string;
   logout: string;
+  // account suspended
+  accountSuspended: string;
+  accountSuspendedDesc: string;
+  // change password page/modal
+  back: string;
+  changePassword: string;
+  oldPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+  saving: string;
+  processing: string;
+  requiredFields: string;
+  fillAllFields: string;
+  passwordTooShort: string;
+  minSixCharsRequired: string;
+  passwordSuccess: string;
+  passwordSuccessDesc: string;
+  currentPasswordPlaceholder: string;
+  newPasswordPlaceholder: string;
+  confirmNewPasswordPlaceholder: string;
+  // history / empty states
+  noWithdrawals: string;
+  noTransactions: string;
+  withdrawalHistory: string;
+  // status labels
+  statusApproved: string;
+  statusPending: string;
+  statusRejected: string;
+  // withdrawal page
+  invalidAmount: string;
+  minAmountPrefix: string;
+  addressRequired: string;
+  selectUsdtWallet: string;
+  // wallet form
+  walletHolderName: string;
+  walletHolderNamePlaceholder: string;
+  walletAddressLabel: string;
+  walletAddressInvalid: string;
+  walletHolderRequired: string;
+  // deposit orders
+  noDeposits: string;
+  depositOrders: string;
 };
 
 const T: Record<Lang, Translations> = {
@@ -159,6 +206,41 @@ const T: Record<Lang, Translations> = {
     wallet:             "钱包",
     commonFunctions:    "常用功能",
     logout:             "退出登录",
+    accountSuspended:   "账号已封禁",
+    accountSuspendedDesc: "您的账号已被封禁，请联系客服。",
+    back:               "返回",
+    changePassword:     "修改密码",
+    oldPassword:        "旧密码",
+    newPassword:        "新密码",
+    confirmNewPassword: "确认新密码",
+    saving:             "保存中...",
+    processing:         "处理中...",
+    requiredFields:     "必填字段",
+    fillAllFields:      "请填写所有字段",
+    passwordTooShort:   "密码太短",
+    minSixCharsRequired:"至少需要6个字符",
+    passwordSuccess:    "成功",
+    passwordSuccessDesc:"密码已成功修改",
+    currentPasswordPlaceholder: "当前密码",
+    newPasswordPlaceholder:     "新密码",
+    confirmNewPasswordPlaceholder: "确认新密码",
+    noWithdrawals:      "暂无提现记录",
+    noTransactions:     "暂无交易记录",
+    withdrawalHistory:  "提现记录",
+    statusApproved:     "成功",
+    statusPending:      "待处理",
+    statusRejected:     "已拒绝",
+    invalidAmount:      "金额无效",
+    minAmountPrefix:    "最低金额为",
+    addressRequired:    "地址必填",
+    selectUsdtWallet:   "请选择USDT BEP20地址",
+    walletHolderName:   "持有人姓名",
+    walletHolderNamePlaceholder: "输入持有人姓名",
+    walletAddressLabel: "BEP20钱包地址",
+    walletAddressInvalid: "BEP20地址无效 (格式: 0x + 40字符)",
+    walletHolderRequired: "持有人姓名必填",
+    noDeposits:         "暂无充值记录",
+    depositOrders:      "充值记录",
   },
   fr: {
     yourNumber:         "votre numéro",
@@ -235,6 +317,41 @@ const T: Record<Lang, Translations> = {
     wallet:             "Portefeuille",
     commonFunctions:    "Fonctions communes",
     logout:             "Déconnexion",
+    accountSuspended:   "Compte suspendu",
+    accountSuspendedDesc: "Votre compte a été suspendu. Contactez le support.",
+    back:               "Retour",
+    changePassword:     "Changer le mot de passe",
+    oldPassword:        "Ancien mot de passe",
+    newPassword:        "Nouveau mot de passe",
+    confirmNewPassword: "Re-mot de passe",
+    saving:             "Enregistrement...",
+    processing:         "Modification...",
+    requiredFields:     "Champs requis",
+    fillAllFields:      "Veuillez remplir tous les champs",
+    passwordTooShort:   "Mot de passe trop court",
+    minSixCharsRequired:"Minimum 6 caractères requis",
+    passwordSuccess:    "Succès",
+    passwordSuccessDesc:"Mot de passe modifié avec succès",
+    currentPasswordPlaceholder: "Mot de passe actuel",
+    newPasswordPlaceholder:     "Nouveau mot de passe",
+    confirmNewPasswordPlaceholder: "Confirmer le nouveau mot de passe",
+    noWithdrawals:      "Aucun retrait pour le moment",
+    noTransactions:     "Aucune transaction pour le moment",
+    withdrawalHistory:  "Historique des retraits",
+    statusApproved:     "SUCCÈS",
+    statusPending:      "EN ATTENTE",
+    statusRejected:     "REFUSÉ",
+    invalidAmount:      "Montant invalide",
+    minAmountPrefix:    "Le montant minimum est de",
+    addressRequired:    "Adresse requise",
+    selectUsdtWallet:   "Veuillez sélectionner une adresse USDT BEP20",
+    walletHolderName:   "Nom du titulaire",
+    walletHolderNamePlaceholder: "Entrez le nom du titulaire",
+    walletAddressLabel: "Adresse du portefeuille BEP20",
+    walletAddressInvalid: "Adresse BEP20 invalide (format 0x + 40 caractères)",
+    walletHolderRequired: "Nom du titulaire requis",
+    noDeposits:         "Aucun dépôt pour le moment",
+    depositOrders:      "Ordre du dépôt",
   },
   en: {
     yourNumber:         "your number",
@@ -311,6 +428,41 @@ const T: Record<Lang, Translations> = {
     wallet:             "Wallet",
     commonFunctions:    "Common functions",
     logout:             "Log out",
+    accountSuspended:   "Account suspended",
+    accountSuspendedDesc: "Your account has been suspended. Please contact support.",
+    back:               "Back",
+    changePassword:     "Change password",
+    oldPassword:        "Current password",
+    newPassword:        "New password",
+    confirmNewPassword: "Confirm new password",
+    saving:             "Saving...",
+    processing:         "Processing...",
+    requiredFields:     "Required fields",
+    fillAllFields:      "Please fill in all fields",
+    passwordTooShort:   "Password too short",
+    minSixCharsRequired:"Minimum 6 characters required",
+    passwordSuccess:    "Success",
+    passwordSuccessDesc:"Password changed successfully",
+    currentPasswordPlaceholder: "Current password",
+    newPasswordPlaceholder:     "New password",
+    confirmNewPasswordPlaceholder: "Confirm new password",
+    noWithdrawals:      "No withdrawals yet",
+    noTransactions:     "No transactions yet",
+    withdrawalHistory:  "Withdrawal history",
+    statusApproved:     "SUCCESS",
+    statusPending:      "PENDING",
+    statusRejected:     "REJECTED",
+    invalidAmount:      "Invalid amount",
+    minAmountPrefix:    "Minimum amount is",
+    addressRequired:    "Address required",
+    selectUsdtWallet:   "Please select a USDT BEP20 address",
+    walletHolderName:   "Account holder name",
+    walletHolderNamePlaceholder: "Enter account holder name",
+    walletAddressLabel: "BEP20 wallet address",
+    walletAddressInvalid: "Invalid BEP20 address (format: 0x + 40 characters)",
+    walletHolderRequired: "Account holder name required",
+    noDeposits:         "No deposits yet",
+    depositOrders:      "Deposit orders",
   },
   pt: {
     yourNumber:         "seu número",
@@ -387,6 +539,41 @@ const T: Record<Lang, Translations> = {
     wallet:             "Billetera",
     commonFunctions:    "Funciones comunes",
     logout:             "Cerrar sesión",
+    accountSuspended:   "Conta suspensa",
+    accountSuspendedDesc: "A sua conta foi suspensa. Entre em contacto com o suporte.",
+    back:               "Voltar",
+    changePassword:     "Alterar senha",
+    oldPassword:        "Senha atual",
+    newPassword:        "Nova senha",
+    confirmNewPassword: "Confirmar nova senha",
+    saving:             "Salvando...",
+    processing:         "Processando...",
+    requiredFields:     "Campos obrigatórios",
+    fillAllFields:      "Por favor preencha todos os campos",
+    passwordTooShort:   "Senha muito curta",
+    minSixCharsRequired:"Mínimo 6 caracteres necessários",
+    passwordSuccess:    "Sucesso",
+    passwordSuccessDesc:"Senha alterada com sucesso",
+    currentPasswordPlaceholder: "Senha atual",
+    newPasswordPlaceholder:     "Nova senha",
+    confirmNewPasswordPlaceholder: "Confirmar nova senha",
+    noWithdrawals:      "Sem saques por enquanto",
+    noTransactions:     "Sem transações por enquanto",
+    withdrawalHistory:  "Histórico de saques",
+    statusApproved:     "APROVADO",
+    statusPending:      "PENDENTE",
+    statusRejected:     "REJEITADO",
+    invalidAmount:      "Valor inválido",
+    minAmountPrefix:    "O valor mínimo é",
+    addressRequired:    "Endereço obrigatório",
+    selectUsdtWallet:   "Por favor selecione um endereço USDT BEP20",
+    walletHolderName:   "Nome do titular",
+    walletHolderNamePlaceholder: "Digite o nome do titular",
+    walletAddressLabel: "Endereço da carteira BEP20",
+    walletAddressInvalid: "Endereço BEP20 inválido (formato: 0x + 40 caracteres)",
+    walletHolderRequired: "Nome do titular obrigatório",
+    noDeposits:         "Sem depósitos por enquanto",
+    depositOrders:      "Ordens de depósito",
   },
   es: {
     yourNumber:         "su número",
@@ -463,6 +650,41 @@ const T: Record<Lang, Translations> = {
     wallet:             "Billetera",
     commonFunctions:    "Funciones comunes",
     logout:             "Cerrar sesión",
+    accountSuspended:   "Cuenta suspendida",
+    accountSuspendedDesc: "Su cuenta ha sido suspendida. Contacte al soporte.",
+    back:               "Volver",
+    changePassword:     "Cambiar contraseña",
+    oldPassword:        "Contraseña actual",
+    newPassword:        "Nueva contraseña",
+    confirmNewPassword: "Confirmar nueva contraseña",
+    saving:             "Guardando...",
+    processing:         "Procesando...",
+    requiredFields:     "Campos requeridos",
+    fillAllFields:      "Por favor complete todos los campos",
+    passwordTooShort:   "Contraseña muy corta",
+    minSixCharsRequired:"Mínimo 6 caracteres requeridos",
+    passwordSuccess:    "Éxito",
+    passwordSuccessDesc:"Contraseña cambiada con éxito",
+    currentPasswordPlaceholder: "Contraseña actual",
+    newPasswordPlaceholder:     "Nueva contraseña",
+    confirmNewPasswordPlaceholder: "Confirmar nueva contraseña",
+    noWithdrawals:      "Sin retiros por el momento",
+    noTransactions:     "Sin transacciones por el momento",
+    withdrawalHistory:  "Historial de retiros",
+    statusApproved:     "APROBADO",
+    statusPending:      "PENDIENTE",
+    statusRejected:     "RECHAZADO",
+    invalidAmount:      "Monto inválido",
+    minAmountPrefix:    "El monto mínimo es",
+    addressRequired:    "Dirección requerida",
+    selectUsdtWallet:   "Por favor seleccione una dirección USDT BEP20",
+    walletHolderName:   "Nombre del titular",
+    walletHolderNamePlaceholder: "Ingrese el nombre del titular",
+    walletAddressLabel: "Dirección de billetera BEP20",
+    walletAddressInvalid: "Dirección BEP20 inválida (formato: 0x + 40 caracteres)",
+    walletHolderRequired: "Nombre del titular requerido",
+    noDeposits:         "Sin depósitos por el momento",
+    depositOrders:      "Órdenes de depósito",
   },
   ar: {
     yourNumber:         "رقمك",
@@ -539,6 +761,41 @@ const T: Record<Lang, Translations> = {
     wallet:             "المحفظة",
     commonFunctions:    "الوظائف المشتركة",
     logout:             "تسجيل الخروج",
+    accountSuspended:   "الحساب موقوف",
+    accountSuspendedDesc: "تم إيقاف حسابك. يرجى التواصل مع الدعم.",
+    back:               "رجوع",
+    changePassword:     "تغيير كلمة المرور",
+    oldPassword:        "كلمة المرور الحالية",
+    newPassword:        "كلمة المرور الجديدة",
+    confirmNewPassword: "تأكيد كلمة المرور الجديدة",
+    saving:             "جارٍ الحفظ...",
+    processing:         "جارٍ المعالجة...",
+    requiredFields:     "حقول مطلوبة",
+    fillAllFields:      "يرجى ملء جميع الحقول",
+    passwordTooShort:   "كلمة المرور قصيرة جداً",
+    minSixCharsRequired:"يجب أن تكون 6 أحرف على الأقل",
+    passwordSuccess:    "نجح",
+    passwordSuccessDesc:"تم تغيير كلمة المرور بنجاح",
+    currentPasswordPlaceholder: "كلمة المرور الحالية",
+    newPasswordPlaceholder:     "كلمة المرور الجديدة",
+    confirmNewPasswordPlaceholder: "تأكيد كلمة المرور الجديدة",
+    noWithdrawals:      "لا توجد عمليات سحب حتى الآن",
+    noTransactions:     "لا توجد معاملات حتى الآن",
+    withdrawalHistory:  "سجل السحوبات",
+    statusApproved:     "ناجح",
+    statusPending:      "قيد الانتظار",
+    statusRejected:     "مرفوض",
+    invalidAmount:      "مبلغ غير صالح",
+    minAmountPrefix:    "الحد الأدنى للمبلغ هو",
+    addressRequired:    "العنوان مطلوب",
+    selectUsdtWallet:   "يرجى اختيار عنوان USDT BEP20",
+    walletHolderName:   "اسم صاحب الحساب",
+    walletHolderNamePlaceholder: "أدخل اسم صاحب الحساب",
+    walletAddressLabel: "عنوان محفظة BEP20",
+    walletAddressInvalid: "عنوان BEP20 غير صالح (صيغة: 0x + 40 حرفاً)",
+    walletHolderRequired: "اسم صاحب الحساب مطلوب",
+    noDeposits:         "لا توجد إيداعات حتى الآن",
+    depositOrders:      "طلبات الإيداع",
   },
 };
 
@@ -562,14 +819,16 @@ const STORAGE_KEY = "powerade_lang_v2";
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY) as Lang | null;
+      if (saved && saved in T) return saved;
+    } catch {}
     return "zh";
   });
 
   const setLang = (l: Lang) => {
-    // The platform is currently Chinese-only. Keep the API for existing
-    // callers, but do not allow an old saved language to change the UI.
-    setLangState(l === "zh" ? "zh" : "zh");
-    try { localStorage.setItem(STORAGE_KEY, "zh"); } catch {}
+    setLangState(l);
+    try { localStorage.setItem(STORAGE_KEY, l); } catch {}
   };
 
   useEffect(() => {

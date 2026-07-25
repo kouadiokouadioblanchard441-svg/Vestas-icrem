@@ -5,6 +5,7 @@ import { Link } from "wouter";
 import { getCountryByCode } from "@/lib/countries";
 import { Skeleton } from "@/components/ui/skeleton";
 import landscapeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
+import { useI18n } from "@/lib/i18n";
 
 interface Withdrawal {
   id: number;
@@ -16,6 +17,7 @@ interface Withdrawal {
 
 export default function DepositHistoryPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const countryInfo = user ? getCountryByCode(user.country) : null;
   const currency = countryInfo?.currency || "USDT";
 
@@ -38,14 +40,10 @@ export default function DepositHistoryPage() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case "approved":
-        return "Approuve";
-      case "pending":
-        return "En attente";
-      case "rejected":
-        return "Rejete";
-      default:
-        return status;
+      case "approved": return t.statusApproved;
+      case "pending":  return t.statusPending;
+      case "rejected": return t.statusRejected;
+      default:         return status;
     }
   };
 
@@ -57,7 +55,7 @@ export default function DepositHistoryPage() {
             <ArrowLeft className="w-5 h-5 text-gray-700" />
           </button>
         </Link>
-        <h1 className="flex-1 text-center text-lg font-semibold text-gray-800 pr-8">Historique des retraits</h1>
+        <h1 className="flex-1 text-center text-lg font-semibold text-gray-800 pr-8">{t.withdrawalHistory}</h1>
       </header>
 
       <div className="p-4 space-y-4">
@@ -69,7 +67,7 @@ export default function DepositHistoryPage() {
           </div>
         ) : withdrawals.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-white/70">Aucun retrait effectue</p>
+            <p className="text-white/70">{t.noWithdrawals}</p>
           </div>
         ) : (
           withdrawals.map((withdrawal) => {

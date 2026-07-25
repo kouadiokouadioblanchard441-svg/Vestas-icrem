@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { Link } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useI18n } from "@/lib/i18n";
 
 interface Withdrawal {
   id: number;
@@ -28,15 +29,18 @@ function formatDate(iso: string) {
   return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
-const STATUS: Record<string, { label: string; color: string }> = {
-  approved: { label: "SUCCÈS",     color: "#16a34a" },
-  pending:  { label: "EN ATTENTE", color: "#f59e0b" },
-  rejected: { label: "REFUSÉ",     color: "#dc2626" },
-};
+// Status labels are resolved via i18n inside the component
 
 export default function WithdrawalHistoryPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const currency = "USDT";
+
+  const STATUS = {
+    approved: { label: t.statusApproved, color: "#16a34a" },
+    pending:  { label: t.statusPending,  color: "#f59e0b" },
+    rejected: { label: t.statusRejected, color: "#dc2626" },
+  } as Record<string, { label: string; color: string }>;
 
   const { data: withdrawals = [], isLoading } = useQuery<Withdrawal[]>({
     queryKey: ["/api/withdrawals/history"],
@@ -52,7 +56,7 @@ export default function WithdrawalHistoryPage() {
           </button>
         </Link>
         <h1 className="flex-1 text-center text-sm font-bold text-gray-900 pr-8 tracking-wide uppercase">
-          Historique des retraits
+          {t.withdrawalHistory}
         </h1>
       </header>
 
@@ -65,7 +69,7 @@ export default function WithdrawalHistoryPage() {
           </div>
         ) : withdrawals.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-gray-400 text-sm">Aucun retrait pour le moment</p>
+            <p className="text-gray-400 text-sm">{t.noWithdrawals}</p>
           </div>
         ) : (
           <div className="bg-white">

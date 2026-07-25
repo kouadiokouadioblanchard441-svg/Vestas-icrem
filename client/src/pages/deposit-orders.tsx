@@ -5,6 +5,7 @@ import { Link } from "wouter";
 import { getCountryByCode } from "@/lib/countries";
 import { Skeleton } from "@/components/ui/skeleton";
 import landscapeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
+import { useI18n } from "@/lib/i18n";
 
 interface Deposit {
   id: number;
@@ -14,11 +15,7 @@ interface Deposit {
   createdAt: string;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string }> = {
-  approved: { label: "Approuvé",   bg: "bg-gray-900",   text: "text-white" },
-  pending:  { label: "En attente", bg: "bg-green-500", text: "text-white" },
-  rejected: { label: "Rejeté",     bg: "bg-red-600",    text: "text-white" },
-};
+// STATUS_CONFIG is built inside the component using i18n
 
 function formatDate(iso: string) {
   const d = new Date(iso);
@@ -28,8 +25,15 @@ function formatDate(iso: string) {
 
 export default function DepositOrdersPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const countryInfo = user ? getCountryByCode(user.country) : null;
   const currency = countryInfo?.currency || "USDT";
+
+  const STATUS_CONFIG = {
+    approved: { label: t.statusApproved, bg: "bg-gray-900",   text: "text-white" },
+    pending:  { label: t.statusPending,  bg: "bg-green-500",  text: "text-white" },
+    rejected: { label: t.statusRejected, bg: "bg-red-600",    text: "text-white" },
+  } as Record<string, { label: string; bg: string; text: string }>;
 
   const { data: deposits = [], isLoading } = useQuery<Deposit[]>({
     queryKey: ["/api/deposits/history"],
@@ -45,7 +49,7 @@ export default function DepositOrdersPage() {
           </button>
         </Link>
         <h1 className="flex-1 text-center text-base font-bold text-gray-900 pr-8">
-          Ordre du dépôt
+          {t.depositOrders}
         </h1>
       </header>
 
@@ -56,7 +60,7 @@ export default function DepositOrdersPage() {
           ))
         ) : deposits.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-gray-400 text-sm">Aucun dépôt pour le moment</p>
+            <p className="text-gray-400 text-sm">{t.noDeposits}</p>
           </div>
         ) : (
           deposits.map((d) => {

@@ -5,12 +5,14 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, HelpCircle, Users } from "lucide-react";
 import { getCountryByCode } from "@/lib/countries";
+import { useI18n } from "@/lib/i18n";
 
 import globeImg from "@/assets/images/elf-station-2.jpeg";
 import landscapeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 
 export default function RewardsPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const { toast } = useToast();
   const [, navigate] = useLocation();
 
@@ -88,7 +90,7 @@ export default function RewardsPage() {
 
           {isLoading ? (
             <div className="bg-white rounded-xl p-6 text-center text-gray-400 text-sm">
-              Chargement...
+              {t.loading}
             </div>
           ) : (
             <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">

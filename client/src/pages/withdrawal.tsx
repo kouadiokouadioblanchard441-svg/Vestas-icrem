@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ChevronLeft, ChevronRight, Loader2, Plus } from "lucide-react";
 import { getContent } from "@/lib/content";
 import { Link, useLocation } from "wouter";
+import { useI18n } from "@/lib/i18n";
 
 interface WalletData {
   id: number;
@@ -27,6 +28,7 @@ const WITHDRAWAL_METHOD = "USDT BEP20";
 
 export default function WithdrawalPage() {
   const { user, refreshUser } = useAuth();
+  const { t } = useI18n();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [amount, setAmount] = useState<number | "">("");
@@ -112,29 +114,29 @@ export default function WithdrawalPage() {
       setAmount("");
     },
     onError: (error: Error) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
   const handleSubmit = () => {
     if (!withdrawalEnabled) {
-      toast({ title: "Retraits désactivés", description: "Les retraits sont temporairement désactivés par l'administration.", variant: "destructive" });
+      toast({ title: t.errorOccurred, variant: "destructive" });
       return;
     }
     if (!isWithinWithdrawalHours) {
-      toast({ title: "Horaires de retrait", description: `Les retraits sont disponibles de ${withdrawalStartHour}h à ${withdrawalEndHour}h`, variant: "destructive" });
+      toast({ title: t.errorOccurred, variant: "destructive" });
       return;
     }
     if (!hasActiveProduct) {
-      toast({ title: "Produit requis", description: "Vous devez avoir un produit actif pour effectuer un retrait", variant: "destructive" });
+      toast({ title: t.errorOccurred, variant: "destructive" });
       return;
     }
     if (!amount || amount < minWithdrawal) {
-      toast({ title: "Montant invalide", description: `Le montant minimum est de ${minWithdrawal} USDT`, variant: "destructive" });
+      toast({ title: t.invalidAmount, description: `${t.minAmountPrefix} ${minWithdrawal} USDT`, variant: "destructive" });
       return;
     }
     if (!selectedWallet) {
-      toast({ title: "Adresse requise", description: "Veuillez sélectionner une adresse USDT BEP20", variant: "destructive" });
+      toast({ title: t.addressRequired, description: t.selectUsdtWallet, variant: "destructive" });
       return;
     }
     withdrawMutation.mutate({ amount: Number(amount), walletId: selectedWallet.id });

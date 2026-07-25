@@ -82,6 +82,17 @@ import SalaryBonusPage from "@/pages/salary-bonus";
 import NewsDetailPage from "@/pages/news-detail";
 import NotFound from "@/pages/not-found";
 import { Loader2 } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
+
+function BannedMessage() {
+  const { t } = useI18n();
+  return (
+    <>
+      <h1 className="text-2xl font-bold text-destructive mb-2">{t.accountSuspended}</h1>
+      <p className="text-muted-foreground">{t.accountSuspendedDesc}</p>
+    </>
+  );
+}
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -103,8 +114,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-destructive mb-2">Compte suspendu</h1>
-          <p className="text-muted-foreground">Votre compte a été suspendu. Contactez le support.</p>
+          <BannedMessage />
         </div>
       </div>
     );

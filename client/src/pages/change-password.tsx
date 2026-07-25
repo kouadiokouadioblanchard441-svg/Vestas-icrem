@@ -5,8 +5,10 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Eye, EyeOff, ChevronLeft } from "lucide-react";
 import { useLocation } from "wouter";
+import { useI18n } from "@/lib/i18n";
 
 export default function ChangePasswordPage() {
+  const { t } = useI18n();
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [currentPassword, setCurrentPassword] = useState("");
@@ -21,33 +23,33 @@ export default function ChangePasswordPage() {
       const res = await apiRequest("POST", "/api/change-password", data);
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.message || "Erreur lors du changement de mot de passe");
+        throw new Error(err.message || t.errorOccurred);
       }
       return res.json();
     },
     onSuccess: () => {
-      toast({ title: "Succès", description: "Mot de passe modifié avec succès" });
+      toast({ title: t.passwordSuccess, description: t.passwordSuccessDesc });
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
       navigate("/account");
     },
     onError: (error: Error) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
   const handleSubmit = () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
-      toast({ title: "Champs requis", description: "Veuillez remplir tous les champs", variant: "destructive" });
+      toast({ title: t.requiredFields, description: t.fillAllFields, variant: "destructive" });
       return;
     }
     if (newPassword.length < 6) {
-      toast({ title: "Mot de passe trop court", description: "Minimum 6 caractères requis", variant: "destructive" });
+      toast({ title: t.passwordTooShort, description: t.minSixCharsRequired, variant: "destructive" });
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast({ title: "Les nouveaux mots de passe ne correspondent pas", variant: "destructive" });
+      toast({ title: t.errPasswordMismatch, variant: "destructive" });
       return;
     }
     changePasswordMutation.mutate({ currentPassword, newPassword });
@@ -56,7 +58,7 @@ export default function ChangePasswordPage() {
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
 
-      {/* ── Green header ── */}
+      {/* ── Header ── */}
       <header
         className="flex items-center px-4 py-4"
         style={{ background: "#003087" }}
@@ -67,10 +69,10 @@ export default function ChangePasswordPage() {
           data-testid="button-back"
         >
           <ChevronLeft className="w-5 h-5" />
-          <span className="text-sm font-medium">Retour</span>
+          <span className="text-sm font-medium">{t.back}</span>
         </button>
         <h1 className="flex-1 text-center text-white font-bold text-base pr-16">
-          Changer le mot de passe
+          {t.changePassword}
         </h1>
       </header>
 
@@ -78,16 +80,17 @@ export default function ChangePasswordPage() {
       <div className="flex-1 px-4 pt-6">
         <div className="bg-white rounded-2xl shadow-sm px-5 py-6 space-y-5">
 
-          {/* Ancien mot de passe */}
+          {/* Old password */}
           <div>
             <label className="block text-sm text-gray-700 mb-2">
-              Ancien mot de passe
+              {t.oldPassword}
             </label>
             <div className="relative">
               <input
                 type={showCurrent ? "text" : "password"}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder={t.currentPasswordPlaceholder}
                 className="w-full border border-gray-200 rounded-xl px-4 py-4 text-sm text-gray-800 outline-none focus:border-green-400 bg-white pr-11"
                 data-testid="input-current-password"
               />
@@ -101,16 +104,17 @@ export default function ChangePasswordPage() {
             </div>
           </div>
 
-          {/* Nouveau mot de passe */}
+          {/* New password */}
           <div>
             <label className="block text-sm text-gray-700 mb-2">
-              Nouveau mot de passe
+              {t.newPassword}
             </label>
             <div className="relative">
               <input
                 type={showNew ? "text" : "password"}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+                placeholder={t.newPasswordPlaceholder}
                 className="w-full border border-gray-200 rounded-xl px-4 py-4 text-sm text-gray-800 outline-none focus:border-green-400 bg-white pr-11"
                 data-testid="input-new-password"
               />
@@ -124,16 +128,17 @@ export default function ChangePasswordPage() {
             </div>
           </div>
 
-          {/* Re-mot de passe */}
+          {/* Confirm password */}
           <div>
             <label className="block text-sm text-gray-700 mb-2">
-              Re-mot de passe
+              {t.confirmNewPassword}
             </label>
             <div className="relative">
               <input
                 type={showConfirm ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder={t.confirmNewPasswordPlaceholder}
                 className="w-full border border-gray-200 rounded-xl px-4 py-4 text-sm text-gray-800 outline-none focus:border-green-400 bg-white pr-11"
                 data-testid="input-confirm-password"
               />
@@ -147,7 +152,7 @@ export default function ChangePasswordPage() {
             </div>
           </div>
 
-          {/* Confirmer button */}
+          {/* Submit button */}
           <button
             onClick={handleSubmit}
             disabled={changePasswordMutation.isPending}
@@ -158,10 +163,10 @@ export default function ChangePasswordPage() {
             {changePasswordMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Modification...
+                {t.processing}
               </span>
             ) : (
-              "Confirmer"
+              t.confirm
             )}
           </button>
 
