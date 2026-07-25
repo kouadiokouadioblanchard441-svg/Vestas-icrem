@@ -37,7 +37,7 @@ const TIER_COLORS = [
   { bg: "from-gray-500 to-gray-400" },
   { bg: "from-yellow-600 to-yellow-400" },
   { bg: "from-cyan-600 to-cyan-400" },
-  { bg: "from-green-700 to-green-500" },
+  { bg: "from-red-700 to-red-500" },
   { bg: "from-purple-700 to-purple-500" },
 ];
 
@@ -201,42 +201,40 @@ export default function TasksPage() {
                   data-testid={`task-item-${task.id}`}
                 >
                   {/* Tier Header */}
-                  <div className={`bg-gradient-to-r ${tier.bg} px-3 py-1.5 flex items-center justify-between`}>
-                    <span className="text-white font-bold text-sm">{label}</span>
-                    {task.isCompleted && <CheckCircle2 className="w-4 h-4 text-white" />}
+                  <div className={`bg-gradient-to-r ${tier.bg} px-2.5 py-1 flex items-center justify-between`}>
+                    <span className="text-white font-bold text-xs">{label}</span>
+                    {task.isCompleted && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
                   </div>
 
                   {/* Task Body */}
-                  <div className="p-2.5 flex items-center gap-2.5">
+                  <div className="p-2 flex items-center gap-2">
                     {/* Icon */}
-                    <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gray-50 flex items-center justify-center">
-                      <img src={icon} alt={label} className="w-8 h-8 object-contain" />
+                    <div className="w-8 h-8 rounded-md overflow-hidden flex-shrink-0 bg-gray-50 flex items-center justify-center">
+                      <img src={icon} alt={label} className="w-6 h-6 object-contain" />
                     </div>
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-gray-700 text-xs leading-snug mb-0.5">
+                      <p className="text-gray-700 text-[11px] leading-snug mb-0.5">
                         Inviter{" "}
                         <span className="font-bold text-gray-900">{task.requiredInvites}</span>{" "}
                         personnes à recharger
                       </p>
-                      <p className="text-[#E8320A] font-bold text-sm">
+                      <p className="text-[#E8192C] font-bold text-xs">
                         {task.reward.toLocaleString()} {currency}
                       </p>
 
                       {/* Progress */}
-                      <div className="mt-1.5">
-                        <div className="flex justify-between items-center mb-1">
+                      <div className="mt-1">
+                        <div className="flex justify-between items-center mb-0.5">
                           <span className="text-gray-400 text-[10px]">
-                            {task.currentInvites} / {task.requiredInvites} invitations
+                            {task.currentInvites} / {task.requiredInvites}
                           </span>
                           <span className="text-gray-400 text-[10px]">{Math.round(progress)}%</span>
                         </div>
-                        <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
                           <div
-                            className={`h-full rounded-full transition-all duration-500 ${
-                              task.isCompleted ? "bg-[#E8320A]" : "bg-[#E8320A]"
-                            }`}
+                            className="h-full rounded-full transition-all duration-500 bg-[#E8192C]"
                             style={{ width: `${progress}%` }}
                           />
                         </div>
@@ -246,14 +244,14 @@ export default function TasksPage() {
                     {/* Action */}
                     <div className="flex-shrink-0">
                       {task.isCompleted ? (
-                        <span className="bg-red-50 text-[#E8320A] text-[10px] font-semibold px-2.5 py-1.5 rounded-full block text-center">
+                        <span className="bg-red-50 text-[#E8192C] text-[10px] font-semibold px-2 py-1 rounded-full block text-center">
                           ✓ Fait
                         </span>
                       ) : task.canClaim ? (
                         <button
                           onClick={() => !claimMutation.isPending && claimMutation.mutate(task.id)}
                           disabled={claimMutation.isPending}
-                          className="bg-[#E8320A] text-white text-[11px] font-semibold px-3 py-1.5 rounded-full active:scale-95 transition-transform shadow-sm"
+                          className="bg-[#E8192C] text-white text-[11px] font-semibold px-2.5 py-1 rounded-full active:scale-95 transition-transform shadow-sm"
                           data-testid={`button-claim-${task.id}`}
                         >
                           {claimMutation.isPending ? (
@@ -263,7 +261,7 @@ export default function TasksPage() {
                           )}
                         </button>
                       ) : (
-                        <span className="bg-gray-100 text-gray-400 text-[10px] font-semibold px-2.5 py-1.5 rounded-full block text-center">
+                        <span className="bg-gray-100 text-gray-400 text-[10px] font-semibold px-2 py-1 rounded-full block text-center">
                           En attente
                         </span>
                       )}
