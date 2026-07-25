@@ -103,7 +103,7 @@ export default function LoginPage() {
       className="min-h-screen flex flex-col"
       style={{
         backgroundImage: [
-          "linear-gradient(to bottom, rgba(5,15,35,0.60) 0%, rgba(5,15,35,0.35) 48%, rgba(5,15,35,0.35) 52%, rgba(5,15,35,0.60) 100%)",
+          "linear-gradient(to bottom, rgba(49,90,171,0.72) 0%, rgba(49,90,171,0.40) 48%, rgba(49,90,171,0.40) 52%, rgba(49,90,171,0.72) 100%)",
           "url('/poweradd/poweradd-batterie-mini.jpg')",
           "url('/poweradd/poweradd-charge3devices.jpg')",
         ].join(", "),
@@ -114,7 +114,7 @@ export default function LoginPage() {
       }}
     >
       {/* Overlay */}
-      <div style={{ position: "absolute", inset: 0, background: "rgba(5,15,35,0.72)", zIndex: 0 }} />
+      <div style={{ position: "absolute", inset: 0, background: "rgba(20,45,100,0.68)", zIndex: 0 }} />
 
       <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", flex: 1 }}>
 
@@ -225,8 +225,8 @@ export default function LoginPage() {
                 style={{
                   height: 56,
                   borderRadius: "14px",
-                  background: "linear-gradient(135deg, #E8320A 0%, #c4260a 100%)",
-                  boxShadow: "0 4px 20px rgba(232,50,10,0.45)",
+                  background: "linear-gradient(135deg, #315aab 0%, #254a91 100%)",
+                  boxShadow: "0 4px 20px rgba(49,90,171,0.50)",
                 }}
                 data-testid="button-login"
               >
