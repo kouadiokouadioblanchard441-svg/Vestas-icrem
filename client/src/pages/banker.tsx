@@ -76,7 +76,7 @@ export default function BankerPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/banker/deposits"] });
       toast({ title: vars.action === "approve" ? "Dépôt validé !" : "Dépôt rejeté" });
     },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
   });
 
   const withdrawalMutation = useMutation({
@@ -89,7 +89,7 @@ export default function BankerPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/banker/withdrawals"] });
       toast({ title: vars.action === "approve" ? "Retrait validé !" : "Retrait rejeté et remboursé" });
     },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
   });
 
   const filterDeposits = (items: DepositWithUser[]) => {

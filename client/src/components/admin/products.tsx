@@ -62,7 +62,7 @@ export default function AdminProducts() {
       createForm.reset();
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -82,7 +82,7 @@ export default function AdminProducts() {
       setSelectedProduct(null);
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -100,7 +100,7 @@ export default function AdminProducts() {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -119,7 +119,7 @@ export default function AdminProducts() {
       toast({ title: "Produit supprimé" });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 

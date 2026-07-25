@@ -46,8 +46,7 @@ export default function ChangePasswordModal({ open, onClose }: ChangePasswordMod
     },
     onError: (error: Error) => {
       toast({
-        title: "Erreur",
-        description: error.message,
+        title: error.message || "Une erreur est survenue",
         variant: "destructive",
       });
     },

@@ -112,7 +112,7 @@ export default function WithdrawalPage() {
       setAmount("");
     },
     onError: (error: Error) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 

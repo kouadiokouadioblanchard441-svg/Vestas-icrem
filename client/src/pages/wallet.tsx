@@ -62,7 +62,7 @@ export default function WalletPage() {
       setShowForm(false);
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -80,7 +80,7 @@ export default function WalletPage() {
       toast({ title: "Portefeuille supprimé !" });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -97,7 +97,7 @@ export default function WalletPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/wallets"] });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 

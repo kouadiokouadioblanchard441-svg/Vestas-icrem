@@ -65,7 +65,7 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
       setShowForm(false);
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -83,7 +83,7 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
       toast({ title: "Portefeuille supprimé!" });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -101,7 +101,7 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
       toast({ title: "Portefeuille par défaut mis à jour!" });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 

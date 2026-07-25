@@ -44,7 +44,7 @@ export default function CheckinPage() {
       toast({ title: "Bonus reçu !", description: "Bonus quotidien ajouté à votre solde" });
     },
     onError: (error: Error) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 

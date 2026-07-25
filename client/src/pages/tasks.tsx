@@ -70,7 +70,7 @@ export default function TasksPage() {
       toast({ title: "Récompense réclamée!", description: "Le bonus a été ajouté à votre compte." });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 

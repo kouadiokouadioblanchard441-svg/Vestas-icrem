@@ -82,7 +82,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
           : "Le site est de nouveau accessible.",
       });
     } catch (e: any) {
-      toast({ title: "Erreur", description: e.message, variant: "destructive" });
+      toast({ title: e.message || "Une erreur est survenue", variant: "destructive" });
     } finally {
       setMaintenanceToggling(false);
     }
@@ -187,7 +187,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
       toast({ title: "Paramètres enregistrés !" });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 

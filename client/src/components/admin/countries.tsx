@@ -70,7 +70,7 @@ export default function AdminCountries() {
       setEditingId(null);
     },
     onError: (e: any) => {
-      toast({ title: "Erreur", description: e.message, variant: "destructive" });
+      toast({ title: e.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -87,7 +87,7 @@ export default function AdminCountries() {
       setDeleteId(null);
     },
     onError: (e: any) => {
-      toast({ title: "Erreur", description: e.message, variant: "destructive" });
+      toast({ title: e.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 

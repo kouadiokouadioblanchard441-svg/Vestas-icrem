@@ -64,7 +64,7 @@ export default function AdminTasks() {
       return res.json();
     },
     onSuccess: () => { invalidate(); toast({ title: "Tâche créée !" }); setShowCreateForm(false); createForm.reset(); },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
   });
 
   const updateMutation = useMutation({
@@ -74,7 +74,7 @@ export default function AdminTasks() {
       return res.json();
     },
     onSuccess: () => { invalidate(); toast({ title: "Tâche mise à jour !" }); setSelectedTask(null); },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
   });
 
   const toggleMutation = useMutation({
@@ -84,7 +84,7 @@ export default function AdminTasks() {
       return res.json();
     },
     onSuccess: () => invalidate(),
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({
@@ -94,7 +94,7 @@ export default function AdminTasks() {
       return res.json();
     },
     onSuccess: () => { invalidate(); toast({ title: "Tâche supprimée" }); setConfirmDeleteId(null); },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
   });
 
   const openEdit = (task: Task) => {

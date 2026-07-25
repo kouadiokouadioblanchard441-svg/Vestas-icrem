@@ -193,7 +193,7 @@ export default function AdminUsers({ isSuperAdmin }: AdminUsersProps) {
       toast({ title: "Produit revoque!" });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -212,7 +212,7 @@ export default function AdminUsers({ isSuperAdmin }: AdminUsersProps) {
       setSelectedUser(null);
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -232,7 +232,7 @@ export default function AdminUsers({ isSuperAdmin }: AdminUsersProps) {
       setSelectedUser(null);
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 

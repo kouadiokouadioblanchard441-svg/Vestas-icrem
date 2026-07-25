@@ -81,7 +81,7 @@ export default function AdminDashboard({ isSuperAdmin }: AdminDashboardProps) {
       toast({ title: "Statistiques reinitialisees avec succes!" });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 

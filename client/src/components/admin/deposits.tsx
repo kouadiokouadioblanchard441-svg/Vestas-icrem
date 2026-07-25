@@ -56,7 +56,7 @@ export default function AdminDeposits() {
       toast({ title: "Dépôt traité !" });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 

@@ -47,7 +47,7 @@ export default function InvestPage() {
     },
     onError: (error: any) => {
       setConfirmProduct(null);
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 

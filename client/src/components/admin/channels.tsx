@@ -63,7 +63,7 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
       form.reset();
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -82,7 +82,7 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
       setEditChannel(null);
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -100,7 +100,7 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
       toast({ title: "Canal supprimé!" });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -117,7 +117,7 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/channels"] });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 

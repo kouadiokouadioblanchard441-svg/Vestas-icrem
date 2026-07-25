@@ -48,7 +48,7 @@ export default function ProductsPage() {
       toast({ title: "Félicitations pour l'achat de votre produit", description: "Vous commencerez à recevoir des gains demain.", variant: "default" });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 

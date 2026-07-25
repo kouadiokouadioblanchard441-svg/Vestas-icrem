@@ -81,7 +81,7 @@ export default function LoginPage() {
       }
       navigate("/");
     } catch (error: any) {
-      toast({ title: "Erreur de connexion", description: error.message || t.errLoginFailed, variant: "destructive" });
+      toast({ title: error.message || t.errLoginFailed, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }

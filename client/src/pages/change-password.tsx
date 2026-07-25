@@ -33,7 +33,7 @@ export default function ChangePasswordPage() {
       navigate("/account");
     },
     onError: (error: Error) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -47,7 +47,7 @@ export default function ChangePasswordPage() {
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast({ title: "Erreur", description: "Les nouveaux mots de passe ne correspondent pas", variant: "destructive" });
+      toast({ title: "Les nouveaux mots de passe ne correspondent pas", variant: "destructive" });
       return;
     }
     changePasswordMutation.mutate({ currentPassword, newPassword });

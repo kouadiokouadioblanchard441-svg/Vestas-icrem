@@ -55,7 +55,7 @@ export default function AdminGiftCodes() {
       toast({ title: "Succes", description: "Code cadeau cree avec succes" });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
@@ -70,14 +70,14 @@ export default function AdminGiftCodes() {
       toast({ title: "Succes", description: "Code cadeau supprime" });
     },
     onError: (error: any) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.code || !formData.amount || !formData.maxUses || !formData.expiresAt) {
-      toast({ title: "Erreur", description: "Tous les champs sont requis", variant: "destructive" });
+      toast({ title: "Tous les champs sont requis", variant: "destructive" });
       return;
     }
     createMutation.mutate(formData);

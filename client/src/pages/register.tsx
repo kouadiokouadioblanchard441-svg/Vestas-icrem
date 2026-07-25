@@ -92,7 +92,7 @@ export default function RegisterPage() {
       toast({ title: t.successRegister, description: t.welcomeMsg });
       navigate("/");
     } catch (error: any) {
-      toast({ title: "Erreur d'inscription", description: error.message || t.errRegisterFailed, variant: "destructive" });
+      toast({ title: error.message || t.errRegisterFailed, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }

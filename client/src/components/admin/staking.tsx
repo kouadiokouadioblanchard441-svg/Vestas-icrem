@@ -66,7 +66,7 @@ export default function AdminStaking() {
       toast({ title: editTarget ? "Produit mis à jour" : `${forms.length} produit(s) ajouté(s)` });
       closeForm();
     },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({
@@ -79,7 +79,7 @@ export default function AdminStaking() {
       queryClient.invalidateQueries({ queryKey: ["/api/staking/products"] });
       toast({ title: "Produit supprimé" });
     },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
   });
 
   const toggleMutation = useMutation({
@@ -92,7 +92,7 @@ export default function AdminStaking() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/staking/products"] });
       queryClient.invalidateQueries({ queryKey: ["/api/staking/products"] });
     },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
   });
 
   const openAdd = () => {
