@@ -36,20 +36,20 @@ export async function seed() {
   if (existingCompanyContent.length === 0) {
     await db.insert(companyContent).values([
       {
-        title: "Qui sommes-nous ?",
-        body: "Découvrez notre entreprise, notre vision et les solutions que nous développons pour accompagner nos clients.",
+        title: "我们是谁？",
+        body: "了解我们的公司、愿景以及为客户提供的解决方案。",
         sortOrder: 1,
         isActive: true,
       },
       {
-        title: "Nos plans d'investissement",
-        body: "Retrouvez ici les informations sur nos plans d'investissement, leurs conditions et les opportunités proposées par la plateforme.",
+        title: "投资计划",
+        body: "这里提供投资计划、相关条件以及平台机会的详细信息。",
         sortOrder: 2,
         isActive: true,
       },
       {
-        title: "Notre engagement",
-        body: "Nous mettons l'accent sur la transparence, la qualité du service et l'accompagnement de chaque membre.",
+        title: "我们的承诺",
+        body: "我们重视透明度、服务质量，并为每一位会员提供支持。",
         sortOrder: 3,
         isActive: true,
       },

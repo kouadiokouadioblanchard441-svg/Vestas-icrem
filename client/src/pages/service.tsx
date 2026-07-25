@@ -96,34 +96,34 @@ export default function ServicePage() {
   const endHour = settings?.withdrawalEndHour || "17";
   const hoursDisplay = `${startHour}:00 - ${endHour}:00`;
 
-  const servicePageTitle = getContent(allSettings, "content_service_pageTitle", "Service client");
-  const serviceWithdrawalHoursText = getContent(allSettings, "content_service_withdrawalHoursText", "Heures de retrait : 24h.");
-  const serviceSupportHoursLabel = getContent(allSettings, "content_service_supportHoursLabel", "Horaires du service client :");
+  const servicePageTitle = getContent(allSettings, "content_service_pageTitle", "客服中心");
+  const serviceWithdrawalHoursText = getContent(allSettings, "content_service_withdrawalHoursText", "提现服务时间：全天开放。");
+  const serviceSupportHoursLabel = getContent(allSettings, "content_service_supportHoursLabel", "客服服务时间：");
 
   const allLinks = [
     {
-      label: settings?.supportLabel || "Service client",
+      label: settings?.supportLabel && /[\u3400-\u9fff]/.test(settings.supportLabel) ? settings.supportLabel : "客服",
       type: settings?.supportType || "telegram",
       href: settings?.supportLink || "https://t.me/vestasgroup",
       testId: "button-support-link",
       enabled: settings?.supportEnabled !== "false",
     },
     {
-      label: settings?.support2Label || "Service client 2",
+      label: settings?.support2Label && /[\u3400-\u9fff]/.test(settings.support2Label) ? settings.support2Label : "客服2",
       type: settings?.support2Type || "telegram",
       href: settings?.support2Link || "https://t.me/vestasgroup",
       testId: "button-support2-link",
       enabled: settings?.support2Enabled !== "false",
     },
     {
-      label: settings?.channelLabel || "Chaîne officielle",
+      label: settings?.channelLabel && /[\u3400-\u9fff]/.test(settings.channelLabel) ? settings.channelLabel : "官方频道",
       type: settings?.channelType || "telegram",
       href: settings?.channelLink || "https://t.me/vestasgroup",
       testId: "button-channel-link",
       enabled: settings?.channelEnabled !== "false",
     },
     {
-      label: settings?.groupLabel || "Groupe de discussion",
+      label: settings?.groupLabel && /[\u3400-\u9fff]/.test(settings.groupLabel) ? settings.groupLabel : "讨论群",
       type: settings?.groupType || "telegram",
       href: settings?.groupLink || "https://t.me/vestasgroup",
       testId: "button-group-link",
@@ -182,7 +182,7 @@ export default function ServicePage() {
           <p className="text-2xl font-black text-gray-900 tracking-wide">{hoursDisplay}</p>
           <p className="text-xs text-gray-400 mt-2">{serviceWithdrawalHoursText}</p>
           <p className="text-xs text-gray-400 mt-0.5">
-            {serviceSupportHoursLabel} {startHour}h - {endHour}h.
+             {serviceSupportHoursLabel} {startHour}:00 - {endHour}:00。
           </p>
         </div>
       </div>

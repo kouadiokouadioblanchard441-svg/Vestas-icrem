@@ -24,12 +24,12 @@ interface TaskWithStatus extends Task {
 }
 
 const TIER_LABELS = [
-  "Parrain Bronze",
-  "Parrain Argent",
-  "Parrain Or",
-  "Parrain Platine",
-  "Parrain Diamant",
-  "Parrain Elite",
+  "青铜推荐",
+  "白银推荐",
+  "黄金推荐",
+  "铂金推荐",
+  "钻石推荐",
+  "精英推荐",
 ];
 
 const TIER_COLORS = [
@@ -82,10 +82,10 @@ export default function TasksPage() {
   const completedCount = tasks?.filter(t => t.isCompleted).length || 0;
   const claimableCount = tasks?.filter(t => t.canClaim && !t.isCompleted).length || 0;
 
-  const headerTitle = getContent(settings, "content_tasks_headerTitle", "Programme de Parrainage");
-  const headerSubtitle = getContent(settings, "content_tasks_headerSubtitle", "Invitez des amis et gagnez des récompenses");
-  const tiersTitle = getContent(settings, "content_tasks_tiersTitle", "Paliers de parrainage");
-  const claimAllButton = getContent(settings, "content_tasks_claimAllButton", "Tout réclamer");
+  const headerTitle = getContent(settings, "content_tasks_headerTitle", "推荐计划");
+  const headerSubtitle = getContent(settings, "content_tasks_headerSubtitle", "邀请好友并获得奖励");
+  const tiersTitle = getContent(settings, "content_tasks_tiersTitle", "推荐等级");
+  const claimAllButton = getContent(settings, "content_tasks_claimAllButton", "全部领取");
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
@@ -137,15 +137,15 @@ export default function TasksPage() {
             <p className="text-[#E8320A] text-lg font-bold" data-testid="text-total-rewards">
               {totalTaskRewards.toLocaleString()}
             </p>
-            <p className="text-gray-500 text-[11px] mt-0.5">{currency} gagnés</p>
+            <p className="text-gray-500 text-[11px] mt-0.5">已获得 {currency}</p>
           </div>
           <div className="flex-1 text-center border-r border-gray-100">
             <p className="text-[#E8320A] text-lg font-bold">{completedCount}</p>
-            <p className="text-gray-500 text-[11px] mt-0.5">Terminées</p>
+            <p className="text-gray-500 text-[11px] mt-0.5">已完成</p>
           </div>
           <div className="flex-1 text-center">
             <p className="text-[#E8320A] text-lg font-bold">{claimableCount}</p>
-            <p className="text-gray-500 text-[11px] mt-0.5">À réclamer</p>
+            <p className="text-gray-500 text-[11px] mt-0.5">待领取</p>
           </div>
         </div>
       </div>
@@ -216,9 +216,9 @@ export default function TasksPage() {
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <p className="text-gray-700 text-[11px] leading-snug mb-0.5">
-                        Inviter{" "}
+                         邀请{" "}
                         <span className="font-bold text-gray-900">{task.requiredInvites}</span>{" "}
-                        personnes à recharger
+                         人充值
                       </p>
                       <p className="text-[#E8192C] font-bold text-xs">
                         {task.reward.toLocaleString()} {currency}
@@ -245,7 +245,7 @@ export default function TasksPage() {
                     <div className="flex-shrink-0">
                       {task.isCompleted ? (
                         <span className="bg-red-50 text-[#E8192C] text-[10px] font-semibold px-2 py-1 rounded-full block text-center">
-                          ✓ Fait
+                           ✓ 已完成
                         </span>
                       ) : task.canClaim ? (
                         <button
@@ -257,12 +257,12 @@ export default function TasksPage() {
                           {claimMutation.isPending ? (
                             <Loader2 className="w-3 h-3 animate-spin" />
                           ) : (
-                            "Réclamer"
+                           "领取"
                           )}
                         </button>
                       ) : (
                         <span className="bg-gray-100 text-gray-400 text-[10px] font-semibold px-2 py-1 rounded-full block text-center">
-                          En attente
+                           等待中
                         </span>
                       )}
                     </div>
@@ -274,7 +274,7 @@ export default function TasksPage() {
         ) : (
           <div className="text-center py-12">
             <Trophy className="w-12 h-12 text-white/40 mx-auto mb-3" />
-            <p className="text-white/70">Aucune tâche disponible</p>
+             <p className="text-white/70">暂无可用任务</p>
           </div>
         )}
       </div>

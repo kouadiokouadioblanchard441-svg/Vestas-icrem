@@ -4,11 +4,6 @@ export type Lang = "fr" | "en" | "pt" | "es" | "ar" | "zh";
 
 export const LANGUAGES: { code: Lang; label: string; flag: string; nativeName: string }[] = [
   { code: "zh", label: "中文",      flag: "🇨🇳", nativeName: "中文" },
-  { code: "fr", label: "Français",  flag: "🇫🇷", nativeName: "Français" },
-  { code: "en", label: "English",   flag: "🇬🇧", nativeName: "English" },
-  { code: "pt", label: "Português", flag: "🇵🇹", nativeName: "Português" },
-  { code: "es", label: "Español",   flag: "🇪🇸", nativeName: "Español" },
-  { code: "ar", label: "العربية",   flag: "🇸🇦", nativeName: "العربية" },
 ];
 
 export type Translations = {
@@ -567,16 +562,14 @@ const STORAGE_KEY = "powerade_lang_v2";
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY) as Lang | null;
-      if (saved && T[saved]) return saved;
-    } catch {}
     return "zh";
   });
 
   const setLang = (l: Lang) => {
-    setLangState(l);
-    try { localStorage.setItem(STORAGE_KEY, l); } catch {}
+    // The platform is currently Chinese-only. Keep the API for existing
+    // callers, but do not allow an old saved language to change the UI.
+    setLangState(l === "zh" ? "zh" : "zh");
+    try { localStorage.setItem(STORAGE_KEY, "zh"); } catch {}
   };
 
   useEffect(() => {

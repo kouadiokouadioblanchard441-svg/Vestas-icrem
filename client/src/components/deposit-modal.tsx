@@ -16,11 +16,11 @@ import { Loader2 } from "lucide-react";
 import type { PaymentChannel } from "@shared/schema";
 
 const depositSchema = z.object({
-  amount: z.string().min(1, "Montant requis"),
-  accountName: z.string().min(2, "Nom du compte requis"),
-  accountNumber: z.string().min(8, "Numéro de paiement requis"),
-  paymentMethod: z.string().min(2, "Moyen de paiement requis"),
-  paymentChannelId: z.string().min(1, "Canal de recharge requis"),
+  amount: z.string().min(1, "请输入金额"),
+  accountName: z.string().min(2, "请输入支付账户名称"),
+  accountNumber: z.string().min(8, "请输入支付号码"),
+  paymentMethod: z.string().min(2, "请选择支付方式"),
+  paymentChannelId: z.string().min(1, "请选择充值渠道"),
 });
 
 type DepositForm = z.infer<typeof depositSchema>;
@@ -74,7 +74,7 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
       if (data.redirectUrl) {
         window.open(data.redirectUrl, "_blank");
       }
-      toast({ title: "Demande envoyée!", description: "Votre dépôt est en attente de validation." });
+       toast({ title: "充值申请已提交！", description: "您的充值正在等待审核。" });
       handleClose();
     },
     onError: (error: any) => {
@@ -101,7 +101,7 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
       setSelectedAmount(amount);
       setStep("details");
     } else {
-      toast({ title: "Montant invalide", description: "Le montant minimum est de 2 USDT", variant: "destructive" });
+       toast({ title: "金额无效", description: "最低金额为 2 USDT", variant: "destructive" });
     }
   };
 
@@ -116,14 +116,14 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {step === "amount" ? "Recharger" : "Informations de paiement"}
+             {step === "amount" ? "充值" : "支付信息"}
           </DialogTitle>
         </DialogHeader>
 
         {step === "amount" ? (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Minimum: {formatCurrency(2000, user.country)}
+               最低金额：{formatCurrency(2000, user.country)}
             </p>
 
             <div className="grid grid-cols-3 gap-2">
@@ -142,13 +142,13 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
             <div className="flex gap-2">
               <Input
                 type="number"
-                placeholder="Montant personnalisé"
+                 placeholder="自定义金额"
                 value={form.watch("amount")}
                 onChange={(e) => form.setValue("amount", e.target.value)}
                 data-testid="input-custom-amount"
               />
               <Button onClick={handleCustomAmount} data-testid="button-custom-amount">
-                Continuer
+                 继续
               </Button>
             </div>
           </div>
@@ -156,7 +156,7 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
           <Form {...form}>
             <form onSubmit={form.handleSubmit((data) => depositMutation.mutate(data))} className="space-y-4">
               <div className="bg-secondary rounded-lg p-3 text-center">
-                <p className="text-sm text-muted-foreground">Montant</p>
+                <p className="text-sm text-muted-foreground">金额</p>
                 <p className="text-2xl font-bold text-primary">
                   {formatCurrency(selectedAmount || 0, user.country)}
                 </p>
@@ -167,11 +167,11 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
                 name="paymentChannelId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Canal de recharge</FormLabel>
+                    <FormLabel>充值渠道</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger data-testid="select-channel">
-                          <SelectValue placeholder="Choisir un canal" />
+                         <SelectValue placeholder="选择渠道" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -192,9 +192,9 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
                 name="accountName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nom du compte de paiement</FormLabel>
+                    <FormLabel>支付账户名称</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Votre nom complet" data-testid="input-account-name" />
+                       <Input {...field} placeholder="请输入您的姓名" data-testid="input-account-name" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -206,9 +206,9 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
                 name="accountNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Numéro de paiement</FormLabel>
+                    <FormLabel>支付号码</FormLabel>
                     <FormControl>
-                      <Input {...field} type="tel" placeholder="Votre numéro" data-testid="input-account-number" />
+                       <Input {...field} type="tel" placeholder="请输入号码" data-testid="input-account-number" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -220,11 +220,11 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
                 name="paymentMethod"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Moyen de paiement</FormLabel>
+                    <FormLabel>支付方式</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger data-testid="select-payment-method">
-                          <SelectValue placeholder="Choisir" />
+                           <SelectValue placeholder="选择" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -242,13 +242,13 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
 
               <div className="flex gap-2">
                 <Button type="button" variant="outline" onClick={() => setStep("amount")} className="flex-1">
-                  Retour
+                   返回
                 </Button>
                 <Button type="submit" className="flex-1" disabled={depositMutation.isPending} data-testid="button-submit-deposit">
                   {depositMutation.isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    "Procéder au paiement"
+                     "提交支付"
                   )}
                 </Button>
               </div>

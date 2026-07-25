@@ -26,9 +26,9 @@ export default function OrdersPage() {
 
   if (!user) return null;
 
-  const headerTitle = getContent(settings, "content_orders_headerTitle", "Mes commandes");
-  const infoLine1 = getContent(settings, "content_orders_infoLine1", "Les revenus du produit sont credites automatiquement une fois toutes les 24 heures.");
-  const infoLine2 = getContent(settings, "content_orders_infoLine2", "Vous pouvez acheter plusieurs machines pour augmenter vos revenus.");
+  const headerTitle = getContent(settings, "content_orders_headerTitle", "我的订单");
+  const infoLine1 = getContent(settings, "content_orders_infoLine1", "产品收益每24小时自动到账。");
+  const infoLine2 = getContent(settings, "content_orders_infoLine2", "您可以购买多个产品来增加收益。");
 
   const getProductImage = (index: number) => {
     return productImages[index % productImages.length];
@@ -55,7 +55,7 @@ export default function OrdersPage() {
           data-testid="orders-tab-active"
         >
           <span className="w-2 h-2 rounded-full bg-white"></span>
-          En cours
+           进行中
         </button>
         <button
           onClick={() => setActiveTab("completed")}
@@ -67,7 +67,7 @@ export default function OrdersPage() {
           data-testid="orders-tab-completed"
         >
           <span className={activeTab === "completed" ? "text-white" : "text-white/50"}>&#10003;</span>
-          Termine
+           已完成
         </button>
       </div>
 
@@ -106,7 +106,7 @@ export default function OrdersPage() {
                     <div className="w-24 h-24 flex-shrink-0">
                       <img 
                         src={getProductImage(up.productId ? up.productId % productImages.length : index)} 
-                        alt={up.product?.name || "Produit"}
+                        alt={up.product?.name || "产品"}
                         className="w-full h-full object-cover rounded-lg"
                       />
                     </div>
@@ -114,35 +114,35 @@ export default function OrdersPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start mb-2">
                         <p className="text-red-500 font-bold text-sm">
-                          {up.product?.name || "Produit"}
+                           {up.product?.name || "产品"}
                         </p>
                         <span className={`px-2 py-0.5 text-[11px] font-semibold rounded ${
                           up.status === 'active' 
                             ? 'bg-green-100 text-green-600' 
                             : 'bg-gray-100 text-gray-600'
                         }`}>
-                          {up.status === 'active' ? 'Actif' : 'Termine'}
+                           {up.status === 'active' ? '有效' : '已完成'}
                         </span>
                       </div>
                       
                       <div className="space-y-0.5 text-[12px]">
                         <p className="text-gray-600">
-                          Prix : <span className="text-green-500 font-medium">{up.product?.price?.toLocaleString() || 0} Fcfa</span>
+                           价格：<span className="text-green-500 font-medium">{up.product?.price?.toLocaleString() || 0} Fcfa</span>
                         </p>
                         <p className="text-gray-600">
-                          Gains/jour : <span className="text-green-500 font-medium">{up.product?.dailyEarnings?.toLocaleString() || 0} Fcfa</span>
+                           每日收益：<span className="text-green-500 font-medium">{up.product?.dailyEarnings?.toLocaleString() || 0} Fcfa</span>
                         </p>
                         <p className="text-gray-600">
-                          Duree : <span className="text-green-500 font-medium">{up.product?.cycleDays || 0} Jours</span>
+                           周期：<span className="text-green-500 font-medium">{up.product?.cycleDays || 0} 天</span>
                         </p>
                         <p className="text-gray-600">
-                          Jours restants : <span className="text-[#2196F3] font-medium">{up.daysRemaining || 0}</span>
+                           剩余天数：<span className="text-[#2196F3] font-medium">{up.daysRemaining || 0}</span>
                         </p>
                         <p className="text-gray-600">
-                          Total gagne : <span className="text-green-600 font-bold">{totalEarned.toLocaleString()} Fcfa</span>
+                           累计收益：<span className="text-green-600 font-bold">{totalEarned.toLocaleString()} Fcfa</span>
                         </p>
                         <p className="text-gray-600">
-                          Date : <span className="text-gray-700 font-medium">{purchaseDate}</span> a <span className="text-gray-700 font-medium">{purchaseTime}</span>
+                           日期：<span className="text-gray-700 font-medium">{purchaseDate}</span> {purchaseTime}
                         </p>
                       </div>
                     </div>
@@ -163,7 +163,7 @@ export default function OrdersPage() {
                 <path d="M45 30 Q50 15 55 30" stroke="currentColor" strokeWidth="2" fill="none"/>
               </svg>
             </div>
-            <p className="text-gray-500 font-medium">Aucun contenu pour le moment !</p>
+             <p className="text-gray-500 font-medium">暂无订单</p>
           </div>
         )}
       </div>

@@ -43,7 +43,7 @@ export default function InvestPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/user/products"] });
       refreshUser();
       setConfirmProduct(null);
-      toast({ title: "Produit acheté !", description: "Vous commencerez à recevoir des gains demain." });
+      toast({ title: "购买成功！", description: "您将从明天开始获得收益。" });
     },
     onError: (error: any) => {
       setConfirmProduct(null);
@@ -98,27 +98,27 @@ export default function InvestPage() {
                   {/* Stats */}
                   <div className="px-3 pb-1 space-y-0.5">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-[11px]">Prix</span>
+                         <span className="text-gray-400 text-[11px]">价格</span>
                       <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
                         {currency} {Number(product.price).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-[11px]">Rev. quotidien</span>
+                       <span className="text-gray-400 text-[11px]">每日收益</span>
                       <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
                         {currency} {Number(product.dailyEarnings).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-[11px]">Rev. total</span>
+                       <span className="text-gray-400 text-[11px]">总收益</span>
                       <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
                         {currency} {Number(product.totalReturn).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-[11px]">Période</span>
+                       <span className="text-gray-400 text-[11px]">周期</span>
                       <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
-                        {product.cycleDays} jours
+                         {product.cycleDays} 天
                       </span>
                     </div>
                   </div>
@@ -135,7 +135,7 @@ export default function InvestPage() {
                         style={{ background: "#E8192C" }}
                         data-testid={`button-purchase-${product.id}`}
                       >
-                        Acheter
+                         购买
                       </button>
                     </div>
                   </div>
@@ -146,7 +146,7 @@ export default function InvestPage() {
         ) : (
           <div className="text-center py-12">
             <Settings className="w-16 h-16 text-white/40 mx-auto mb-4" />
-            <p className="text-white/70">Aucun produit disponible</p>
+             <p className="text-white/70">暂无可用产品</p>
           </div>
         )}
       </div>
@@ -166,7 +166,7 @@ export default function InvestPage() {
             <div className="pt-6 px-6 pb-3">
               <h3 className="text-white text-2xl font-black">{confirmProduct.name}</h3>
               <p className="text-white/70 text-sm mt-1">
-                Après l'achat du produit, vos gains seront crédités sur votre compte toutes les 24 heures.
+                 购买产品后，收益将每24小时自动到账。
               </p>
             </div>
 
@@ -181,20 +181,20 @@ export default function InvestPage() {
               </div>
               <div className="flex-1 space-y-1.5">
                 <div>
-                  <p className="text-white/60 text-xs">Prix</p>
+                   <p className="text-white/60 text-xs">价格</p>
                   <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.price).toLocaleString("fr-FR")}</p>
                 </div>
                 <div>
-                  <p className="text-white/60 text-xs">Revenu quotidien</p>
+                   <p className="text-white/60 text-xs">每日收益</p>
                   <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.dailyEarnings).toLocaleString("fr-FR")}</p>
                 </div>
                 <div>
-                  <p className="text-white/60 text-xs">Revenu total</p>
+                   <p className="text-white/60 text-xs">总收益</p>
                   <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.totalReturn).toLocaleString("fr-FR")}</p>
                 </div>
                 <div>
-                  <p className="text-white/60 text-xs">Période de validité</p>
-                  <p className="text-white font-bold text-sm">{confirmProduct.cycleDays} jours</p>
+                   <p className="text-white/60 text-xs">有效周期</p>
+                   <p className="text-white font-bold text-sm">{confirmProduct.cycleDays} 天</p>
                 </div>
               </div>
             </div>
@@ -205,12 +205,12 @@ export default function InvestPage() {
                 <div className="flex items-center gap-2 p-2.5 bg-red-500/20 border border-red-400/30 rounded-xl">
                   <AlertTriangle className="w-4 h-4 text-red-300 shrink-0" />
                   <p className="text-xs text-red-200">
-                    Solde insuffisant. Il vous manque {formatCurrency(confirmProduct.price - balance, user.country)}.
+                     余额不足，还需要 {formatCurrency(confirmProduct.price - balance, user.country)}。
                   </p>
                 </div>
               ) : (
                 <p className="text-white/70 text-xs text-center font-semibold">
-                  Chaque personne ne peut acheter qu'un seul article par jour.
+                   每人每天只能购买一件产品。
                 </p>
               )}
             </div>
@@ -223,7 +223,7 @@ export default function InvestPage() {
                 style={{ background: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.8)" }}
                 data-testid="button-cancel-purchase"
               >
-                Annuler
+                 取消
               </button>
               <button
                 onClick={() => purchaseMutation.mutate(confirmProduct.id)}
@@ -233,7 +233,7 @@ export default function InvestPage() {
                 data-testid="button-confirm-purchase"
               >
                 {purchaseMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                Confirmer
+                 确认
               </button>
             </div>
           </div>

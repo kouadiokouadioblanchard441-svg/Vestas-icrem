@@ -19,7 +19,7 @@ export default function ServiceModal({ open, onClose, supportLink, channelLink, 
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle className="text-center">Service client</DialogTitle>
+          <DialogTitle className="text-center">客服中心</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-3">
@@ -33,8 +33,8 @@ export default function ServiceModal({ open, onClose, supportLink, channelLink, 
               <Headphones className="w-5 h-5 text-green-500" />
             </div>
             <div className="text-left">
-              <p className="font-medium text-foreground">Service client</p>
-              <p className="text-xs text-muted-foreground">Assistance en direct</p>
+               <p className="font-medium text-foreground">客服</p>
+               <p className="text-xs text-muted-foreground">在线咨询</p>
             </div>
           </Button>
 
@@ -48,8 +48,8 @@ export default function ServiceModal({ open, onClose, supportLink, channelLink, 
               <MessageCircle className="w-5 h-5 text-primary" />
             </div>
             <div className="text-left">
-              <p className="font-medium text-foreground">Chaîne officielle</p>
-              <p className="text-xs text-muted-foreground">Annonces et actualités</p>
+               <p className="font-medium text-foreground">官方频道</p>
+               <p className="text-xs text-muted-foreground">公告和最新消息</p>
             </div>
           </Button>
 
@@ -63,8 +63,8 @@ export default function ServiceModal({ open, onClose, supportLink, channelLink, 
               <Users className="w-5 h-5 text-green-500" />
             </div>
             <div className="text-left">
-              <p className="font-medium text-foreground">Groupe de discussion</p>
-              <p className="text-xs text-muted-foreground">Échangez avec la communauté</p>
+               <p className="font-medium text-foreground">讨论群</p>
+               <p className="text-xs text-muted-foreground">与社区成员交流</p>
             </div>
           </Button>
         </div>

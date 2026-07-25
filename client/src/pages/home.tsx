@@ -153,12 +153,12 @@ export default function HomePage() {
   const signupBonus = settings?.signupBonus || "200";
   const level1Commission = settings?.level1Commission || "25";
   const telegramGroupLink = settings?.groupLink || "https://t.me/vestasgroup";
-  const popupTitle = getContent(settings, "content_home_popupTitle", "NOTIFICATION");
+  const popupTitle = getContent(settings, "content_home_popupTitle", "通知");
   const popupLines = [
-    getContent(settings, "content_home_popupLine1", "Power Add Inc. was founded in 1996 as an independent unit of the Tekman Group."),
-    getContent(settings, "content_home_popupLine3", "Power Add solutions cover adapters, open-frame power supplies, U-chassis, box models, and DC/DC converters."),
-    getContent(settings, "content_home_popupLine4", "Research and pilot manufacturing are based in Taiwan; mass production is carried out in Taiwan and China."),
-    getContent(settings, "content_home_popupLine5", "Power Add is certified ISO 9001 and ISO 14001, with a commitment to continuous improvement."),
+    getContent(settings, "content_home_popupLine1", "Power Add 成立于1996年，是 Tekman 集团旗下的独立部门。"),
+    getContent(settings, "content_home_popupLine3", "Power Add 提供适配器、开放式电源、U 型电源、盒式电源和 DC/DC 转换器等解决方案。"),
+    getContent(settings, "content_home_popupLine4", "研发和试生产位于台湾，大规模生产位于台湾和中国。"),
+    getContent(settings, "content_home_popupLine5", "Power Add 已通过 ISO 9001 和 ISO 14001 认证，并持续提升产品质量。"),
   ];
 
   return (
@@ -221,7 +221,7 @@ export default function HomePage() {
 
       {/* ── Header ── */}
       <div className="flex items-center justify-between px-4 py-2 bg-white shadow-sm">
-        <img src={poweraddLogo} alt="Power Add" className="h-10 w-auto object-contain" />
+              <img src={poweraddLogo} alt="Power Add" className="h-10 w-auto object-contain" />
         <LanguagePicker variant="dark" />
       </div>
 
@@ -253,9 +253,9 @@ export default function HomePage() {
           </button>
           <button onClick={() => navigate("/company")} className="flex flex-col items-center gap-2" data-testid="button-company">
             <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <Building2 className="w-8 h-8" style={{ color: "#315aab" }} />
+              <Building2 className="w-8 h-8 text-black" />
             </div>
-            <span className="text-gray-700 text-xs font-medium">Compagnie</span>
+            <span className="text-gray-700 text-xs font-medium">公司</span>
           </button>
         </div>
       </div>

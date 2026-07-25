@@ -50,19 +50,19 @@ export default function TeamPage() {
 
   const copyCode = () => {
     navigator.clipboard.writeText(user.referralCode);
-    toast({ title: "Code copié !" });
+    toast({ title: "邀请码已复制！" });
   };
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
-    toast({ title: "Lien copié !" });
+    toast({ title: "链接已复制！" });
   };
 
   const lv1Rate = settings?.level1Commission || "27";
   const lv2Rate = settings?.level2Commission || "2";
   const lv3Rate = settings?.level3Commission || "1";
 
-  const taskCenterButton = getContent(settings, "content_team_taskCenterButton", "Tâches");
+  const taskCenterButton = getContent(settings, "content_team_taskCenterButton", "任务中心");
 
   // Argent rechargé par niveau (back-computed depuis commission pour niveaux 2 & 3)
   const lv1Recharged = (stats?.level1Recharged || 0).toFixed(0);
@@ -77,21 +77,21 @@ export default function TeamPage() {
 
   const levels = [
     {
-      label: "Équipe niveau 1",
+      label: "一级团队",
       recharged: lv1Recharged,
       invested: stats?.level1Invested || 0,
       total: stats?.level1Count || 0,
       rate: `${lv1Rate}%`,
     },
     {
-      label: "Équipe niveau 2",
+      label: "二级团队",
       recharged: lv2Recharged,
       invested: stats?.level2Invested || 0,
       total: stats?.level2Count || 0,
       rate: `${lv2Rate}%`,
     },
     {
-      label: "Équipe niveau 3",
+      label: "三级团队",
       recharged: lv3Recharged,
       invested: stats?.level3Invested || 0,
       total: stats?.level3Count || 0,
@@ -117,7 +117,7 @@ export default function TeamPage() {
           >
             <Users size={16} className="text-white" />
           </div>
-          <p className="text-white font-extrabold text-lg tracking-wide">Équipe</p>
+          <p className="text-white font-extrabold text-lg tracking-wide">团队</p>
         </div>
         <button
           onClick={() => navigate("/salary-bonus")}
@@ -143,13 +143,13 @@ export default function TeamPage() {
               className="w-4 h-4 object-contain"
               style={{ filter: "brightness(0) invert(1)" }}
             />
-            <p className="text-white font-bold text-sm">Code &amp; Lien d'invitation</p>
+            <p className="text-white font-bold text-sm">邀请码与邀请链接</p>
           </div>
 
           <div className="px-4 py-4 space-y-3">
             {/* Code */}
             <div>
-              <p className="text-gray-400 text-[11px] mb-1.5 font-medium">Inviter :</p>
+              <p className="text-gray-400 text-[11px] mb-1.5 font-medium">邀请码：</p>
               <div className="flex items-center gap-2">
                 <div
                   className="flex-1 min-w-0 px-3 py-2.5 rounded-xl"
@@ -165,7 +165,7 @@ export default function TeamPage() {
                   style={{ background: RED }}
                   data-testid="button-copy-code"
                 >
-                  <Copy size={12} /> Copier
+                  <Copy size={12} /> 复制
                 </button>
               </div>
             </div>
@@ -174,7 +174,7 @@ export default function TeamPage() {
 
             {/* Lien */}
             <div>
-              <p className="text-gray-400 text-[11px] mb-1.5 font-medium">Inviter :</p>
+              <p className="text-gray-400 text-[11px] mb-1.5 font-medium">邀请链接：</p>
               <div className="flex items-center gap-2">
                 <div
                   className="flex-1 min-w-0 px-3 py-2.5 rounded-xl"
@@ -190,7 +190,7 @@ export default function TeamPage() {
                   style={{ background: RED }}
                   data-testid="button-copy-link"
                 >
-                  <Copy size={12} /> Copier
+                  <Copy size={12} /> 复制
                 </button>
               </div>
             </div>
@@ -213,7 +213,7 @@ export default function TeamPage() {
             <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.28)" }} />
             <div className="relative z-10 p-4 flex flex-col justify-between h-full">
               <p className="text-white/90 text-[11px] font-semibold leading-tight drop-shadow">
-                Portefeuille de recharge
+                团队充值总额
               </p>
               <div className="mt-3">
                 <p className="text-white font-extrabold text-xl leading-none drop-shadow">
@@ -237,7 +237,7 @@ export default function TeamPage() {
             <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.28)" }} />
             <div className="relative z-10 p-4 flex flex-col justify-between h-full">
               <p className="text-white/90 text-[11px] font-semibold leading-tight drop-shadow">
-                Portefeuille de retrait
+                团队提现总额
               </p>
               <div className="mt-3">
                 <p className="text-white font-extrabold text-xl leading-none drop-shadow">
@@ -267,7 +267,7 @@ export default function TeamPage() {
             <div className="grid grid-cols-3 py-4">
               <div className="flex flex-col items-center px-2 border-r border-gray-100">
                 <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
-                  Argent{"\n"}rechargé
+                  充值金额
                 </p>
                 <p className="font-extrabold text-sm" style={{ color: BLUE }}>
                   {Number(lvl.recharged).toLocaleString("fr-FR")}
@@ -277,7 +277,7 @@ export default function TeamPage() {
 
               <div className="flex flex-col items-center px-2 border-r border-gray-100">
                 <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
-                  Nombre total{"\n"}de personnes
+                  总人数
                 </p>
                 <p className="font-extrabold text-sm text-gray-900">
                   {lvl.invested}/{lvl.total}
@@ -286,7 +286,7 @@ export default function TeamPage() {
 
               <div className="flex flex-col items-center px-2">
                 <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
-                  Taux de{"\n"}commission
+                  佣金比例
                 </p>
                 <p className="font-extrabold text-sm" style={{ color: RED }}>
                   {lvl.rate}
@@ -303,7 +303,7 @@ export default function TeamPage() {
           style={{ background: RED, color: "#fff" }}
         >
           <Users size={16} />
-          Voir tous mes membres
+          查看全部成员
           <ChevronRight size={16} />
         </button>
 

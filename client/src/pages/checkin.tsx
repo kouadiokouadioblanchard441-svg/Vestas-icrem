@@ -55,14 +55,14 @@ export default function CheckinPage() {
   const totalBonusClaimed = bonusStatus?.totalBonusClaimed || 0;
   const daysPointed = bonusStatus?.daysPointed || 0;
 
-  const headerTitle = getContent(settings, "content_checkin_headerTitle", "Pointage");
-  const cardTitle = getContent(settings, "content_checkin_cardTitle", "Pointage quotidien");
-  const cardSubtitle = getContent(settings, "content_checkin_cardSubtitle", "Activer les récompenses quotidiennes");
-  const dailyRewardLabel = getContent(settings, "content_checkin_dailyRewardLabel", "Récompense du jour");
-  const streakLabel = getContent(settings, "content_checkin_streakLabel", "Jours consécutifs");
-  const totalLabel = getContent(settings, "content_checkin_totalLabel", "Récompenses cumulées");
-  const rule1 = getContent(settings, "content_checkin_rule1", "1. Récompense de connexion quotidienne : 0.05 USDT");
-  const rule2 = getContent(settings, "content_checkin_rule2", "2. Connectez-vous une fois par jour pour accumuler des points.");
+  const headerTitle = getContent(settings, "content_checkin_headerTitle", "每日签到");
+  const cardTitle = getContent(settings, "content_checkin_cardTitle", "每日签到");
+  const cardSubtitle = getContent(settings, "content_checkin_cardSubtitle", "开启每日奖励");
+  const dailyRewardLabel = getContent(settings, "content_checkin_dailyRewardLabel", "今日奖励");
+  const streakLabel = getContent(settings, "content_checkin_streakLabel", "连续签到天数");
+  const totalLabel = getContent(settings, "content_checkin_totalLabel", "累计奖励");
+  const rule1 = getContent(settings, "content_checkin_rule1", "1. 每日登录可获得 0.05 USDT 奖励");
+  const rule2 = getContent(settings, "content_checkin_rule2", "2. 每天登录一次即可累计奖励。");
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
@@ -140,10 +140,10 @@ export default function CheckinPage() {
               {claimMutation.isPending ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Chargement...
+                  加载中...
                 </span>
               ) : (
-                "Pointer"
+                "签到"
               )}
             </button>
           ) : (
@@ -153,7 +153,7 @@ export default function CheckinPage() {
               style={{ background: "#e0e0e0", color: "#9e9e9e" }}
               data-testid="button-pointer-disabled"
             >
-              Revenir dans {bonusStatus?.hoursRemaining || 0}h
+               {bonusStatus?.hoursRemaining || 0} 小时后再来
             </button>
           )}
         </div>

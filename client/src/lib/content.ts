@@ -7,5 +7,9 @@ export function getContent(
   fallback: string
 ): string {
   const value = settings?.[key];
-  return value !== undefined && value !== "" ? value : fallback;
+  // The product is currently Chinese-only. Keep administrator-entered Chinese
+  // content, but hide legacy French/English values from older database seeds.
+  return value !== undefined && value !== "" && /[\u3400-\u9fff]/.test(value)
+    ? value
+    : fallback;
 }

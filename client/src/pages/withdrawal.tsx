@@ -58,16 +58,16 @@ export default function WithdrawalPage() {
   const withdrawalStartHour = withdrawalSettings?.withdrawalStartHour ?? 9;
   const withdrawalEndHour = withdrawalSettings?.withdrawalEndHour ?? 17;
 
-  const withdrawalCtaButton = getContent(allSettings, "content_withdrawal_ctaButton", "Retirez votre argent maintenant");
-  const withdrawalInstructionsTitle = getContent(allSettings, "content_withdrawal_instructionsTitle", "Instructions de retrait");
-  const withdrawalInstruction1 = getContent(allSettings, "content_withdrawal_instruction1", `1. Le montant minimum de retrait est de ${minWithdrawal.toLocaleString()} ${currency}.`);
-  const withdrawalInstruction2 = getContent(allSettings, "content_withdrawal_instruction2", "2. Il n'y a pas de limite de temps pour les retraits, mais une limite de trois retraits par jour est autorisée.");
-  const withdrawalInstruction3 = getContent(allSettings, "content_withdrawal_instruction3", `3. Des frais de traitement de ${withdrawalFee}% seront appliqués sur chaque retrait.`);
-  const withdrawalInstruction4 = getContent(allSettings, "content_withdrawal_instruction4", "4. Les retraits seront disponibles sous 2 heures, et exceptionnellement sous 24 heures.");
-   const withdrawalInstruction5 = getContent(allSettings, "content_withdrawal_instruction5", "5. Si le retrait échoue, vérifiez que votre adresse USDT BEP20 est correcte, puis soumettez à nouveau la demande.");
-  const withdrawalInstruction6 = getContent(allSettings, "content_withdrawal_instruction6", "6. Consultez les conditions de retrait affichées par la plateforme avant votre demande.");
-  const withdrawalWarningNoHours = getContent(allSettings, "content_withdrawal_warningNoHours", `Horaires de retrait : ${withdrawalStartHour}h00 – ${withdrawalEndHour}h00 (Fermé actuellement)`);
-  const withdrawalWarningNoProduct = getContent(allSettings, "content_withdrawal_warningNoProduct", "Vous devez avoir un produit actif pour effectuer un retrait.");
+  const withdrawalCtaButton = getContent(allSettings, "content_withdrawal_ctaButton", "立即提现");
+  const withdrawalInstructionsTitle = getContent(allSettings, "content_withdrawal_instructionsTitle", "提现说明");
+  const withdrawalInstruction1 = getContent(allSettings, "content_withdrawal_instruction1", `1. 最低提现金额为 ${minWithdrawal.toLocaleString()} ${currency}。`);
+  const withdrawalInstruction2 = getContent(allSettings, "content_withdrawal_instruction2", "2. 每天最多可提现三次，没有时间限制。");
+  const withdrawalInstruction3 = getContent(allSettings, "content_withdrawal_instruction3", `3. 每笔提现将收取 ${withdrawalFee}% 的处理费。`);
+  const withdrawalInstruction4 = getContent(allSettings, "content_withdrawal_instruction4", "4. 提现通常在2小时内到账，特殊情况下可能需要24小时。");
+  const withdrawalInstruction5 = getContent(allSettings, "content_withdrawal_instruction5", "5. 如果提现失败，请确认 USDT BEP20 地址正确后重新提交。");
+  const withdrawalInstruction6 = getContent(allSettings, "content_withdrawal_instruction6", "6. 提交前请查看平台显示的提现条件。");
+  const withdrawalWarningNoHours = getContent(allSettings, "content_withdrawal_warningNoHours", `提现时间：${withdrawalStartHour}:00 – ${withdrawalEndHour}:00（当前已关闭）`);
+  const withdrawalWarningNoProduct = getContent(allSettings, "content_withdrawal_warningNoProduct", "您需要拥有有效产品才能提现。");
 
   const amountAfterFees = amount ? Math.floor(Number(amount) * (1 - withdrawalFee / 100)) : 0;
   const currentHour = new Date().getHours();
@@ -161,7 +161,7 @@ export default function WithdrawalPage() {
         <Link href="/account">
           <button className="flex items-center gap-1 text-gray-800" data-testid="button-back">
             <ChevronLeft className="w-5 h-5" />
-            <span className="font-semibold text-base">Retrait</span>
+            <span className="font-semibold text-base">提现</span>
           </button>
         </Link>
         <div className="w-9 h-9" />
@@ -185,7 +185,7 @@ export default function WithdrawalPage() {
             <span className="text-sm font-semibold mr-1">{currency}</span>
             {balance.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}
           </p>
-          <p className="text-white/80 text-xs mt-0.5">Solde des revenus</p>
+          <p className="text-white/80 text-xs mt-0.5">收益余额</p>
         </div>
       </div>
 
@@ -193,7 +193,7 @@ export default function WithdrawalPage() {
 
         {/* ── Wallet selector ── */}
         <div>
-            <p className="text-white font-semibold text-sm mb-2">Adresse de retrait</p>
+            <p className="text-white font-semibold text-sm mb-2">提现地址</p>
           <button
             onClick={() => {
               if (!hasWallets) {
@@ -209,10 +209,10 @@ export default function WithdrawalPage() {
               {selectedWallet
                  ? `${selectedWallet.accountName} · ${selectedWallet.accountNumber} · ${WITHDRAWAL_METHOD}`
                 : hasWallets
-                   ? "Sélectionner une adresse BEP20"
+                    ? "选择 BEP20 地址"
                   : (
                     <span className="flex items-center gap-2 text-[#E8192C]">
-                      <Plus className="w-4 h-4" /> Ajouter un portefeuille de retrait
+                       <Plus className="w-4 h-4" /> 添加提现钱包
                     </span>
                   )
               }
@@ -224,8 +224,8 @@ export default function WithdrawalPage() {
         {/* ── Amount section ── */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-white font-semibold text-sm">Montant du retrait</p>
-            <p className="text-white/70 text-sm">Impôt: {withdrawalFee}%</p>
+             <p className="text-white font-semibold text-sm">提现金额</p>
+             <p className="text-white/70 text-sm">手续费：{withdrawalFee}%</p>
           </div>
 
           <div className="border border-gray-300 rounded-md flex items-center overflow-hidden bg-white">
@@ -236,7 +236,7 @@ export default function WithdrawalPage() {
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value ? Number(e.target.value) : "")}
-              placeholder="Veuillez sélectionner le montant du retrait"
+               placeholder="请输入提现金额"
               className="flex-1 px-4 py-4 text-sm text-gray-400 outline-none bg-white placeholder:text-gray-400"
               data-testid="input-withdrawal-amount"
             />
@@ -244,12 +244,12 @@ export default function WithdrawalPage() {
 
           <div className="flex items-center justify-between mt-2 px-1">
             <p className="text-white/80 text-xs">
-              Montant reçu:{" "}
+               到账金额：{" "}
               <span className="font-semibold">{currency} {amountAfterFees.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</span>
             </p>
           </div>
           <p className="text-right text-xs mt-1 px-1" style={{ color: "#ff0000" }}>
-            (Minimum {minWithdrawal.toLocaleString()} {currency})
+             （最低 {minWithdrawal.toLocaleString()} {currency}）
           </p>
         </div>
 
@@ -261,7 +261,7 @@ export default function WithdrawalPage() {
         )}
         {!withdrawalEnabled && (
           <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-xs font-medium" style={{ color: "#ff0000" }}>
-            Les retraits sont temporairement désactivés par l’administration.
+             管理员暂时关闭了提现功能。
           </div>
         )}
         {!hasActiveProduct && (
@@ -283,7 +283,7 @@ export default function WithdrawalPage() {
           {withdrawMutation.isPending ? (
             <span className="flex items-center justify-center gap-2">
               <Loader2 className="w-5 h-5 animate-spin" />
-              Envoi en cours...
+               提交中...
             </span>
           ) : (
             withdrawalCtaButton

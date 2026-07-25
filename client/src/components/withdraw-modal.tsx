@@ -14,7 +14,7 @@ import { Loader2, AlertCircle, Clock, Wallet } from "lucide-react";
 import type { WithdrawalWallet } from "@shared/schema";
 
 const withdrawSchema = z.object({
-  amount: z.string().min(1, "Montant requis"),
+  amount: z.string().min(1, "请输入金额"),
 });
 
 type WithdrawForm = z.infer<typeof withdrawSchema>;
@@ -66,7 +66,7 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/withdrawals"] });
       refreshUser();
-      toast({ title: "Demande envoyée!", description: "Votre retrait est en attente de validation." });
+       toast({ title: "提现申请已提交！", description: "您的提现正在等待审核。" });
       handleClose();
     },
     onError: (error: any) => {
@@ -106,9 +106,9 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Retrait</DialogTitle>
+          <DialogTitle>提现</DialogTitle>
           <DialogDescription>
-             Minimum: {minWithdrawal} USDT | Frais: {fees}%
+             最低金额：{minWithdrawal} USDT | 手续费：{fees}%
           </DialogDescription>
         </DialogHeader>
 
@@ -117,14 +117,14 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
             <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
               <div className="text-sm">
-                <p className="font-medium text-destructive">Retrait non disponible</p>
+                <p className="font-medium text-destructive">暂时无法提现</p>
                 <ul className="mt-2 space-y-1 text-muted-foreground">
-                  {!user.hasDeposited && <li>- Effectuez un dépôt</li>}
-                  {!user.hasActiveProduct && <li>- Achetez un produit</li>}
-                  {!defaultWallet && <li>- Enregistrez un portefeuille de retrait</li>}
-                  {user.isWithdrawalBlocked && <li>- Votre retrait est bloqué</li>}
-                  {user.mustInviteToWithdraw && <li>- Invitez quelqu'un qui investit</li>}
-                  {!withdrawalEnabled && <li>- Les retraits sont temporairement désactivés par l'administration</li>}
+                   {!user.hasDeposited && <li>- 请先充值</li>}
+                   {!user.hasActiveProduct && <li>- 请先购买产品</li>}
+                   {!defaultWallet && <li>- 请登记提现钱包</li>}
+                   {user.isWithdrawalBlocked && <li>- 您的提现功能已被限制</li>}
+                   {user.mustInviteToWithdraw && <li>- 请邀请一位用户完成投资</li>}
+                   {!withdrawalEnabled && <li>- 管理员暂时关闭了提现功能</li>}
                 </ul>
               </div>
             </div>
@@ -134,10 +134,10 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
             <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-start gap-3">
               <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
               <div className="text-sm">
-                <p className="font-medium text-foreground">Hors des heures de retrait</p>
+                <p className="font-medium text-foreground">当前不在提现时间内</p>
                 <p className="text-muted-foreground mt-1">
-                  Les retraits sont disponibles de {actualStartHour}h à {actualEndHour}h
-                  {isCameroonOrBenin && " (Cameroun et Bénin)"}
+                   提现时间为 {actualStartHour}:00 至 {actualEndHour}:00
+                   {isCameroonOrBenin && "（喀麦隆和贝宁）"}
                 </p>
               </div>
             </div>
@@ -148,14 +148,14 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
               <div className="bg-secondary rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <Wallet className="w-4 h-4 text-primary" />
-                  <span className="text-sm text-muted-foreground">Portefeuille de retrait</span>
+                   <span className="text-sm text-muted-foreground">提现钱包</span>
                 </div>
                 <p className="font-medium text-foreground">{defaultWallet?.accountName}</p>
                 <p className="text-sm text-muted-foreground">{defaultWallet?.accountNumber} - USDT BEP20</p>
               </div>
 
               <div className="bg-secondary rounded-lg p-3 text-center">
-                <p className="text-sm text-muted-foreground">Solde disponible</p>
+                <p className="text-sm text-muted-foreground">可用余额</p>
                 <p className="text-xl font-bold text-foreground">{balance.toLocaleString("fr-FR")} {currency}</p>
               </div>
 
@@ -164,12 +164,12 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
                 name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Montant à retirer</FormLabel>
+                    <FormLabel>提现金额</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="number"
-                         placeholder={`Minimum ${minWithdrawal}`}
+                         placeholder={`最低 ${minWithdrawal}`}
                         data-testid="input-withdraw-amount"
                       />
                     </FormControl>
@@ -181,7 +181,7 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
               {amount >= 1 && (
                 <div className="bg-muted rounded-lg p-3 space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Montant</span>
+                    <span className="text-muted-foreground">金额</span>
                     <span className="text-foreground">{amount.toLocaleString("fr-FR")} {currency}</span>
                   </div>
                   <div className="flex justify-between">
@@ -189,7 +189,7 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
                     <span className="text-destructive">-{feeAmount.toLocaleString("fr-FR")} {currency}</span>
                   </div>
                   <div className="flex justify-between border-t pt-2">
-                    <span className="font-medium text-foreground">Net à recevoir</span>
+                    <span className="font-medium text-foreground">预计到账</span>
                     <span className="font-bold text-primary">{netAmount.toLocaleString("fr-FR")} {currency}</span>
                   </div>
                 </div>
@@ -204,7 +204,7 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
                 {withdrawMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  "Demander le retrait"
+                   "申请提现"
                 )}
               </Button>
             </form>
