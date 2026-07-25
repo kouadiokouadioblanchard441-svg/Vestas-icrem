@@ -137,7 +137,7 @@ export default function RegisterPage() {
             style={{ color: "#222", fontWeight: 500, fontSize: 13 }}
           >
             <Sun size={18} style={{ color: "#f5a623" }} />
-            <span>Langue</span>
+            <span>{LANGUAGES.find(l => l.code === lang)?.flag} {t.languageLabel}</span>
             <ChevronRight size={14} />
           </button>
         </div>
