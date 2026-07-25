@@ -33,9 +33,9 @@ const TIER_LABELS = [
 ];
 
 const TIER_COLORS = [
-  { bg: "from-amber-700 to-amber-500" },
+  { bg: "from-red-700 to-red-500" },
   { bg: "from-gray-500 to-gray-400" },
-  { bg: "from-yellow-600 to-yellow-400" },
+  { bg: "from-red-600 to-red-400" },
   { bg: "from-cyan-600 to-cyan-400" },
   { bg: "from-red-700 to-red-500" },
   { bg: "from-purple-700 to-purple-500" },

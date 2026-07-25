@@ -42,7 +42,7 @@ function formatDate(dateStr: string): string {
   return `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
 }
 
-const GREEN = "#F59E0B";
+const GREEN = "#E8192C";
 const GREEN_BG = "#d9f5e4";
 
 export default function TeamDetailsPage() {

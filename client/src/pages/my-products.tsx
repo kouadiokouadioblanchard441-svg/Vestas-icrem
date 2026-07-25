@@ -104,7 +104,7 @@ export default function MyProductsPage() {
         <div className="px-3 mt-3 space-y-3">
           {isLoading ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#F59E0B" }} />
+              <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#E8192C" }} />
             </div>
           ) : allProducts.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl shadow-sm flex flex-col items-center gap-3">

@@ -128,7 +128,7 @@ export default function DepositCallbackPage() {
   if (depositStatus === "timeout") {
     return (
       <Screen>
-        <Headphones className="w-16 h-16 text-amber-400 mx-auto" />
+        <Headphones className="w-16 h-16 text-[#E8192C] mx-auto" />
         <h1 className="text-xl font-bold text-gray-800">En attente de confirmation</h1>
         <p className="text-gray-500 text-sm">
           Votre paiement est en cours de traitement. Si votre solde n'est pas
@@ -159,7 +159,7 @@ export default function DepositCallbackPage() {
   /* ── Polling / Loading ── */
   return (
     <Screen>
-      <Loader2 className="w-16 h-16 text-[#F59E0B] animate-spin mx-auto" />
+      <Loader2 className="w-16 h-16 text-[#E8192C] animate-spin mx-auto" />
       <h1 className="text-xl font-bold text-gray-800">Vérification en cours…</h1>
       <p className="text-gray-500 text-sm">
         Nous confirmons votre paiement auprès de WestPay. Merci de patienter
@@ -169,7 +169,7 @@ export default function DepositCallbackPage() {
         {[0, 1, 2].map((i) => (
           <span
             key={i}
-            className="w-2.5 h-2.5 rounded-full bg-[#F59E0B] animate-bounce"
+            className="w-2.5 h-2.5 rounded-full bg-[#E8192C] animate-bounce"
             style={{ animationDelay: `${i * 0.18}s` }}
           />
         ))}

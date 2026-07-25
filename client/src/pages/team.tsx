@@ -235,7 +235,7 @@ export default function TeamPage() {
                       <p className="text-white/70 text-[10px]">Membres</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-yellow-300 font-bold text-xs" data-testid="text-level1-commission">
+                      <p className="text-red-300 font-bold text-xs" data-testid="text-level1-commission">
                         {(stats?.level1Commission || 0).toFixed(0)} {currency}
                       </p>
                       <p className="text-white/70 text-[10px]">Récompenses</p>

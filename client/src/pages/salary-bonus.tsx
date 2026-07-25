@@ -126,7 +126,7 @@ export default function SalaryBonusPage() {
                     className="h-full rounded-full transition-all"
                     style={{
                       width: `${(progress / required) * 100}%`,
-                      background: "linear-gradient(90deg, #FBBF24, #4ADE80)",
+                      background: "linear-gradient(90deg, #E8192C, #4ADE80)",
                     }}
                   />
                 </div>

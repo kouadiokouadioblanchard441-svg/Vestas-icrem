@@ -98,7 +98,7 @@ export default function NewsDetailPage() {
 
         {/* Titre + date */}
         <div className="space-y-2">
-          <h2 className="text-xl font-bold text-[#F59E0B]">{article.title}</h2>
+          <h2 className="text-xl font-bold text-[#E8192C]">{article.title}</h2>
           <p className="text-white/50 text-xs font-semibold">{article.date}</p>
         </div>
 

@@ -188,7 +188,7 @@ export default function AccountPage() {
             <button
               onClick={handleAdminClick}
               className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl"
-              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+              style={{ background: "linear-gradient(135deg, #E8192C, #E8192C)" }}
               data-testid="button-admin"
             >
               <Shield className="w-5 h-5 text-white" />
@@ -228,7 +228,7 @@ export default function AccountPage() {
               }}
               disabled={verifyPinMutation.isPending || adminPin.length < 4}
               className="w-full"
-              style={{ backgroundColor: "#F59E0B" }}
+              style={{ backgroundColor: "#E8192C" }}
               data-testid="button-verify-pin"
             >
               {verifyPinMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}

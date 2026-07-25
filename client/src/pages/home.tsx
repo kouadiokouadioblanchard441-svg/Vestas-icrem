@@ -278,7 +278,7 @@ export default function HomePage() {
               <p className="text-gray-400 text-xs leading-relaxed line-clamp-2">
                 {article.summary}
               </p>
-              <p className="text-xs font-semibold mt-1" style={{ color: "#F59E0B" }}>
+              <p className="text-xs font-semibold mt-1" style={{ color: "#E8192C" }}>
                 {article.date}
               </p>
             </div>

@@ -47,7 +47,7 @@ export default function RulesPage() {
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-[#F59E0B] border-l-4 border-[#F59E0B] pl-3">{rS1Title}</h2>
+          <h2 className="text-lg font-bold text-[#E8192C] border-l-4 border-[#E8192C] pl-3">{rS1Title}</h2>
           <ul className="list-disc pl-5 space-y-2 text-white/90 text-sm">
             <li>{rS1b1}</li>
             <li>{rS1b2}</li>
@@ -56,7 +56,7 @@ export default function RulesPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-[#F59E0B] border-l-4 border-[#F59E0B] pl-3">{rS2Title}</h2>
+          <h2 className="text-lg font-bold text-[#E8192C] border-l-4 border-[#E8192C] pl-3">{rS2Title}</h2>
           <ul className="list-disc pl-5 space-y-2 text-white/90 text-sm">
             <li>Le montant minimum de dépôt est de {parseInt(minDeposit).toLocaleString()} USDT.</li>
             <li>Le montant minimum de retrait est de {parseInt(minWithdrawal).toLocaleString()} USDT.</li>
@@ -67,7 +67,7 @@ export default function RulesPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-[#F59E0B] border-l-4 border-[#F59E0B] pl-3">{rS3Title}</h2>
+          <h2 className="text-lg font-bold text-[#E8192C] border-l-4 border-[#E8192C] pl-3">{rS3Title}</h2>
           <ul className="list-disc pl-5 space-y-2 text-white/90 text-sm">
             <li>Commission de niveau 1 : {lv1}% sur le PREMIER investissement du filleul.</li>
             <li>Commission de niveau 2 : {lv2}% sur le PREMIER investissement du filleul.</li>
@@ -77,14 +77,14 @@ export default function RulesPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-[#F59E0B] border-l-4 border-[#F59E0B] pl-3">{rS4Title}</h2>
+          <h2 className="text-lg font-bold text-[#E8192C] border-l-4 border-[#E8192C] pl-3">{rS4Title}</h2>
           <ul className="list-disc pl-5 space-y-2 text-white/90 text-sm">
             <li>Chaque nouveau membre reçoit {parseInt(signupBonus).toLocaleString()} USDT de bonus à l'inscription.</li>
           </ul>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-[#F59E0B] border-l-4 border-[#F59E0B] pl-3">{rS5Title}</h2>
+          <h2 className="text-lg font-bold text-[#E8192C] border-l-4 border-[#E8192C] pl-3">{rS5Title}</h2>
           <ul className="list-disc pl-5 space-y-2 text-white/90 text-sm">
             <li>{rS5b1}</li>
             <li>{rS5b2}</li>

@@ -281,13 +281,13 @@ export default function DepositPage() {
           >
             <div>
               <p className="text-xs text-gray-500">Montant à déposer</p>
-              <p className="text-xl font-bold text-[#F59E0B]">
+              <p className="text-xl font-bold text-[#E8192C]">
                 {Number(amount).toLocaleString()} {currency}
               </p>
             </div>
             <button
               onClick={() => setStep("amount")}
-              className="text-xs text-[#F59E0B] underline"
+              className="text-xs text-[#E8192C] underline"
               data-testid="button-change-amount"
             >
               Modifier
@@ -302,7 +302,7 @@ export default function DepositPage() {
 
             {numbersLoading ? (
               <div className="flex items-center justify-center py-16">
-                <Loader2 className="w-8 h-8 animate-spin text-[#F59E0B]" />
+                <Loader2 className="w-8 h-8 animate-spin text-[#E8192C]" />
               </div>
             ) : paymentNumbersList.length === 0 ? (
               <div className="text-center py-14 text-white/70">
@@ -322,12 +322,12 @@ export default function DepositPage() {
                       <img src={num.logoUrl} alt={num.operatorName} className="w-12 h-12 rounded-xl object-contain border border-gray-100" />
                     ) : (
                       <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center">
-                        <Phone className="w-6 h-6 text-[#F59E0B]" />
+                        <Phone className="w-6 h-6 text-[#E8192C]" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-gray-900 text-sm">{num.operatorName}</p>
-                      <p className="text-[#F59E0B] font-mono font-bold text-lg">{num.phone}</p>
+                      <p className="text-[#E8192C] font-mono font-bold text-lg">{num.phone}</p>
                       <p className="text-gray-500 text-xs">{num.ownerName}</p>
                     </div>
                     <button
@@ -337,7 +337,7 @@ export default function DepositPage() {
                     >
                       {copiedId === num.id
                         ? <CheckCircle className="w-5 h-5 text-green-500" />
-                        : <Copy className="w-5 h-5 text-[#F59E0B]" />}
+                        : <Copy className="w-5 h-5 text-[#E8192C]" />}
                     </button>
                   </div>
                   <button
@@ -379,12 +379,12 @@ export default function DepositPage() {
                 <img src={selectedNumber.logoUrl} alt={selectedNumber.operatorName} className="w-10 h-10 rounded-lg object-contain" />
               ) : (
                 <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center">
-                  <Phone className="w-5 h-5 text-[#F59E0B]" />
+                  <Phone className="w-5 h-5 text-[#E8192C]" />
                 </div>
               )}
               <div className="flex-1">
                 <p className="text-xs text-gray-500">Numéro destinataire</p>
-                <p className="font-bold text-[#F59E0B] text-sm">{selectedNumber.operatorName} — {selectedNumber.phone}</p>
+                <p className="font-bold text-[#E8192C] text-sm">{selectedNumber.operatorName} — {selectedNumber.phone}</p>
                 <p className="text-xs text-gray-500">{selectedNumber.ownerName}</p>
               </div>
               <div className="text-right">

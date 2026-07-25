@@ -197,7 +197,7 @@ export default function WalletPage() {
             onClick={handleSubmit}
             disabled={addMutation.isPending}
             className="w-full py-4 rounded-full text-white font-bold text-base shadow-md mt-2 disabled:opacity-40"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+            style={{ background: "linear-gradient(135deg, #E8192C, #E8192C)" }}
             data-testid="button-confirm-wallet"
           >
             {addMutation.isPending ? (
@@ -344,7 +344,7 @@ export default function WalletPage() {
               <button
                 onClick={() => setShowForm(true)}
                 className="w-full py-3.5 rounded-full text-white font-bold text-sm shadow-md mt-2"
-                style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+                style={{ background: "linear-gradient(135deg, #E8192C, #E8192C)" }}
                 data-testid="button-add-wallet"
               >
                 + Ajouter une carte
@@ -356,7 +356,7 @@ export default function WalletPage() {
           <button
             onClick={() => setShowForm(true)}
             className="w-full py-4 rounded-full text-white font-bold text-base shadow-md"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+            style={{ background: "linear-gradient(135deg, #E8192C, #E8192C)" }}
             data-testid="button-add-wallet"
           >
             Ajouter un moyen de retrait

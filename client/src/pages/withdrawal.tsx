@@ -143,7 +143,7 @@ export default function WithdrawalPage() {
   if (walletsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: "#315aab" }}>
-        <Loader2 className="w-8 h-8 animate-spin text-[#F59E0B]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#E8192C]" />
       </div>
     );
   }
@@ -211,7 +211,7 @@ export default function WithdrawalPage() {
                 : hasWallets
                    ? "Sélectionner une adresse BEP20"
                   : (
-                    <span className="flex items-center gap-2 text-[#F59E0B]">
+                    <span className="flex items-center gap-2 text-[#E8192C]">
                       <Plus className="w-4 h-4" /> Ajouter un portefeuille de retrait
                     </span>
                   )
@@ -276,7 +276,7 @@ export default function WithdrawalPage() {
           disabled={withdrawMutation.isPending || !withdrawalEnabled}
           className="w-full py-5 rounded-full text-white font-bold text-base shadow-lg disabled:opacity-50"
           style={{
-            background: "linear-gradient(135deg, #F59E0B 0%, #D97706 50%, #B45309 100%)",
+            background: "linear-gradient(135deg, #E8192C 0%, #E8192C 50%, #B45309 100%)",
           }}
           data-testid="button-submit-withdrawal"
         >
@@ -292,7 +292,7 @@ export default function WithdrawalPage() {
 
         {/* ── Instructions (texte existant conservé) ── */}
         <div className="pt-2 pb-6">
-          <p className="font-bold text-[#F59E0B] text-sm mb-3">{withdrawalInstructionsTitle}</p>
+          <p className="font-bold text-[#E8192C] text-sm mb-3">{withdrawalInstructionsTitle}</p>
           <div className="space-y-2.5 text-sm text-gray-600 leading-relaxed">
             <p>{withdrawalInstruction1}</p>
             <p>{withdrawalInstruction2}</p>

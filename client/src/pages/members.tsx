@@ -124,7 +124,7 @@ export default function MembersPage() {
           </div>
           <div className="flex-1 px-5 py-4">
             <p className="text-white/70 text-xs font-medium mb-1">Bonus reçus</p>
-            <p className="text-yellow-300 font-extrabold text-2xl">
+            <p className="text-red-300 font-extrabold text-2xl">
               {isLoading ? "—" : `${totalBonus.toFixed(0)} ${currency}`}
             </p>
           </div>

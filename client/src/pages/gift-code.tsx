@@ -97,7 +97,7 @@ export default function GiftCodePage() {
 
         {/* Icon badge */}
         <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center shadow-lg border-2 border-white"
-          style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+          style={{ background: "linear-gradient(135deg, #E8192C, #E8192C)" }}>
           <Gift className="w-6 h-6 text-white" />
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function GiftCodePage() {
         {/* Input card */}
         <div className="bg-white rounded-2xl shadow-sm p-4 space-y-3">
           <div className="flex items-center gap-2 mb-1">
-            <Tag className="w-4 h-4" style={{ color: "#F59E0B" }} />
+            <Tag className="w-4 h-4" style={{ color: "#E8192C" }} />
             <span className="text-gray-800 font-semibold text-sm">Code cadeau</span>
           </div>
 
@@ -130,7 +130,7 @@ export default function GiftCodePage() {
               placeholder="Saisir le code ici"
               className="w-full px-4 py-3 rounded-xl border-2 text-center text-sm font-mono tracking-widest outline-none transition-colors"
               style={{
-                borderColor: code ? "#F59E0B" : "#e5e7eb",
+                borderColor: code ? "#E8192C" : "#e5e7eb",
                 color: "#1f2937",
               }}
               data-testid="input-gift-code"
@@ -141,7 +141,7 @@ export default function GiftCodePage() {
             onClick={handleSubmit}
             disabled={claimMutation.isPending}
             className="w-full py-3.5 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2 transition-opacity active:opacity-80"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+            style={{ background: "linear-gradient(135deg, #E8192C, #E8192C)" }}
             data-testid="button-submit-code"
           >
             {claimMutation.isPending ? (
@@ -161,17 +161,17 @@ export default function GiftCodePage() {
           <div className="space-y-2">
             <div className="flex items-start gap-2">
               <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-white text-[10px] font-bold"
-                style={{ backgroundColor: "#F59E0B" }}>1</div>
+                style={{ backgroundColor: "#E8192C" }}>1</div>
               <p className="text-gray-500 text-xs">{step1}</p>
             </div>
             <div className="flex items-start gap-2">
               <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-white text-[10px] font-bold"
-                style={{ backgroundColor: "#F59E0B" }}>2</div>
+                style={{ backgroundColor: "#E8192C" }}>2</div>
               <p className="text-gray-500 text-xs">{step2}</p>
             </div>
             <div className="flex items-start gap-2">
               <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-white text-[10px] font-bold"
-                style={{ backgroundColor: "#F59E0B" }}>3</div>
+                style={{ backgroundColor: "#E8192C" }}>3</div>
               <p className="text-gray-500 text-xs">{step3}</p>
             </div>
           </div>
