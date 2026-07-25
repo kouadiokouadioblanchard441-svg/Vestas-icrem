@@ -9,11 +9,9 @@ import { useAuth } from "@/lib/auth";
 import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
 import { WORLD_COUNTRIES } from "@/lib/world-countries";
 import { CountrySelector } from "@/components/country-selector";
-import { LanguagePicker } from "@/components/language-picker";
 import { useI18n } from "@/lib/i18n";
-import { Loader2, ChevronDown, Eye, EyeOff } from "lucide-react";
+import { Loader2, ChevronDown, Eye, EyeOff, Sun, ChevronRight } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
-const poweraddLogo = "/poweradd/poweradd-logo-official.png";
 
 export default function LoginPage() {
   const [, navigate] = useLocation();
@@ -91,166 +89,181 @@ export default function LoginPage() {
     }
   }
 
-  const fieldStyle: React.CSSProperties = {
-    background: "rgba(245, 232, 210, 0.92)",
+  const inputStyle: React.CSSProperties = {
+    background: "rgba(255,255,255,0.88)",
     borderRadius: "14px",
     border: "none",
-    color: "#1a1a1a",
+    height: 54,
   };
 
   return (
     <div
       className="min-h-screen flex flex-col"
       style={{
-        backgroundImage: [
-          "linear-gradient(to bottom, rgba(49,90,171,0.72) 0%, rgba(49,90,171,0.40) 48%, rgba(49,90,171,0.40) 52%, rgba(49,90,171,0.72) 100%)",
-          "url('/poweradd/poweradd-batterie-mini.jpg')",
-          "url('/poweradd/poweradd-charge3devices.jpg')",
-        ].join(", "),
-        backgroundSize: "100% 100%, 100% 55%, 100% 55%",
-        backgroundPosition: "0 0, center top, center bottom",
+        backgroundImage: "url('/poweradd/poweradd-batterie-mini.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         position: "relative",
       }}
     >
-      {/* Overlay */}
-      <div style={{ position: "absolute", inset: 0, background: "rgba(20,45,100,0.68)", zIndex: 0 }} />
+      {/* Light overlay */}
+      <div style={{ position: "absolute", inset: 0, background: "rgba(80,80,80,0.38)", zIndex: 0 }} />
 
       <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", flex: 1 }}>
 
         {/* Top bar */}
-        <div className="flex items-center justify-end px-4 pt-4">
-          <LanguagePicker align="right" />
-        </div>
-
-        <div className="flex-1 flex flex-col items-center justify-center px-5 py-8">
-
+        <div className="flex items-center justify-between px-4 pt-4 pb-3">
           {/* Logo */}
-          <img src={poweraddLogo} alt="Power Add" style={{ width: 180, height: 64, objectFit: "contain" }} className="mb-2" />
-
-          {/* Greeting */}
-          <div className="w-full max-w-sm mb-4">
-            <p className="text-white font-bold text-2xl leading-tight">Bonjour</p>
-            <p className="text-white/70 text-base mt-1">Bienvenue, connectez-vous</p>
+          <div className="flex items-center gap-2">
+            <div
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: "50%",
+                background: "#D42B2B",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+              </svg>
+            </div>
+            <span style={{ color: "#D42B2B", fontWeight: 800, fontSize: 22, letterSpacing: -0.5 }}>
+              enercoop
+            </span>
           </div>
 
-          {/* Form */}
-          <div className="w-full max-w-sm">
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
-              <input type="hidden" {...form.register("country")} />
+          {/* Language */}
+          <button
+            className="flex items-center gap-1"
+            style={{ color: "#222", fontWeight: 500, fontSize: 13 }}
+          >
+            <Sun size={18} style={{ color: "#f5a623" }} />
+            <span>Langue</span>
+            <ChevronRight size={14} />
+          </button>
+        </div>
 
-              {/* Phone */}
-              <div>
-                <label className="text-white font-semibold text-sm mb-2 block">
-                  {t.yourNumber}
-                </label>
-                <div className="w-full flex items-center overflow-hidden" style={{ ...fieldStyle, height: 56 }}>
-                  <button
-                    type="button"
-                    onClick={() => setCountryModalOpen(true)}
-                    className="flex items-center gap-1 px-4 h-full font-bold text-sm shrink-0 border-r"
-                    style={{ color: "#c4260a", borderColor: "rgba(0,0,0,0.12)" }}
-                    data-testid="button-select-country"
-                  >
-                    +{countryData?.phonePrefix || "1"}
-                    <ChevronDown size={14} />
-                  </button>
-                  <input
-                    {...form.register("phone")}
-                    type="tel"
-                    placeholder="Numéro de téléphone"
-                    className="flex-1 h-full bg-transparent text-gray-800 placeholder:text-gray-400 text-sm outline-none px-4"
-                    data-testid="input-phone"
-                  />
-                </div>
-                {form.formState.errors.phone && (
-                  <p className="text-red-400 text-xs mt-1 ml-1">{form.formState.errors.phone.message}</p>
-                )}
-              </div>
+        {/* Form area */}
+        <div className="flex-1 flex flex-col justify-center px-5 pb-10">
+          <div className="w-full max-w-sm mx-auto flex flex-col gap-4">
+            <input type="hidden" {...form.register("country")} />
 
-              {/* Password */}
-              <div>
-                <label className="text-white font-semibold text-sm mb-2 block">
-                  {t.yourPassword}
-                </label>
-                <div className="w-full flex items-center overflow-hidden" style={{ ...fieldStyle, height: 56 }}>
-                  <input
-                    {...form.register("password")}
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Mot de passe"
-                    className="flex-1 h-full bg-transparent text-gray-800 placeholder:text-gray-400 text-sm outline-none px-4"
-                    data-testid="input-password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(v => !v)}
-                    className="pr-4 pl-2 flex items-center"
-                  >
-                    {showPassword
-                      ? <EyeOff size={18} className="text-gray-500" />
-                      : <Eye size={18} className="text-gray-500" />}
-                  </button>
-                </div>
-                {form.formState.errors.password && (
-                  <p className="text-red-400 text-xs mt-1 ml-1">{form.formState.errors.password.message}</p>
-                )}
-              </div>
-
-              {/* Remember me */}
-              <div className="flex items-center gap-2.5">
-                <div
-                  onClick={() => setRememberMe(v => !v)}
-                  className="w-5 h-5 rounded-full border-2 flex items-center justify-center cursor-pointer shrink-0 transition-all"
-                  style={{
-                    borderColor: rememberMe ? "#E8320A" : "rgba(255,255,255,0.45)",
-                    background: rememberMe ? "#E8320A" : "transparent",
-                  }}
-                  data-testid="checkbox-remember"
-                >
-                  {rememberMe && <div className="w-2 h-2 rounded-full bg-white" />}
-                </div>
-                <label
-                  onClick={() => setRememberMe(v => !v)}
-                  className="text-white/70 text-sm cursor-pointer"
-                >
-                  {t.rememberMe}
-                </label>
-              </div>
-
-              {/* Login button */}
+            {/* Phone */}
+            <div className="w-full flex items-center overflow-hidden" style={inputStyle}>
               <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full font-bold text-white text-base disabled:opacity-50 mt-1 transition-all active:scale-95"
-                style={{
-                  height: 56,
-                  borderRadius: "14px",
-                  background: "linear-gradient(135deg, #315aab 0%, #254a91 100%)",
-                  boxShadow: "0 4px 20px rgba(49,90,171,0.50)",
-                }}
-                data-testid="button-login"
+                type="button"
+                onClick={() => setCountryModalOpen(true)}
+                className="flex items-center gap-1 px-4 h-full font-bold text-sm shrink-0 border-r"
+                style={{ color: "#333", borderColor: "rgba(0,0,0,0.12)" }}
+                data-testid="button-select-country"
               >
-                {isLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    {t.loginLoading}
-                  </span>
-                ) : t.loginBtn}
+                +{countryData?.phonePrefix || "1"}
+                <ChevronRight size={14} />
               </button>
+              <input
+                {...form.register("phone")}
+                type="tel"
+                placeholder="Veuillez saisir le numéro de téléphone"
+                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-3"
+                data-testid="input-phone"
+              />
+            </div>
+            {form.formState.errors.phone && (
+              <p className="text-red-300 text-xs -mt-2 ml-1">{form.formState.errors.phone.message}</p>
+            )}
 
-              {/* Register link */}
-              <div className="text-center mt-1">
-                <span className="text-white/50 text-sm">{t.noAccount}&nbsp;</span>
-                <button
-                  type="button"
-                  onClick={() => navigate("/register")}
-                  className="text-white font-bold text-sm underline underline-offset-2"
-                  data-testid="link-register"
-                >
-                  {t.createAccount}
-                </button>
+            {/* Password */}
+            <div className="w-full flex items-center overflow-hidden" style={inputStyle}>
+              <input
+                {...form.register("password")}
+                type={showPassword ? "text" : "password"}
+                placeholder="Veuillez saisir votre mot de passe de connexion"
+                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
+                data-testid="input-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(v => !v)}
+                className="pr-4 pl-2 flex items-center shrink-0"
+              >
+                {showPassword
+                  ? <EyeOff size={18} className="text-gray-400" />
+                  : <Eye size={18} className="text-gray-400" />}
+              </button>
+            </div>
+            {form.formState.errors.password && (
+              <p className="text-red-300 text-xs -mt-2 ml-1">{form.formState.errors.password.message}</p>
+            )}
+
+            {/* Remember me - green checkbox */}
+            <div className="flex items-center gap-2.5">
+              <div
+                onClick={() => setRememberMe(v => !v)}
+                className="flex items-center justify-center cursor-pointer shrink-0 transition-all"
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 4,
+                  border: `2px solid ${rememberMe ? "#22a84a" : "rgba(255,255,255,0.6)"}`,
+                  background: rememberMe ? "#22a84a" : "rgba(255,255,255,0.15)",
+                }}
+                data-testid="checkbox-remember"
+              >
+                {rememberMe && (
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
               </div>
-            </form>
+              <label
+                onClick={() => setRememberMe(v => !v)}
+                className="text-white text-sm cursor-pointer font-medium"
+              >
+                Se souvenir du mot de passe du compte
+              </label>
+            </div>
+
+            {/* Login button */}
+            <button
+              type="button"
+              onClick={form.handleSubmit(onSubmit)}
+              disabled={isLoading}
+              className="w-full font-bold text-white text-base disabled:opacity-50 transition-all active:scale-95"
+              style={{
+                height: 56,
+                borderRadius: 28,
+                background: "#D42B2B",
+                boxShadow: "0 4px 16px rgba(212,43,43,0.40)",
+              }}
+              data-testid="button-login"
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Connexion...
+                </span>
+              ) : "Connectez-vous immédiatement"}
+            </button>
+
+            {/* Register button */}
+            <button
+              type="button"
+              onClick={() => navigate("/register")}
+              className="w-full font-bold text-white text-base transition-all active:scale-95"
+              style={{
+                height: 56,
+                borderRadius: 28,
+                background: "#D42B2B",
+                boxShadow: "0 4px 16px rgba(212,43,43,0.40)",
+              }}
+              data-testid="link-register"
+            >
+              Pas de compte ? Inscrivez-vous
+            </button>
           </div>
         </div>
 
