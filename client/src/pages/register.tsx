@@ -18,7 +18,7 @@ export default function RegisterPage() {
   const searchString = useSearch();
   const { register } = useAuth();
   const { toast } = useToast();
-  const { t } = useI18n();
+  const { t, lang, setLang } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
   const [countryModalOpen, setCountryModalOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -251,8 +251,8 @@ export default function RegisterPage() {
               style={{
                 height: 56,
                 borderRadius: 28,
-                background: "#D42B2B",
-                boxShadow: "0 4px 16px rgba(212,43,43,0.40)",
+                background: "linear-gradient(135deg, #315aab 0%, #254a91 100%)",
+                boxShadow: "0 4px 16px rgba(49,90,171,0.45)",
               }}
               data-testid="button-register"
             >
@@ -272,8 +272,8 @@ export default function RegisterPage() {
               style={{
                 height: 56,
                 borderRadius: 28,
-                background: "#D42B2B",
-                boxShadow: "0 4px 16px rgba(212,43,43,0.40)",
+                background: "linear-gradient(135deg, #315aab 0%, #254a91 100%)",
+                boxShadow: "0 4px 16px rgba(49,90,171,0.45)",
               }}
               data-testid="link-login"
             >
