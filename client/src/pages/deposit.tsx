@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { getContent } from "@/lib/content";
-import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
+import landscapeImg from "@assets/71vdMjQS9sL._AC_UF1000,1000_QL80__1784966822182.jpg";
 import { useAuth } from "@/lib/auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";

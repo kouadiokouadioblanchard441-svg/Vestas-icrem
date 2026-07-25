@@ -9,7 +9,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Loader2, Plus, Trash2, CreditCard, ChevronLeft, ChevronRight, Shield, Check } from "lucide-react";
 import { Link, useLocation, useSearch } from "wouter";
 import type { WithdrawalWallet } from "@shared/schema";
-import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
+import landscapeImg from "@assets/71vdMjQS9sL._AC_UF1000,1000_QL80__1784966822182.jpg";
 
 function maskAccountNumber(num: string): string {
   if (num.length <= 6) return num;
