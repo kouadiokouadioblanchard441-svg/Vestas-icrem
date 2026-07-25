@@ -170,7 +170,7 @@ export default function WithdrawalPage() {
       {/* ── Banner with balance ── */}
       <div className="relative w-full" style={{ height: "180px" }}>
         <img
-          src="/poweradd/poweradd-tech-banner.jpg"
+          src="/poweradd/poweradd-news-cmef.jpg"
           alt="Retrait"
           className="w-full h-full object-cover"
         />
