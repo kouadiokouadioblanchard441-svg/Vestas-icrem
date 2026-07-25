@@ -20,11 +20,13 @@ interface TeamStats {
   level2Invested: number;
   level3Invested: number;
   level1Recharged: number;
+  teamTotalDeposits: number;
+  teamTotalWithdrawals: number;
 }
 
-const BLUE = "#315aab";
+const BLUE      = "#315aab";
 const BLUE_DARK = "#254a91";
-const RED = "#E8192C";
+const RED       = "#E8192C";
 
 export default function TeamPage() {
   const { user } = useAuth();
@@ -61,7 +63,7 @@ export default function TeamPage() {
 
   const taskCenterButton = getContent(settings, "content_team_taskCenterButton", "Tâches");
 
-  // Argent rechargé par niveau
+  // Argent rechargé par niveau (back-computed depuis commission pour niveaux 2 & 3)
   const lv1Recharged = (stats?.level1Recharged || 0).toFixed(0);
   const lv2Recharged =
     Number(lv2Rate) > 0
@@ -96,11 +98,12 @@ export default function TeamPage() {
     },
   ];
 
+  const teamDeposits    = (stats?.teamTotalDeposits    || 0).toFixed(0);
+  const teamWithdrawals = (stats?.teamTotalWithdrawals || 0).toFixed(0);
+
   return (
-    <div
-      className="flex flex-col min-h-full pb-20"
-      style={{ background: BLUE }}
-    >
+    <div className="flex flex-col min-h-full pb-20" style={{ background: BLUE }}>
+
       {/* ── Header ── */}
       <div
         className="px-4 pt-5 pb-4 flex items-center justify-between"
@@ -109,7 +112,7 @@ export default function TeamPage() {
         <div className="flex items-center gap-2">
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: "rgba(255,255,255,0.15)" }}
+            style={{ background: "rgba(255,255,255,0.18)" }}
           >
             <Users size={16} className="text-white" />
           </div>
@@ -138,8 +141,7 @@ export default function TeamPage() {
       <div className="px-3 pt-3 space-y-3">
 
         {/* ── Invitation ── */}
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-          {/* Titre section */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           <div
             className="px-4 py-2.5 flex items-center gap-2"
             style={{ background: `linear-gradient(135deg, ${BLUE} 0%, ${BLUE_DARK} 100%)` }}
@@ -154,19 +156,15 @@ export default function TeamPage() {
           </div>
 
           <div className="px-4 py-4 space-y-3">
-            {/* Code row */}
+            {/* Code */}
             <div>
               <p className="text-gray-400 text-[11px] mb-1.5 font-medium">Inviter :</p>
               <div className="flex items-center gap-2">
                 <div
                   className="flex-1 min-w-0 px-3 py-2.5 rounded-xl"
-                  style={{ background: "#f0f4fb", border: `1.5px solid ${BLUE}30` }}
+                  style={{ background: "#eef2fa", border: `1.5px solid ${BLUE}30` }}
                 >
-                  <p
-                    className="font-bold text-sm truncate"
-                    style={{ color: BLUE }}
-                    data-testid="text-referral-code"
-                  >
+                  <p className="font-bold text-sm truncate" style={{ color: BLUE }} data-testid="text-referral-code">
                     {user.referralCode}
                   </p>
                 </div>
@@ -176,27 +174,22 @@ export default function TeamPage() {
                   style={{ background: RED }}
                   data-testid="button-copy-code"
                 >
-                  <Copy size={12} />
-                  Copier
+                  <Copy size={12} /> Copier
                 </button>
               </div>
             </div>
 
             <div className="h-px bg-gray-100" />
 
-            {/* Lien row */}
+            {/* Lien */}
             <div>
               <p className="text-gray-400 text-[11px] mb-1.5 font-medium">Inviter :</p>
               <div className="flex items-center gap-2">
                 <div
                   className="flex-1 min-w-0 px-3 py-2.5 rounded-xl"
-                  style={{ background: "#f0f4fb", border: `1.5px solid ${BLUE}30` }}
+                  style={{ background: "#eef2fa", border: `1.5px solid ${BLUE}30` }}
                 >
-                  <p
-                    className="text-xs truncate"
-                    style={{ color: BLUE_DARK }}
-                    data-testid="text-referral-link"
-                  >
+                  <p className="text-xs truncate" style={{ color: BLUE_DARK }} data-testid="text-referral-link">
                     {referralLink}
                   </p>
                 </div>
@@ -206,8 +199,7 @@ export default function TeamPage() {
                   style={{ background: RED }}
                   data-testid="button-copy-link"
                 >
-                  <Copy size={12} />
-                  Copier
+                  <Copy size={12} /> Copier
                 </button>
               </div>
             </div>
@@ -216,57 +208,78 @@ export default function TeamPage() {
 
         {/* ── Portefeuilles ── */}
         <div className="grid grid-cols-2 gap-3">
+
           {/* Recharge */}
           <div
-            className="rounded-2xl p-4 shadow-md"
-            style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.22)" }}
+            className="relative rounded-2xl overflow-hidden shadow-lg"
+            style={{ minHeight: 110 }}
           >
-            <p className="text-white/70 text-[11px] font-medium mb-2">
-              Portefeuille de recharge
-            </p>
-            <p className="text-white font-extrabold text-lg leading-none">
-              {parseFloat(user.balance || "0").toFixed(0)}
-            </p>
-            <p className="text-white/60 text-xs mt-0.5">{currency}</p>
+            <img
+              src="/poweradd/poweradd-energycell-banner.jpg"
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div
+              className="absolute inset-0"
+              style={{ background: `linear-gradient(135deg, ${BLUE}e0 0%, ${BLUE_DARK}cc 100%)` }}
+            />
+            <div className="relative z-10 p-4 flex flex-col justify-between h-full">
+              <p className="text-white/80 text-[11px] font-medium leading-tight">
+                Portefeuille de recharge
+              </p>
+              <div className="mt-3">
+                <p className="text-white font-extrabold text-xl leading-none">
+                  {Number(teamDeposits).toLocaleString("fr-FR")}
+                </p>
+                <p className="text-white/60 text-xs mt-0.5">{currency}</p>
+              </div>
+            </div>
           </div>
 
           {/* Retrait */}
           <div
-            className="rounded-2xl p-4 shadow-md"
-            style={{ background: "rgba(232,25,44,0.18)", border: "1px solid rgba(232,25,44,0.35)" }}
+            className="relative rounded-2xl overflow-hidden shadow-lg"
+            style={{ minHeight: 110 }}
           >
-            <p className="text-white/70 text-[11px] font-medium mb-2">
-              Portefeuille de retrait
-            </p>
-            <p className="text-white font-extrabold text-lg leading-none">
-              {parseFloat(user.totalEarnings || "0").toFixed(0)}
-            </p>
-            <p className="text-white/60 text-xs mt-0.5">{currency}</p>
+            <img
+              src="/poweradd/poweradd-tech-banner.jpg"
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div
+              className="absolute inset-0"
+              style={{ background: "linear-gradient(135deg, #c0101ee0 0%, #a00a18cc 100%)" }}
+            />
+            <div className="relative z-10 p-4 flex flex-col justify-between h-full">
+              <p className="text-white/80 text-[11px] font-medium leading-tight">
+                Portefeuille de retrait
+              </p>
+              <div className="mt-3">
+                <p className="text-white font-extrabold text-xl leading-none">
+                  {Number(teamWithdrawals).toLocaleString("fr-FR")}
+                </p>
+                <p className="text-white/60 text-xs mt-0.5">{currency}</p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* ── Niveaux ── */}
         {levels.map((lvl, idx) => (
-          <div
-            key={idx}
-            className="bg-white rounded-2xl shadow-md overflow-hidden"
-          >
-            {/* Titre niveau */}
-            <div className="px-4 py-3 text-center relative">
+          <div key={idx} className="bg-white rounded-2xl shadow-md overflow-hidden">
+            {/* Titre */}
+            <div className="relative px-4 py-3 text-center">
               <p className="text-gray-800 font-bold text-sm">{lvl.label}</p>
-              {/* Trait décoratif rouge centré */}
               <div
                 className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full"
                 style={{ width: 48, height: 2, background: RED }}
               />
             </div>
 
-            {/* Séparateur */}
             <div className="h-px bg-gray-100" />
 
             {/* 3 colonnes */}
             <div className="grid grid-cols-3 py-4">
-              {/* Argent rechargé */}
               <div className="flex flex-col items-center px-2 border-r border-gray-100">
                 <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
                   Argent{"\n"}rechargé
@@ -277,7 +290,6 @@ export default function TeamPage() {
                 <p className="text-gray-400 text-[10px] mt-0.5">{currency}</p>
               </div>
 
-              {/* Nombre de personnes */}
               <div className="flex flex-col items-center px-2 border-r border-gray-100">
                 <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
                   Nombre total{"\n"}de personnes
@@ -287,7 +299,6 @@ export default function TeamPage() {
                 </p>
               </div>
 
-              {/* Taux commission */}
               <div className="flex flex-col items-center px-2">
                 <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
                   Taux de{"\n"}commission
@@ -300,7 +311,7 @@ export default function TeamPage() {
           </div>
         ))}
 
-        {/* ── Voir les membres ── */}
+        {/* ── CTA ── */}
         <button
           onClick={() => navigate("/members")}
           className="w-full rounded-2xl py-3.5 flex items-center justify-center gap-2 font-bold text-sm shadow-md"
