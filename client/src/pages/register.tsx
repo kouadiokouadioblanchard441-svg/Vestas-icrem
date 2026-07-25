@@ -293,20 +293,6 @@ export default function RegisterPage() {
                 ) : t.registerBtn}
               </button>
 
-              {/* Login link */}
-              <button
-                type="button"
-                onClick={() => navigate("/login")}
-                className="w-full font-semibold text-white/80 text-base transition-all active:scale-95"
-                style={{
-                  height: 56,
-                  borderRadius: "14px",
-                  background: "rgba(255,255,255,0.10)",
-                  border: "1.5px solid rgba(255,255,255,0.25)",
-                }}
-              >
-                {t.loginBtn}
-              </button>
             </form>
           </div>
         </div>
