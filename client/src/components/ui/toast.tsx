@@ -45,6 +45,7 @@ const Toast = React.forwardRef<
     <ToastPrimitives.Root
       ref={ref}
       className={cn(toastVariants({ variant }), className)}
+      style={{ backgroundColor: '#ffffff', color: '#000000' }}
       {...props}
     />
   )
@@ -86,6 +87,7 @@ const ToastTitle = React.forwardRef<
   <ToastPrimitives.Title
     ref={ref}
     className={cn("text-sm font-medium whitespace-nowrap !text-black", className)}
+    style={{ color: '#000000' }}
     {...props}
   />
 ))
@@ -98,6 +100,7 @@ const ToastDescription = React.forwardRef<
   <ToastPrimitives.Description
     ref={ref}
     className={cn("text-xs opacity-80 whitespace-nowrap !text-black", className)}
+    style={{ color: '#000000' }}
     {...props}
   />
 ))

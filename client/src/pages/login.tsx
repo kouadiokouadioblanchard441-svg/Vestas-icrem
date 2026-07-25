@@ -154,7 +154,7 @@ export default function LoginPage() {
               />
             </div>
             {form.formState.errors.phone && (
-              <p className="text-red-300 text-xs -mt-2 ml-1">{form.formState.errors.phone.message}</p>
+              <p className="text-red-600 text-xs -mt-2 ml-1">{form.formState.errors.phone.message}</p>
             )}
 
             {/* Password */}
@@ -177,7 +177,7 @@ export default function LoginPage() {
               </button>
             </div>
             {form.formState.errors.password && (
-              <p className="text-red-300 text-xs -mt-2 ml-1">{form.formState.errors.password.message}</p>
+              <p className="text-red-600 text-xs -mt-2 ml-1">{form.formState.errors.password.message}</p>
             )}
 
             {/* Remember me - green checkbox */}

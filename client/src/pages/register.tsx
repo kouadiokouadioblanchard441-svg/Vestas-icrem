@@ -168,7 +168,7 @@ export default function RegisterPage() {
               />
             </div>
             {form.formState.errors.phone && (
-              <p className="text-red-300 text-xs -mt-2 ml-1">{form.formState.errors.phone.message}</p>
+              <p className="text-red-600 text-xs -mt-2 ml-1">{form.formState.errors.phone.message}</p>
             )}
 
             {/* Password */}
@@ -185,7 +185,7 @@ export default function RegisterPage() {
               </button>
             </div>
             {form.formState.errors.password && (
-              <p className="text-red-300 text-xs -mt-2 ml-1">{form.formState.errors.password.message}</p>
+              <p className="text-red-600 text-xs -mt-2 ml-1">{form.formState.errors.password.message}</p>
             )}
 
             {/* Confirm password */}
@@ -202,7 +202,7 @@ export default function RegisterPage() {
               </button>
             </div>
             {form.formState.errors.confirmPassword && (
-              <p className="text-red-300 text-xs -mt-2 ml-1">{form.formState.errors.confirmPassword.message}</p>
+              <p className="text-red-600 text-xs -mt-2 ml-1">{form.formState.errors.confirmPassword.message}</p>
             )}
 
             {/* Transaction password */}
