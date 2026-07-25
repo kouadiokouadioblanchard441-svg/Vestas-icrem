@@ -155,7 +155,7 @@ export default function TeamPage() {
                   className="flex-1 min-w-0 px-3 py-2.5 rounded-xl"
                   style={{ background: "#eef2fa", border: `1.5px solid ${BLUE}30` }}
                 >
-                  <p className="font-bold text-sm truncate" style={{ color: BLUE }} data-testid="text-referral-code">
+                  <p className="font-bold text-sm truncate" style={{ color: "#222" }} data-testid="text-referral-code">
                     {user.referralCode}
                   </p>
                 </div>
@@ -180,7 +180,7 @@ export default function TeamPage() {
                   className="flex-1 min-w-0 px-3 py-2.5 rounded-xl"
                   style={{ background: "#eef2fa", border: `1.5px solid ${BLUE}30` }}
                 >
-                  <p className="text-xs truncate" style={{ color: BLUE_DARK }} data-testid="text-referral-link">
+                  <p className="text-xs truncate" style={{ color: "#333" }} data-testid="text-referral-link">
                     {referralLink}
                   </p>
                 </div>
