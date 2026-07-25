@@ -83,7 +83,7 @@ export default function DepositCallbackPage() {
         <Link href="/deposit-history">
           <button
             className="w-full py-3.5 rounded-full text-white font-bold shadow-md"
-            style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)" }}
+            style={{ background: "#E8192C" }}
           >
             Voir mes dépôts
           </button>
@@ -110,7 +110,7 @@ export default function DepositCallbackPage() {
         <Link href="/deposit">
           <button
             className="w-full py-3.5 rounded-full text-white font-bold shadow-md"
-            style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)" }}
+            style={{ background: "#E8192C" }}
           >
             Réessayer
           </button>
@@ -142,7 +142,7 @@ export default function DepositCallbackPage() {
         <Link href="/service">
           <button
             className="w-full py-3.5 rounded-full text-white font-bold shadow-md"
-            style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)" }}
+            style={{ background: "#E8192C" }}
           >
             Contacter le support
           </button>

@@ -210,7 +210,7 @@ export default function DepositPage() {
                     style={{
                       background:
                         amount === preset
-                          ? "linear-gradient(135deg, #F59E0B, #D97706)"
+                          ? "#E8192C"
                           : "rgba(255,255,255,0.90)",
                     }}
                     data-testid={`button-preset-amount-${preset}`}
