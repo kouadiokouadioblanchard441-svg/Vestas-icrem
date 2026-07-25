@@ -113,7 +113,7 @@ export default function AdminCountries() {
       phonePrefix: c.phonePrefix,
       operators: operatorsStr,
       isActive: c.isActive,
-      autoPaymentEnabled: false,
+      autoPaymentEnabled: c.autoPaymentEnabled ?? false,
     });
     setEditingId(c.id);
     setDialogOpen(true);
