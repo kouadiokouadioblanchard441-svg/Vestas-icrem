@@ -4,13 +4,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { formatCurrency, getCountryByCode } from "@/lib/countries";
-import { Loader2, Settings } from "lucide-react";
+import { Loader2, Headphones } from "lucide-react";
 import { useLocation } from "wouter";
 import { getContent } from "@/lib/content";
 import type { Product } from "@shared/schema";
 
 const poweraddLogo = "/poweradd/poweradd-logo-official.png";
-import serviceIcon from "@assets/20260311_214852_1773265973964.png";
 import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
 
 interface ProductWithOwnership extends Product {
@@ -82,8 +81,13 @@ export default function ProductsPage() {
       >
         <img src={poweraddLogo} alt="Power Add" className="h-8 w-auto object-contain" />
         <p className="font-bold text-base" style={{ color: "#315aab" }}>{headerTitle}</p>
-        <button onClick={() => navigate("/service")} className="flex items-center justify-center" data-testid="button-service">
-          <img src={serviceIcon} alt="Service client" className="w-8 h-8 object-contain" />
+        <button
+          onClick={() => navigate("/service")}
+          className="w-9 h-9 rounded-full flex items-center justify-center"
+          style={{ background: "#e8eef8" }}
+          data-testid="button-service"
+        >
+          <Headphones className="w-5 h-5" style={{ color: "#315aab" }} />
         </button>
       </div>
 
