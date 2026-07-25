@@ -8,6 +8,7 @@ import { Loader2, Settings } from "lucide-react";
 import iconService from "@assets/3-1_1783245823860.png";
 import { useLocation } from "wouter";
 import { getContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 import type { Product } from "@shared/schema";
 
 const poweraddLogo = "/poweradd/poweradd-logo-official.png";
@@ -23,6 +24,7 @@ export default function ProductsPage() {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
   const [, navigate] = useLocation();
+  const { t } = useI18n();
 
   const { data: products, isLoading } = useQuery<ProductWithOwnership[]>({
     queryKey: ["/api/products"],
@@ -45,10 +47,10 @@ export default function ProductsPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user/products"] });
       refreshUser();
-      toast({ title: "Félicitations pour l'achat de votre produit", description: "Vous commencerez à recevoir des gains demain.", variant: "default" });
+      toast({ title: t.purchaseSuccess, description: t.purchaseSuccessDescription, variant: "default" });
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -121,25 +123,25 @@ export default function ProductsPage() {
                     <p className="font-extrabold text-gray-800 text-sm mb-2">{product.name}</p>
                     <div className="space-y-1">
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-400 text-xs">Prix</span>
+                        <span className="text-gray-400 text-xs">{t.price}</span>
                         <span className="font-bold text-xs text-gray-900">
                           {currency} {Number(product.price).toLocaleString("fr-FR")}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-400 text-xs">Rev./jour</span>
+                        <span className="text-gray-400 text-xs">{t.dailyRevenue}</span>
                         <span className="font-bold text-xs text-gray-900">
                           {currency} {Number(product.dailyEarnings).toLocaleString("fr-FR")}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-400 text-xs">Rev. total</span>
+                        <span className="text-gray-400 text-xs">{t.totalRevenue}</span>
                         <span className="font-bold text-xs text-gray-900">
                           {currency} {Number(product.totalReturn).toLocaleString("fr-FR")}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-400 text-xs">Durée</span>
+                        <span className="text-gray-400 text-xs">{t.duration}</span>
                         <span className="font-bold text-xs text-gray-900">
                           {product.cycleDays} jours
                         </span>
@@ -155,7 +157,7 @@ export default function ProductsPage() {
                     style={{ background: "#E8192C" }}
                     data-testid={`button-purchase-${product.id}`}
                   >
-                    {isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : "Acheter"}
+                    {isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : t.buy}
                   </button>
                 </div>
               </div>
@@ -164,7 +166,7 @@ export default function ProductsPage() {
         ) : (
           <div className="text-center py-16">
             <Settings className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-400">Aucun produit disponible</p>
+            <p className="text-gray-400">{t.noProducts}</p>
           </div>
         )}
       </div>

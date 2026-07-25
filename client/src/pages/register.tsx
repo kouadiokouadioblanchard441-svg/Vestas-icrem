@@ -31,7 +31,7 @@ export default function RegisterPage() {
 
   const registerSchema = z.object({
     phone: z.string().min(8, t.errInvalidPhone),
-    country: z.string().min(2, "Sélectionnez un pays"),
+    country: z.string().min(2, t.selectCountry),
     password: z.string().min(6, t.errMinPassword),
     confirmPassword: z.string().min(1, t.errConfirmPassword),
     transactionPassword: z.string().optional(),
@@ -162,7 +162,7 @@ export default function RegisterPage() {
               <input
                 {...form.register("phone")}
                 type="tel"
-                placeholder="Please enter your phone number"
+                placeholder={t.phonePlaceholder}
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-3"
                 data-testid="input-phone"
               />
@@ -176,7 +176,7 @@ export default function RegisterPage() {
               <input
                 {...form.register("password")}
                 type={showPassword ? "text" : "password"}
-                placeholder="Please enter your password"
+                placeholder={t.passwordPlaceholder}
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
                 data-testid="input-password"
               />
@@ -193,7 +193,7 @@ export default function RegisterPage() {
               <input
                 {...form.register("confirmPassword")}
                 type={showConfirm ? "text" : "password"}
-                placeholder="Please confirm your password"
+                placeholder={t.confirmPasswordPlaceholder}
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
                 data-testid="input-confirm-password"
               />
@@ -210,7 +210,7 @@ export default function RegisterPage() {
               <input
                 {...form.register("transactionPassword")}
                 type={showTxPassword ? "text" : "password"}
-                placeholder="Please enter your transaction password"
+                placeholder={t.transactionPasswordPlaceholder}
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
                 data-testid="input-transaction-password"
               />
@@ -223,7 +223,7 @@ export default function RegisterPage() {
             <div style={inputStyle}>
               <input
                 {...form.register("invitationCode")}
-                placeholder="Please enter invitation code"
+                placeholder={t.invitationCodePlaceholder}
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
                 data-testid="input-invitation-code"
               />
@@ -233,7 +233,7 @@ export default function RegisterPage() {
             <div style={inputStyle}>
               <input
                 {...form.register("telegram")}
-                placeholder="Telegram"
+                placeholder={t.telegramPlaceholder}
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
                 data-testid="input-telegram"
               />
@@ -256,9 +256,9 @@ export default function RegisterPage() {
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Registering...
+                  {t.registerLoading}
                 </span>
-              ) : "Register now"}
+              ) : t.registerNow}
             </button>
 
             {/* Login link */}
@@ -274,7 +274,7 @@ export default function RegisterPage() {
               }}
               data-testid="link-login"
             >
-              Already have an account? Login
+              {t.alreadyHaveAccountLogin}
             </button>
           </div>
         </div>

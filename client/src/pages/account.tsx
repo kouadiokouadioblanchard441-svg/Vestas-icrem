@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useI18n } from "@/lib/i18n";
 
 import avatarImg from "@assets/IMG_20260326_091340_948_1782691806785.jpg";
 import iconRecords from "@assets/mine-mod-records-DgHXSKa1_1782689837747.png";
@@ -26,6 +27,7 @@ import profileCardBg from "@assets/portable-charger-power-banks_480x480_d6b67d82
 export default function AccountPage() {
   const { user, logout } = useAuth();
   const { toast } = useToast();
+  const { t } = useI18n();
   const [, navigate] = useLocation();
   const [showPinModal, setShowPinModal] = useState(false);
   const [adminPin, setAdminPin] = useState("");
@@ -79,14 +81,14 @@ export default function AccountPage() {
   const phonePrefix = country?.phonePrefix || "";
 
   const gridItems = [
-    { icon: iconRecharger, label: "Deposit", href: "/deposit", white: true },
-    { icon: iconRetraits, label: "Withdraw", href: "/withdrawal", white: true },
-    { icon: iconRecords, label: "Records", href: "/history", white: false },
-    { icon: iconChangePwd, label: "Security", href: "/change-password", white: false },
-    { icon: iconGift, label: "Redeem", href: "/gift-code", white: false },
-    { icon: iconCS, label: "Support", href: "/service", white: false },
-    { icon: iconAbout, label: "About", href: "/about", white: false },
-    { icon: iconWithdraw, label: "Wallet", href: "/wallet", white: false },
+    { icon: iconRecharger, label: t.deposit, href: "/deposit", white: true },
+    { icon: iconRetraits, label: t.withdraw, href: "/withdrawal", white: true },
+    { icon: iconRecords, label: t.history, href: "/history", white: false },
+    { icon: iconChangePwd, label: t.security, href: "/change-password", white: false },
+    { icon: iconGift, label: t.redeem, href: "/gift-code", white: false },
+    { icon: iconCS, label: t.customerService, href: "/service", white: false },
+    { icon: iconAbout, label: t.about, href: "/about", white: false },
+    { icon: iconWithdraw, label: t.wallet, href: "/wallet", white: false },
   ];
 
   return (
@@ -144,7 +146,7 @@ export default function AccountPage() {
         {/* ── Fonctions communes ── */}
         <div className="mx-4 mt-4 bg-white rounded-2xl overflow-hidden shadow-sm">
           <p className="text-gray-500 text-xs font-semibold uppercase tracking-widest px-5 pt-4 pb-3">
-            Fonctions communes
+            {t.commonFunctions}
           </p>
           <div className="grid grid-cols-4 gap-0 px-2 pb-4">
             {gridItems.map((item, idx) => (
@@ -178,7 +180,7 @@ export default function AccountPage() {
             className="w-full py-4 rounded-2xl text-sm font-bold border-2 border-red-600 text-red-600 bg-white active:bg-red-50"
             data-testid="button-logout"
           >
-            Déconnexion
+            {t.logout}
           </button>
         </div>
 
@@ -192,7 +194,7 @@ export default function AccountPage() {
               data-testid="button-admin"
             >
               <Shield className="w-5 h-5 text-white" />
-              <span className="text-white font-bold text-sm">Panel Admin</span>
+              <span className="text-white font-bold text-sm">{t.adminPanel}</span>
             </button>
           </div>
         )}
@@ -203,17 +205,17 @@ export default function AccountPage() {
       <Dialog open={showPinModal} onOpenChange={setShowPinModal}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-center">Code d'accès administrateur</DialogTitle>
+            <DialogTitle className="text-center">{t.adminAccessCode}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground text-center">
-              Entrez votre code PIN pour accéder au panel administrateur
+              {t.adminPinHint}
             </p>
             <Input
               type="password"
               value={adminPin}
               onChange={(e) => setAdminPin(e.target.value)}
-              placeholder="Code PIN"
+              placeholder={t.pinPlaceholder}
               className="text-center text-2xl tracking-widest"
               maxLength={8}
               data-testid="input-admin-pin"
@@ -221,7 +223,7 @@ export default function AccountPage() {
             <Button
               onClick={() => {
                 if (adminPin.length < 4) {
-                  toast({ title: "Le code PIN doit contenir au moins 4 caractères", variant: "destructive" });
+                  toast({ title: "请输入至少4位字符的PIN码", variant: "destructive" });
                   return;
                 }
                 verifyPinMutation.mutate(adminPin);
@@ -232,7 +234,7 @@ export default function AccountPage() {
               data-testid="button-verify-pin"
             >
               {verifyPinMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-              Confirmer
+              {t.confirm}
             </Button>
           </div>
         </DialogContent>

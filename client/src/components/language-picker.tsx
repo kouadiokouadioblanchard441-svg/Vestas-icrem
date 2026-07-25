@@ -10,7 +10,7 @@ interface LanguagePickerProps {
 }
 
 export function LanguagePicker({ align = "right", variant = "light" }: LanguagePickerProps) {
-  const { lang, setLang } = useI18n();
+  const { lang, setLang, t } = useI18n();
   const [open, setOpen] = useState(false);
 
   const isDark = variant === "dark";
@@ -21,7 +21,7 @@ export function LanguagePicker({ align = "right", variant = "light" }: LanguageP
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Change language"
+        aria-label={t.languageLabel}
         style={{
           width: 38,
           height: 38,

@@ -8,6 +8,7 @@ import { getContent } from "@/lib/content";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
 import { LanguagePicker } from "@/components/language-picker";
+import { useI18n } from "@/lib/i18n";
 
 const poweraddLogo = "/poweradd/poweradd-logo-official.png";
 import bellIcon from "@assets/d7d9f6f6-dddc-4071-8bc2-d6e7e589fbae_(1)_1783248684110.png";
@@ -27,6 +28,7 @@ const BANNER_SLIDES = [
 const DARK_ICON = { filter: "brightness(0) saturate(100%)" } as React.CSSProperties;
 
 function HeroBanner() {
+  const { t } = useI18n();
   const [current, setCurrent] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const total = BANNER_SLIDES.length;
@@ -83,7 +85,7 @@ function HeroBanner() {
         onClick={() => resetTimer(prev)}
         className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full flex items-center justify-center"
         style={{ background: "rgba(0,0,0,0.35)", width: 28, height: 28 }}
-        aria-label="Précédent"
+        aria-label={t.previous}
       >
         <ChevronLeft className="w-4 h-4 text-white" />
       </button>
@@ -91,7 +93,7 @@ function HeroBanner() {
         onClick={() => resetTimer(next)}
         className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full flex items-center justify-center"
         style={{ background: "rgba(0,0,0,0.35)", width: 28, height: 28 }}
-        aria-label="Suivant"
+        aria-label={t.next}
       >
         <ChevronRight className="w-4 h-4 text-white" />
       </button>
@@ -118,6 +120,7 @@ function HeroBanner() {
 
 export default function HomePage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const [, navigate] = useLocation();
   const [showPopup, setShowPopup] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<any>(null);
@@ -175,7 +178,7 @@ export default function HomePage() {
           >
             {/* Bell icon */}
             <div className="flex justify-center pt-7 pb-2">
-              <img src={bellIcon} alt="Notification" className="w-24 h-24 object-contain" />
+              <img src={bellIcon} alt={t.notification} className="w-24 h-24 object-contain" />
             </div>
 
             {/* Title */}
@@ -232,28 +235,28 @@ export default function HomePage() {
         <div className="flex justify-around items-center">
           <button onClick={() => navigate("/deposit")} className="flex flex-col items-center gap-2" data-testid="button-depot">
             <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <img src={iconRecharger} alt="Deposit" className="w-8 h-8 object-contain" style={DARK_ICON} />
+              <img src={iconRecharger} alt={t.deposit} className="w-8 h-8 object-contain" style={DARK_ICON} />
             </div>
-            <span className="text-gray-700 text-xs font-medium">Deposit</span>
+            <span className="text-gray-700 text-xs font-medium">{t.deposit}</span>
           </button>
           <button onClick={() => navigate("/withdrawal")} className="flex flex-col items-center gap-2" data-testid="button-retrait">
             <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <img src={iconRetraits} alt="Withdraw" className="w-8 h-8 object-contain" style={DARK_ICON} />
+              <img src={iconRetraits} alt={t.withdraw} className="w-8 h-8 object-contain" style={DARK_ICON} />
             </div>
-            <span className="text-gray-700 text-xs font-medium">Withdraw</span>
+            <span className="text-gray-700 text-xs font-medium">{t.withdraw}</span>
           </button>
           <button onClick={() => navigate("/service")} className="flex flex-col items-center gap-2" data-testid="button-aide">
             <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <img src={iconService} alt="Support" className="w-8 h-8 object-contain" style={DARK_ICON} />
+              <img src={iconService} alt={t.customerService} className="w-8 h-8 object-contain" style={DARK_ICON} />
             </div>
-            <span className="text-gray-700 text-xs font-medium">Customer Service</span>
+            <span className="text-gray-700 text-xs font-medium">{t.customerService}</span>
           </button>
         </div>
       </div>
 
       {/* ── Info Cards ── */}
       <div className="mx-3 mt-3 space-y-3">
-        <p className="text-white font-bold text-sm px-1">Information Center</p>
+        <p className="text-white font-bold text-sm px-1">{t.informationCenter}</p>
         {NEWS_ARTICLES.map((article) => (
           <button
             key={article.id}

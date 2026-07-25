@@ -29,7 +29,7 @@ export default function LoginPage() {
 
   const loginSchema = z.object({
     phone: z.string().min(8, t.errInvalidPhone),
-    country: z.string().min(2, "Sélectionnez un pays"),
+    country: z.string().min(2, t.selectCountry),
     password: z.string().min(1, t.errPasswordRequired),
   });
   type LoginForm = z.infer<typeof loginSchema>;
@@ -148,7 +148,7 @@ export default function LoginPage() {
               <input
                 {...form.register("phone")}
                 type="tel"
-                placeholder="Please enter your phone number"
+                placeholder={t.phonePlaceholder}
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-3"
                 data-testid="input-phone"
               />
@@ -162,7 +162,7 @@ export default function LoginPage() {
               <input
                 {...form.register("password")}
                 type={showPassword ? "text" : "password"}
-                placeholder="Please enter your password"
+                placeholder={t.passwordPlaceholder}
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
                 data-testid="input-password"
               />
@@ -204,7 +204,7 @@ export default function LoginPage() {
                 onClick={() => setRememberMe(v => !v)}
                 className="text-white text-sm cursor-pointer font-medium"
               >
-                Remember account password
+                {t.rememberPassword}
               </label>
             </div>
 
@@ -225,9 +225,9 @@ export default function LoginPage() {
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Logging in...
+                  {t.loginLoading}
                 </span>
-              ) : "Login immediately"}
+              ) : t.loginImmediately}
             </button>
 
             {/* Register button */}
@@ -243,7 +243,7 @@ export default function LoginPage() {
               }}
               data-testid="link-register"
             >
-              No account? Register
+              {t.noAccountRegister}
             </button>
           </div>
         </div>
