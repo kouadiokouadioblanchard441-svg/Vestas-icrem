@@ -94,9 +94,13 @@ export default function LoginPage() {
     <div
       className="min-h-screen flex flex-col"
       style={{
-        backgroundImage: "url('/auth-bg.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundImage: [
+          "linear-gradient(to bottom, rgba(5,15,35,0.55) 0%, rgba(5,15,35,0.30) 48%, rgba(5,15,35,0.30) 52%, rgba(5,15,35,0.55) 100%)",
+          "url('/solar-bg-top.jpg')",
+          "url('/solar-bg-bottom.png')",
+        ].join(", "),
+        backgroundSize: "100% 100%, 100% 55%, 100% 55%",
+        backgroundPosition: "0 0, center top, center bottom",
         backgroundRepeat: "no-repeat",
         position: "relative",
       }}
