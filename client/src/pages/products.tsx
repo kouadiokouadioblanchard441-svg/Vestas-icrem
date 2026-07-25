@@ -4,7 +4,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { formatCurrency, getCountryByCode } from "@/lib/countries";
-import { Loader2, Headphones, Settings } from "lucide-react";
+import { Loader2, Settings } from "lucide-react";
+import iconService from "@assets/3-1_1783245823860.png";
 import { useLocation } from "wouter";
 import { getContent } from "@/lib/content";
 import type { Product } from "@shared/schema";
@@ -87,7 +88,7 @@ export default function ProductsPage() {
           style={{ background: "#e8eef8" }}
           data-testid="button-service"
         >
-          <Headphones className="w-5 h-5" style={{ color: "#315aab" }} />
+          <img src={iconService} alt="Support" className="w-5 h-5 object-contain" style={{ filter: "brightness(0) saturate(100%) invert(27%) sepia(80%) saturate(600%) hue-rotate(195deg) brightness(90%) contrast(95%)" }} />
         </button>
       </div>
 
