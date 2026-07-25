@@ -169,19 +169,19 @@ export default function RegisterPage() {
                   className="w-full flex items-center overflow-hidden"
                   style={{
                     height: 52,
-                    background: "rgba(255,255,255,0.12)",
-                    border: "1.5px solid rgba(255,255,255,0.22)",
+                    background: "rgba(255,255,255,0.15)",
+                    border: "1.5px solid rgba(255,255,255,0.55)",
                     borderRadius: "50px",
                   }}
                 >
                   <div className="pl-4 pr-2 flex items-center shrink-0">
-                    <Phone size={15} className="text-white/50" />
+                    <Phone size={15} className="text-white/70" />
                   </div>
                   <button
                     type="button"
                     onClick={() => setCountryModalOpen(true)}
                     className="flex items-center gap-0.5 pr-3 h-full font-bold text-sm shrink-0 border-r"
-                    style={{ color: "#E8A020", borderColor: "rgba(255,255,255,0.18)" }}
+                    style={{ color: "#E8320A", borderColor: "rgba(255,255,255,0.40)" }}
                   >
                     +{countryData?.phonePrefix || "1"}
                     <ChevronDown size={13} />
@@ -208,13 +208,13 @@ export default function RegisterPage() {
                   className="w-full flex items-center overflow-hidden"
                   style={{
                     height: 52,
-                    background: "rgba(255,255,255,0.12)",
-                    border: "1.5px solid rgba(255,255,255,0.22)",
+                    background: "rgba(255,255,255,0.15)",
+                    border: "1.5px solid rgba(255,255,255,0.55)",
                     borderRadius: "50px",
                   }}
                 >
                   <div className="pl-4 pr-3 flex items-center shrink-0">
-                    <Lock size={15} className="text-white/50" />
+                    <Lock size={15} className="text-white/70" />
                   </div>
                   <input
                     {...form.register("password")}
@@ -241,13 +241,13 @@ export default function RegisterPage() {
                   className="w-full flex items-center overflow-hidden"
                   style={{
                     height: 52,
-                    background: "rgba(255,255,255,0.12)",
-                    border: "1.5px solid rgba(255,255,255,0.22)",
+                    background: "rgba(255,255,255,0.15)",
+                    border: "1.5px solid rgba(255,255,255,0.55)",
                     borderRadius: "50px",
                   }}
                 >
                   <div className="pl-4 pr-3 flex items-center shrink-0">
-                    <Lock size={15} className="text-white/50" />
+                    <Lock size={15} className="text-white/70" />
                   </div>
                   <input
                     {...form.register("confirmPassword")}
@@ -274,13 +274,13 @@ export default function RegisterPage() {
                   className="w-full flex items-center overflow-hidden"
                   style={{
                     height: 52,
-                    background: "rgba(255,255,255,0.12)",
-                    border: "1.5px solid rgba(255,255,255,0.22)",
+                    background: "rgba(255,255,255,0.15)",
+                    border: "1.5px solid rgba(255,255,255,0.55)",
                     borderRadius: "50px",
                   }}
                 >
                   <div className="pl-4 pr-3 flex items-center shrink-0">
-                    <Gift size={15} className="text-white/50" />
+                    <Gift size={15} className="text-white/70" />
                   </div>
                   <input
                     {...form.register("invitationCode")}
@@ -297,8 +297,8 @@ export default function RegisterPage() {
                   onClick={() => setAgreedToTerms(v => !v)}
                   className="w-5 h-5 rounded-full border-2 flex items-center justify-center cursor-pointer shrink-0 mt-0.5 transition-all"
                   style={{
-                    borderColor: agreedToTerms ? "#E8A020" : "rgba(255,255,255,0.35)",
-                    background: agreedToTerms ? "#E8A020" : "transparent",
+                    borderColor: agreedToTerms ? "#E8320A" : "rgba(255,255,255,0.35)",
+                    background: agreedToTerms ? "#E8320A" : "transparent",
                   }}
                 >
                   {agreedToTerms && <div className="w-2 h-2 rounded-full bg-white" />}
@@ -318,8 +318,8 @@ export default function RegisterPage() {
                 className="w-full rounded-full font-bold text-white text-base disabled:opacity-50 mt-1 transition-all active:scale-95"
                 style={{
                   height: 52,
-                  background: "linear-gradient(135deg, #E8A020 0%, #c47a10 100%)",
-                  boxShadow: "0 4px 20px rgba(232,160,32,0.40)",
+                  background: "linear-gradient(135deg, #E8320A 0%, #c4260a 100%)",
+                  boxShadow: "0 4px 20px rgba(232,50,10,0.45)",
                 }}
                 data-testid="button-register"
               >

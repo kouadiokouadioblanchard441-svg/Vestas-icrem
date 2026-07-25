@@ -147,14 +147,14 @@ export default function LoginPage() {
                 <div
                   className="w-full h-13 flex items-center overflow-hidden"
                   style={{
-                    background: "rgba(255,255,255,0.12)",
-                    border: "1.5px solid rgba(255,255,255,0.22)",
+                    background: "rgba(255,255,255,0.15)",
+                    border: "1.5px solid rgba(255,255,255,0.55)",
                     borderRadius: "50px",
                   }}
                 >
                   {/* Phone icon */}
                   <div className="pl-4 pr-2 flex items-center">
-                    <Phone size={16} className="text-white/50" />
+                    <Phone size={16} className="text-white/70" />
                   </div>
                   {/* Country prefix button */}
                   <button
@@ -188,13 +188,13 @@ export default function LoginPage() {
                 <div
                   className="w-full h-13 flex items-center overflow-hidden"
                   style={{
-                    background: "rgba(255,255,255,0.12)",
-                    border: "1.5px solid rgba(255,255,255,0.22)",
+                    background: "rgba(255,255,255,0.15)",
+                    border: "1.5px solid rgba(255,255,255,0.55)",
                     borderRadius: "50px",
                   }}
                 >
                   <div className="pl-4 pr-3 flex items-center">
-                    <Lock size={16} className="text-white/50" />
+                    <Lock size={16} className="text-white/70" />
                   </div>
                   <input
                     {...form.register("password")}
