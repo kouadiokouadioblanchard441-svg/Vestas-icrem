@@ -12,7 +12,7 @@ import { CountrySelector } from "@/components/country-selector";
 import { LanguagePicker } from "@/components/language-picker";
 import { useI18n } from "@/lib/i18n";
 import { Loader2, ChevronDown } from "lucide-react";
-import vestasLogo from "@/assets/vestas-logo_1783210030332.png";
+const vestasLogo = "/powerade-logo.webp";
 import { FloatingSupport } from "@/components/floating-support";
 
 export default function LoginPage() {
@@ -23,7 +23,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [countryModalOpen, setCountryModalOpen] = useState(false);
 
-  const savedCredentials = typeof window !== "undefined" ? localStorage.getItem("spolarpv_credentials") : null;
+  const savedCredentials = typeof window !== "undefined" ? localStorage.getItem("powerade_credentials") : null;
   const parsedCredentials = savedCredentials ? JSON.parse(savedCredentials) : null;
   const [rememberMe, setRememberMe] = useState(!!parsedCredentials);
 
@@ -74,13 +74,13 @@ export default function LoginPage() {
     try {
       await login(data.phone, data.country, data.password);
       if (rememberMe) {
-        localStorage.setItem("spolarpv_credentials", JSON.stringify({
+        localStorage.setItem("powerade_credentials", JSON.stringify({
           phone: data.phone,
           country: data.country,
           password: btoa(data.password),
         }));
       } else {
-        localStorage.removeItem("spolarpv_credentials");
+        localStorage.removeItem("powerade_credentials");
       }
       navigate("/");
     } catch (error: any) {
@@ -117,7 +117,7 @@ export default function LoginPage() {
 
           {/* Logo */}
           <div className="flex justify-center mb-14">
-            <img src={vestasLogo} alt="Vestas" style={{ width: 200, height: 72, objectFit: "contain" }} />
+            <img src={vestasLogo} alt="Powerade" style={{ width: 200, height: 72, objectFit: "contain" }} />
           </div>
 
           {/* Fields */}

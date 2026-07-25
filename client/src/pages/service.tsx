@@ -151,7 +151,7 @@ export default function ServicePage() {
       <div className="w-full" style={{ height: 220 }}>
         <img
           src={heroImg}
-          alt="SpolarPV"
+          alt="Powerade"
           className="w-full h-full object-cover"
           data-testid="img-service-hero"
         />

@@ -235,7 +235,7 @@ export default function WalletPage() {
         <div className="mt-auto">
           <img
             src={landscapeImg}
-            alt="SpolarPV"
+            alt="Powerade"
             className="w-full object-cover object-top"
             style={{ maxHeight: 300 }}
           />
@@ -422,7 +422,7 @@ export default function WalletPage() {
       <div className="mt-auto">
         <img
           src={landscapeImg}
-          alt="SpolarPV"
+          alt="Powerade"
           className="w-full object-cover object-top"
           style={{ maxHeight: 300 }}
         />

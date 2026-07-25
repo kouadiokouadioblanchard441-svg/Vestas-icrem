@@ -8,21 +8,21 @@ import { getContent } from "@/lib/content";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
 
-const jollibeeLogo = "/spolarpv-logo.png";
+const jollibeeLogo = "/powerade-logo.webp";
 import bellIcon from "@assets/d7d9f6f6-dddc-4071-8bc2-d6e7e589fbae_(1)_1783248684110.png";
 import iconRecharger from "@assets/1-1_1783245823715.png";
 import iconRetraits from "@assets/2-1_1783245823825.png";
 import iconService from "@assets/3-1_1783245823860.png";
 
-// 7 real SpolarPV exhibition photos (from spolarpv.com official)
+// 7 real Powerade exhibition photos (from powerade.com official)
 const BANNER_SLIDES = [
-  { src: "/banner/banner1.jpg", label: "SpolarPV — SNEC Shanghai 2024" },
-  { src: "/banner/banner2.jpg", label: "SpolarPV — Thailand ASEW Expo" },
-  { src: "/banner/banner4.jpg", label: "SpolarPV — Future Energy Africa" },
-  { src: "/banner/banner5.jpg", label: "SpolarPV — Future Energy Show" },
-  { src: "/banner/banner6.jpg", label: "SpolarPV — Future Energy Show" },
-  { src: "/banner/banner7.jpg", label: "SpolarPV — International Meeting" },
-  { src: "/banner/banner3.jpg", label: "SpolarPV — Elmia Solar Sweden" },
+  { src: "/banner/banner1.jpg", label: "Powerade — SNEC Shanghai 2024" },
+  { src: "/banner/banner2.jpg", label: "Powerade — Thailand ASEW Expo" },
+  { src: "/banner/banner4.jpg", label: "Powerade — Future Energy Africa" },
+  { src: "/banner/banner5.jpg", label: "Powerade — Future Energy Show" },
+  { src: "/banner/banner6.jpg", label: "Powerade — Future Energy Show" },
+  { src: "/banner/banner7.jpg", label: "Powerade — International Meeting" },
+  { src: "/banner/banner3.jpg", label: "Powerade — Elmia Solar Sweden" },
 ];
 
 const DARK_ICON = { filter: "brightness(0) saturate(100%)" } as React.CSSProperties;
@@ -156,7 +156,7 @@ export default function HomePage() {
     getContent(settings, "content_home_popupLine1", `Prime d'inscription : ${parseInt(signupBonus).toLocaleString()} USDT.`),
     getContent(settings, "content_home_popupLine3", `Invitez vos subordonnés à investir et recevez une récompense en espèces de ${level1Commission}% du montant de leur investissement.`),
     getContent(settings, "content_home_popupLine4", "Il n'y a aucune limite quant au temps de retrait ou au nombre de retraits. Vous pouvez retirer de l'argent à tout moment."),
-    getContent(settings, "content_home_popupLine5", "SpolarPV attache une grande importance au marché."),
+    getContent(settings, "content_home_popupLine5", "Powerade attache une grande importance au marché."),
   ];
 
   return (
@@ -219,7 +219,7 @@ export default function HomePage() {
 
       {/* ── Header ── */}
       <div className="flex items-center px-4 py-2 bg-white shadow-sm">
-        <img src={jollibeeLogo} alt="SpolarPV" className="h-10 w-auto object-contain" />
+        <img src={jollibeeLogo} alt="Powerade" className="h-10 w-auto object-contain" />
       </div>
 
       {/* ── Hero Banner (carrousel défilant) ── */}

@@ -1,8 +1,8 @@
 import { useLocation, useParams } from "wouter";
 import { ChevronLeft } from "lucide-react";
 
-// Real SpolarPV event & meeting photos (served as static assets)
-const img1 = "/news-img-1.jpg";   // SpolarPV team — SNEC Shanghai exhibition
+// Real Powerade event & meeting photos (served as static assets)
+const img1 = "/news-img-1.jpg";   // Powerade team — SNEC Shanghai exhibition
 const img2 = "/news-img-2.png";   // Solar & Storage Africa conference
 const img3 = "/news-img-3.jpg";   // IPP & PPA Conference
 const landscapeImg = "/news-img-1.jpg";
@@ -10,16 +10,16 @@ const landscapeImg = "/news-img-1.jpg";
 export const NEWS_ARTICLES = [
   {
     id: "1",
-    title: "SpolarPV — Exposition Philippines 2026",
+    title: "Powerade — Exposition Philippines 2026",
     summary:
-      "L'exposition de mai 2026 aux Philippines a été un succès retentissant pour SpolarPV. Des milliers de visiteurs ont découvert nos dernières innovations en énergie solaire.",
-    body: `L'exposition internationale de mai 2026 aux Philippines a marqué un tournant majeur pour SpolarPV sur le marché asiatique.
+      "L'exposition de mai 2026 aux Philippines a été un succès retentissant pour Powerade. Des milliers de visiteurs ont découvert nos dernières innovations en énergie solaire.",
+    body: `L'exposition internationale de mai 2026 aux Philippines a marqué un tournant majeur pour Powerade sur le marché asiatique.
 
-Pendant 5 jours, nos équipes ont présenté les toutes dernières solutions photovoltaïques de la gamme SpolarPV, capables de produire jusqu'à 3,45 MW d'énergie propre par installation.
+Pendant 5 jours, nos équipes ont présenté les toutes dernières solutions photovoltaïques de la gamme Powerade, capables de produire jusqu'à 3,45 MW d'énergie propre par installation.
 
 Les investisseurs présents ont été particulièrement intéressés par notre programme de rendement journalier, qui garantit des revenus stables et prévisibles sur une période de 90 jours.
 
-Cette exposition confirme la position de SpolarPV comme leader mondial de l'énergie solaire durable, avec plus de 100 GW de capacité installée dans le monde entier.
+Cette exposition confirme la position de Powerade comme leader mondial de l'énergie solaire durable, avec plus de 100 GW de capacité installée dans le monde entier.
 
 Rejoignez-nous dans cette aventure et commencez dès aujourd'hui à investir dans un avenir plus vert et plus rentable.`,
     image: img1,
@@ -27,10 +27,10 @@ Rejoignez-nous dans cette aventure et commencez dès aujourd'hui à investir dan
   },
   {
     id: "2",
-    title: "Nouvelle gamme SpolarPV — Performances record en 2026",
+    title: "Nouvelle gamme Powerade — Performances record en 2026",
     summary:
-      "SpolarPV établit de nouveaux records de production d'énergie solaire. Découvrez comment cette technologie révolutionne le secteur et booste vos investissements.",
-    body: `SpolarPV a établi en 2026 un nouveau record mondial de production d'énergie solaire en conditions réelles.
+      "Powerade établit de nouveaux records de production d'énergie solaire. Découvrez comment cette technologie révolutionne le secteur et booste vos investissements.",
+    body: `Powerade a établi en 2026 un nouveau record mondial de production d'énergie solaire en conditions réelles.
 
 Avec un rendement moyen de 48 %, bien au-dessus de la moyenne du secteur (35 %), nos panneaux représentent l'état de l'art en matière d'ingénierie photovoltaïque.
 
@@ -38,16 +38,16 @@ Nos modules à haute densité capturent la lumière solaire de manière optimale
 
 Pour nos investisseurs, cela se traduit directement par des revenus quotidiens fiables et une rentabilité accrue sur toute la durée du cycle d'investissement.
 
-Investir dans SpolarPV, c'est choisir la technologie la plus avancée au monde au service de votre patrimoine financier.`,
+Investir dans Powerade, c'est choisir la technologie la plus avancée au monde au service de votre patrimoine financier.`,
     image: img2,
     date: "10 Juin 2026",
   },
   {
     id: "3",
-    title: "Expansion SpolarPV en Afrique francophone — Plan 2026–2027",
+    title: "Expansion Powerade en Afrique francophone — Plan 2026–2027",
     summary:
-      "SpolarPV accélère son développement en Afrique de l'Ouest et Centrale. Un plan ambitieux pour apporter l'énergie propre et des opportunités d'investissement à toute la région.",
-    body: `SpolarPV annonce un plan d'expansion ambitieux pour l'Afrique francophone couvrant la période 2026–2027.
+      "Powerade accélère son développement en Afrique de l'Ouest et Centrale. Un plan ambitieux pour apporter l'énergie propre et des opportunités d'investissement à toute la région.",
+    body: `Powerade annonce un plan d'expansion ambitieux pour l'Afrique francophone couvrant la période 2026–2027.
 
 Ce plan prévoit l'installation de 200 nouvelles fermes solaires dans des pays clés comme le Sénégal, la Côte d'Ivoire, le Cameroun et le Burkina Faso, pour une capacité totale de 690 MW.
 
@@ -114,7 +114,7 @@ export default function NewsDetailPage() {
           </p>
         ))}
       </div>
-      <img src={landscapeImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
+      <img src={landscapeImg} alt="Powerade" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

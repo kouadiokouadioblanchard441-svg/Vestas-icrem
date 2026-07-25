@@ -9,7 +9,7 @@ import { useLocation } from "wouter";
 import { getContent } from "@/lib/content";
 import type { Product } from "@shared/schema";
 
-const vestasLogo = "/spolarpv-logo.png";
+const vestasLogo = "/powerade-logo.webp";
 import serviceIcon from "@assets/20260311_214852_1773265973964.png";
 import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
 
@@ -81,7 +81,7 @@ export default function ProductsPage() {
         className="flex items-center justify-between px-4 py-3 shadow-sm"
         style={{ background: "#87CEEB" }}
       >
-        <img src={vestasLogo} alt="SpolarPV" className="h-8 w-auto object-contain" />
+        <img src={vestasLogo} alt="Powerade" className="h-8 w-auto object-contain" />
         <p className="text-gray-800 font-bold text-base">{headerTitle}</p>
         <button onClick={() => navigate("/service")} className="flex items-center justify-center" data-testid="button-service">
           <img src={serviceIcon} alt="Service client" className="w-8 h-8 object-contain" />

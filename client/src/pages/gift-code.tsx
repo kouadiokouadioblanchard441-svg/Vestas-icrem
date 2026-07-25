@@ -73,7 +73,7 @@ export default function GiftCodePage() {
       <div className="relative">
         <img
           src={jollibeeNight}
-          alt="SpolarPV"
+          alt="Powerade"
           className="w-full h-52 object-cover"
           data-testid="img-gift-banner"
         />
@@ -178,7 +178,7 @@ export default function GiftCodePage() {
         </div>
 
       </div>
-      <img src={landscapeImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
+      <img src={landscapeImg} alt="Powerade" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

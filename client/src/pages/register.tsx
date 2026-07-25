@@ -14,7 +14,7 @@ import { useI18n } from "@/lib/i18n";
 import { Loader2, ChevronDown } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
 
-const intelLogo = "/spolarpv-logo.png";
+const intelLogo = "/powerade-logo.webp";
 
 export default function RegisterPage() {
   const [, navigate] = useLocation();

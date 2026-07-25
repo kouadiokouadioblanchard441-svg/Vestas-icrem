@@ -48,7 +48,7 @@ const T: Record<Lang, Translations> = {
     registerLoading:   "Inscription...",
     repeatPassword:    "répéter le mot de passe",
     referralCode:      "code de parrainage",
-    terms:             "En cochant cette case, vous acceptez les Conditions Générales d'Utilisation de SpolarPV",
+    terms:             "En cochant cette case, vous acceptez les Conditions Générales d'Utilisation de Powerade",
     errInvalidPhone:   "Numéro de téléphone invalide",
     errPasswordRequired:"Le mot de passe est requis",
     errMinPassword:    "Au moins 6 caractères",
@@ -58,7 +58,7 @@ const T: Record<Lang, Translations> = {
     errLoginFailed:    "Vérifiez vos informations",
     errRegisterFailed: "Une erreur est survenue",
     successRegister:   "Inscription réussie !",
-    welcomeMsg:        "Bienvenue sur SpolarPV !",
+    welcomeMsg:        "Bienvenue sur Powerade !",
   },
   en: {
     yourNumber:        "your number",
@@ -72,7 +72,7 @@ const T: Record<Lang, Translations> = {
     registerLoading:   "Registering...",
     repeatPassword:    "repeat your password",
     referralCode:      "referral code",
-    terms:             "By checking this box you agree to the SpolarPV Terms and Conditions",
+    terms:             "By checking this box you agree to the Powerade Terms and Conditions",
     errInvalidPhone:   "Invalid phone number",
     errPasswordRequired:"Password is required",
     errMinPassword:    "At least 6 characters",
@@ -82,7 +82,7 @@ const T: Record<Lang, Translations> = {
     errLoginFailed:    "Check your credentials",
     errRegisterFailed: "An error occurred",
     successRegister:   "Registration successful!",
-    welcomeMsg:        "Welcome to SpolarPV!",
+    welcomeMsg:        "Welcome to Powerade!",
   },
   pt: {
     yourNumber:        "seu número",
@@ -96,7 +96,7 @@ const T: Record<Lang, Translations> = {
     registerLoading:   "Registrando...",
     repeatPassword:    "repita a senha",
     referralCode:      "código de referência",
-    terms:             "Ao marcar esta caixa, você concorda com os Termos e Condições da SpolarPV",
+    terms:             "Ao marcar esta caixa, você concorda com os Termos e Condições da Powerade",
     errInvalidPhone:   "Número de telefone inválido",
     errPasswordRequired:"A senha é obrigatória",
     errMinPassword:    "Pelo menos 6 caracteres",
@@ -106,7 +106,7 @@ const T: Record<Lang, Translations> = {
     errLoginFailed:    "Verifique suas credenciais",
     errRegisterFailed: "Ocorreu um erro",
     successRegister:   "Registro bem-sucedido!",
-    welcomeMsg:        "Bem-vindo ao SpolarPV!",
+    welcomeMsg:        "Bem-vindo ao Powerade!",
   },
   es: {
     yourNumber:        "su número",
@@ -120,7 +120,7 @@ const T: Record<Lang, Translations> = {
     registerLoading:   "Registrando...",
     repeatPassword:    "repetir contraseña",
     referralCode:      "código de referido",
-    terms:             "Al marcar esta casilla, acepta los Términos y Condiciones de SpolarPV",
+    terms:             "Al marcar esta casilla, acepta los Términos y Condiciones de Powerade",
     errInvalidPhone:   "Número de teléfono inválido",
     errPasswordRequired:"La contraseña es obligatoria",
     errMinPassword:    "Al menos 6 caracteres",
@@ -130,7 +130,7 @@ const T: Record<Lang, Translations> = {
     errLoginFailed:    "Verifique sus datos",
     errRegisterFailed: "Ocurrió un error",
     successRegister:   "¡Registro exitoso!",
-    welcomeMsg:        "¡Bienvenido a SpolarPV!",
+    welcomeMsg:        "¡Bienvenido a Powerade!",
   },
   ar: {
     yourNumber:        "رقمك",
@@ -144,7 +144,7 @@ const T: Record<Lang, Translations> = {
     registerLoading:   "جارٍ التسجيل...",
     repeatPassword:    "أعد كلمة المرور",
     referralCode:      "رمز الإحالة",
-    terms:             "بتحديد هذا المربع، فإنك توافق على شروط وأحكام SpolarPV",
+    terms:             "بتحديد هذا المربع، فإنك توافق على شروط وأحكام Powerade",
     errInvalidPhone:   "رقم الهاتف غير صالح",
     errPasswordRequired:"كلمة المرور مطلوبة",
     errMinPassword:    "6 أحرف على الأقل",
@@ -154,7 +154,7 @@ const T: Record<Lang, Translations> = {
     errLoginFailed:    "تحقق من بيانات الدخول",
     errRegisterFailed: "حدث خطأ ما",
     successRegister:   "تم التسجيل بنجاح!",
-    welcomeMsg:        "مرحباً بك في SpolarPV!",
+    welcomeMsg:        "مرحباً بك في Powerade!",
   },
 };
 
@@ -172,7 +172,7 @@ const I18nContext = createContext<I18nCtx>({
   t: T.fr,
 });
 
-const STORAGE_KEY = "spolarpv_lang";
+const STORAGE_KEY = "powerade_lang";
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => {

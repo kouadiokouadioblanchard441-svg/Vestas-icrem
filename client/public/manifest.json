@@ -1,7 +1,7 @@
 {
-  "name": "SpolarPV",
-  "short_name": "SpolarPV",
-  "description": "SpolarPV - Investissement solaire. Easy Invest, More Returns.",
+  "name": "Powerade",
+  "short_name": "Powerade",
+  "description": "Powerade - Investissement solaire. Easy Invest, More Returns.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -10,7 +10,7 @@ import { Link } from "wouter";
 import type { Task } from "@shared/schema";
 import jollibeeImg from "@assets/Philippines-Exhibition-May-19-2026-2_1783947359298.webp";
 import landscapeImg from "@assets/High-Efficiency-Cis-Solar-Panel-Monocrystalline-Solar-Module-_1783948797085.webp";
-const jollibeeLogo = "/spolarpv-logo.png";
+const jollibeeLogo = "/powerade-logo.webp";
 import iconBronze from "@assets/344464_1773318022355.png";
 import iconArgent from "@assets/817729_1773318022328.png";
 import iconOr from "@assets/sac-argent-gros-tas-illustration-icone-argent-comptant-icone-p_1773318022388.jpg";
@@ -94,7 +94,7 @@ export default function TasksPage() {
       <div className="relative overflow-hidden" style={{ height: "260px" }}>
         <img
           src={jollibeeImg}
-          alt="SpolarPV"
+          alt="Powerade"
           className="w-full h-full object-cover object-center"
         />
         {/* Dark gradient overlay */}
@@ -114,7 +114,7 @@ export default function TasksPage() {
             </button>
           </Link>
           <div className="flex-1 flex justify-center">
-            <img src={jollibeeLogo} alt="SpolarPV" className="h-8 object-contain" />
+            <img src={jollibeeLogo} alt="Powerade" className="h-8 object-contain" />
           </div>
           <div className="w-9" />
         </div>

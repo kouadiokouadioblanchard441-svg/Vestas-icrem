@@ -509,7 +509,7 @@ export default function DepositPage() {
       <div className="mt-auto">
         <img
           src={landscapeImg}
-          alt="SpolarPV"
+          alt="Powerade"
           className="w-full object-cover object-top"
           style={{ maxHeight: 300 }}
         />

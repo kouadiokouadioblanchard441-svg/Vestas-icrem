@@ -46,7 +46,7 @@ export default function MyProductsPage() {
         <div className="relative">
           <img
             src={heroBanner}
-            alt="SpolarPV"
+            alt="Powerade"
             className="w-full object-cover"
             style={{ height: 200 }}
           />
@@ -64,7 +64,7 @@ export default function MyProductsPage() {
           {/* Title on banner */}
           <div className="absolute bottom-4 left-4">
             <p className="text-white text-xl font-black tracking-tight">Mes Produits</p>
-            <p className="text-white/70 text-xs mt-0.5">SpolarPV</p>
+            <p className="text-white/70 text-xs mt-0.5">Powerade</p>
           </div>
         </div>
 
@@ -109,7 +109,7 @@ export default function MyProductsPage() {
           ) : allProducts.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl shadow-sm flex flex-col items-center gap-3">
               <Wind className="w-12 h-12 text-gray-200" />
-              <p className="text-gray-500 font-medium">Aucun produit SpolarPV</p>
+              <p className="text-gray-500 font-medium">Aucun produit Powerade</p>
               <p className="text-gray-400 text-sm">Achetez des produits pour commencer à gagner</p>
             </div>
           ) : (

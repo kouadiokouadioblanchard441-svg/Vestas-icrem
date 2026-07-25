@@ -148,7 +148,7 @@ export default function SalaryBonusPage() {
         })}
 
       </div>
-      <img src={solarPanelImg} alt="SpolarPV" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
+      <img src={solarPanelImg} alt="Powerade" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }
