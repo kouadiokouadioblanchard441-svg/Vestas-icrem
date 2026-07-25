@@ -9,7 +9,7 @@ import { useAuth } from "@/lib/auth";
 import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
 import { WORLD_COUNTRIES } from "@/lib/world-countries";
 import { CountrySelector } from "@/components/country-selector";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, LANGUAGES, type Lang } from "@/lib/i18n";
 import { Loader2, ChevronDown, Eye, EyeOff, Sun, ChevronRight } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
 
@@ -24,6 +24,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showTxPassword, setShowTxPassword] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
 
   const params = new URLSearchParams(searchString);
   const refCode = params.get("invite_code") || params.get("money") || params.get("reg") || "";
@@ -133,6 +134,8 @@ export default function RegisterPage() {
 
           {/* Language */}
           <button
+            type="button"
+            onClick={() => setLangOpen(true)}
             className="flex items-center gap-1"
             style={{ color: "#222", fontWeight: 500, fontSize: 13 }}
           >
@@ -285,6 +288,48 @@ export default function RegisterPage() {
           onSelect={(code) => form.setValue("country", code, { shouldValidate: true })}
           selectedCode={selectedCountry}
         />
+
+        {/* Language picker bottom sheet */}
+        {langOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              style={{ background: "rgba(0,0,0,0.50)" }}
+              onClick={() => setLangOpen(false)}
+            />
+            <div
+              className="fixed bottom-0 inset-x-0 z-50 bg-white flex flex-col"
+              style={{ borderRadius: "20px 20px 0 0", boxShadow: "0 -4px 24px rgba(0,0,0,0.12)" }}
+            >
+              <div style={{ height: 20 }} />
+              {LANGUAGES.map((lng, index) => {
+                const isSelected = lng.code === lang;
+                return (
+                  <button
+                    key={lng.code}
+                    type="button"
+                    onClick={() => { setLang(lng.code as Lang); setLangOpen(false); }}
+                    className="w-full flex items-center justify-between px-4"
+                    style={{ height: 56, borderBottom: index < LANGUAGES.length - 1 ? "1px dashed #BFDBFE" : "none" }}
+                  >
+                    <span style={{ fontSize: 15, fontWeight: 500, color: isSelected ? "#E8A020" : "#1a1a1a" }}>
+                      {lng.flag}&nbsp;&nbsp;{lng.nativeName}
+                    </span>
+                    {isSelected && (
+                      <span className="flex items-center justify-center shrink-0"
+                        style={{ width: 24, height: 24, borderRadius: "50%", background: "#E8A020" }}>
+                        <svg width="13" height="10" viewBox="0 0 13 10" fill="none">
+                          <path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+              <div style={{ height: 24 }} />
+            </div>
+          </>
+        )}
       </div>
 
       <FloatingSupport bottomOffset={24} />
