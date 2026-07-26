@@ -56,11 +56,11 @@ export default function SalaryBonusPage() {
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-16 px-4 pt-4 space-y-3">
+      <div className="flex-1 overflow-y-auto pb-16 px-3 pt-3 space-y-2">
 
         {/* ── Stats card ── */}
         <div
-          className="rounded-2xl px-6 py-5 flex items-center relative overflow-hidden"
+          className="rounded-xl px-4 py-3 flex items-center relative overflow-hidden"
           style={{
             background: `linear-gradient(120deg, rgba(0,166,81,0.75), rgba(0,200,83,0.55)), url(${solarPanelImg})`,
             backgroundSize: "cover",
@@ -68,13 +68,13 @@ export default function SalaryBonusPage() {
           }}
         >
           <div className="flex-1 text-center">
-            <p className="text-white font-extrabold text-2xl">{currency} {totalCommission.toFixed(0)}</p>
-            <p className="text-white/70 text-xs mt-1">{t.salaryTotalRewards}</p>
+            <p className="text-white font-extrabold text-lg">{currency} {totalCommission.toFixed(0)}</p>
+            <p className="text-white/70 text-[11px] mt-0.5">{t.salaryTotalRewards}</p>
           </div>
-          <div className="w-px h-12 bg-white/30" />
+          <div className="w-px h-8 bg-white/30" />
           <div className="flex-1 text-center">
-            <p className="text-white font-extrabold text-2xl">{totalPeople}</p>
-            <p className="text-white/70 text-xs mt-1">{t.salaryTotalPeople}</p>
+            <p className="text-white font-extrabold text-lg">{totalPeople}</p>
+            <p className="text-white/70 text-[11px] mt-0.5">{t.salaryTotalPeople}</p>
           </div>
         </div>
 
@@ -87,43 +87,43 @@ export default function SalaryBonusPage() {
           return (
             <div
               key={lv}
-              className="rounded-2xl overflow-hidden shadow-sm flex"
+              className="rounded-xl overflow-hidden shadow-sm flex"
               style={{ background: "#fff" }}
               data-testid={`level-card-${lv}`}
             >
-              {/* Purple left bar */}
+              {/* Left bar */}
               <div
-                className="flex items-center justify-center px-4 py-5"
-                style={{ background: "linear-gradient(160deg, #E8192C, #ff5a5a)", minWidth: 72 }}
+                className="flex items-center justify-center px-3 py-3"
+                style={{ background: "linear-gradient(160deg, #E8192C, #ff5a5a)", minWidth: 56 }}
               >
-                <p className="text-white font-extrabold text-lg">Lv{lv}</p>
+                <p className="text-white font-extrabold text-sm">Lv{lv}</p>
               </div>
 
               {/* Content */}
-              <div className="flex-1 px-4 py-4">
-                <p className="text-gray-700 text-xs text-center leading-snug mb-3">
+              <div className="flex-1 px-3 py-2.5">
+                <p className="text-gray-700 text-[11px] text-center leading-snug mb-2">
                   {t.salaryInviteDesc.replace("{0}", String(required))}{" "}
                   <span className="font-bold" style={{ color: "#E8192C" }}>{currency} {reward.toLocaleString()}</span>
                 </p>
 
                 {/* Stats row */}
-                <div className="flex justify-around mb-3">
+                <div className="flex justify-around mb-2">
                   <div className="text-center">
-                    <p className="text-gray-900 font-extrabold text-base">{current}</p>
-                    <p className="text-gray-400 text-xs">{t.salaryCurrent}</p>
+                    <p className="text-gray-900 font-extrabold text-sm">{current}</p>
+                    <p className="text-gray-400 text-[10px]">{t.salaryCurrent}</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-gray-900 font-extrabold text-base">{required}</p>
-                    <p className="text-gray-400 text-xs">{t.salaryTarget}</p>
+                    <p className="text-gray-900 font-extrabold text-sm">{required}</p>
+                    <p className="text-gray-400 text-[10px]">{t.salaryTarget}</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-gray-900 font-extrabold text-base">{progress}/{required}</p>
-                    <p className="text-gray-400 text-xs">{t.salaryProgress}</p>
+                    <p className="text-gray-900 font-extrabold text-sm">{progress}/{required}</p>
+                    <p className="text-gray-400 text-[10px]">{t.salaryProgress}</p>
                   </div>
                 </div>
 
                 {/* Progress bar */}
-                <div className="w-full h-1.5 rounded-full bg-gray-100 mb-3">
+                <div className="w-full h-1 rounded-full bg-gray-100 mb-2">
                   <div
                     className="h-full rounded-full transition-all"
                     style={{
@@ -135,7 +135,7 @@ export default function SalaryBonusPage() {
 
                 {/* Button */}
                 <button
-                  className="w-full py-2.5 rounded-xl text-sm font-bold transition-all"
+                  className="w-full py-1.5 rounded-lg text-xs font-bold transition-all"
                   style={reached
                     ? { background: "linear-gradient(90deg, #E8192C, #ff5a5a)", color: "#fff" }
                     : { background: "#F3F4F6", color: "#6B7280" }
