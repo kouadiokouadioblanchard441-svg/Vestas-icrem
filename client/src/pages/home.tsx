@@ -18,10 +18,10 @@ import iconService from "@assets/3-1_1783245823860.png";
 
 // Official Power Add Inc. visuals — real company conference & factory photos.
 const BANNER_SLIDES = [
-  { src: "/poweradd/poweradd-news-cmef.jpg", label: "Power Add — Official booth at CMEF International Medical Exhibition" },
-  { src: "/poweradd/poweradd-factory-opening.jpg", label: "Power Add — Asia Production Facility Grand Opening" },
-  { src: "/poweradd/poweradd-factory-lines.jpg", label: "Power Add — High-precision Automated Production Lines" },
-  { src: "/poweradd/poweradd-intl-exhibition.jpg", label: "Power Add — Presence at International Industrial Exhibitions" },
+  { src: "/poweradd/poweradd-news-cmef.jpg", label: "Power Add — 参加CMEF国际医疗展览会官方展台" },
+  { src: "/poweradd/poweradd-factory-opening.jpg", label: "Power Add — 亚洲生产基地盛大开幕" },
+  { src: "/poweradd/poweradd-factory-lines.jpg", label: "Power Add — 高精度自动化生产线" },
+  { src: "/poweradd/poweradd-intl-exhibition.jpg", label: "Power Add — 参加国际工业展览会" },
   { src: "/poweradd/poweradd-pps180s.png", label: "Power Add — Certified Professional Power Supply Solutions" },
 ];
 
