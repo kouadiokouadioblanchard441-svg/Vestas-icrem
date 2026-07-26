@@ -219,13 +219,6 @@ export default function DepositPage() {
 
       {step === "currency" && (
         <section className="mx-auto max-w-lg p-4">
-          <div className="mb-4 flex items-center justify-between rounded-2xl border border-white/15 bg-[#234781] px-4 py-3 shadow-lg">
-            <div>
-              <p className="text-xs text-white/60">{t.depositAmount}</p>
-              <p className="font-bold">{Number(amount).toLocaleString()} {currency}</p>
-            </div>
-            <button type="button" onClick={() => setStep("amount")} className="text-sm font-semibold underline">{t.depositModify}</button>
-          </div>
           <p className="mb-3 px-1 text-sm font-semibold text-white/80">{t.depositSelectNetwork}</p>
           <div className="overflow-hidden rounded-3xl border border-white/15 bg-[#234781] px-4 shadow-xl">
             {CRYPTO_OPTIONS.map((option, index) => (
