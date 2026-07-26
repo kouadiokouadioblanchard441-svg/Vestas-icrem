@@ -4,6 +4,7 @@ import landscapeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 
 import elfExpert1 from "@/assets/images/elf-expert-1.jpeg";
 import elfExpert2 from "@/assets/images/elf-expert-2.webp";
@@ -14,6 +15,7 @@ const productImages = [elfExpert1, elfExpert2, elfStation1, elfStation2];
 
 export default function OrdersPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<"active" | "completed">("active");
 
   const { data: userProducts, isLoading } = useQuery<any[]>({
@@ -26,15 +28,15 @@ export default function OrdersPage() {
 
   if (!user) return null;
 
-  const headerTitle = getContent(settings, "content_orders_headerTitle", "我的订单");
-  const infoLine1 = getContent(settings, "content_orders_infoLine1", "产品收益每24小时自动到账。");
-  const infoLine2 = getContent(settings, "content_orders_infoLine2", "您可以购买多个产品来增加收益。");
+  const headerTitle = getContent(settings, "content_orders_headerTitle", t.myProductsTitle);
+  const infoLine1 = getContent(settings, "content_orders_infoLine1", t.myProductsSettledEvery24h);
+  const infoLine2 = getContent(settings, "content_orders_infoLine2", t.purchaseSuccessDescription);
 
   const getProductImage = (index: number) => {
     return productImages[index % productImages.length];
   };
 
-  const filteredProducts = userProducts?.filter((up: any) => 
+  const filteredProducts = userProducts?.filter((up: any) =>
     activeTab === "active" ? up.status === "active" : up.status !== "active"
   ) || [];
 
@@ -55,7 +57,7 @@ export default function OrdersPage() {
           data-testid="orders-tab-active"
         >
           <span className="w-2 h-2 rounded-full bg-white"></span>
-           进行中
+          {t.ordersOngoing}
         </button>
         <button
           onClick={() => setActiveTab("completed")}
@@ -67,17 +69,13 @@ export default function OrdersPage() {
           data-testid="orders-tab-completed"
         >
           <span className={activeTab === "completed" ? "text-white" : "text-white/50"}>&#10003;</span>
-           已完成
+          {t.ordersCompleted}
         </button>
       </div>
 
       <div className="bg-green-50 p-3 mx-4 mt-3 rounded-lg">
-        <p className="text-xs text-green-700 leading-relaxed">
-          {infoLine1}
-        </p>
-        <p className="text-xs text-green-700 leading-relaxed mt-1">
-          {infoLine2}
-        </p>
+        <p className="text-xs text-green-700 leading-relaxed">{infoLine1}</p>
+        <p className="text-xs text-green-700 leading-relaxed mt-1">{infoLine2}</p>
       </div>
 
       <div className="flex-1 overflow-y-auto pb-20 px-4 pt-4">
@@ -95,18 +93,18 @@ export default function OrdersPage() {
               const purchaseDateTime = up.purchasedAt ? new Date(up.purchasedAt) : null;
               const purchaseDate = purchaseDateTime ? purchaseDateTime.toLocaleDateString('fr-FR') : '-';
               const purchaseTime = purchaseDateTime ? purchaseDateTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '-';
-              
+
               return (
-                <div 
-                  key={up.id} 
+                <div
+                  key={up.id}
                   className="bg-white rounded-xl p-4 shadow-sm border"
                   data-testid={`order-card-${up.id}`}
                 >
                   <div className="flex items-start gap-4">
                     <div className="w-24 h-24 flex-shrink-0">
-                      <img 
-                        src={getProductImage(up.productId ? up.productId % productImages.length : index)} 
-                        alt={up.product?.name || "产品"}
+                      <img
+                        src={getProductImage(up.productId ? up.productId % productImages.length : index)}
+                        alt={up.product?.name || t.noProducts}
                         className="w-full h-full object-cover rounded-lg"
                       />
                     </div>
@@ -114,35 +112,35 @@ export default function OrdersPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start mb-2">
                         <p className="text-red-500 font-bold text-sm">
-                           {up.product?.name || "产品"}
+                          {up.product?.name || t.noProducts}
                         </p>
                         <span className={`px-2 py-0.5 text-[11px] font-semibold rounded ${
-                          up.status === 'active' 
-                            ? 'bg-green-100 text-green-600' 
+                          up.status === 'active'
+                            ? 'bg-green-100 text-green-600'
                             : 'bg-gray-100 text-gray-600'
                         }`}>
-                           {up.status === 'active' ? '有效' : '已完成'}
+                          {up.status === 'active' ? t.ordersStatusActive : t.ordersStatusDone}
                         </span>
                       </div>
-                      
+
                       <div className="space-y-0.5 text-[12px]">
                         <p className="text-gray-600">
-                           价格：<span className="text-green-500 font-medium">{up.product?.price?.toLocaleString() || 0} Fcfa</span>
+                          {t.price}：<span className="text-green-500 font-medium">{up.product?.price?.toLocaleString() || 0} USDT</span>
                         </p>
                         <p className="text-gray-600">
-                           每日收益：<span className="text-green-500 font-medium">{up.product?.dailyEarnings?.toLocaleString() || 0} Fcfa</span>
+                          {t.ordersDailyLbl}：<span className="text-green-500 font-medium">{up.product?.dailyEarnings?.toLocaleString() || 0} USDT</span>
                         </p>
                         <p className="text-gray-600">
-                           周期：<span className="text-green-500 font-medium">{up.product?.cycleDays || 0} 天</span>
+                          {t.ordersCycleLbl}：<span className="text-green-500 font-medium">{up.product?.cycleDays || 0} {t.ordersDaysLbl}</span>
                         </p>
                         <p className="text-gray-600">
-                           剩余天数：<span className="text-[#2196F3] font-medium">{up.daysRemaining || 0}</span>
+                          {t.ordersRemainingLbl}：<span className="text-[#2196F3] font-medium">{up.daysRemaining || 0}</span>
                         </p>
                         <p className="text-gray-600">
-                           累计收益：<span className="text-green-600 font-bold">{totalEarned.toLocaleString()} Fcfa</span>
+                          {t.ordersTotalEarnedLbl}：<span className="text-green-600 font-bold">{totalEarned.toLocaleString()} USDT</span>
                         </p>
                         <p className="text-gray-600">
-                           日期：<span className="text-gray-700 font-medium">{purchaseDate}</span> {purchaseTime}
+                          {t.ordersDateLbl}：<span className="text-gray-700 font-medium">{purchaseDate}</span> {purchaseTime}
                         </p>
                       </div>
                     </div>
@@ -163,7 +161,7 @@ export default function OrdersPage() {
                 <path d="M45 30 Q50 15 55 30" stroke="currentColor" strokeWidth="2" fill="none"/>
               </svg>
             </div>
-             <p className="text-gray-500 font-medium">暂无订单</p>
+            <p className="text-gray-500 font-medium">{t.ordersNone}</p>
           </div>
         )}
       </div>

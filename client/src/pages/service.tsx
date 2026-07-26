@@ -13,6 +13,7 @@ import {
 import heroImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 import landscapeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 import { getContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 
 interface LinksSettings {
   supportLink: string;
@@ -84,6 +85,7 @@ function LinkRow({
 }
 
 export default function ServicePage() {
+  const { t } = useI18n();
   const { data: settings } = useQuery<LinksSettings>({
     queryKey: ["/api/settings/links"],
   });
@@ -92,38 +94,34 @@ export default function ServicePage() {
     queryKey: ["/api/settings"],
   });
 
-  const startHour = settings?.withdrawalStartHour || "9";
-  const endHour = settings?.withdrawalEndHour || "17";
-  const hoursDisplay = `${startHour}:00 - ${endHour}:00`;
-
-  const servicePageTitle = getContent(allSettings, "content_service_pageTitle", "客服中心");
-  const serviceWithdrawalHoursText = getContent(allSettings, "content_service_withdrawalHoursText", "提现服务时间：全天开放。");
-  const serviceSupportHoursLabel = getContent(allSettings, "content_service_supportHoursLabel", "客服服务时间：");
+  const servicePageTitle = getContent(allSettings, "content_service_pageTitle", t.customerService);
+  const serviceWithdrawalHoursText = getContent(allSettings, "content_service_withdrawalHoursText", t.serviceWithdrawalHoursText ?? "");
+  const serviceSupportHoursLabel = getContent(allSettings, "content_service_supportHoursLabel", t.customerService);
 
   const allLinks = [
     {
-      label: settings?.supportLabel && /[\u3400-\u9fff]/.test(settings.supportLabel) ? settings.supportLabel : "客服",
+      label: settings?.supportLabel || t.serviceCustomerServiceFallback,
       type: settings?.supportType || "telegram",
       href: settings?.supportLink || "https://t.me/vestasgroup",
       testId: "button-support-link",
       enabled: settings?.supportEnabled !== "false",
     },
     {
-      label: settings?.support2Label && /[\u3400-\u9fff]/.test(settings.support2Label) ? settings.support2Label : "客服2",
+      label: settings?.support2Label || t.serviceCustomerService2Fallback,
       type: settings?.support2Type || "telegram",
       href: settings?.support2Link || "https://t.me/vestasgroup",
       testId: "button-support2-link",
       enabled: settings?.support2Enabled !== "false",
     },
     {
-      label: settings?.channelLabel && /[\u3400-\u9fff]/.test(settings.channelLabel) ? settings.channelLabel : "官方频道",
+      label: settings?.channelLabel || t.serviceOfficialChannelFallback,
       type: settings?.channelType || "telegram",
       href: settings?.channelLink || "https://t.me/vestasgroup",
       testId: "button-channel-link",
       enabled: settings?.channelEnabled !== "false",
     },
     {
-      label: settings?.groupLabel && /[\u3400-\u9fff]/.test(settings.groupLabel) ? settings.groupLabel : "讨论群",
+      label: settings?.groupLabel || t.serviceDiscussionGroupFallback,
       type: settings?.groupType || "telegram",
       href: settings?.groupLink || "https://t.me/vestasgroup",
       testId: "button-group-link",

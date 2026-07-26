@@ -10,7 +10,6 @@ import { ChevronLeft, Loader2, Trophy, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import type { Task } from "@shared/schema";
 import jollibeeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
-import landscapeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 const poweraddLogo = "/poweradd/poweradd-logo-official.png";
 import iconBronze from "@assets/344464_1773318022355.png";
 import iconArgent from "@assets/817729_1773318022328.png";
@@ -23,15 +22,6 @@ interface TaskWithStatus extends Task {
   canClaim: boolean;
   currentInvites: number;
 }
-
-const TIER_LABELS = [
-  "青铜推荐",
-  "白银推荐",
-  "黄金推荐",
-  "铂金推荐",
-  "钻石推荐",
-  "精英推荐",
-];
 
 const TIER_COLORS = [
   { bg: "from-red-700 to-red-500" },
@@ -57,6 +47,15 @@ export default function TasksPage() {
     queryKey: ["/api/settings"],
   });
 
+  const TIER_LABELS = [
+    t.taskTierBronze,
+    t.taskTierSilver,
+    t.taskTierGold,
+    t.taskTierPlatinum,
+    t.taskTierDiamond,
+    t.taskTierElite,
+  ];
+
   const claimMutation = useMutation({
     mutationFn: async (taskId: number) => {
       const response = await apiRequest("POST", `/api/tasks/${taskId}/claim`, {});
@@ -80,26 +79,25 @@ export default function TasksPage() {
 
   const countryInfo = getCountryByCode(user.country);
   const currency = countryInfo?.currency || "USDT";
-  const totalTaskRewards = tasks?.filter(t => t.isCompleted).reduce((sum, t) => sum + t.reward, 0) || 0;
-  const completedCount = tasks?.filter(t => t.isCompleted).length || 0;
-  const claimableCount = tasks?.filter(t => t.canClaim && !t.isCompleted).length || 0;
+  const totalTaskRewards = tasks?.filter(tk => tk.isCompleted).reduce((sum, tk) => sum + tk.reward, 0) || 0;
+  const completedCount = tasks?.filter(tk => tk.isCompleted).length || 0;
+  const claimableCount = tasks?.filter(tk => tk.canClaim && !tk.isCompleted).length || 0;
 
-  const headerTitle = getContent(settings, "content_tasks_headerTitle", "推荐计划");
-  const headerSubtitle = getContent(settings, "content_tasks_headerSubtitle", "邀请好友并获得奖励");
-  const tiersTitle = getContent(settings, "content_tasks_tiersTitle", "推荐等级");
-  const claimAllButton = getContent(settings, "content_tasks_claimAllButton", "全部领取");
+  const headerTitle = getContent(settings, "content_tasks_headerTitle", t.taskTierBronze ? t.team : "推荐计划");
+  const headerSubtitle = getContent(settings, "content_tasks_headerSubtitle", t.taskTierBronze ? t.salaryInviteDesc.replace("{0}", "") : "邀请好友并获得奖励");
+  const tiersTitle = getContent(settings, "content_tasks_tiersTitle", t.taskTierBronze ? t.taskTierBronze.split(" ")[0] : "推荐等级");
+  const claimAllButton = getContent(settings, "content_tasks_claimAllButton", t.taskClaim);
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
 
-      {/* Hero Section — tall enough so bottom text clears the stats card overlap */}
+      {/* Hero Section */}
       <div className="relative overflow-hidden" style={{ height: "260px" }}>
         <img
           src={jollibeeImg}
           alt="Powerade"
           className="w-full h-full object-cover object-center"
         />
-        {/* Dark gradient overlay */}
         <div
           className="absolute inset-0"
           style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.85) 100%)" }}
@@ -121,7 +119,6 @@ export default function TasksPage() {
           <div className="w-9" />
         </div>
 
-        {/* Hero text — positioned above the stats card overlap zone (bottom 60px) */}
         <div className="absolute left-4 right-4" style={{ bottom: "60px" }}>
           <h1 className="text-white font-bold text-xl leading-tight" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>
             {headerTitle}
@@ -132,22 +129,22 @@ export default function TasksPage() {
         </div>
       </div>
 
-      {/* Stats Row — overlaps bottom of hero */}
+      {/* Stats Row */}
       <div className="mx-4 -mt-10 z-10 relative">
         <div className="bg-white rounded-2xl shadow-lg p-3 flex items-center justify-between">
           <div className="flex-1 text-center border-r border-gray-100">
             <p className="text-[#E8320A] text-lg font-bold" data-testid="text-total-rewards">
               {totalTaskRewards.toLocaleString()}
             </p>
-            <p className="text-gray-500 text-[11px] mt-0.5">已获得 {currency}</p>
+            <p className="text-gray-500 text-[11px] mt-0.5">{t.taskEarned} ({currency})</p>
           </div>
           <div className="flex-1 text-center border-r border-gray-100">
             <p className="text-[#E8320A] text-lg font-bold">{completedCount}</p>
-            <p className="text-gray-500 text-[11px] mt-0.5">已完成</p>
+            <p className="text-gray-500 text-[11px] mt-0.5">{t.taskCompleted}</p>
           </div>
           <div className="flex-1 text-center">
             <p className="text-[#E8320A] text-lg font-bold">{claimableCount}</p>
-            <p className="text-gray-500 text-[11px] mt-0.5">待领取</p>
+            <p className="text-gray-500 text-[11px] mt-0.5">{t.taskClaimable}</p>
           </div>
         </div>
       </div>
@@ -162,7 +159,7 @@ export default function TasksPage() {
           {claimableCount > 0 && (
             <button
               onClick={async () => {
-                const claimable = tasks?.filter(t => t.canClaim && !t.isCompleted) || [];
+                const claimable = tasks?.filter(tk => tk.canClaim && !tk.isCompleted) || [];
                 for (const task of claimable) {
                   try { await claimMutation.mutateAsync(task.id); } catch {}
                 }
@@ -202,31 +199,24 @@ export default function TasksPage() {
                   }`}
                   data-testid={`task-item-${task.id}`}
                 >
-                  {/* Tier Header */}
                   <div className={`bg-gradient-to-r ${tier.bg} px-2.5 py-1 flex items-center justify-between`}>
                     <span className="text-white font-bold text-xs">{label}</span>
                     {task.isCompleted && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
                   </div>
 
-                  {/* Task Body */}
                   <div className="p-2 flex items-center gap-2">
-                    {/* Icon */}
                     <div className="w-8 h-8 rounded-md overflow-hidden flex-shrink-0 bg-gray-50 flex items-center justify-center">
                       <img src={icon} alt={label} className="w-6 h-6 object-contain" />
                     </div>
 
-                    {/* Info */}
                     <div className="flex-1 min-w-0">
                       <p className="text-gray-700 text-[11px] leading-snug mb-0.5">
-                         邀请{" "}
-                        <span className="font-bold text-gray-900">{task.requiredInvites}</span>{" "}
-                         人充值
+                        {t.taskInviteDesc.replace("{0}", String(task.requiredInvites))}
                       </p>
                       <p className="text-[#E8192C] font-bold text-xs">
                         {task.reward.toLocaleString()} {currency}
                       </p>
 
-                      {/* Progress */}
                       <div className="mt-1">
                         <div className="flex justify-between items-center mb-0.5">
                           <span className="text-gray-400 text-[10px]">
@@ -243,11 +233,10 @@ export default function TasksPage() {
                       </div>
                     </div>
 
-                    {/* Action */}
                     <div className="flex-shrink-0">
                       {task.isCompleted ? (
                         <span className="bg-red-50 text-[#E8192C] text-[10px] font-semibold px-2 py-1 rounded-full block text-center">
-                           ✓ 已完成
+                          {t.taskDone}
                         </span>
                       ) : task.canClaim ? (
                         <button
@@ -259,12 +248,12 @@ export default function TasksPage() {
                           {claimMutation.isPending ? (
                             <Loader2 className="w-3 h-3 animate-spin" />
                           ) : (
-                           "领取"
+                            t.taskClaim
                           )}
                         </button>
                       ) : (
                         <span className="bg-gray-100 text-gray-400 text-[10px] font-semibold px-2 py-1 rounded-full block text-center">
-                           等待中
+                          {t.taskWaiting}
                         </span>
                       )}
                     </div>
@@ -276,7 +265,7 @@ export default function TasksPage() {
         ) : (
           <div className="text-center py-12">
             <Trophy className="w-12 h-12 text-white/40 mx-auto mb-3" />
-             <p className="text-white/70">暂无可用任务</p>
+            <p className="text-white/70">{t.taskNone}</p>
           </div>
         )}
       </div>

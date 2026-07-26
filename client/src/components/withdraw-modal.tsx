@@ -10,14 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Loader2, AlertCircle, Clock, Wallet } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
+import { Loader2, AlertCircle, Wallet } from "lucide-react";
 import type { WithdrawalWallet } from "@shared/schema";
 
-const withdrawSchema = z.object({
-  amount: z.string().min(1, "请输入金额"),
-});
-
-type WithdrawForm = z.infer<typeof withdrawSchema>;
+const withdrawSchemaFactory = (msg: string) =>
+  z.object({ amount: z.string().min(1, msg) });
 
 interface WithdrawModalProps {
   open: boolean;
@@ -27,15 +25,19 @@ interface WithdrawModalProps {
 export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
+  const { t } = useI18n();
+
+  const withdrawSchema = withdrawSchemaFactory(t.invalidAmount);
+  type WithdrawForm = z.infer<typeof withdrawSchema>;
 
   const { data: wallets } = useQuery<WithdrawalWallet[]>({
     queryKey: ["/api/wallets"],
     enabled: open,
   });
 
-  const { data: withdrawalSettings } = useQuery<{ 
+  const { data: withdrawalSettings } = useQuery<{
     withdrawalEnabled: boolean;
-    withdrawalFees: number; 
+    withdrawalFees: number;
     withdrawalStartHour: number;
     withdrawalEndHour: number;
     maxWithdrawalsPerDay: number;
@@ -47,9 +49,7 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
 
   const form = useForm<WithdrawForm>({
     resolver: zodResolver(withdrawSchema),
-    defaultValues: {
-      amount: "",
-    },
+    defaultValues: { amount: "" },
   });
 
   const withdrawMutation = useMutation({
@@ -66,11 +66,11 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/withdrawals"] });
       refreshUser();
-       toast({ title: "提现申请已提交！", description: "您的提现正在等待审核。" });
+      toast({ title: t.withdrawSuccess, description: t.withdrawSuccessDesc });
       handleClose();
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -85,9 +85,7 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
   const defaultWallet = wallets?.find(w => w.isDefault);
   const withdrawalEnabled = withdrawalSettings?.withdrawalEnabled ?? true;
   const fees = withdrawalSettings?.withdrawalFees || 15;
-  const minWithdrawal = withdrawalSettings?.minWithdrawal || 1000;
-  const startHour = withdrawalSettings?.withdrawalStartHour || 8;
-  const endHour = withdrawalSettings?.withdrawalEndHour || 17;
+  const minWithdrawal = withdrawalSettings?.minWithdrawal || 1;
   const currency = "USDT";
 
   const amount = parseInt(form.watch("amount") || "0");
@@ -95,20 +93,14 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
   const netAmount = amount - feeAmount;
 
   const canWithdraw = withdrawalEnabled && user.hasDeposited && user.hasActiveProduct && !user.isWithdrawalBlocked && defaultWallet;
-  const isCameroonOrBenin = user.country === "CM" || user.country === "BJ";
-  const actualStartHour = isCameroonOrBenin ? 9 : startHour;
-  const actualEndHour = isCameroonOrBenin ? 18 : endHour;
-
-  const currentHour = new Date().getHours();
-  const isWithinHours = currentHour >= actualStartHour && currentHour < actualEndHour;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>提现</DialogTitle>
+          <DialogTitle>{t.withdrawTitle}</DialogTitle>
           <DialogDescription>
-             最低金额：{minWithdrawal} USDT | 手续费：{fees}%
+            {t.withdrawMinFee.replace("{0}", String(minWithdrawal)).replace("{1}", String(fees))}
           </DialogDescription>
         </DialogHeader>
 
@@ -117,28 +109,15 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
             <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
               <div className="text-sm">
-                <p className="font-medium text-destructive">暂时无法提现</p>
+                <p className="font-medium text-destructive">{t.withdrawNotAvailable}</p>
                 <ul className="mt-2 space-y-1 text-muted-foreground">
-                   {!user.hasDeposited && <li>- 请先充值</li>}
-                   {!user.hasActiveProduct && <li>- 请先购买产品</li>}
-                   {!defaultWallet && <li>- 请登记提现钱包</li>}
-                   {user.isWithdrawalBlocked && <li>- 您的提现功能已被限制</li>}
-                   {user.mustInviteToWithdraw && <li>- 请邀请一位用户完成投资</li>}
-                   {!withdrawalEnabled && <li>- 管理员暂时关闭了提现功能</li>}
+                  {!user.hasDeposited && <li>- {t.withdrawNeedDeposit}</li>}
+                  {!user.hasActiveProduct && <li>- {t.withdrawNeedProduct}</li>}
+                  {!defaultWallet && <li>- {t.withdrawNeedWallet}</li>}
+                  {user.isWithdrawalBlocked && <li>- {t.withdrawBlocked}</li>}
+                  {user.mustInviteToWithdraw && <li>- {t.withdrawMustInvite}</li>}
+                  {!withdrawalEnabled && <li>- {t.withdrawAdminDisabled}</li>}
                 </ul>
-              </div>
-            </div>
-          </div>
-        ) : !isWithinHours ? (
-          <div className="space-y-4">
-            <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-start gap-3">
-              <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-              <div className="text-sm">
-                <p className="font-medium text-foreground">当前不在提现时间内</p>
-                <p className="text-muted-foreground mt-1">
-                   提现时间为 {actualStartHour}:00 至 {actualEndHour}:00
-                   {isCameroonOrBenin && "（喀麦隆和贝宁）"}
-                </p>
               </div>
             </div>
           </div>
@@ -148,14 +127,14 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
               <div className="bg-secondary rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <Wallet className="w-4 h-4 text-primary" />
-                   <span className="text-sm text-muted-foreground">提现钱包</span>
+                  <span className="text-sm text-muted-foreground">{t.withdrawWalletLabel}</span>
                 </div>
                 <p className="font-medium text-foreground">{defaultWallet?.accountName}</p>
                 <p className="text-sm text-muted-foreground">{defaultWallet?.accountNumber} - USDT BEP20</p>
               </div>
 
               <div className="bg-secondary rounded-lg p-3 text-center">
-                <p className="text-sm text-muted-foreground">可用余额</p>
+                <p className="text-sm text-muted-foreground">{t.withdrawAvailableBalance}</p>
                 <p className="text-xl font-bold text-foreground">{balance.toLocaleString("fr-FR")} {currency}</p>
               </div>
 
@@ -164,12 +143,12 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
                 name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>提现金额</FormLabel>
+                    <FormLabel>{t.withdrawAmountLabel}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="number"
-                         placeholder={`最低 ${minWithdrawal}`}
+                        placeholder={t.withdrawMinPlaceholder.replace("{0}", String(minWithdrawal))}
                         data-testid="input-withdraw-amount"
                       />
                     </FormControl>
@@ -181,15 +160,15 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
               {amount >= 1 && (
                 <div className="bg-muted rounded-lg p-3 space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">金额</span>
+                    <span className="text-muted-foreground">{t.withdrawAmountRow}</span>
                     <span className="text-foreground">{amount.toLocaleString("fr-FR")} {currency}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Frais ({fees}%)</span>
+                    <span className="text-muted-foreground">{t.depositSec1} ({fees}%)</span>
                     <span className="text-destructive">-{feeAmount.toLocaleString("fr-FR")} {currency}</span>
                   </div>
                   <div className="flex justify-between border-t pt-2">
-                    <span className="font-medium text-foreground">预计到账</span>
+                    <span className="font-medium text-foreground">{t.withdrawNetAmount}</span>
                     <span className="font-bold text-primary">{netAmount.toLocaleString("fr-FR")} {currency}</span>
                   </div>
                 </div>
@@ -204,7 +183,7 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
                 {withdrawMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                   "申请提现"
+                  t.withdrawSubmitBtn
                 )}
               </Button>
             </form>

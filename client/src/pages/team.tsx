@@ -5,6 +5,7 @@ import { getCountryByCode } from "@/lib/countries";
 import { useLocation } from "wouter";
 import { Copy, Users, ChevronRight } from "lucide-react";
 import { getContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 
 import teamIcon from "@assets/1244758_1783246767217.png";
 import profileCardBg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
@@ -32,6 +33,7 @@ const RED       = "#E8192C";
 export default function TeamPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useI18n();
   const [, navigate] = useLocation();
 
   const { data: stats } = useQuery<TeamStats>({
@@ -50,21 +52,20 @@ export default function TeamPage() {
 
   const copyCode = () => {
     navigator.clipboard.writeText(user.referralCode);
-    toast({ title: "邀请码已复制！" });
+    toast({ title: t.teamCodeCopied });
   };
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
-    toast({ title: "链接已复制！" });
+    toast({ title: t.teamLinkCopied });
   };
 
   const lv1Rate = settings?.level1Commission || "27";
   const lv2Rate = settings?.level2Commission || "2";
   const lv3Rate = settings?.level3Commission || "1";
 
-  const taskCenterButton = getContent(settings, "content_team_taskCenterButton", "任务中心");
+  const taskCenterButton = getContent(settings, "content_team_taskCenterButton", t.salaryTotalRewards ? t.team : "任务中心");
 
-  // Argent rechargé par niveau (back-computed depuis commission pour niveaux 2 & 3)
   const lv1Recharged = (stats?.level1Recharged || 0).toFixed(0);
   const lv2Recharged =
     Number(lv2Rate) > 0
@@ -77,21 +78,21 @@ export default function TeamPage() {
 
   const levels = [
     {
-      label: "一级团队",
+      label: t.teamLevel1,
       recharged: lv1Recharged,
       invested: stats?.level1Invested || 0,
       total: stats?.level1Count || 0,
       rate: `${lv1Rate}%`,
     },
     {
-      label: "二级团队",
+      label: t.teamLevel2,
       recharged: lv2Recharged,
       invested: stats?.level2Invested || 0,
       total: stats?.level2Count || 0,
       rate: `${lv2Rate}%`,
     },
     {
-      label: "三级团队",
+      label: t.teamLevel3,
       recharged: lv3Recharged,
       invested: stats?.level3Invested || 0,
       total: stats?.level3Count || 0,
@@ -117,7 +118,7 @@ export default function TeamPage() {
           >
             <Users size={16} className="text-white" />
           </div>
-          <p className="text-white font-extrabold text-lg tracking-wide">团队</p>
+          <p className="text-white font-extrabold text-lg tracking-wide">{t.teamTitle}</p>
         </div>
         <button
           onClick={() => navigate("/salary-bonus")}
@@ -125,7 +126,7 @@ export default function TeamPage() {
           style={{ background: "rgba(255,255,255,0.18)", color: "#fff" }}
           data-testid="button-centre-taches"
         >
-          {taskCenterButton}
+          {getContent(settings, "content_team_taskCenterButton", t.informationCenter)}
         </button>
       </div>
 
@@ -143,13 +144,13 @@ export default function TeamPage() {
               className="w-4 h-4 object-contain"
               style={{ filter: "brightness(0) invert(1)" }}
             />
-            <p className="text-white font-bold text-sm">邀请码与邀请链接</p>
+            <p className="text-white font-bold text-sm">{t.teamInviteSection}</p>
           </div>
 
           <div className="px-4 py-4 space-y-3">
             {/* Code */}
             <div>
-              <p className="text-gray-400 text-[11px] mb-1.5 font-medium">邀请码：</p>
+              <p className="text-gray-400 text-[11px] mb-1.5 font-medium">{t.teamInviteCode}</p>
               <div className="flex items-center gap-2">
                 <div
                   className="flex-1 min-w-0 px-3 py-2.5 rounded-xl"
@@ -165,7 +166,7 @@ export default function TeamPage() {
                   style={{ background: RED }}
                   data-testid="button-copy-code"
                 >
-                  <Copy size={12} /> 复制
+                  <Copy size={12} /> {t.teamCopy}
                 </button>
               </div>
             </div>
@@ -174,7 +175,7 @@ export default function TeamPage() {
 
             {/* Lien */}
             <div>
-              <p className="text-gray-400 text-[11px] mb-1.5 font-medium">邀请链接：</p>
+              <p className="text-gray-400 text-[11px] mb-1.5 font-medium">{t.teamInviteLink}</p>
               <div className="flex items-center gap-2">
                 <div
                   className="flex-1 min-w-0 px-3 py-2.5 rounded-xl"
@@ -190,14 +191,14 @@ export default function TeamPage() {
                   style={{ background: RED }}
                   data-testid="button-copy-link"
                 >
-                  <Copy size={12} /> 复制
+                  <Copy size={12} /> {t.teamCopy}
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── Portefeuilles ── */}
+        {/* ── Totaux ── */}
         <div className="grid grid-cols-2 gap-3">
 
           {/* Recharge */}
@@ -213,7 +214,7 @@ export default function TeamPage() {
             <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.28)" }} />
             <div className="relative z-10 p-4 flex flex-col justify-between h-full">
               <p className="text-white/90 text-[11px] font-semibold leading-tight drop-shadow">
-                团队充值总额
+                {t.teamDepositsLabel}
               </p>
               <div className="mt-3">
                 <p className="text-white font-extrabold text-xl leading-none drop-shadow">
@@ -237,7 +238,7 @@ export default function TeamPage() {
             <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.28)" }} />
             <div className="relative z-10 p-4 flex flex-col justify-between h-full">
               <p className="text-white/90 text-[11px] font-semibold leading-tight drop-shadow">
-                团队提现总额
+                {t.teamWithdrawalsLabel}
               </p>
               <div className="mt-3">
                 <p className="text-white font-extrabold text-xl leading-none drop-shadow">
@@ -252,7 +253,6 @@ export default function TeamPage() {
         {/* ── Niveaux ── */}
         {levels.map((lvl, idx) => (
           <div key={idx} className="bg-white rounded-2xl shadow-md overflow-hidden">
-            {/* Titre */}
             <div className="relative px-4 py-3 text-center">
               <p className="text-gray-800 font-bold text-sm">{lvl.label}</p>
               <div
@@ -263,11 +263,10 @@ export default function TeamPage() {
 
             <div className="h-px bg-gray-100" />
 
-            {/* 3 colonnes */}
             <div className="grid grid-cols-3 py-4">
               <div className="flex flex-col items-center px-2 border-r border-gray-100">
                 <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
-                  充值金额
+                  {t.teamRechargeAmount}
                 </p>
                 <p className="font-extrabold text-sm" style={{ color: BLUE }}>
                   {Number(lvl.recharged).toLocaleString("fr-FR")}
@@ -277,7 +276,7 @@ export default function TeamPage() {
 
               <div className="flex flex-col items-center px-2 border-r border-gray-100">
                 <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
-                  总人数
+                  {t.teamTotalCount}
                 </p>
                 <p className="font-extrabold text-sm text-gray-900">
                   {lvl.invested}/{lvl.total}
@@ -286,7 +285,7 @@ export default function TeamPage() {
 
               <div className="flex flex-col items-center px-2">
                 <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
-                  佣金比例
+                  {t.teamCommissionRate}
                 </p>
                 <p className="font-extrabold text-sm" style={{ color: RED }}>
                   {lvl.rate}
@@ -303,7 +302,7 @@ export default function TeamPage() {
           style={{ background: RED, color: "#fff" }}
         >
           <Users size={16} />
-          查看全部成员
+          {t.teamViewAll}
           <ChevronRight size={16} />
         </button>
 

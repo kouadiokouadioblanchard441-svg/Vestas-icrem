@@ -11,15 +11,17 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useI18n } from "@/lib/i18n";
 import { Loader2, Plus, Trash2, CreditCard, Check } from "lucide-react";
 import type { WithdrawalWallet } from "@shared/schema";
 
-const walletSchema = z.object({
-  accountName: z.string().min(2, "请输入账户名称"),
-  accountNumber: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "BEP20 地址格式无效"),
-});
+const walletSchemaFactory = (nameMsg: string, addrMsg: string) =>
+  z.object({
+    accountName: z.string().min(2, nameMsg),
+    accountNumber: z.string().regex(/^0x[a-fA-F0-9]{40}$/, addrMsg),
+  });
 
-type WalletForm = z.infer<typeof walletSchema>;
+type WalletForm = { accountName: string; accountNumber: string };
 const WITHDRAWAL_METHOD = "USDT BEP20";
 
 interface WalletModalProps {
@@ -30,7 +32,10 @@ interface WalletModalProps {
 export default function WalletModal({ open, onClose }: WalletModalProps) {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useI18n();
   const [showForm, setShowForm] = useState(false);
+
+  const walletSchema = walletSchemaFactory(t.walletNameLabel, t.walletAddressLabel);
 
   const { data: wallets, isLoading } = useQuery<WithdrawalWallet[]>({
     queryKey: ["/api/wallets"],
@@ -39,10 +44,7 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
 
   const form = useForm<WalletForm>({
     resolver: zodResolver(walletSchema),
-    defaultValues: {
-      accountName: "",
-      accountNumber: "",
-    },
+    defaultValues: { accountName: "", accountNumber: "" },
   });
 
   const addMutation = useMutation({
@@ -60,12 +62,12 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/wallets"] });
-       toast({ title: "钱包已添加！" });
+      toast({ title: t.walletAdded });
       form.reset();
       setShowForm(false);
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -80,10 +82,10 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/wallets"] });
-       toast({ title: "钱包已删除！" });
+      toast({ title: t.walletDeleted });
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -98,10 +100,10 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/wallets"] });
-       toast({ title: "默认钱包已更新！" });
+      toast({ title: t.walletDefaultUpdated });
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -111,7 +113,7 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>钱包管理</DialogTitle>
+          <DialogTitle>{t.walletTitle}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -157,7 +159,7 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
                   </div>
                   {wallet.isDefault && (
                     <div className="mt-2">
-                       <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">默认</span>
+                      <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">{t.walletDefault}</span>
                     </div>
                   )}
                 </CardContent>
@@ -166,7 +168,7 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
           ) : !showForm ? (
             <div className="text-center py-8">
               <CreditCard className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-muted-foreground mb-4">暂无已登记的钱包</p>
+              <p className="text-muted-foreground mb-4">{t.walletNone}</p>
             </div>
           ) : null}
 
@@ -178,9 +180,9 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
                   name="accountName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>账户名称</FormLabel>
+                      <FormLabel>{t.walletNameLabel}</FormLabel>
                       <FormControl>
-                       <Input {...field} placeholder="请输入您的姓名" data-testid="input-wallet-name" />
+                        <Input {...field} placeholder={t.walletNamePlaceholder} data-testid="input-wallet-name" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -192,9 +194,9 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
                   name="accountNumber"
                   render={({ field }) => (
                     <FormItem>
-                        <FormLabel>BEP20 钱包地址</FormLabel>
+                      <FormLabel>{t.walletAddressLabel}</FormLabel>
                       <FormControl>
-                          <Input {...field} type="text" placeholder="0x..." data-testid="input-wallet-number" />
+                        <Input {...field} type="text" placeholder="0x..." data-testid="input-wallet-number" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -202,15 +204,15 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
                 />
 
                 <div className="rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
-                   唯一方式：<span className="font-semibold text-foreground">USDT BEP20</span>
+                  {t.walletOnlyMethod} : <span className="font-semibold text-foreground">USDT BEP20</span>
                 </div>
 
                 <div className="flex gap-2">
                   <Button type="button" variant="outline" onClick={() => setShowForm(false)} className="flex-1">
-                     取消
+                    {t.cancel}
                   </Button>
                   <Button type="submit" className="flex-1" disabled={addMutation.isPending}>
-                     {addMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "添加"}
+                    {addMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : t.walletAddLabel}
                   </Button>
                 </div>
               </form>
@@ -218,7 +220,7 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
           ) : (
             <Button className="w-full" onClick={() => setShowForm(true)} data-testid="button-add-wallet">
               <Plus className="w-4 h-4 mr-2" />
-               添加钱包
+              {t.walletAddBtn}
             </Button>
           )}
         </div>

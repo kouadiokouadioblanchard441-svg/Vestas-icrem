@@ -7,6 +7,7 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { formatCurrency, getCountryByCode } from "@/lib/countries";
 import { Loader2, AlertTriangle, Settings } from "lucide-react";
 import { useLocation } from "wouter";
+import { useI18n } from "@/lib/i18n";
 import type { Product } from "@shared/schema";
 
 const poweraddLogo = "/poweradd/poweradd-logo-official.png";
@@ -21,6 +22,7 @@ interface ProductWithOwnership extends Product {
 
 export default function InvestPage() {
   const { user, refreshUser } = useAuth();
+  const { t } = useI18n();
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [confirmProduct, setConfirmProduct] = useState<ProductWithOwnership | null>(null);
@@ -43,11 +45,11 @@ export default function InvestPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/user/products"] });
       refreshUser();
       setConfirmProduct(null);
-      toast({ title: "购买成功！", description: "您将从明天开始获得收益。" });
+      toast({ title: t.purchaseSuccess, description: t.purchaseSuccessDescription });
     },
     onError: (error: any) => {
       setConfirmProduct(null);
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -65,7 +67,7 @@ export default function InvestPage() {
       <div className="flex items-center justify-between px-4 py-3 shadow-sm" style={{ background: "linear-gradient(135deg, #E8192C 0%, #001a40 100%)" }}>
         <img src={poweraddLogo} alt="Power Add" className="h-8 w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} />
         <button onClick={() => navigate("/service")} className="flex items-center justify-center" data-testid="button-service">
-          <img src={serviceIcon} alt="Service client" className="w-8 h-8 object-contain" />
+          <img src={serviceIcon} alt={t.customerService} className="w-8 h-8 object-contain" />
         </button>
       </div>
 
@@ -85,45 +87,41 @@ export default function InvestPage() {
                   className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col"
                   data-testid={`product-card-${product.id}`}
                 >
-                  {/* Product name */}
                   <div className="text-center pt-3 pb-1 px-2">
                     <p className="font-bold text-gray-800 text-sm">{product.name}</p>
                   </div>
 
-                  {/* Product image */}
                   <div className="mx-3 my-2 rounded-xl overflow-hidden" style={{ height: 110 }}>
                     <img src={img} alt={product.name} className="w-full h-full object-cover" />
                   </div>
 
-                  {/* Stats */}
                   <div className="px-3 pb-1 space-y-0.5">
                     <div className="flex justify-between items-center">
-                         <span className="text-gray-400 text-[11px]">价格</span>
+                      <span className="text-gray-400 text-[11px]">{t.price}</span>
                       <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
                         {currency} {Number(product.price).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                       <span className="text-gray-400 text-[11px]">每日收益</span>
+                      <span className="text-gray-400 text-[11px]">{t.dailyRevenue}</span>
                       <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
                         {currency} {Number(product.dailyEarnings).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                       <span className="text-gray-400 text-[11px]">总收益</span>
+                      <span className="text-gray-400 text-[11px]">{t.totalRevenue}</span>
                       <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
                         {currency} {Number(product.totalReturn).toLocaleString("fr-FR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                       <span className="text-gray-400 text-[11px]">周期</span>
+                      <span className="text-gray-400 text-[11px]">{t.period}</span>
                       <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
-                         {product.cycleDays} 天
+                        {product.cycleDays} {t.ordersDaysLbl}
                       </span>
                     </div>
                   </div>
 
-                  {/* Price + button */}
                   <div className="mt-auto px-3 pb-3 pt-2">
                     <p className="text-gray-800 font-black text-base text-center mb-2">
                       {currency} {Number(product.price).toLocaleString("fr-FR")}
@@ -135,7 +133,7 @@ export default function InvestPage() {
                         style={{ background: "#E8192C" }}
                         data-testid={`button-purchase-${product.id}`}
                       >
-                         购买
+                        {t.buy}
                       </button>
                     </div>
                   </div>
@@ -146,7 +144,7 @@ export default function InvestPage() {
         ) : (
           <div className="text-center py-12">
             <Settings className="w-16 h-16 text-white/40 mx-auto mb-4" />
-             <p className="text-white/70">暂无可用产品</p>
+            <p className="text-white/70">{t.noProducts}</p>
           </div>
         )}
       </div>
@@ -162,15 +160,11 @@ export default function InvestPage() {
             style={{ background: "linear-gradient(160deg, #E8192C 0%, #001a40 100%)" }}
             onClick={e => e.stopPropagation()}
           >
-            {/* Title */}
             <div className="pt-6 px-6 pb-3">
               <h3 className="text-white text-2xl font-black">{confirmProduct.name}</h3>
-              <p className="text-white/70 text-sm mt-1">
-                 购买产品后，收益将每24小时自动到账。
-              </p>
+              <p className="text-white/70 text-sm mt-1">{t.investConfirmDesc}</p>
             </div>
 
-            {/* Image + Info row */}
             <div className="flex items-center gap-4 px-6 py-3">
               <div className="w-28 h-24 rounded-2xl overflow-hidden shrink-0 shadow-lg">
                 <img
@@ -181,41 +175,39 @@ export default function InvestPage() {
               </div>
               <div className="flex-1 space-y-1.5">
                 <div>
-                   <p className="text-white/60 text-xs">价格</p>
+                  <p className="text-white/60 text-xs">{t.price}</p>
                   <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.price).toLocaleString("fr-FR")}</p>
                 </div>
                 <div>
-                   <p className="text-white/60 text-xs">每日收益</p>
+                  <p className="text-white/60 text-xs">{t.dailyRevenue}</p>
                   <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.dailyEarnings).toLocaleString("fr-FR")}</p>
                 </div>
                 <div>
-                   <p className="text-white/60 text-xs">总收益</p>
+                  <p className="text-white/60 text-xs">{t.totalRevenue}</p>
                   <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.totalReturn).toLocaleString("fr-FR")}</p>
                 </div>
                 <div>
-                   <p className="text-white/60 text-xs">有效周期</p>
-                   <p className="text-white font-bold text-sm">{confirmProduct.cycleDays} 天</p>
+                  <p className="text-white/60 text-xs">{t.investCycleDays}</p>
+                  <p className="text-white font-bold text-sm">{confirmProduct.cycleDays} {t.ordersDaysLbl}</p>
                 </div>
               </div>
             </div>
 
-            {/* Warning */}
             <div className="mx-6 mb-3">
               {balance < confirmProduct.price ? (
                 <div className="flex items-center gap-2 p-2.5 bg-red-500/20 border border-red-400/30 rounded-xl">
                   <AlertTriangle className="w-4 h-4 text-red-300 shrink-0" />
                   <p className="text-xs text-red-200">
-                     余额不足，还需要 {formatCurrency(confirmProduct.price - balance, user.country)}。
+                    {t.investInsufficient.replace("{0}", formatCurrency(confirmProduct.price - balance, user.country))}
                   </p>
                 </div>
               ) : (
                 <p className="text-white/70 text-xs text-center font-semibold">
-                   每人每天只能购买一件产品。
+                  {t.investOnePerDay}
                 </p>
               )}
             </div>
 
-            {/* Buttons */}
             <div className="flex gap-3 px-6 pb-6 pt-1">
               <button
                 onClick={() => setConfirmProduct(null)}
@@ -223,7 +215,7 @@ export default function InvestPage() {
                 style={{ background: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.8)" }}
                 data-testid="button-cancel-purchase"
               >
-                 取消
+                {t.cancel}
               </button>
               <button
                 onClick={() => purchaseMutation.mutate(confirmProduct.id)}
@@ -233,7 +225,7 @@ export default function InvestPage() {
                 data-testid="button-confirm-purchase"
               >
                 {purchaseMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                 确认
+                {t.confirm}
               </button>
             </div>
           </div>
