@@ -750,7 +750,7 @@ export async function registerRoutes(
       const sdk = getSDK();
       const payment = await sdk.createDirectPayment({
         amount: Number(amount),
-        currency: "usdt",
+        currency: "usd",   // prix en USD — évite l'erreur USDT→USDT sur même actif
         payCurrency: payCurrency.toLowerCase(),
         orderId,
         ...(ipnCallbackUrl && { ipnCallbackUrl }),
