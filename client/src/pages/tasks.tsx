@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { getCountryByCode } from "@/lib/countries";
 import { getContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 import { ChevronLeft, Loader2, Trophy, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import type { Task } from "@shared/schema";
@@ -45,6 +46,7 @@ const TIER_ICONS = [iconBronze, iconArgent, iconOr, iconPlatine, iconDiamant, ic
 
 export default function TasksPage() {
   const { user, refreshUser } = useAuth();
+  const { t } = useI18n();
   const { toast } = useToast();
 
   const { data: tasks, isLoading } = useQuery<TaskWithStatus[]>({
@@ -67,10 +69,10 @@ export default function TasksPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       refreshUser();
-      toast({ title: "Récompense réclamée!", description: "Le bonus a été ajouté à votre compte." });
+      toast({ title: t.tasksRewardClaimed, description: t.tasksRewardClaimedDesc });
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -184,7 +186,7 @@ export default function TasksPage() {
           <div className="space-y-2">
             {tasks.map((task, index) => {
               const tier = TIER_COLORS[index] || TIER_COLORS[0];
-              const label = TIER_LABELS[index] || `Palier ${index + 1}`;
+              const label = TIER_LABELS[index] || `${t.tasksTierFallback} ${index + 1}`;
               const icon = TIER_ICONS[index] || TIER_ICONS[0];
               const progress = Math.min((task.currentInvites / task.requiredInvites) * 100, 100);
 

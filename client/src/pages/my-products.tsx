@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCountryByCode } from "@/lib/countries";
 import { ChevronLeft, Loader2, Wind } from "lucide-react";
 import { Link } from "wouter";
+import { useI18n } from "@/lib/i18n";
 
 import heroBanner from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
@@ -11,6 +12,7 @@ import iconRevenu from "@assets/3309927_1783248791847.png";
 
 export default function MyProductsPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
 
   const { data: userProducts, isLoading } = useQuery<any[]>({
     queryKey: ["/api/user/products"],
@@ -63,8 +65,7 @@ export default function MyProductsPage() {
 
           {/* Title on banner */}
           <div className="absolute bottom-4 left-4">
-            <p className="text-white text-xl font-black tracking-tight">Mes Produits</p>
-            <p className="text-white/70 text-xs mt-0.5">Powerade</p>
+            <p className="text-white text-xl font-black tracking-tight">{t.myProductsTitle}</p>
           </div>
         </div>
 
@@ -81,14 +82,14 @@ export default function MyProductsPage() {
             <div className="px-4 py-4 flex items-center gap-3">
               <img src={iconWallet} alt="" className="w-10 h-10 object-contain shrink-0" />
               <div>
-                <p className="text-white/80 text-xs mb-1">Mon appareil</p>
+                <p className="text-white/80 text-xs mb-1">{t.myProductsDevice}</p>
                 <p className="text-white font-black text-2xl">{allProducts.length}</p>
               </div>
             </div>
             <div className="px-4 py-4 flex items-center gap-3">
               <img src={iconRevenu} alt="" className="w-10 h-10 object-contain shrink-0" />
               <div>
-                <p className="text-white/80 text-xs mb-1">Mes revenus</p>
+                <p className="text-white/80 text-xs mb-1">{t.myProductsEarnings}</p>
                 <p className="text-white font-black text-lg leading-tight">
                   {currency} {totalEarned.toLocaleString("fr-FR")}
                 </p>
@@ -96,7 +97,7 @@ export default function MyProductsPage() {
             </div>
           </div>
           <div className="border-t border-white/20 px-4 py-2.5 text-center">
-            <p className="text-white/90 text-xs">⏱️ Les revenus des produits sont réglés toutes les 24 heures</p>
+            <p className="text-white/90 text-xs">{t.myProductsSettledEvery24h}</p>
           </div>
         </div>
 
@@ -109,8 +110,8 @@ export default function MyProductsPage() {
           ) : allProducts.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl shadow-sm flex flex-col items-center gap-3">
               <Wind className="w-12 h-12 text-gray-200" />
-              <p className="text-gray-500 font-medium">Aucun produit Powerade</p>
-              <p className="text-gray-400 text-sm">Achetez des produits pour commencer à gagner</p>
+              <p className="text-gray-500 font-medium">{t.myProductsNone}</p>
+              <p className="text-gray-400 text-sm">{t.myProductsNoneDesc}</p>
             </div>
           ) : (
             allProducts.map((up: any) => {
@@ -147,21 +148,21 @@ export default function MyProductsPage() {
                     </div>
                     <div className="flex-1 space-y-1.5">
                       <div className="flex justify-between">
-                        <span className="text-gray-400 text-xs">Revenu/jour</span>
+                        <span className="text-gray-400 text-xs">{t.myProductsDailyRevenue}</span>
                         <span className="font-bold text-sm text-gray-900">
                           {currency} {dailyEarnings.toLocaleString("fr-FR")}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400 text-xs">Gagné</span>
+                        <span className="text-gray-400 text-xs">{t.myProductsEarned}</span>
                         <span className="font-bold text-sm text-gray-900">
                           {currency} {earnedSoFar.toLocaleString("fr-FR")}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400 text-xs">Durée</span>
+                        <span className="text-gray-400 text-xs">{t.myProductsDuration}</span>
                         <span className="font-bold text-xs text-gray-700">
-                          {daysCompleted}/{cycleDays} jours
+                          {daysCompleted}/{cycleDays} {t.myProductsDays}
                         </span>
                       </div>
                     </div>
@@ -170,7 +171,7 @@ export default function MyProductsPage() {
                   {/* Progress bar */}
                   <div className="px-4 pb-4">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-gray-400 text-xs">Progression</span>
+                      <span className="text-gray-400 text-xs">{t.myProductsProgress}</span>
                       <span className="text-xs font-bold text-gray-900">{progress}%</span>
                     </div>
                     <div className="w-full rounded-full h-2" style={{ background: "#e5e5e5" }}>
@@ -186,7 +187,7 @@ export default function MyProductsPage() {
                     className="px-4 py-2.5 text-center text-white text-xs font-semibold"
                     style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
                   >
-                    Revenus reçus : {currency} {earnedSoFar.toLocaleString("fr-FR")}
+                    {t.myProductsRevenueReceived} : {currency} {earnedSoFar.toLocaleString()}
                   </div>
                 </div>
               );

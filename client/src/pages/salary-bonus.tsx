@@ -4,10 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { getCountryByCode } from "@/lib/countries";
 import { getContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 import solarPanelImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 
 export default function SalaryBonusPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const [, navigate] = useLocation();
 
   const { data: teamStats } = useQuery<any>({
@@ -67,12 +69,12 @@ export default function SalaryBonusPage() {
         >
           <div className="flex-1 text-center">
             <p className="text-white font-extrabold text-2xl">{currency} {totalCommission.toFixed(0)}</p>
-            <p className="text-white/70 text-xs mt-1">Total des récompenses</p>
+            <p className="text-white/70 text-xs mt-1">{t.salaryTotalRewards}</p>
           </div>
           <div className="w-px h-12 bg-white/30" />
           <div className="flex-1 text-center">
             <p className="text-white font-extrabold text-2xl">{totalPeople}</p>
-            <p className="text-white/70 text-xs mt-1">Total de personnes</p>
+            <p className="text-white/70 text-xs mt-1">{t.salaryTotalPeople}</p>
           </div>
         </div>
 
@@ -100,7 +102,7 @@ export default function SalaryBonusPage() {
               {/* Content */}
               <div className="flex-1 px-4 py-4">
                 <p className="text-gray-700 text-xs text-center leading-snug mb-3">
-                  Invitez <span className="font-bold text-gray-900">{required}</span> investisseurs de niveau 1 pour obtenir :{" "}
+                  {t.salaryInviteDesc.replace("{0}", String(required))}{" "}
                   <span className="font-bold" style={{ color: "#16A34A" }}>{currency} {reward.toLocaleString()}</span>
                 </p>
 
@@ -108,15 +110,15 @@ export default function SalaryBonusPage() {
                 <div className="flex justify-around mb-3">
                   <div className="text-center">
                     <p className="text-gray-900 font-extrabold text-base">{current}</p>
-                    <p className="text-gray-400 text-xs">Actuel</p>
+                    <p className="text-gray-400 text-xs">{t.salaryCurrent}</p>
                   </div>
                   <div className="text-center">
                     <p className="text-gray-900 font-extrabold text-base">{required}</p>
-                    <p className="text-gray-400 text-xs">Objectif</p>
+                    <p className="text-gray-400 text-xs">{t.salaryTarget}</p>
                   </div>
                   <div className="text-center">
                     <p className="text-gray-900 font-extrabold text-base">{progress}/{required}</p>
-                    <p className="text-gray-400 text-xs">Progression</p>
+                    <p className="text-gray-400 text-xs">{t.salaryProgress}</p>
                   </div>
                 </div>
 
@@ -140,7 +142,7 @@ export default function SalaryBonusPage() {
                   }
                   data-testid={`button-level-${lv}`}
                 >
-                  {reached ? "Réclamer" : "En cours"}
+                  {reached ? t.salaryClaim : t.salaryInProgress}
                 </button>
               </div>
             </div>
