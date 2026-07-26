@@ -10,8 +10,7 @@ import {
   SiYoutube,
 } from "react-icons/si";
 
-import heroImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
-import landscapeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
+import heroImg from "@assets/pngtree-office-people-teamwork-image_2245594_1785053207927.jpg";
 import { getContent } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 
@@ -146,11 +145,11 @@ export default function ServicePage() {
       </div>
 
       {/* ── Hero Image ── */}
-      <div className="w-full" style={{ height: 220 }}>
+      <div className="w-full bg-white flex items-center justify-center" style={{ height: 160 }}>
         <img
           src={heroImg}
-          alt="Powerade"
-          className="w-full h-full object-cover"
+          alt="Service client"
+          className="h-full object-contain"
           data-testid="img-service-hero"
         />
       </div>
