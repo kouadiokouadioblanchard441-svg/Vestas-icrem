@@ -129,7 +129,7 @@ export default function AccountPage() {
               <p className="text-white font-extrabold text-base leading-tight" data-testid="text-balance">
                 {balance.toFixed(2)}
               </p>
-              <p className="text-white/80 text-xs mt-0.5">Solde du compte</p>
+              <p className="text-white/80 text-xs mt-0.5">{t.accountBalanceLabel}</p>
             </div>
             <div className="rounded-2xl px-4 py-3.5" style={{ background: "rgba(0,0,0,0.35)" }}>
               <div className="flex items-center gap-2 mb-1">
@@ -138,7 +138,7 @@ export default function AccountPage() {
               <p className="text-white font-extrabold text-base leading-tight" data-testid="text-earnings">
                 {totalEarnings.toFixed(2)}
               </p>
-              <p className="text-white/80 text-xs mt-0.5">Revenus({currency})</p>
+              <p className="text-white/80 text-xs mt-0.5">{t.revenueLabel}({currency})</p>
             </div>
           </div>
         </div>

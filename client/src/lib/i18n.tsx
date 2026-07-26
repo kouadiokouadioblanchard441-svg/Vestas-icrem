@@ -130,6 +130,19 @@ export type Translations = {
   depositOrders: string;
   depositHistory: string;
   depositLabel: string;
+  // rewards / gains page
+  rewardsTitle: string;
+  rewardsSubtitle: string;
+  rewardsTaskList: string;
+  rewardsRewardLabel: string;
+  rewardsClaimed: string;
+  rewardsClaim: string;
+  rewardsReceived: string;
+  rewardsSuccessTitle: string;
+  rewardsSuccessDesc: string;
+  // account balance labels
+  accountBalanceLabel: string;
+  revenueLabel: string;
   // deposit page
   depositAmount: string;
   depositMinimum: string;
@@ -290,6 +303,17 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "无法创建充值订单",
     depositModify:      "修改",
     depositDefaultHelp: "仅向显示的地址发送所选币种和网络的资产，错误网络可能导致资产丢失。",
+    rewardsTitle:       "领取奖励",
+    rewardsSubtitle:    "完成任务可获得 {0} {1}",
+    rewardsTaskList:    "任务列表",
+    rewardsRewardLabel: "奖励",
+    rewardsClaimed:     "已完成",
+    rewardsClaim:       "领取",
+    rewardsReceived:    "已领取",
+    rewardsSuccessTitle:"恭喜",
+    rewardsSuccessDesc: "奖励领取成功！",
+    accountBalanceLabel:"账户余额",
+    revenueLabel:       "收益",
   },
   fr: {
     yourNumber:         "votre numéro",
@@ -425,6 +449,17 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "Impossible de créer le dépôt",
     depositModify:      "Modifier",
     depositDefaultHelp: "Envoyez uniquement la devise et le réseau sélectionnés vers l'adresse affichée. Un mauvais réseau peut entraîner la perte des fonds.",
+    rewardsTitle:       "Recevoir",
+    rewardsSubtitle:    "Remplissez ces tâches pour obtenir {0} {1}",
+    rewardsTaskList:    "Liste des tâches",
+    rewardsRewardLabel: "Récompense",
+    rewardsClaimed:     "Complet",
+    rewardsClaim:       "Recevoir",
+    rewardsReceived:    "Reçu",
+    rewardsSuccessTitle:"Félicitations",
+    rewardsSuccessDesc: "Récompense reçue avec succès !",
+    accountBalanceLabel:"Solde du compte",
+    revenueLabel:       "Revenus",
   },
   en: {
     yourNumber:         "your number",
@@ -560,6 +595,17 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "Unable to create deposit",
     depositModify:      "Modify",
     depositDefaultHelp: "Only send the selected currency and network to the displayed address. Wrong network may result in loss of funds.",
+    rewardsTitle:       "Receive",
+    rewardsSubtitle:    "Complete tasks to earn {0} {1}",
+    rewardsTaskList:    "Task list",
+    rewardsRewardLabel: "Reward",
+    rewardsClaimed:     "Complete",
+    rewardsClaim:       "Claim",
+    rewardsReceived:    "Received",
+    rewardsSuccessTitle:"Congratulations",
+    rewardsSuccessDesc: "Reward claimed successfully!",
+    accountBalanceLabel:"Account balance",
+    revenueLabel:       "Revenue",
   },
   pt: {
     yourNumber:         "seu número",
@@ -695,6 +741,17 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "Não foi possível criar o depósito",
     depositModify:      "Modificar",
     depositDefaultHelp: "Envie apenas a moeda e rede selecionadas para o endereço exibido. Rede errada pode resultar em perda de fundos.",
+    rewardsTitle:       "Receber",
+    rewardsSubtitle:    "Conclua as tarefas para ganhar {0} {1}",
+    rewardsTaskList:    "Lista de tarefas",
+    rewardsRewardLabel: "Recompensa",
+    rewardsClaimed:     "Completo",
+    rewardsClaim:       "Receber",
+    rewardsReceived:    "Recebido",
+    rewardsSuccessTitle:"Parabéns",
+    rewardsSuccessDesc: "Recompensa recebida com sucesso!",
+    accountBalanceLabel:"Saldo da conta",
+    revenueLabel:       "Receita",
   },
   es: {
     yourNumber:         "su número",
@@ -830,6 +887,17 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "No se pudo crear el depósito",
     depositModify:      "Modificar",
     depositDefaultHelp: "Envíe solo la moneda y red seleccionadas a la dirección mostrada. Una red incorrecta puede ocasionar pérdida de fondos.",
+    rewardsTitle:       "Recibir",
+    rewardsSubtitle:    "Completa las tareas para ganar {0} {1}",
+    rewardsTaskList:    "Lista de tareas",
+    rewardsRewardLabel: "Recompensa",
+    rewardsClaimed:     "Completo",
+    rewardsClaim:       "Recibir",
+    rewardsReceived:    "Recibido",
+    rewardsSuccessTitle:"Felicitaciones",
+    rewardsSuccessDesc: "¡Recompensa recibida con éxito!",
+    accountBalanceLabel:"Saldo de la cuenta",
+    revenueLabel:       "Ingresos",
   },
   ar: {
     yourNumber:         "رقمك",
@@ -965,6 +1033,17 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "تعذّر إنشاء الإيداع",
     depositModify:      "تعديل",
     depositDefaultHelp: "أرسل فقط العملة والشبكة المحددتين إلى العنوان الظاهر. قد تؤدي الشبكة الخاطئة إلى فقدان الأموال.",
+    rewardsTitle:       "استلام",
+    rewardsSubtitle:    "أكمل المهام للحصول على {0} {1}",
+    rewardsTaskList:    "قائمة المهام",
+    rewardsRewardLabel: "المكافأة",
+    rewardsClaimed:     "مكتمل",
+    rewardsClaim:       "استلام",
+    rewardsReceived:    "تم الاستلام",
+    rewardsSuccessTitle:"تهانينا",
+    rewardsSuccessDesc: "تم استلام المكافأة بنجاح!",
+    accountBalanceLabel:"رصيد الحساب",
+    revenueLabel:       "الإيرادات",
   },
 };
 
