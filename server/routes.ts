@@ -9,6 +9,7 @@ import ConnectPgSimple from "connect-pg-simple";
 import { db } from "./db";
 import QRCode from "qrcode";
 import crypto from "crypto";
+import { NowPaymentsSDK, verifyWebhookSignature, normalizeWebhook } from "@nowpaymentsio/nowpayments-sdk-nodejs";
 
 // --- Brute-force protection (in-memory) ---
 const loginAttempts = new Map<string, { count: number; blockedUntil: number }>();
@@ -675,7 +676,7 @@ export async function registerRoutes(
     }
   });
 
-  // NOWPayments crypto deposits. The API key stays server-side in Replit Secrets.
+  // NOWPayments crypto deposits — uses official SDK for payment creation.
   app.post("/api/crypto-deposits", requireAuth, async (req, res) => {
     try {
       const { amount, payCurrency } = req.body as {
@@ -684,20 +685,11 @@ export async function registerRoutes(
       };
       const user = await storage.getUser(req.session.userId!);
       const apiKey = process.env.NOWPAYMENTS_API_KEY;
+
       const allowedCurrencies = new Set([
-        "usdtbsc",
-        "usdtmatic",
-        "usdttrc20",
-        "usdterc20",
-        "usdc",
-        "usdcbsc",
-        "usdcerc20",
-        "usdcsol",
-        "trx",
-        "bnbbsc",
-        "eth",
-        "matic",
-        "pyusd",
+        "usdtbsc", "usdtmatic", "usdttrc20", "usdterc20",
+        "usdc", "usdcbsc", "usdcerc20", "usdcsol",
+        "trx", "bnbbsc", "eth", "matic", "pyusd",
       ]);
 
       if (!user) return res.status(401).json({ message: "Non authentifié" });
@@ -722,27 +714,22 @@ export async function registerRoutes(
         (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : null);
       const ipnCallbackUrl = baseUrl ? `${baseUrl}/api/nowpayments/ipn` : undefined;
 
-      const paymentResponse = await fetch("https://api.nowpayments.io/v1/payment", {
-        method: "POST",
-        headers: {
-          "x-api-key": apiKey,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          price_amount: Number(amount),
-          price_currency: "usdt",
-          pay_currency: payCurrency.toLowerCase(),
-          order_id: orderId,
-          ...(ipnCallbackUrl && { ipn_callback_url: ipnCallbackUrl }),
-        }),
+      const sdk = new NowPaymentsSDK({
+        apiKey,
+        ipnSecret: process.env.NOWPAYMENTS_IPN_SECRET,
       });
 
-      const payment = await paymentResponse.json().catch(() => ({}));
-      if (!paymentResponse.ok || !payment.pay_address || !payment.payment_id) {
-        console.error("NOWPayments payment creation failed:", paymentResponse.status, payment.message || payment);
-        return res.status(502).json({
-          message: payment.message || "Impossible de générer l'adresse de dépôt",
-        });
+      const payment = await sdk.createDirectPayment({
+        amount: Number(amount),
+        currency: "usdt",
+        payCurrency: payCurrency.toLowerCase(),
+        orderId,
+        ...(ipnCallbackUrl && { ipnCallbackUrl }),
+      });
+
+      if (!payment.pay_address || !payment.payment_id) {
+        console.error("NOWPayments: missing pay_address or payment_id in response", payment);
+        return res.status(502).json({ message: "Impossible de générer l'adresse de dépôt" });
       }
 
       const deposit = await storage.createDeposit({
@@ -773,72 +760,68 @@ export async function registerRoutes(
       });
     } catch (error: any) {
       console.error("NOWPayments deposit error:", error);
-      return res.status(500).json({ message: "Une erreur est survenue lors de la création du dépôt" });
+      const message = error?.details?.message || error?.message || "Une erreur est survenue lors de la création du dépôt";
+      return res.status(500).json({ message });
     }
   });
 
-  // NOWPayments IPN webhook — called automatically by NOWPayments when a payment status changes
+  // NOWPayments IPN webhook — called automatically by NOWPayments when payment status changes.
+  // Uses SDK's verifyWebhookSignature (recursive key sort + timingSafeEqual HMAC-SHA512).
   app.post("/api/nowpayments/ipn", async (req, res) => {
     try {
       const ipnSecret = process.env.NOWPAYMENTS_IPN_SECRET;
-      if (!ipnSecret) {
-        console.warn("NOWPayments IPN: NOWPAYMENTS_IPN_SECRET not set, skipping signature check");
-      } else {
-        // Verify HMAC-SHA512 signature: sort body keys alphabetically, then HMAC
-        const sig = req.headers["x-nowpayments-sig"];
+
+      if (ipnSecret) {
+        const sig = req.headers["x-nowpayments-sig"] as string | undefined;
         if (!sig) {
           return res.status(401).json({ message: "Missing signature" });
         }
-        const sortedBody = JSON.stringify(
-          Object.fromEntries(Object.entries(req.body).sort(([a], [b]) => a.localeCompare(b)))
-        );
-        const expected = crypto.createHmac("sha512", ipnSecret).update(sortedBody).digest("hex");
-        if (sig !== expected) {
+        const valid = verifyWebhookSignature(req.body, sig, ipnSecret);
+        if (!valid) {
           console.warn("NOWPayments IPN: invalid signature");
           return res.status(401).json({ message: "Invalid signature" });
         }
+      } else {
+        console.warn("NOWPayments IPN: NOWPAYMENTS_IPN_SECRET not set — skipping signature verification");
       }
 
-      const { payment_id, payment_status, actually_paid, price_amount } = req.body;
-      const FINAL_STATUSES = new Set(["finished", "confirmed"]);
-
-      if (!FINAL_STATUSES.has(payment_status)) {
-        // Not yet confirmed — acknowledge receipt and wait for next update
-        return res.status(200).json({ received: true, status: payment_status });
+      // Normalize the raw webhook payload using the SDK
+      const { type, payment } = normalizeWebhook(req.body);
+      if (type !== "payment.status_changed" || !payment) {
+        return res.status(200).json({ received: true, type });
       }
 
-      const deposit = await storage.getDepositByReference(String(payment_id));
+      // SDK status 'paid' = API 'finished' (funds received and confirmed)
+      // 'processing' = confirming/sending — wait for next IPN
+      if (payment.status !== "paid") {
+        return res.status(200).json({ received: true, status: payment.status });
+      }
+
+      const deposit = await storage.getDepositByReference(String(payment.payment_id));
       if (!deposit) {
-        console.warn(`NOWPayments IPN: deposit not found for payment_id=${payment_id}`);
-        return res.status(200).json({ received: true }); // 200 so NOWPayments doesn't retry
+        console.warn(`NOWPayments IPN: no deposit found for payment_id=${payment.payment_id}`);
+        return res.status(200).json({ received: true }); // 200 to stop NowPayments retries
       }
-
       if (deposit.status === "approved") {
         return res.status(200).json({ received: true, already: "approved" });
       }
 
-      // Auto-approve the deposit
-      await storage.updateDeposit(deposit.id, {
-        status: "approved",
-        processedAt: new Date(),
-      });
+      // Auto-approve: credit user balance
+      await storage.updateDeposit(deposit.id, { status: "approved", processedAt: new Date() });
 
       const user = await storage.getUser(deposit.userId);
       if (user) {
         const newBalance = parseFloat(user.balance) + deposit.amount;
-        await storage.updateUser(user.id, {
-          balance: newBalance.toFixed(2),
-          hasDeposited: true,
-        });
+        await storage.updateUser(user.id, { balance: newBalance.toFixed(2), hasDeposited: true });
         await storage.createTransaction({
           userId: user.id,
           type: "deposit",
           amount: deposit.amount.toString(),
-          description: `Dépôt crypto confirmé (${payment_status}) — ${deposit.channelName}`,
+          description: `Dépôt crypto confirmé — ${deposit.channelName}`,
         });
       }
 
-      console.log(`NOWPayments IPN: deposit ${deposit.id} auto-approved (payment_id=${payment_id}, status=${payment_status}, actually_paid=${actually_paid})`);
+      console.log(`NOWPayments IPN: deposit ${deposit.id} auto-approved (payment_id=${payment.payment_id}, actually_paid=${payment.actually_paid})`);
       return res.status(200).json({ received: true, approved: true });
     } catch (error: any) {
       console.error("NOWPayments IPN error:", error);
