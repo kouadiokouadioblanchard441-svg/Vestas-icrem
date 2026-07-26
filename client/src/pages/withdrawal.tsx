@@ -290,7 +290,7 @@ export default function WithdrawalPage() {
         {/* ── Instructions (texte existant conservé) ── */}
         <div className="pt-2 pb-6">
           <p className="font-bold text-[#E8192C] text-sm mb-3">{withdrawalInstructionsTitle}</p>
-          <div className="space-y-2.5 text-sm text-gray-600 leading-relaxed">
+          <div className="space-y-2.5 text-sm text-black leading-relaxed">
             <p>{withdrawalInstruction1}</p>
             <p>{withdrawalInstruction2}</p>
             <p>{withdrawalInstruction3}</p>
