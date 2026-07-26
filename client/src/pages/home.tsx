@@ -201,7 +201,7 @@ export default function HomePage() {
                 className="w-full py-3.5 bg-white rounded-full font-extrabold text-base text-gray-900"
                 data-testid="button-popup-agree"
               >
-                OK
+                {t.popupOk}
               </button>
               <a
                 href={telegramGroupLink}
@@ -212,7 +212,7 @@ export default function HomePage() {
                 onClick={() => setShowPopup(false)}
               >
                 <SiTelegram className="w-4 h-4" />
-                Go to Telegram &gt;
+                {t.popupJoinGroup}
               </a>
             </div>
           </div>

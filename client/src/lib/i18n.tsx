@@ -200,6 +200,9 @@ export type Translations = {
   depositCreateFail: string;
   depositModify: string;
   depositDefaultHelp: string;
+  // home popup buttons
+  popupOk: string;
+  popupJoinGroup: string;
 };
 
 const T: Record<Lang, Translations> = {
@@ -337,6 +340,8 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "无法创建充值订单",
     depositModify:      "修改",
     depositDefaultHelp: "仅向显示的地址发送所选币种和网络的资产，错误网络可能导致资产丢失。",
+    popupOk:            "确认",
+    popupJoinGroup:     "加入电报群 >",
     membersTitle:        "我的成员",
     membersLevel:        "级别",
     membersTotalMembers: "总成员数",
@@ -513,6 +518,8 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "Impossible de créer le dépôt",
     depositModify:      "Modifier",
     depositDefaultHelp: "Envoyez uniquement la devise et le réseau sélectionnés vers l'adresse affichée. Un mauvais réseau peut entraîner la perte des fonds.",
+    popupOk:            "OK",
+    popupJoinGroup:     "Rejoindre le groupe Telegram >",
     membersTitle:        "Mes Membres",
     membersLevel:        "Niveau",
     membersTotalMembers: "Total membres",
@@ -689,6 +696,8 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "Unable to create deposit",
     depositModify:      "Modify",
     depositDefaultHelp: "Only send the selected currency and network to the displayed address. Wrong network may result in loss of funds.",
+    popupOk:            "OK",
+    popupJoinGroup:     "Join Telegram Group >",
     membersTitle:        "My Members",
     membersLevel:        "Level",
     membersTotalMembers: "Total members",
@@ -865,6 +874,8 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "Não foi possível criar o depósito",
     depositModify:      "Modificar",
     depositDefaultHelp: "Envie apenas a moeda e rede selecionadas para o endereço exibido. Rede errada pode resultar em perda de fundos.",
+    popupOk:            "OK",
+    popupJoinGroup:     "Entrar no grupo do Telegram >",
     membersTitle:        "Meus Membros",
     membersLevel:        "Nível",
     membersTotalMembers: "Total de membros",
@@ -1041,6 +1052,8 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "No se pudo crear el depósito",
     depositModify:      "Modificar",
     depositDefaultHelp: "Envíe solo la moneda y red seleccionadas a la dirección mostrada. Una red incorrecta puede ocasionar pérdida de fondos.",
+    popupOk:            "OK",
+    popupJoinGroup:     "Unirse al grupo de Telegram >",
     membersTitle:        "Mis Miembros",
     membersLevel:        "Nivel",
     membersTotalMembers: "Total miembros",
@@ -1217,6 +1230,8 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "تعذّر إنشاء الإيداع",
     depositModify:      "تعديل",
     depositDefaultHelp: "أرسل فقط العملة والشبكة المحددتين إلى العنوان الظاهر. قد تؤدي الشبكة الخاطئة إلى فقدان الأموال.",
+    popupOk:            "موافق",
+    popupJoinGroup:     "انضم إلى مجموعة تيليغرام >",
     membersTitle:        "أعضائي",
     membersLevel:        "المستوى",
     membersTotalMembers: "إجمالي الأعضاء",

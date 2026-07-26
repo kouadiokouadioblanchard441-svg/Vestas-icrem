@@ -256,11 +256,6 @@ export default function WithdrawalPage() {
         </div>
 
         {/* ── Warnings ── */}
-        {!isWithinWithdrawalHours && (
-          <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-xs font-medium" style={{ color: "#ff0000" }}>
-            {withdrawalWarningNoHours}
-          </div>
-        )}
         {!withdrawalEnabled && (
           <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-xs font-medium" style={{ color: "#ff0000" }}>
              管理员暂时关闭了提现功能。
