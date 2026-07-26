@@ -19,15 +19,16 @@ PowerAdd est une plateforme d'investissement mobile ciblant les pays francophone
 - `dist/index.cjs` sert à la fois l'API Express (`/api/*`) et le frontend compilé (catch-all → `dist/public/index.html`)
 
 ### Étapes de déploiement sur Plesk
-1. `npm install`
-2. `npm run build`
-3. Plesk pointe l'entrée Node.js sur `dist/index.cjs`
-4. Configurer les variables d'environnement dans Plesk :
+1. Depuis Replit, lancer `npm run build` avant le push Git
+2. Pousser le commit contenant `dist/index.cjs` et `dist/public/`
+3. Dans Plesk, faire `pull`, puis `Deploy now` et `restart`
+4. Plesk pointe l'entrée Node.js sur `dist/index.cjs` — aucun build n'est nécessaire sur Plesk
+5. Configurer les variables d'environnement dans Plesk :
    - `DATABASE_URL` — connexion PostgreSQL
    - `SESSION_SECRET` — secret pour les sessions Express
    - `NODE_ENV=production`
    - `PORT` — port d'écoute (défaut : 5000)
-5. Au premier démarrage, le serveur seed automatiquement la base de données
+6. Au premier démarrage, le serveur seed automatiquement la base de données
 
 ### Points importants
 - Pas de proxy Vite en production — Express sert directement les fichiers statiques

@@ -20,6 +20,7 @@ const allowlist = [
   "memorystore",
   "multer",
   "nanoid",
+  "@nowpaymentsio/nowpayments-sdk-nodejs",
   "nodemailer",
   "openai",
   "passport",
