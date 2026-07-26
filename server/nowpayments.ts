@@ -128,9 +128,21 @@ async function payoutRequest(
   const apiKey = process.env.NOWPAYMENTS_API_KEY;
   if (!apiKey) throw new Error("NOWPayments payouts are not fully configured");
 
-  // Delegate JWT lifecycle entirely to the SDK (caching + auto-refresh)
+  // Delegate JWT lifecycle entirely to the SDK (caching + auto-refresh).
+  // getJwtToken() returns null when email/password are not configured —
+  // detect that early so the error message is clear.
   const sdk = getSDK();
+  if (!sdk.hasAuthCredentials()) {
+    throw new Error(
+      "NOWPayments payouts requièrent NOWPAYMENTS_ACCOUNT_EMAIL et NOWPAYMENTS_ACCOUNT_PASSWORD",
+    );
+  }
   const token = await sdk.getJwtToken();
+  if (!token) {
+    throw new Error(
+      "NOWPayments n'a pas retourné de token JWT — vérifiez vos identifiants",
+    );
+  }
 
   const headers = new Headers(init.headers as HeadersInit);
   headers.set("x-api-key", apiKey);

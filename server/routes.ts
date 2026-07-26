@@ -868,9 +868,11 @@ export async function registerRoutes(
         return res.status(200).json({ received: true, status: "processing" });
       }
 
-      // Use sdk.parseWebhook() — verifies HMAC-SHA512 + normalizes in one call
+      // Signature already verified above with verifyWebhookSignature().
+      // parseWebhook({ verify: false }) skips the redundant second check and
+      // avoids a crash when NOWPAYMENTS_IPN_SECRET is not set in the SDK instance.
       const sdk = getSDK();
-      const webhook = sdk.parseWebhook(req.body, sig ?? "");
+      const webhook = sdk.parseWebhook(req.body, sig ?? "", { verify: false });
       if (webhook.type !== "payment.status_changed") {
         return res.status(200).json({ received: true, type: webhook.type });
       }
