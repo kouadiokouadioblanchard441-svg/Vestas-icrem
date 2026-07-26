@@ -10,6 +10,7 @@ import { db } from "./db";
 import QRCode from "qrcode";
 import crypto from "crypto";
 import { NowPaymentsSDK, verifyWebhookSignature, normalizeWebhook } from "@nowpaymentsio/nowpayments-sdk-nodejs";
+import { createPayout, verifyPayout } from "./nowpayments";
 
 // --- Brute-force protection (in-memory) ---
 const loginAttempts = new Map<string, { count: number; blockedUntil: number }>();
@@ -50,6 +51,40 @@ function clearFailedAttempts(req: Request) {
   loginAttempts.delete(getClientKey(req));
 }
 // --- end brute-force protection ---
+
+function getNowPaymentsPayoutPayload(body: Record<string, unknown>) {
+  const batchId =
+    typeof body.batch_withdrawal_id === "string"
+      ? body.batch_withdrawal_id
+      : typeof body.batchWithdrawalId === "string"
+        ? body.batchWithdrawalId
+        : null;
+  const payoutId =
+    typeof body.id === "string"
+      ? body.id
+      : typeof body.payout_id === "string"
+        ? body.payout_id
+        : null;
+  const status = typeof body.status === "string" ? body.status.toLowerCase() : null;
+  const hash =
+    typeof body.hash === "string"
+      ? body.hash
+      : typeof body.payout_hash === "string"
+        ? body.payout_hash
+        : null;
+  const error = typeof body.error === "string" ? body.error : null;
+
+  return { batchId, payoutId, status, hash, error };
+}
+
+function isNowPaymentsPayout(body: Record<string, unknown>) {
+  return Boolean(
+    body.batch_withdrawal_id ||
+    body.batchWithdrawalId ||
+    body.payout_id ||
+    (body.type === "payout" && body.status),
+  );
+}
 
 declare module "express-session" {
   interface SessionData {
@@ -785,11 +820,65 @@ export async function registerRoutes(
         console.warn("NOWPayments IPN: NOWPAYMENTS_IPN_SECRET not set — skipping signature verification");
       }
 
-      // Normalize the raw webhook payload using the SDK
-      const { type, payment } = normalizeWebhook(req.body);
-      if (type !== "payment.status_changed" || !payment) {
-        return res.status(200).json({ received: true, type });
+      if (isNowPaymentsPayout(req.body)) {
+        const payout = getNowPaymentsPayoutPayload(req.body);
+        const withdrawal =
+          (payout.payoutId
+            ? await storage.getWithdrawalByNowPaymentsPayoutId(payout.payoutId)
+            : undefined) ||
+          (payout.batchId
+            ? await storage.getWithdrawalByNowPaymentsBatchId(payout.batchId)
+            : undefined);
+
+        if (!withdrawal) {
+          console.warn(
+            `NOWPayments payout IPN: no withdrawal found for payout=${payout.payoutId || "unknown"} batch=${payout.batchId || "unknown"}`,
+          );
+          return res.status(200).json({ received: true });
+        }
+
+        const status = payout.status || "unknown";
+        const statusUpdate = {
+          nowPaymentsStatus: status.toUpperCase(),
+          ...(payout.hash ? { nowPaymentsHash: payout.hash } : {}),
+          ...(payout.error ? { nowPaymentsError: payout.error } : {}),
+        };
+
+        if (["failed", "rejected"].includes(status)) {
+          const refunded = await storage.refundWithdrawal(
+            withdrawal.id,
+            status === "failed" ? "failed" : "rejected",
+            payout.error || `NOWPayments payout ${status}`,
+          );
+          return res.status(200).json({
+            received: true,
+            status,
+            refunded: Boolean(refunded),
+          });
+        }
+
+        if (status === "finished") {
+          await storage.updateWithdrawal(withdrawal.id, {
+            ...statusUpdate,
+            status: "approved",
+            processedAt: new Date(),
+          });
+          return res.status(200).json({ received: true, status: "approved" });
+        }
+
+        await storage.updateWithdrawal(withdrawal.id, {
+          ...statusUpdate,
+          status: "processing",
+        });
+        return res.status(200).json({ received: true, status: "processing" });
       }
+
+      // Normalize the raw webhook payload using the SDK
+      const webhook = normalizeWebhook(req.body);
+      if (webhook.type !== "payment.status_changed") {
+        return res.status(200).json({ received: true, type: webhook.type });
+      }
+      const { payment } = webhook;
 
       // SDK status 'paid' = API 'finished' (funds received and confirmed)
       // 'processing' = confirming/sending — wait for next IPN
@@ -898,11 +987,14 @@ export async function registerRoutes(
   // Withdrawals
   app.post("/api/withdrawals", requireAuth, async (req, res) => {
     try {
-      const { amount } = req.body;
+      const amount = Number(req.body.amount);
       const user = await storage.getUser(req.session.userId!);
       
       if (!user) {
         return res.status(401).json({ message: "Non authentifié" });
+      }
+      if (!Number.isFinite(amount) || amount <= 0 || !Number.isInteger(amount)) {
+        return res.status(400).json({ message: "Montant de retrait invalide" });
       }
 
       const settingsForWithdrawal = await storage.getSettings();
@@ -968,10 +1060,45 @@ export async function registerRoutes(
         accountNumber: wallet.accountNumber,
         country: user.country,
         paymentMethod: "USDT BEP20",
-        status: "pending",
+        status: "processing",
+        nowPaymentsStatus: "CREATING",
       });
 
-      res.json(withdrawal);
+      try {
+        const payout = await createPayout({
+          address: wallet.accountNumber,
+          currency: "usdtbsc",
+          amount: netAmount,
+          uniqueExternalId: `poweradd-withdrawal-${withdrawal.id}`,
+          description: `PowerAdd withdrawal ${withdrawal.id}`,
+        });
+        const payoutItem = payout.withdrawals?.[0];
+        const batchId = payout.id || payoutItem?.batchWithdrawalId || payoutItem?.batch_withdrawal_id;
+        const payoutId = payoutItem?.id;
+        if (!batchId || !payoutId) {
+          throw new Error("NOWPayments payout response is missing payout identifiers");
+        }
+
+        const updatedWithdrawal = await storage.updateWithdrawal(withdrawal.id, {
+          status: "pending_2fa",
+          nowPaymentsPayoutId: String(payoutId),
+          nowPaymentsBatchId: String(batchId),
+          nowPaymentsStatus: String(payoutItem.status || "WAITING").toUpperCase(),
+        });
+        return res.json({
+          ...updatedWithdrawal,
+          payoutRequiresVerification: true,
+        });
+      } catch (payoutError: any) {
+        await storage.refundWithdrawal(
+          withdrawal.id,
+          "failed",
+          payoutError?.message || "NOWPayments payout creation failed",
+        );
+        return res.status(502).json({
+          message: `Le retrait n'a pas pu être envoyé à NOWPayments : ${payoutError?.message || "erreur inconnue"}`,
+        });
+      }
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
@@ -983,6 +1110,45 @@ export async function registerRoutes(
       res.json(withdrawals);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/withdrawals/:id/verify-nowpayments", requireAdmin, async (req, res) => {
+    try {
+      const withdrawalId = parseInt(req.params.id as string, 10);
+      const verificationCode = String(req.body.verificationCode || "").trim();
+      if (!/^\d{6}$/.test(verificationCode)) {
+        return res.status(400).json({ message: "Le code 2FA NOWPayments doit contenir 6 chiffres" });
+      }
+
+      const withdrawals = await storage.getWithdrawals();
+      const withdrawal = withdrawals.find((item) => item.id === withdrawalId);
+      if (!withdrawal) return res.status(404).json({ message: "Retrait non trouvé" });
+      if (!withdrawal.nowPaymentsBatchId) {
+        return res.status(400).json({ message: "Ce retrait n'a pas de payout NOWPayments à vérifier" });
+      }
+      if (withdrawal.status !== "pending_2fa") {
+        return res.status(400).json({ message: "Ce retrait n'est plus en attente de validation 2FA" });
+      }
+
+      await verifyPayout(withdrawal.nowPaymentsBatchId, verificationCode);
+      const updated = await storage.updateWithdrawal(withdrawal.id, {
+        status: "processing",
+        nowPaymentsStatus: "PROCESSING",
+        processedAt: new Date(),
+        processedBy: req.session.userId,
+      });
+      await storage.logAdminAction(
+        req.session.userId!,
+        "verify_nowpayments_withdrawal",
+        withdrawal.userId,
+        `Payout NOWPayments vérifié pour le retrait ${withdrawal.id}`,
+      );
+      return res.json(updated);
+    } catch (error: any) {
+      return res.status(400).json({
+        message: error?.message || "La validation du payout NOWPayments a échoué",
+      });
     }
   });
 

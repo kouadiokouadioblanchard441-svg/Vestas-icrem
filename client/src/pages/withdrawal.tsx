@@ -107,8 +107,13 @@ export default function WithdrawalPage() {
       const res = await apiRequest("POST", "/api/withdrawals", data);
       return res.json();
     },
-    onSuccess: () => {
-      toast({ title: "Demande envoyée", description: "Votre demande de retrait a été envoyée." });
+    onSuccess: (data) => {
+      toast({
+        title: data?.payoutRequiresVerification ? "Retrait créé" : "Demande envoyée",
+        description: data?.payoutRequiresVerification
+          ? "Le payout est créé. L'administrateur doit saisir le code 2FA NOWPayments pour lancer l'envoi."
+          : "Votre demande de retrait a été envoyée.",
+      });
       refreshUser();
       queryClient.invalidateQueries({ queryKey: ["/api/withdrawals"] });
       setAmount("");

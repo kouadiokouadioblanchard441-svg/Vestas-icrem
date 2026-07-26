@@ -57,6 +57,9 @@ export interface IStorage {
   getWithdrawals(status?: string): Promise<(Withdrawal & { user: User })[]>;
   getUserWithdrawals(userId: number): Promise<Withdrawal[]>;
   updateWithdrawal(id: number, data: Partial<Withdrawal>): Promise<Withdrawal>;
+  getWithdrawalByNowPaymentsPayoutId(payoutId: string): Promise<Withdrawal | undefined>;
+  getWithdrawalByNowPaymentsBatchId(batchId: string): Promise<Withdrawal | undefined>;
+  refundWithdrawal(id: number, status: "rejected" | "failed", reason: string): Promise<Withdrawal | undefined>;
   getUserWithdrawalCountToday(userId: number): Promise<number>;
   
   // Wallets
@@ -685,6 +688,63 @@ export class DatabaseStorage implements IStorage {
   async updateWithdrawal(id: number, data: Partial<Withdrawal>): Promise<Withdrawal> {
     const [withdrawal] = await db.update(withdrawals).set(data).where(eq(withdrawals.id, id)).returning();
     return withdrawal;
+  }
+
+  async getWithdrawalByNowPaymentsPayoutId(payoutId: string): Promise<Withdrawal | undefined> {
+    const [withdrawal] = await db
+      .select()
+      .from(withdrawals)
+      .where(eq(withdrawals.nowPaymentsPayoutId, payoutId));
+    return withdrawal || undefined;
+  }
+
+  async getWithdrawalByNowPaymentsBatchId(batchId: string): Promise<Withdrawal | undefined> {
+    const [withdrawal] = await db
+      .select()
+      .from(withdrawals)
+      .where(eq(withdrawals.nowPaymentsBatchId, batchId));
+    return withdrawal || undefined;
+  }
+
+  async refundWithdrawal(
+    id: number,
+    status: "rejected" | "failed",
+    reason: string,
+  ): Promise<Withdrawal | undefined> {
+    return db.transaction(async (tx) => {
+      const [withdrawal] = await tx
+        .update(withdrawals)
+        .set({
+          status,
+          processedAt: new Date(),
+          nowPaymentsStatus: status.toUpperCase(),
+          nowPaymentsError: reason,
+        })
+        .where(and(
+          eq(withdrawals.id, id),
+          sql`${withdrawals.status} NOT IN ('approved', 'rejected', 'failed')`,
+        ))
+        .returning();
+
+      if (!withdrawal) return undefined;
+
+      const [user] = await tx.select().from(users).where(eq(users.id, withdrawal.userId));
+      if (user) {
+        const refundedEarnings = parseFloat(user.totalEarnings || "0") + withdrawal.amount;
+        await tx
+          .update(users)
+          .set({ totalEarnings: refundedEarnings.toFixed(2) })
+          .where(eq(users.id, user.id));
+        await tx.insert(transactions).values({
+          userId: user.id,
+          type: "withdrawal_refund",
+          amount: withdrawal.amount.toString(),
+          description: `Remboursement du retrait ${withdrawal.id}: ${reason}`,
+        });
+      }
+
+      return withdrawal;
+    });
   }
 
   async getUserWithdrawalCountToday(userId: number): Promise<number> {

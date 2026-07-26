@@ -39,7 +39,10 @@ export default function WithdrawalHistoryPage() {
   const STATUS = {
     approved: { label: t.statusApproved, color: "#16a34a" },
     pending:  { label: t.statusPending,  color: "#f59e0b" },
+    pending_2fa: { label: "Validation 2FA requise", color: "#d97706" },
+    processing: { label: "En cours", color: "#2563eb" },
     rejected: { label: t.statusRejected, color: "#dc2626" },
+    failed: { label: "Échoué — remboursé", color: "#dc2626" },
   } as Record<string, { label: string; color: string }>;
 
   const { data: withdrawals = [], isLoading } = useQuery<Withdrawal[]>({

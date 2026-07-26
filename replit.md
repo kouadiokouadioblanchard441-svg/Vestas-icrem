@@ -117,9 +117,13 @@ Preferred communication style: Simple, everyday language.
 - `SUPABASE_DATABASE_URL`: PostgreSQL connection string for the external Supabase database (preferred; SSL is enabled automatically)
 - `DATABASE_URL`: PostgreSQL connection string fallback when Supabase is not configured
 - `SESSION_SECRET`: Secret for session encryption (optional, has fallback)
+- `NOWPAYMENTS_API_KEY`: NOWPayments API key for crypto deposits and payouts
+- `NOWPAYMENTS_IPN_SECRET`: NOWPayments IPN signature secret
+- `NOWPAYMENTS_ACCOUNT_EMAIL` / `NOWPAYMENTS_ACCOUNT_PASSWORD`: NOWPayments merchant account credentials used to request payout JWTs (stored as Replit Secrets)
 
 ## Recent Changes (July 2026)
 - Current Replit setup: configured the `SUPABASE_DATABASE_URL` secret, installed dependencies, synchronized the Drizzle schema with Supabase using `npm run db:push -- --force`, and restarted `Start application`. The application is operational on port 5000 and existing Supabase products, tasks, and settings were preserved.
+- NOWPayments integration: crypto deposits use the official Node SDK and signed IPN callbacks; withdrawals create a NOWPayments payout and require the merchant's NOWPayments 2FA verification before processing. Payout status callbacks update the withdrawal and refund users automatically when NOWPayments reports a failure or rejection.
 - Re-imported project (fifth time): ran `npm install` (tsx was missing), pushed DB schema with `npm run db:push -- --force`, configured `SUPABASE_DATABASE_URL` secret (user-provided, points to aws-1-us-west-2 pooler), restarted `Start application` workflow — 8 produits, 6 tâches et tous les paramètres Supabase préservés. Application opérationnelle sur port 5000.
 - Re-imported project (fourth time): reinstalled dependencies (`npm install`), added the `SUPABASE_DATABASE_URL` secret (user-provided), ran `npm run db:push -- --force` against that Supabase DB, restarted the `Start application` workflow. Verified end-to-end via a direct DB query and a login request that the pre-existing super admin row in Supabase (found via `isSuperAdmin = true`) logs in successfully — its phone/password differ from whatever this file previously (and incorrectly) hardcoded; removed those hardcoded values from this file since they are live credentials, not documentation. Confirmed 3 users, 8 products, 6 tasks, and settings already present in Supabase were preserved (not overwritten) by the seed step.
 - Re-imported project (third time): reinstalled dependencies (`npm install`), pushed DB schema (`npm run db:push --force`), restarted the `Start application` workflow — it seeds data and serves on port 5000. Verified end-to-end that the login page renders and admin login succeeds against the actual super admin row in the DB.

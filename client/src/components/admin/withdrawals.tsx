@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Check, X, Search, Loader2 } from "lucide-react";
+import { Check, X, Search, Loader2, ShieldCheck } from "lucide-react";
 import type { Withdrawal } from "@shared/schema";
 
 interface WithdrawalWithUser extends Withdrawal {
@@ -23,7 +23,8 @@ interface WithdrawalWithUser extends Withdrawal {
 export default function AdminWithdrawals() {
   const { toast } = useToast();
   const [filter, setFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
+  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "pending_2fa" | "processing" | "approved" | "rejected" | "failed">("pending");
+  const [verificationCodes, setVerificationCodes] = useState<Record<number, string>>({});
 
   const { data: allWithdrawals, isLoading } = useQuery<WithdrawalWithUser[]>({
     queryKey: ["/api/admin/withdrawals"],
@@ -57,6 +58,24 @@ export default function AdminWithdrawals() {
     },
   });
 
+  const verifyMutation = useMutation({
+    mutationFn: async ({ id, verificationCode }: { id: number; verificationCode: string }) => {
+      const response = await apiRequest("POST", `/api/admin/withdrawals/${id}/verify-nowpayments`, { verificationCode });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Validation NOWPayments échouée");
+      return data;
+    },
+    onSuccess: (_data, variables) => {
+      setVerificationCodes((current) => ({ ...current, [variables.id]: "" }));
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/withdrawals"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      toast({ title: "Payout NOWPayments validé", description: "Le retrait est maintenant en cours de traitement." });
+    },
+    onError: (error: any) => {
+      toast({ title: error.message || "Validation NOWPayments échouée", variant: "destructive" });
+    },
+  });
+
   const filteredWithdrawals = withdrawals?.filter(w =>
     w.accountNumber.includes(filter) ||
     w.user.phone.includes(filter) ||
@@ -78,14 +97,26 @@ export default function AdminWithdrawals() {
       </div>
 
       <div className="flex gap-2 overflow-x-auto">
-        {(["all", "pending", "approved", "rejected"] as const).map((status) => (
+        {(["all", "pending", "pending_2fa", "processing", "approved", "rejected", "failed"] as const).map((status) => (
           <Button
             key={status}
             size="sm"
             variant={statusFilter === status ? "default" : "outline"}
             onClick={() => setStatusFilter(status)}
           >
-            {status === "all" ? "Tous" : status === "pending" ? "En attente" : status === "approved" ? "Approuvés" : "Rejetés"}
+            {status === "all"
+              ? "Tous"
+              : status === "pending"
+                ? "En attente"
+                : status === "pending_2fa"
+                  ? "2FA requis"
+                  : status === "processing"
+                    ? "En cours"
+                    : status === "approved"
+                      ? "Approuvés"
+                      : status === "failed"
+                        ? "Échoués"
+                        : "Rejetés"}
           </Button>
         ))}
       </div>
@@ -108,9 +139,20 @@ export default function AdminWithdrawals() {
                   </div>
                   <Badge variant={
                     withdrawal.status === "pending" ? "secondary" :
-                    withdrawal.status === "approved" ? "default" : "destructive"
+                    withdrawal.status === "approved" ? "default" :
+                    withdrawal.status === "processing" || withdrawal.status === "pending_2fa" ? "outline" : "destructive"
                   }>
-                    {withdrawal.status === "pending" ? "En attente" : withdrawal.status === "approved" ? "Approuvé" : "Rejeté"}
+                    {withdrawal.status === "pending"
+                      ? "En attente"
+                      : withdrawal.status === "pending_2fa"
+                        ? "2FA NOWPayments requis"
+                        : withdrawal.status === "processing"
+                          ? "En cours"
+                          : withdrawal.status === "approved"
+                            ? "Approuvé"
+                            : withdrawal.status === "failed"
+                              ? "Échoué"
+                              : "Rejeté"}
                   </Badge>
                 </div>
 
@@ -135,6 +177,12 @@ export default function AdminWithdrawals() {
                     <p className="text-muted-foreground">Adresse USDT BEP20</p>
                     <p className="font-medium text-foreground">{withdrawal.accountNumber} - {withdrawal.accountName}</p>
                   </div>
+                  {withdrawal.nowPaymentsPayoutId && (
+                    <div className="col-span-2 text-xs text-muted-foreground">
+                      Payout NOWPayments : {withdrawal.nowPaymentsPayoutId}
+                      {withdrawal.nowPaymentsStatus ? ` · ${withdrawal.nowPaymentsStatus}` : ""}
+                    </div>
+                  )}
                   <div className="col-span-2">
                     <p className="text-muted-foreground">Date et heure</p>
                     <p className="font-medium text-foreground">
@@ -149,6 +197,38 @@ export default function AdminWithdrawals() {
                     </p>
                   </div>
                 </div>
+
+                {withdrawal.status === "pending_2fa" && (
+                  <div className="rounded-lg border border-amber-400/40 bg-amber-50/60 p-3 space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-medium text-amber-800">
+                      <ShieldCheck className="w-4 h-4" />
+                      Saisissez le code 2FA reçu de NOWPayments
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                        inputMode="numeric"
+                        maxLength={6}
+                        placeholder="123456"
+                        value={verificationCodes[withdrawal.id] || ""}
+                        onChange={(event) =>
+                          setVerificationCodes((current) => ({
+                            ...current,
+                            [withdrawal.id]: event.target.value.replace(/\D/g, "").slice(0, 6),
+                          }))
+                        }
+                      />
+                      <Button
+                        onClick={() => verifyMutation.mutate({
+                          id: withdrawal.id,
+                          verificationCode: verificationCodes[withdrawal.id] || "",
+                        })}
+                        disabled={verifyMutation.isPending || (verificationCodes[withdrawal.id] || "").length !== 6}
+                      >
+                        {verifyMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Valider"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
                 {withdrawal.status === "pending" && (
                   <div className="flex gap-2">
