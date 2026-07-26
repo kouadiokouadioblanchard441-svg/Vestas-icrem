@@ -4,6 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import { Link } from "wouter";
 import { getCountryByCode } from "@/lib/countries";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useI18n } from "@/lib/i18n";
 
 interface Deposit {
   id: number;
@@ -26,16 +27,17 @@ function formatDate(iso: string) {
   return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
-const STATUS: Record<string, { label: string; color: string }> = {
-  approved: { label: "SUCCÈS",     color: "#16a34a" },
-  pending:  { label: "EN ATTENTE", color: "#f59e0b" },
-  rejected: { label: "REFUSÉ",     color: "#dc2626" },
-};
-
 export default function DepositHistoryRealPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const countryInfo = user ? getCountryByCode(user.country) : null;
   const currency = countryInfo?.currency || "USDT";
+
+  const STATUS = {
+    approved: { label: t.statusApproved, color: "#16a34a" },
+    pending:  { label: t.statusPending,  color: "#f59e0b" },
+    rejected: { label: t.statusRejected, color: "#dc2626" },
+  } as Record<string, { label: string; color: string }>;
 
   const { data: deposits = [], isLoading } = useQuery<Deposit[]>({
     queryKey: ["/api/deposits/history"],
@@ -51,7 +53,7 @@ export default function DepositHistoryRealPage() {
           </button>
         </Link>
         <h1 className="flex-1 text-center text-sm font-bold text-gray-900 pr-8 tracking-wide uppercase">
-          Historique des dépôts
+          {t.depositHistory}
         </h1>
       </header>
 
@@ -64,7 +66,7 @@ export default function DepositHistoryRealPage() {
           </div>
         ) : deposits.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-gray-400 text-sm">Aucun dépôt pour le moment</p>
+            <p className="text-gray-400 text-sm">{t.noDeposits}</p>
           </div>
         ) : (
           <div className="bg-white">
@@ -79,14 +81,12 @@ export default function DepositHistoryRealPage() {
                   className="px-4 py-4"
                   style={{ borderBottom: "1px solid #f0f0f0" }}
                 >
-                  {/* Transaction ID */}
                   <p className="text-gray-400 text-xs mb-1 font-mono">{txId}</p>
 
-                  {/* Row: type+amount | status */}
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <p className="font-bold text-sm" style={{ color: "#16a34a" }}>
-                        DÉPÔT {currency} {amountNum.toLocaleString("fr-FR")}
+                        {t.depositLabel} {currency} {amountNum.toLocaleString()}
                       </p>
                       <p className="text-gray-400 text-xs mt-0.5">{formatDate(dep.createdAt)}</p>
                     </div>

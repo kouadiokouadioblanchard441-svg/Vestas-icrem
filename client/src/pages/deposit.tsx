@@ -8,6 +8,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { getContent } from "@/lib/content";
 import type { ApiCountry } from "@/lib/countries";
 import { COUNTRIES } from "@/lib/countries";
+import { useI18n } from "@/lib/i18n";
 
 import tetherLogo from "@/assets/crypto/tether.png";
 import usdcLogo from "@/assets/crypto/usd-coin.png";
@@ -24,7 +25,6 @@ type CryptoOption = {
   label: string;
   network: string;
   logo: string;
-  description: string;
 };
 
 type CryptoPayment = {
@@ -37,18 +37,18 @@ type CryptoPayment = {
 };
 
 const CRYPTO_OPTIONS: CryptoOption[] = [
-  { code: "usdtbsc", label: "BEP20 — USDT", network: "BNB Smart Chain", logo: tetherLogo, description: "USDT sur BNB Smart Chain" },
-  { code: "usdtmatic", label: "POLYGON — USDT", network: "Polygon", logo: tetherLogo, description: "USDT sur Polygon" },
-  { code: "usdttrc20", label: "TRC20 — USDT", network: "TRON", logo: tetherLogo, description: "USDT sur TRON" },
-  { code: "usdterc20", label: "ETH — USDT", network: "Ethereum", logo: tetherLogo, description: "USDT sur Ethereum" },
-  { code: "usdcbsc", label: "BEP20 — USDC", network: "BNB Smart Chain", logo: usdcLogo, description: "USDC sur BNB Smart Chain" },
-  { code: "usdcsol", label: "SOLANA — USDC", network: "Solana", logo: usdcLogo, description: "USDC sur Solana" },
-  { code: "trx", label: "TRX", network: "TRON", logo: tronLogo, description: "TRON" },
-  { code: "bnbbsc", label: "BNB", network: "BNB Smart Chain", logo: bnbLogo, description: "BNB sur BNB Smart Chain" },
-  { code: "usdcerc20", label: "ETH — USDC", network: "Ethereum", logo: usdcLogo, description: "USDC sur Ethereum" },
-  { code: "eth", label: "ETH", network: "Ethereum", logo: ethereumLogo, description: "Ethereum" },
-  { code: "matic", label: "POLYGON", network: "Polygon", logo: polygonLogo, description: "Polygon" },
-  { code: "pyusd", label: "ETH — PYUSD", network: "Ethereum", logo: pyusdLogo, description: "PayPal USD sur Ethereum" },
+  { code: "usdtbsc",   label: "BEP20 — USDT",    network: "BNB Smart Chain", logo: tetherLogo   },
+  { code: "usdtmatic", label: "POLYGON — USDT",   network: "Polygon",         logo: tetherLogo   },
+  { code: "usdttrc20", label: "TRC20 — USDT",     network: "TRON",            logo: tetherLogo   },
+  { code: "usdterc20", label: "ETH — USDT",       network: "Ethereum",        logo: tetherLogo   },
+  { code: "usdcbsc",   label: "BEP20 — USDC",     network: "BNB Smart Chain", logo: usdcLogo     },
+  { code: "usdcsol",   label: "SOLANA — USDC",    network: "Solana",          logo: usdcLogo     },
+  { code: "trx",       label: "TRX",              network: "TRON",            logo: tronLogo     },
+  { code: "bnbbsc",    label: "BNB",              network: "BNB Smart Chain", logo: bnbLogo      },
+  { code: "usdcerc20", label: "ETH — USDC",       network: "Ethereum",        logo: usdcLogo     },
+  { code: "eth",       label: "ETH",              network: "Ethereum",        logo: ethereumLogo },
+  { code: "matic",     label: "POLYGON",          network: "Polygon",         logo: polygonLogo  },
+  { code: "pyusd",     label: "ETH — PYUSD",      network: "Ethereum",        logo: pyusdLogo    },
 ];
 
 function shortenAddress(address: string) {
@@ -58,6 +58,7 @@ function shortenAddress(address: string) {
 
 export default function DepositPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [step, setStep] = useState<Step>("amount");
@@ -88,7 +89,7 @@ export default function DepositPage() {
   const helpText = getContent(
     platformSettings,
     "content_deposit_cryptoHelp",
-    "Envoyez uniquement la devise et le réseau sélectionnés vers l'adresse affichée. Un mauvais réseau peut entraîner la perte des fonds.",
+    t.depositDefaultHelp,
   );
 
   const createPayment = useMutation({
@@ -105,7 +106,7 @@ export default function DepositPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/deposits/history"] });
     },
     onError: (error: Error) => {
-      toast({ title: "Impossible de créer le dépôt", description: error.message, variant: "destructive" });
+      toast({ title: t.depositCreateFail, description: error.message, variant: "destructive" });
     },
   });
 
@@ -117,8 +118,8 @@ export default function DepositPage() {
   const continueWithAmount = () => {
     if (!amount || Number(amount) < minDeposit) {
       toast({
-        title: "Montant invalide",
-        description: `Le minimum est de ${minDeposit.toLocaleString()} ${currency}`,
+        title: t.invalidAmount,
+        description: `${t.depositMinimum} ${minDeposit.toLocaleString()} ${currency}`,
         variant: "destructive",
       });
       return;
@@ -136,10 +137,10 @@ export default function DepositPage() {
     try {
       await navigator.clipboard.writeText(payment.payAddress);
       setCopied(true);
-      toast({ title: "Adresse copiée", description: "L'adresse de dépôt est dans votre presse-papiers." });
+      toast({ title: t.depositCopiedToast, description: t.depositCopiedDesc });
       window.setTimeout(() => setCopied(false), 2200);
     } catch {
-      toast({ title: "Copie impossible", description: "Maintenez l'adresse appuyée pour la copier." });
+      toast({ title: t.depositCopyFail, description: t.depositCopyFailDesc });
     }
   };
 
@@ -163,7 +164,7 @@ export default function DepositPage() {
           </button>
         )}
         <h1 className="text-lg font-bold tracking-wide">
-          {step === "currency" ? "Sélectionnez la devise" : "Dépôt"}
+          {step === "currency" ? t.depositSelectNetwork : t.deposit}
         </h1>
         <div className="w-10" />
       </header>
@@ -171,8 +172,8 @@ export default function DepositPage() {
       {step === "amount" && (
         <section className="mx-auto max-w-lg space-y-5 p-5">
           <div className="rounded-3xl border border-white/15 bg-[#234781] p-5 shadow-xl">
-            <p className="mb-1 text-sm font-semibold text-white/75">Montant de la recharge</p>
-            <p className="mb-4 text-xs text-white/60">Minimum {minDeposit.toLocaleString()} {currency}</p>
+            <p className="mb-1 text-sm font-semibold text-white/75">{t.depositAmount}</p>
+            <p className="mb-4 text-xs text-white/60">{t.depositMinimum} {minDeposit.toLocaleString()} {currency}</p>
             <div className="flex overflow-hidden rounded-2xl border border-white/15 bg-white text-[#173667]">
               <span className="flex items-center border-r border-[#315aab]/20 px-4 font-bold">{currency}</span>
               <input
@@ -180,7 +181,7 @@ export default function DepositPage() {
                 value={amount}
                 min={minDeposit}
                 onChange={(event) => setAmount(event.target.value ? Number(event.target.value) : "")}
-                placeholder="Saisissez le montant"
+                placeholder={`${t.depositMinimum} ${minDeposit.toLocaleString()}`}
                 className="min-w-0 flex-1 bg-transparent px-4 py-4 outline-none placeholder:text-[#173667]/45"
                 data-testid="input-deposit-amount"
               />
@@ -206,12 +207,12 @@ export default function DepositPage() {
               className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-white py-4 font-bold text-[#315aab] shadow-lg transition hover:bg-white/90"
               data-testid="button-recharge-now"
             >
-              Rechargez maintenant <ArrowRight className="h-5 w-5" />
+              {t.depositRechargeNow} <ArrowRight className="h-5 w-5" />
             </button>
           </div>
           <div className="rounded-3xl border border-white/15 bg-[#234781] p-5 text-sm leading-7 text-white/85 shadow-xl">
-            <p>{getContent(platformSettings, "content_deposit_infoText", "Les dépôts crypto sont disponibles 24h/24 et 7j/7.")}</p>
-            <p className="mt-3 text-white/65">Choisissez ensuite le réseau exact utilisé par votre portefeuille avant d'envoyer les fonds.</p>
+            <p>{getContent(platformSettings, "content_deposit_infoText", t.depositNetworkTip)}</p>
+            <p className="mt-3 text-white/65">{t.depositNetworkTip}</p>
           </div>
         </section>
       )}
@@ -220,12 +221,12 @@ export default function DepositPage() {
         <section className="mx-auto max-w-lg p-4">
           <div className="mb-4 flex items-center justify-between rounded-2xl border border-white/15 bg-[#234781] px-4 py-3 shadow-lg">
             <div>
-              <p className="text-xs text-white/60">Montant du dépôt</p>
+              <p className="text-xs text-white/60">{t.depositAmount}</p>
               <p className="font-bold">{Number(amount).toLocaleString()} {currency}</p>
             </div>
-            <button type="button" onClick={() => setStep("amount")} className="text-sm font-semibold underline">Modifier</button>
+            <button type="button" onClick={() => setStep("amount")} className="text-sm font-semibold underline">{t.depositModify}</button>
           </div>
-          <p className="mb-3 px-1 text-sm font-semibold text-white/80">Sélectionnez le réseau de paiement</p>
+          <p className="mb-3 px-1 text-sm font-semibold text-white/80">{t.depositSelectNetwork}</p>
           <div className="overflow-hidden rounded-3xl border border-white/15 bg-[#234781] px-4 shadow-xl">
             {CRYPTO_OPTIONS.map((option, index) => (
               <button
@@ -249,7 +250,7 @@ export default function DepositPage() {
           </div>
           {createPayment.isPending && (
             <div className="mt-5 flex items-center justify-center gap-2 text-sm text-white/80">
-              <Loader2 className="h-5 w-5 animate-spin" /> Génération de votre adresse…
+              <Loader2 className="h-5 w-5 animate-spin" /> {t.depositGenerating}
             </div>
           )}
         </section>
@@ -265,12 +266,12 @@ export default function DepositPage() {
                 <p className="text-xs text-white/60">{selectedCurrency.network}</p>
               </div>
             </div>
-            <p className="text-sm text-white/70">Montant exact à envoyer</p>
+            <p className="text-sm text-white/70">{t.depositExactAmount}</p>
             <p className="mt-1 text-2xl font-black">{payment.payAmount} <span className="text-base">{payment.payCurrency.toUpperCase()}</span></p>
             <div className="mx-auto my-5 w-fit rounded-2xl bg-white p-3 shadow-lg">
-              <img src={payment.qrCode} alt="QR code de l'adresse de dépôt" className="h-56 w-56" data-testid="img-deposit-qr" />
+              <img src={payment.qrCode} alt="QR" className="h-56 w-56" data-testid="img-deposit-qr" />
             </div>
-            <p className="mb-2 text-lg font-bold">Adresse de dépôt</p>
+            <p className="mb-2 text-lg font-bold">{t.depositAddressTitle}</p>
             <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-[#173667] p-2 pl-4">
               <span className="min-w-0 flex-1 truncate text-left font-mono text-xs text-white/75">{shortenAddress(payment.payAddress)}</span>
               <button
@@ -280,23 +281,23 @@ export default function DepositPage() {
                 data-testid="button-copy-deposit-address"
               >
                 {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                {copied ? "Copié" : "Copier"}
+                {copied ? t.depositCopied : t.depositCopy}
               </button>
             </div>
             <button
               type="button"
-              onClick={() => toast({ title: "Dépôt enregistré", description: "Votre dépôt sera crédité après confirmation du paiement." })}
+              onClick={() => toast({ title: t.depositDone, description: t.depositDoneDesc })}
               className="mt-5 w-full rounded-full bg-white py-4 font-bold text-[#315aab] shadow-lg"
               data-testid="button-deposit-completed"
             >
-              Dépôt effectué
+              {t.depositDone}
             </button>
           </div>
           <div className="rounded-3xl border border-white/15 bg-[#234781] p-5 text-sm leading-7 text-white/85 shadow-xl">
-            <div className="mb-2 flex items-center gap-2 font-bold"><ShieldCheck className="h-5 w-5" /> Instructions de sécurité</div>
-            <p>1. Copiez l'adresse ci-dessus ou scannez le QR code.</p>
-            <p>2. Envoyez uniquement {selectedCurrency.label} sur le réseau {selectedCurrency.network}.</p>
-            <p>3. Le solde sera crédité après la confirmation de la transaction par le réseau.</p>
+            <div className="mb-2 flex items-center gap-2 font-bold"><ShieldCheck className="h-5 w-5" /> {t.depositSecurity}</div>
+            <p>{t.depositSec1}</p>
+            <p>2. {t.depositLabel} {selectedCurrency.label} — {selectedCurrency.network}.</p>
+            <p>{t.depositSec3}</p>
             <p className="mt-2 text-white/65">{helpText}</p>
           </div>
         </section>

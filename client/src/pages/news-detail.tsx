@@ -10,47 +10,47 @@ const landscapeImg = "/poweradd/poweradd-powerbank-banner.jpg";
 export const NEWS_ARTICLES = [
   {
     id: "1",
-    title: "Power Add Inc. : une expertise construite depuis 1996",
+    title: "Power Add Inc.：自1996年以来积累的专业经验",
     summary:
-      "Fondée en 1996 comme unité indépendante du groupe Tekman, Power Add développe des solutions d’alimentation et des convertisseurs pour ses clients.",
-    body: `Power Add Inc. a été fondée en 1996 comme unité indépendante du groupe Tekman.
+      "Power Add成立于1996年，是Tekman集团旗下的独立部门，专为客户开发电源解决方案和转换器。",
+    body: `Power Add Inc.于1996年作为Tekman集团的独立部门成立。
 
-L’entreprise est spécialisée dans le développement de solutions d’alimentation électrique et dispose de capacités de recherche et développement ainsi que de fabrication pilote à New Taipei City, à Taïwan. La production de masse est réalisée à Taïwan et en Chine.
+公司专注于电源解决方案的研发，在台湾新北市设有研发和试制中心，量产业务在台湾和中国大陆进行。
 
-Ces informations proviennent de la page officielle « About Us » de Power Add.`,
+以上信息来源于Power Add官方"关于我们"页面。`,
     image: img1,
-    date: "Source officielle",
+    date: "官方来源",
   },
   {
     id: "2",
-    title: "Les solutions Power Add pour différents besoins",
+    title: "Power Add针对不同需求提供的解决方案",
     summary:
-      "Power Add propose des adaptateurs, alimentations open frame, alimentations en U, modèles box, convertisseurs DC/DC et conceptions sur mesure.",
-    body: `La gamme présentée par Power Add couvre plusieurs familles de produits :
+      "Power Add提供适配器、开放式电源、U型电源、盒式电源、DC/DC转换器及定制化设计方案。",
+    body: `Power Add提供的产品系列涵盖多个品类：
 
-- Adaptateurs muraux et de bureau de 1 W à 50 W
-- Alimentations open frame de 30 W à 350 W
-- Alimentations en U de 60 W à 500 W
-- Alimentations box de 25 W à 150 W
-- Convertisseurs DC/DC de 1 W à 30 W
-- Solutions d’alimentation sur mesure de 1 W à 500 W
+- 1W至50W壁插及桌面适配器
+- 30W至350W开放式电源
+- 60W至500W U型电源
+- 25W至150W盒式电源
+- 1W至30W DC/DC转换器
+- 1W至500W定制化电源解决方案
 
-Ces catégories et puissances sont celles publiées sur le site officiel de Power Add.`,
+以上产品类别和功率范围均来自Power Add官方网站。`,
     image: img2,
-    date: "Produits officiels",
+    date: "官方产品",
   },
   {
     id: "3",
-    title: "Power Add : qualité, environnement et service",
+    title: "Power Add：品质、环保与服务",
     summary:
-      "L’entreprise met en avant l’amélioration continue, le travail d’équipe et ses certifications ISO 9001:2015 et ISO 14001:2015.",
-    body: `Power Add indique être certifiée ISO 9001 depuis 1997 et ISO 14001 depuis 2006.
+      "公司致力于持续改进、团队合作，并通过ISO 9001:2015和ISO 14001:2015认证。",
+    body: `Power Add表示已于1997年获得ISO 9001认证，2006年获得ISO 14001认证。
 
-Sa politique qualité vise à mobiliser ses ressources internes et externes pour fournir une production de qualité et répondre aux attentes de ses clients.
+公司质量方针旨在整合内外部资源，提供高质量产品，满足客户需求。
 
-L’entreprise présente également un engagement d’amélioration continue, d’initiative, de performance et de travail d’équipe. Consultez poweradd.com pour les informations et certificats à jour.`,
+公司同时展现了对持续改进、主动性、绩效与团队合作的承诺。如需最新信息及证书，请访问poweradd.com。`,
     image: img3,
-    date: "Qualité et service",
+    date: "品质与服务",
   },
 ];
 
@@ -63,7 +63,7 @@ export default function NewsDetailPage() {
   if (!article) {
     return (
       <div className="flex flex-col min-h-full items-center justify-center" style={{ background: "#315aab" }}>
-        <p className="text-white/60">Article introuvable</p>
+        <p className="text-white/60">文章未找到</p>
       </div>
     );
   }
@@ -71,7 +71,7 @@ export default function NewsDetailPage() {
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
 
-      {/* Header blanc — même style que À propos */}
+      {/* Header */}
       <header className="flex items-center px-4 py-3 border-b bg-white">
         <button
           onClick={() => navigate("/")}
@@ -85,10 +85,9 @@ export default function NewsDetailPage() {
         </h1>
       </header>
 
-      {/* Contenu directement sur le fond bleu */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
 
-        {/* Image de l'article */}
+        {/* Article image */}
         <img
           src={article.image}
           alt={article.title}
@@ -96,13 +95,13 @@ export default function NewsDetailPage() {
           style={{ height: 200 }}
         />
 
-        {/* Titre + date */}
+        {/* Title + date */}
         <div className="space-y-2">
           <h2 className="text-xl font-bold text-[#E8192C]">{article.title}</h2>
           <p className="text-white/50 text-xs font-semibold">{article.date}</p>
         </div>
 
-        {/* Corps de l'article */}
+        {/* Article body */}
         {article.body.split("\n\n").map((paragraph, i) => (
           <p key={i} className="text-white/90 leading-relaxed">
             {paragraph}
@@ -110,7 +109,7 @@ export default function NewsDetailPage() {
         ))}
       </div>
 
-      <img src={landscapeImg} alt="Power Add — composants électroniques" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
+      <img src={landscapeImg} alt="Power Add" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

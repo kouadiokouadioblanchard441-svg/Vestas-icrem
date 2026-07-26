@@ -128,6 +128,31 @@ export type Translations = {
   // deposit orders
   noDeposits: string;
   depositOrders: string;
+  depositHistory: string;
+  depositLabel: string;
+  // deposit page
+  depositAmount: string;
+  depositMinimum: string;
+  depositSelectNetwork: string;
+  depositRechargeNow: string;
+  depositNetworkTip: string;
+  depositAddressTitle: string;
+  depositExactAmount: string;
+  depositGenerating: string;
+  depositCopied: string;
+  depositCopy: string;
+  depositDone: string;
+  depositDoneDesc: string;
+  depositSecurity: string;
+  depositSec1: string;
+  depositSec3: string;
+  depositCopiedToast: string;
+  depositCopiedDesc: string;
+  depositCopyFail: string;
+  depositCopyFailDesc: string;
+  depositCreateFail: string;
+  depositModify: string;
+  depositDefaultHelp: string;
 };
 
 const T: Record<Lang, Translations> = {
@@ -241,6 +266,30 @@ const T: Record<Lang, Translations> = {
     walletHolderRequired: "持有人姓名必填",
     noDeposits:         "暂无充值记录",
     depositOrders:      "充值记录",
+    depositHistory:     "充值记录",
+    depositLabel:       "充值",
+    depositAmount:      "充值金额",
+    depositMinimum:     "最低",
+    depositSelectNetwork: "选择支付网络",
+    depositRechargeNow: "立即充值",
+    depositNetworkTip:  "选择您钱包使用的确切网络后再发送资金。",
+    depositAddressTitle:"充值地址",
+    depositExactAmount: "需发送的精确金额",
+    depositGenerating:  "正在生成地址…",
+    depositCopied:      "已复制",
+    depositCopy:        "复制",
+    depositDone:        "已完成充值",
+    depositDoneDesc:    "支付确认后，您的充值将到账。",
+    depositSecurity:    "安全提示",
+    depositSec1:        "1. 复制上方地址或扫描二维码。",
+    depositSec3:        "3. 交易经网络确认后余额将自动到账。",
+    depositCopiedToast: "地址已复制",
+    depositCopiedDesc:  "充值地址已复制到剪贴板。",
+    depositCopyFail:    "复制失败",
+    depositCopyFailDesc:"请长按地址手动复制。",
+    depositCreateFail:  "无法创建充值订单",
+    depositModify:      "修改",
+    depositDefaultHelp: "仅向显示的地址发送所选币种和网络的资产，错误网络可能导致资产丢失。",
   },
   fr: {
     yourNumber:         "votre numéro",
@@ -352,6 +401,30 @@ const T: Record<Lang, Translations> = {
     walletHolderRequired: "Nom du titulaire requis",
     noDeposits:         "Aucun dépôt pour le moment",
     depositOrders:      "Ordre du dépôt",
+    depositHistory:     "Historique des dépôts",
+    depositLabel:       "DÉPÔT",
+    depositAmount:      "Montant de la recharge",
+    depositMinimum:     "Minimum",
+    depositSelectNetwork: "Sélectionnez le réseau de paiement",
+    depositRechargeNow: "Rechargez maintenant",
+    depositNetworkTip:  "Choisissez ensuite le réseau exact utilisé par votre portefeuille avant d'envoyer les fonds.",
+    depositAddressTitle:"Adresse de dépôt",
+    depositExactAmount: "Montant exact à envoyer",
+    depositGenerating:  "Génération de votre adresse…",
+    depositCopied:      "Copié",
+    depositCopy:        "Copier",
+    depositDone:        "Dépôt effectué",
+    depositDoneDesc:    "Votre dépôt sera crédité après confirmation du paiement.",
+    depositSecurity:    "Instructions de sécurité",
+    depositSec1:        "1. Copiez l'adresse ci-dessus ou scannez le QR code.",
+    depositSec3:        "3. Le solde sera crédité après la confirmation de la transaction par le réseau.",
+    depositCopiedToast: "Adresse copiée",
+    depositCopiedDesc:  "L'adresse de dépôt est dans votre presse-papiers.",
+    depositCopyFail:    "Copie impossible",
+    depositCopyFailDesc:"Maintenez l'adresse appuyée pour la copier.",
+    depositCreateFail:  "Impossible de créer le dépôt",
+    depositModify:      "Modifier",
+    depositDefaultHelp: "Envoyez uniquement la devise et le réseau sélectionnés vers l'adresse affichée. Un mauvais réseau peut entraîner la perte des fonds.",
   },
   en: {
     yourNumber:         "your number",
@@ -463,6 +536,30 @@ const T: Record<Lang, Translations> = {
     walletHolderRequired: "Account holder name required",
     noDeposits:         "No deposits yet",
     depositOrders:      "Deposit orders",
+    depositHistory:     "Deposit history",
+    depositLabel:       "DEPOSIT",
+    depositAmount:      "Deposit amount",
+    depositMinimum:     "Minimum",
+    depositSelectNetwork: "Select payment network",
+    depositRechargeNow: "Deposit now",
+    depositNetworkTip:  "Choose the exact network used by your wallet before sending funds.",
+    depositAddressTitle:"Deposit address",
+    depositExactAmount: "Exact amount to send",
+    depositGenerating:  "Generating your address…",
+    depositCopied:      "Copied",
+    depositCopy:        "Copy",
+    depositDone:        "Deposit completed",
+    depositDoneDesc:    "Your deposit will be credited after payment confirmation.",
+    depositSecurity:    "Security instructions",
+    depositSec1:        "1. Copy the address above or scan the QR code.",
+    depositSec3:        "3. Balance will be credited after network confirmation.",
+    depositCopiedToast: "Address copied",
+    depositCopiedDesc:  "The deposit address is in your clipboard.",
+    depositCopyFail:    "Copy failed",
+    depositCopyFailDesc:"Long-press the address to copy it manually.",
+    depositCreateFail:  "Unable to create deposit",
+    depositModify:      "Modify",
+    depositDefaultHelp: "Only send the selected currency and network to the displayed address. Wrong network may result in loss of funds.",
   },
   pt: {
     yourNumber:         "seu número",
@@ -574,6 +671,30 @@ const T: Record<Lang, Translations> = {
     walletHolderRequired: "Nome do titular obrigatório",
     noDeposits:         "Sem depósitos por enquanto",
     depositOrders:      "Ordens de depósito",
+    depositHistory:     "Histórico de depósitos",
+    depositLabel:       "DEPÓSITO",
+    depositAmount:      "Valor do depósito",
+    depositMinimum:     "Mínimo",
+    depositSelectNetwork: "Selecione a rede de pagamento",
+    depositRechargeNow: "Depositar agora",
+    depositNetworkTip:  "Escolha a rede exata usada pela sua carteira antes de enviar os fundos.",
+    depositAddressTitle:"Endereço de depósito",
+    depositExactAmount: "Valor exato a enviar",
+    depositGenerating:  "Gerando seu endereço…",
+    depositCopied:      "Copiado",
+    depositCopy:        "Copiar",
+    depositDone:        "Depósito realizado",
+    depositDoneDesc:    "Seu depósito será creditado após confirmação do pagamento.",
+    depositSecurity:    "Instruções de segurança",
+    depositSec1:        "1. Copie o endereço acima ou escaneie o QR code.",
+    depositSec3:        "3. O saldo será creditado após confirmação da transação pela rede.",
+    depositCopiedToast: "Endereço copiado",
+    depositCopiedDesc:  "O endereço de depósito está na sua área de transferência.",
+    depositCopyFail:    "Falha ao copiar",
+    depositCopyFailDesc:"Pressione e segure o endereço para copiá-lo.",
+    depositCreateFail:  "Não foi possível criar o depósito",
+    depositModify:      "Modificar",
+    depositDefaultHelp: "Envie apenas a moeda e rede selecionadas para o endereço exibido. Rede errada pode resultar em perda de fundos.",
   },
   es: {
     yourNumber:         "su número",
@@ -685,6 +806,30 @@ const T: Record<Lang, Translations> = {
     walletHolderRequired: "Nombre del titular requerido",
     noDeposits:         "Sin depósitos por el momento",
     depositOrders:      "Órdenes de depósito",
+    depositHistory:     "Historial de depósitos",
+    depositLabel:       "DEPÓSITO",
+    depositAmount:      "Monto del depósito",
+    depositMinimum:     "Mínimo",
+    depositSelectNetwork: "Seleccione la red de pago",
+    depositRechargeNow: "Depositar ahora",
+    depositNetworkTip:  "Elija la red exacta usada por su billetera antes de enviar los fondos.",
+    depositAddressTitle:"Dirección de depósito",
+    depositExactAmount: "Monto exacto a enviar",
+    depositGenerating:  "Generando su dirección…",
+    depositCopied:      "Copiado",
+    depositCopy:        "Copiar",
+    depositDone:        "Depósito realizado",
+    depositDoneDesc:    "Su depósito será acreditado tras la confirmación del pago.",
+    depositSecurity:    "Instrucciones de seguridad",
+    depositSec1:        "1. Copie la dirección de arriba o escanee el código QR.",
+    depositSec3:        "3. El saldo se acreditará tras la confirmación de la transacción por la red.",
+    depositCopiedToast: "Dirección copiada",
+    depositCopiedDesc:  "La dirección de depósito está en su portapapeles.",
+    depositCopyFail:    "Error al copiar",
+    depositCopyFailDesc:"Mantenga presionada la dirección para copiarla.",
+    depositCreateFail:  "No se pudo crear el depósito",
+    depositModify:      "Modificar",
+    depositDefaultHelp: "Envíe solo la moneda y red seleccionadas a la dirección mostrada. Una red incorrecta puede ocasionar pérdida de fondos.",
   },
   ar: {
     yourNumber:         "رقمك",
@@ -796,6 +941,30 @@ const T: Record<Lang, Translations> = {
     walletHolderRequired: "اسم صاحب الحساب مطلوب",
     noDeposits:         "لا توجد إيداعات حتى الآن",
     depositOrders:      "طلبات الإيداع",
+    depositHistory:     "سجل الإيداعات",
+    depositLabel:       "إيداع",
+    depositAmount:      "مبلغ الإيداع",
+    depositMinimum:     "الحد الأدنى",
+    depositSelectNetwork: "اختر شبكة الدفع",
+    depositRechargeNow: "إيداع الآن",
+    depositNetworkTip:  "اختر الشبكة الصحيحة التي تستخدمها محفظتك قبل إرسال الأموال.",
+    depositAddressTitle:"عنوان الإيداع",
+    depositExactAmount: "المبلغ الدقيق للإرسال",
+    depositGenerating:  "جارٍ إنشاء عنوانك…",
+    depositCopied:      "تم النسخ",
+    depositCopy:        "نسخ",
+    depositDone:        "تم الإيداع",
+    depositDoneDesc:    "سيُضاف إيداعك بعد تأكيد الدفع.",
+    depositSecurity:    "تعليمات الأمان",
+    depositSec1:        "١. انسخ العنوان أعلاه أو امسح رمز QR.",
+    depositSec3:        "٣. سيُضاف الرصيد بعد تأكيد المعاملة من الشبكة.",
+    depositCopiedToast: "تم نسخ العنوان",
+    depositCopiedDesc:  "عنوان الإيداع موجود في الحافظة.",
+    depositCopyFail:    "فشل النسخ",
+    depositCopyFailDesc:"اضغط مطولاً على العنوان لنسخه يدوياً.",
+    depositCreateFail:  "تعذّر إنشاء الإيداع",
+    depositModify:      "تعديل",
+    depositDefaultHelp: "أرسل فقط العملة والشبكة المحددتين إلى العنوان الظاهر. قد تؤدي الشبكة الخاطئة إلى فقدان الأموال.",
   },
 };
 
