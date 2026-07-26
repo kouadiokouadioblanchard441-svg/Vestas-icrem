@@ -97,6 +97,10 @@ export default function ServicePage() {
   const serviceWithdrawalHoursText = getContent(allSettings, "content_service_withdrawalHoursText", t.serviceWithdrawalHoursText ?? "");
   const serviceSupportHoursLabel = getContent(allSettings, "content_service_supportHoursLabel", t.customerService);
 
+  const startHour = parseInt(settings?.withdrawalStartHour || "9", 10);
+  const endHour = parseInt(settings?.withdrawalEndHour || "17", 10);
+  const hoursDisplay = `${String(startHour).padStart(2, "0")}:00 - ${String(endHour).padStart(2, "0")}:00`;
+
   const allLinks = [
     {
       label: settings?.supportLabel || t.serviceCustomerServiceFallback,
