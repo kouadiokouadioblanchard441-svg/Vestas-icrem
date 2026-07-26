@@ -169,7 +169,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(data: Partial<User>): Promise<User> {
-    const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const referralCode = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedPassword = await bcrypt.hash(data.password!, 10);
 
     // Get signup bonus from settings (default 200)
