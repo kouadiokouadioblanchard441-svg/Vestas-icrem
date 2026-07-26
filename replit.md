@@ -1,8 +1,8 @@
-# SpolarPV - Solar Energy Investment Platform
+# PowerAdd - Plateforme d'investissement
 
 ## Overview
 
-SpolarPV is a mobile-first investment platform targeting French-speaking African countries. Users can purchase virtual solar photovoltaic products that generate daily earnings, manage deposits/withdrawals via mobile money, build referral teams for commission income, and complete tasks for bonuses. The platform features a full admin panel for managing users, transactions, products, and platform settings.
+PowerAdd est une plateforme d'investissement mobile ciblant les pays francophones d'Afrique. Les utilisateurs peuvent acheter des produits virtuels qui génèrent des gains quotidiens, gérer des dépôts/retraits via mobile money, constituer des équipes de parrainage pour des commissions, et accomplir des tâches pour des bonus. La plateforme dispose d'un panneau d'administration complet pour gérer les utilisateurs, les transactions, les produits et les paramètres.
 
 ## Running Locally on Replit
 

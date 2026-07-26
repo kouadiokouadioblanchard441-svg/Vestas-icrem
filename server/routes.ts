@@ -716,7 +716,7 @@ export async function registerRoutes(
         return res.status(400).json({ message: `Montant minimum: ${minDeposit.toLocaleString()} USDT` });
       }
 
-      const orderId = `spolarpv-${user.id}-${Date.now()}`;
+      const orderId = `poweradd-${user.id}-${Date.now()}`;
       const paymentResponse = await fetch("https://api.nowpayments.io/v1/payment", {
         method: "POST",
         headers: {
