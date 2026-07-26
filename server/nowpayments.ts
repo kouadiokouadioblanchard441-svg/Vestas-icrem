@@ -13,6 +13,8 @@
 
 import { NowPaymentsSDK } from "@nowpaymentsio/nowpayments-sdk-nodejs";
 
+const DEFAULT_PUBLIC_APP_URL = "http://poweradd.xyz";
+
 // ---------------------------------------------------------------------------
 // Singleton SDK instance
 // ---------------------------------------------------------------------------
@@ -63,9 +65,7 @@ export function resetSDK(): void {
 export function getNowPaymentsCallbackUrl(): string | undefined {
   const baseUrl =
     process.env.APP_URL ||
-    (process.env.REPLIT_DEV_DOMAIN
-      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-      : null);
+    DEFAULT_PUBLIC_APP_URL;
   return baseUrl ? `${baseUrl}/api/nowpayments/ipn` : undefined;
 }
 

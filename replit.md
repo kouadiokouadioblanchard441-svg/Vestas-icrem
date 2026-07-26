@@ -26,6 +26,7 @@ PowerAdd est une plateforme d'investissement mobile ciblant les pays francophone
 5. Configurer les variables d'environnement dans Plesk :
    - `DATABASE_URL` — connexion PostgreSQL
    - `SESSION_SECRET` — secret pour les sessions Express
+   - `APP_URL=http://poweradd.xyz` — URL publique utilisée pour les callbacks de paiement
    - `NODE_ENV=production`
    - `PORT` — port d'écoute (défaut : 5000)
 6. Au premier démarrage, le serveur seed automatiquement la base de données
