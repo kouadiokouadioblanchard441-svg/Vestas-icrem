@@ -25,34 +25,34 @@ const NETWORKS = [
 
 const settingsSchema = z.object({
   supportLink: z.string().min(5, "Lien requis"),
-  supportType: z.string().min(1, "Réseau requis"),
+  supportType: z.string().min(1, "社交网络必填"),
   supportLabel: z.string().min(1, "Label requis"),
   support2Link: z.string().min(5, "Lien requis"),
-  support2Type: z.string().min(1, "Réseau requis"),
+  support2Type: z.string().min(1, "社交网络必填"),
   support2Label: z.string().min(1, "Label requis"),
   channelLink: z.string().min(5, "Lien requis"),
-  channelType: z.string().min(1, "Réseau requis"),
+  channelType: z.string().min(1, "社交网络必填"),
   channelLabel: z.string().min(1, "Label requis"),
   groupLink: z.string().min(5, "Lien requis"),
-  groupType: z.string().min(1, "Réseau requis"),
+  groupType: z.string().min(1, "社交网络必填"),
   groupLabel: z.string().min(1, "Label requis"),
   popupButtonLabel: z.string().min(1, "Label requis"),
   supportEnabled: z.boolean(),
   support2Enabled: z.boolean(),
   channelEnabled: z.boolean(),
   groupEnabled: z.boolean(),
-  signupBonus: z.string().min(1, "Bonus requis"),
+  signupBonus: z.string().min(1, "奖励金额必填"),
   minDeposit: z.string().min(1, "Montant requis"),
   depositPresetAmounts: z.string().min(1, "Montants requis"),
   minWithdrawal: z.string().min(1, "Montant requis"),
   withdrawalEnabled: z.boolean(),
-  withdrawalFees: z.string().min(1, "Frais requis"),
+  withdrawalFees: z.string().min(1, "手续费必填"),
   maxWithdrawalsPerDay: z.string().min(1, "Requis"),
-  withdrawalStartHour: z.string().min(1, "Heure requise"),
-  withdrawalEndHour: z.string().min(1, "Heure requise"),
-  level1Commission: z.string().min(1, "Commission requise"),
-  level2Commission: z.string().min(1, "Commission requise"),
-  level3Commission: z.string().min(1, "Commission requise"),
+  withdrawalStartHour: z.string().min(1, "时间必填"),
+  withdrawalEndHour: z.string().min(1, "时间必填"),
+  level1Commission: z.string().min(1, "佣金必填"),
+  level2Commission: z.string().min(1, "佣金必填"),
+  level3Commission: z.string().min(1, "佣金必填"),
 });
 
 type SettingsForm = z.infer<typeof settingsSchema>;
@@ -209,12 +209,12 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
                 ? <PowerOff className="w-5 h-5 text-red-400" />
                 : <Power className="w-5 h-5 text-green-400" />}
               <span className={isMaintenance ? "text-red-300" : "text-green-300"}>
-                Mode Maintenance
+                维护模式
               </span>
               <span className={`ml-auto text-xs font-semibold px-2 py-0.5 rounded-full ${
                 isMaintenance ? "bg-red-500/30 text-red-300" : "bg-green-500/30 text-green-300"
               }`}>
-                {isMaintenance ? "HORS SERVICE" : "EN LIGNE"}
+                {isMaintenance ? "维护中" : "运行中"}
               </span>
             </CardTitle>
           </CardHeader>
@@ -260,7 +260,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <Link className="w-5 h-5 text-primary" />
-              Liens & Réseaux sociaux
+              链接与社交网络
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
@@ -268,10 +268,10 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
             {/* Support 1 */}
             <div className="space-y-2 border rounded-xl p-3">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Lien 1 — Service client</p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">链接 1 — 客服</p>
                 <FormField control={form.control} name="supportEnabled" render={({ field }) => (
                   <FormItem className="flex items-center gap-2 space-y-0">
-                    <FormLabel className="text-xs text-gray-500">{field.value ? "Actif" : "Désactivé"}</FormLabel>
+                    <FormLabel className="text-xs text-gray-500">{field.value ? "启用" : "禁用"}</FormLabel>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
@@ -281,17 +281,17 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
               <div className="grid grid-cols-2 gap-2">
                 <FormField control={form.control} name="supportLabel" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Libellé affiché</FormLabel>
-                    <FormControl><Input {...field} placeholder="Service client" /></FormControl>
+                    <FormLabel>显示名称</FormLabel>
+                    <FormControl><Input {...field} placeholder="客服" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="supportType" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Réseau social</FormLabel>
+                    <FormLabel>社交网络</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger><SelectValue placeholder="Réseau..." /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="选择..." /></SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {NETWORKS.map(n => <SelectItem key={n.value} value={n.value}>{n.label}</SelectItem>)}
@@ -303,7 +303,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
               </div>
               <FormField control={form.control} name="supportLink" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lien URL</FormLabel>
+                  <FormLabel>链接 URL</FormLabel>
                   <FormControl><Input {...field} placeholder="https://t.me/..." /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -313,10 +313,10 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
             {/* Support 2 */}
             <div className="space-y-2 border rounded-xl p-3">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Lien 2 — Service client</p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">链接 2 — 客服 2</p>
                 <FormField control={form.control} name="support2Enabled" render={({ field }) => (
                   <FormItem className="flex items-center gap-2 space-y-0">
-                    <FormLabel className="text-xs text-gray-500">{field.value ? "Actif" : "Désactivé"}</FormLabel>
+                    <FormLabel className="text-xs text-gray-500">{field.value ? "启用" : "禁用"}</FormLabel>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
@@ -326,17 +326,17 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
               <div className="grid grid-cols-2 gap-2">
                 <FormField control={form.control} name="support2Label" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Libellé affiché</FormLabel>
-                    <FormControl><Input {...field} placeholder="Service client 2" /></FormControl>
+                    <FormLabel>显示名称</FormLabel>
+                    <FormControl><Input {...field} placeholder="客服 2" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="support2Type" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Réseau social</FormLabel>
+                    <FormLabel>社交网络</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger><SelectValue placeholder="Réseau..." /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="选择..." /></SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {NETWORKS.map(n => <SelectItem key={n.value} value={n.value}>{n.label}</SelectItem>)}
@@ -348,7 +348,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
               </div>
               <FormField control={form.control} name="support2Link" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lien URL</FormLabel>
+                  <FormLabel>链接 URL</FormLabel>
                   <FormControl><Input {...field} placeholder="https://t.me/..." /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -358,10 +358,10 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
             {/* Channel */}
             <div className="space-y-2 border rounded-xl p-3">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Lien 3 — Chaîne officielle</p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">链接 3 — 官方频道</p>
                 <FormField control={form.control} name="channelEnabled" render={({ field }) => (
                   <FormItem className="flex items-center gap-2 space-y-0">
-                    <FormLabel className="text-xs text-gray-500">{field.value ? "Actif" : "Désactivé"}</FormLabel>
+                    <FormLabel className="text-xs text-gray-500">{field.value ? "启用" : "禁用"}</FormLabel>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
@@ -371,17 +371,17 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
               <div className="grid grid-cols-2 gap-2">
                 <FormField control={form.control} name="channelLabel" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Libellé affiché</FormLabel>
-                    <FormControl><Input {...field} placeholder="Chaîne officielle" /></FormControl>
+                    <FormLabel>显示名称</FormLabel>
+                    <FormControl><Input {...field} placeholder="官方频道" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="channelType" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Réseau social</FormLabel>
+                    <FormLabel>社交网络</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger><SelectValue placeholder="Réseau..." /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="选择..." /></SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {NETWORKS.map(n => <SelectItem key={n.value} value={n.value}>{n.label}</SelectItem>)}
@@ -393,7 +393,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
               </div>
               <FormField control={form.control} name="channelLink" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lien URL</FormLabel>
+                  <FormLabel>链接 URL</FormLabel>
                   <FormControl><Input {...field} placeholder="https://t.me/..." /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -403,10 +403,10 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
             {/* Group */}
             <div className="space-y-2 border rounded-xl p-3">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Lien 4 — Groupe de discussion</p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">链接 4 — 讨论群</p>
                 <FormField control={form.control} name="groupEnabled" render={({ field }) => (
                   <FormItem className="flex items-center gap-2 space-y-0">
-                    <FormLabel className="text-xs text-gray-500">{field.value ? "Actif" : "Désactivé"}</FormLabel>
+                    <FormLabel className="text-xs text-gray-500">{field.value ? "启用" : "禁用"}</FormLabel>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
@@ -416,17 +416,17 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
               <div className="grid grid-cols-2 gap-2">
                 <FormField control={form.control} name="groupLabel" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Libellé affiché</FormLabel>
-                    <FormControl><Input {...field} placeholder="Groupe de discussion" /></FormControl>
+                    <FormLabel>显示名称</FormLabel>
+                    <FormControl><Input {...field} placeholder="讨论群" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="groupType" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Réseau social</FormLabel>
+                    <FormLabel>社交网络</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger><SelectValue placeholder="Réseau..." /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="选择..." /></SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {NETWORKS.map(n => <SelectItem key={n.value} value={n.value}>{n.label}</SelectItem>)}
@@ -438,7 +438,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
               </div>
               <FormField control={form.control} name="groupLink" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lien URL</FormLabel>
+                  <FormLabel>链接 URL</FormLabel>
                   <FormControl><Input {...field} placeholder="https://t.me/..." /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -449,23 +449,23 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
             <div className="border border-red-500 rounded-lg p-4 space-y-3">
               <div className="flex items-center gap-2">
                 <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-500 shrink-0" />
-                <p className="text-sm font-semibold text-red-600">Bouton du popup sur le tableau de bord</p>
+                <p className="text-sm font-semibold text-red-600">首页弹窗按钮</p>
               </div>
               <p className="text-xs text-muted-foreground">
-                Ce bouton apparaît dans la fenêtre d'avertissement qui s'ouvre automatiquement sur l'accueil.
+                此按钮显示在首页自动弹出的提示窗口中。
               </p>
               <FormField control={form.control} name="popupButtonLabel" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Texte du bouton <span className="text-red-500">(popup dashboard)</span></FormLabel>
-                  <FormControl><Input {...field} placeholder="Ex: Cliquez ici pour rejoindre le groupe Telegram" /></FormControl>
+                  <FormLabel>按钮文字 <span className="text-red-500">(首页弹窗)</span></FormLabel>
+                  <FormControl><Input {...field} placeholder="例：点击此处加入Telegram群组" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="groupLink" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lien du bouton <span className="text-red-500">(popup dashboard)</span></FormLabel>
+                  <FormLabel>按钮链接 <span className="text-red-500">(首页弹窗)</span></FormLabel>
                   <FormControl><Input {...field} placeholder="https://t.me/..." /></FormControl>
-                  <FormDescription>Ce lien est aussi utilisé dans le popup de bienvenue du tableau de bord.</FormDescription>
+                  <FormDescription>此链接也用于首页欢迎弹窗。</FormDescription>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -479,22 +479,22 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <Clock className="w-5 h-5 text-primary" />
-              Retraits & Bonus
+              提现与奖励
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
-              <p className="text-sm font-semibold text-foreground">Moyen de retrait actif</p>
+              <p className="text-sm font-semibold text-foreground">当前提现方式</p>
               <p className="mt-1 text-lg font-bold text-primary">USDT BEP20</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                C’est l’unique moyen disponible. Les utilisateurs doivent fournir une adresse BEP20 commençant par 0x.
+                唯一可用方式。用户须提供以 0x 开头的 BEP20 地址。
               </p>
               <FormField control={form.control} name="withdrawalEnabled" render={({ field }) => (
                 <FormItem className="mt-3 flex items-center justify-between rounded-md border bg-background/60 p-3 space-y-0">
                   <div>
-                    <FormLabel>Retraits actifs</FormLabel>
+                    <FormLabel>允许提现</FormLabel>
                     <FormDescription>
-                      {field.value ? "Les utilisateurs peuvent envoyer de nouvelles demandes." : "Les nouvelles demandes sont bloquées."}
+                      {field.value ? "用户可以提交提现申请。" : "新的提现申请已被禁止。"}
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -505,9 +505,9 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
             </div>
             <FormField control={form.control} name="signupBonus" render={({ field }) => (
               <FormItem>
-                <FormLabel>Bonus d'inscription (USDT)</FormLabel>
+                <FormLabel>注册奖励 (USDT)</FormLabel>
                 <FormControl><Input {...field} type="number" min="0" /></FormControl>
-                <FormDescription>Montant offert à chaque nouvel utilisateur à l'inscription.</FormDescription>
+                <FormDescription>新用户注册时获得的奖励金额。</FormDescription>
                 <FormMessage />
               </FormItem>
             )} />
@@ -515,22 +515,22 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="minDeposit" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Dépôt minimum (USDT)</FormLabel>
+                  <FormLabel>最低充值 (USDT)</FormLabel>
                   <FormControl><Input {...field} type="number" min="0" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="depositPresetAmounts" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Montants rapides de dépôt (USDT)</FormLabel>
+                  <FormLabel>快捷充值金额 (USDT)</FormLabel>
                   <FormControl><Input {...field} placeholder="3500,5000,7000,10000,15000,20000,50000,70000" /></FormControl>
-                  <FormDescription>Liste de montants séparés par des virgules, affichés en boutons rapides sur la page de dépôt.</FormDescription>
+                  <FormDescription>用逗号分隔的金额列表，显示为充值页面的快捷按钮。</FormDescription>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="minWithdrawal" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Retrait minimum (USDT)</FormLabel>
+                  <FormLabel>最低提现 (USDT)</FormLabel>
                   <FormControl><Input {...field} type="number" min="0" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -540,14 +540,14 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="withdrawalFees" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Frais de retrait (%)</FormLabel>
+                  <FormLabel>提现手续费 (%)</FormLabel>
                   <FormControl><Input {...field} type="number" min="0" max="100" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="maxWithdrawalsPerDay" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Max retraits / jour</FormLabel>
+                  <FormLabel>每日最多提现次数</FormLabel>
                   <FormControl><Input {...field} type="number" min="1" max="10" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -557,14 +557,14 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="withdrawalStartHour" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Heure début retraits</FormLabel>
+                  <FormLabel>提现开始时间（时）</FormLabel>
                   <FormControl><Input {...field} type="number" min="0" max="23" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="withdrawalEndHour" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Heure fin retraits</FormLabel>
+                  <FormLabel>提现结束时间（时）</FormLabel>
                   <FormControl><Input {...field} type="number" min="0" max="23" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -578,28 +578,28 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <Users className="w-5 h-5 text-primary" />
-              Commissions de parrainage
+              推荐佣金
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-3 gap-4">
               <FormField control={form.control} name="level1Commission" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Niveau 1 (%)</FormLabel>
+                  <FormLabel>等级 1 (%)</FormLabel>
                   <FormControl><Input {...field} type="number" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="level2Commission" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Niveau 2 (%)</FormLabel>
+                  <FormLabel>等级 2 (%)</FormLabel>
                   <FormControl><Input {...field} type="number" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="level3Commission" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Niveau 3 (%)</FormLabel>
+                  <FormLabel>等级 3 (%)</FormLabel>
                   <FormControl><Input {...field} type="number" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -614,7 +614,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
           ) : (
             <>
               <Save className="w-4 h-4 mr-2" />
-              Enregistrer les paramètres
+              保存设置
             </>
           )}
         </Button>
