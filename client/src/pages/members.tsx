@@ -5,6 +5,7 @@ import { ChevronLeft, User, Users } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth";
 import { getCountryByCode } from "@/lib/countries";
+import { useI18n } from "@/lib/i18n";
 
 interface TeamMember {
   id: number;
@@ -45,6 +46,7 @@ export default function MembersPage() {
   const [activeLevel, setActiveLevel] = useState<1 | 2 | 3>(1);
   const [, navigate] = useLocation();
   const { user } = useAuth();
+  const { t } = useI18n();
 
   const { data: team, isLoading } = useQuery<TeamDetails>({
     queryKey: ["/api/team/details"],

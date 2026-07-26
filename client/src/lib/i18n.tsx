@@ -130,6 +130,14 @@ export type Translations = {
   depositOrders: string;
   depositHistory: string;
   depositLabel: string;
+  // members page
+  membersTitle: string;
+  membersLevel: string;
+  membersTotalMembers: string;
+  membersBonusReceived: string;
+  membersNoneAtLevel: string;
+  membersInviteFriends: string;
+  membersBonus: string;
   // salary-bonus / task center page
   salaryTotalRewards: string;
   salaryTotalPeople: string;
@@ -329,6 +337,13 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "无法创建充值订单",
     depositModify:      "修改",
     depositDefaultHelp: "仅向显示的地址发送所选币种和网络的资产，错误网络可能导致资产丢失。",
+    membersTitle:        "我的成员",
+    membersLevel:        "级别",
+    membersTotalMembers: "总成员数",
+    membersBonusReceived:"已收佣金",
+    membersNoneAtLevel:  "第{0}级暂无成员",
+    membersInviteFriends:"邀请好友壮大您的团队",
+    membersBonus:        "佣金",
     salaryTotalRewards: "总奖励",
     salaryTotalPeople:  "总人数",
     salaryInviteDesc:   "邀请 {0} 名1级投资者即可获得：",
@@ -498,6 +513,13 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "Impossible de créer le dépôt",
     depositModify:      "Modifier",
     depositDefaultHelp: "Envoyez uniquement la devise et le réseau sélectionnés vers l'adresse affichée. Un mauvais réseau peut entraîner la perte des fonds.",
+    membersTitle:        "Mes Membres",
+    membersLevel:        "Niveau",
+    membersTotalMembers: "Total membres",
+    membersBonusReceived:"Bonus reçus",
+    membersNoneAtLevel:  "Aucun membre au niveau {0}",
+    membersInviteFriends:"Invitez des amis pour agrandir votre équipe",
+    membersBonus:        "Bonus",
     salaryTotalRewards: "Total des récompenses",
     salaryTotalPeople:  "Total de personnes",
     salaryInviteDesc:   "Invitez {0} investisseurs de niveau 1 pour obtenir :",
@@ -667,6 +689,13 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "Unable to create deposit",
     depositModify:      "Modify",
     depositDefaultHelp: "Only send the selected currency and network to the displayed address. Wrong network may result in loss of funds.",
+    membersTitle:        "My Members",
+    membersLevel:        "Level",
+    membersTotalMembers: "Total members",
+    membersBonusReceived:"Bonus received",
+    membersNoneAtLevel:  "No members at level {0}",
+    membersInviteFriends:"Invite friends to grow your team",
+    membersBonus:        "Bonus",
     salaryTotalRewards: "Total rewards",
     salaryTotalPeople:  "Total people",
     salaryInviteDesc:   "Invite {0} level-1 investors to earn:",
@@ -836,6 +865,13 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "Não foi possível criar o depósito",
     depositModify:      "Modificar",
     depositDefaultHelp: "Envie apenas a moeda e rede selecionadas para o endereço exibido. Rede errada pode resultar em perda de fundos.",
+    membersTitle:        "Meus Membros",
+    membersLevel:        "Nível",
+    membersTotalMembers: "Total de membros",
+    membersBonusReceived:"Bônus recebidos",
+    membersNoneAtLevel:  "Nenhum membro no nível {0}",
+    membersInviteFriends:"Convide amigos para expandir sua equipe",
+    membersBonus:        "Bônus",
     salaryTotalRewards: "Total de recompensas",
     salaryTotalPeople:  "Total de pessoas",
     salaryInviteDesc:   "Convide {0} investidores nível 1 para ganhar:",
@@ -1005,6 +1041,13 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "No se pudo crear el depósito",
     depositModify:      "Modificar",
     depositDefaultHelp: "Envíe solo la moneda y red seleccionadas a la dirección mostrada. Una red incorrecta puede ocasionar pérdida de fondos.",
+    membersTitle:        "Mis Miembros",
+    membersLevel:        "Nivel",
+    membersTotalMembers: "Total miembros",
+    membersBonusReceived:"Bonos recibidos",
+    membersNoneAtLevel:  "Sin miembros en nivel {0}",
+    membersInviteFriends:"Invite amigos para agrandar su equipo",
+    membersBonus:        "Bono",
     salaryTotalRewards: "Total de recompensas",
     salaryTotalPeople:  "Total de personas",
     salaryInviteDesc:   "Invite {0} inversores de nivel 1 para ganar:",
@@ -1174,6 +1217,13 @@ const T: Record<Lang, Translations> = {
     depositCreateFail:  "تعذّر إنشاء الإيداع",
     depositModify:      "تعديل",
     depositDefaultHelp: "أرسل فقط العملة والشبكة المحددتين إلى العنوان الظاهر. قد تؤدي الشبكة الخاطئة إلى فقدان الأموال.",
+    membersTitle:        "أعضائي",
+    membersLevel:        "المستوى",
+    membersTotalMembers: "إجمالي الأعضاء",
+    membersBonusReceived:"المكافآت المستلمة",
+    membersNoneAtLevel:  "لا يوجد أعضاء في المستوى {0}",
+    membersInviteFriends:"ادعُ أصدقاء لتوسيع فريقك",
+    membersBonus:        "مكافأة",
     salaryTotalRewards: "إجمالي المكافآت",
     salaryTotalPeople:  "إجمالي الأشخاص",
     salaryInviteDesc:   "ادعُ {0} مستثمرًا من المستوى 1 للحصول على:",
