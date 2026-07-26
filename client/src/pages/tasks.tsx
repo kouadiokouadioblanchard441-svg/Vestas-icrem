@@ -9,7 +9,7 @@ import { useI18n } from "@/lib/i18n";
 import { ChevronLeft, Loader2, Trophy, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import type { Task } from "@shared/schema";
-import trophyImg from "@assets/piedestal-realiste-trophees-gobelets-metal-composition-rubans-_1785077956432.jpg";
+import trophyImg from "@assets/piedestal-realiste-trophees-gobelets-metal-composition-rubans-_1785098538437.jpg";
 const poweraddLogo = "/poweradd/poweradd-logo-official.png";
 import iconBronze from "@assets/344464_1773318022355.png";
 import iconArgent from "@assets/817729_1773318022328.png";
@@ -89,7 +89,7 @@ export default function TasksPage() {
   const claimAllButton = getContent(settings, "content_tasks_claimAllButton", t.taskClaim);
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#f5f7fb" }}>
 
       {/* Hero Section */}
       <div className="relative overflow-hidden" style={{ height: "260px" }}>

@@ -2,3 +2,4 @@
 - [PowerAdd user deletion / FK cascade](spolarpv-user-deletion.md) — no ON DELETE CASCADE anywhere on users.id FKs; hard-deleting a user needs manual multi-table cleanup in a transaction.
 - [PowerAdd WestPay webhook secret](spolarpv-westpay-webhook.md) — secret now DB-backed (admin-panel editable) since production runs on external Plesk; dev DB = shared/production Supabase.
 - [PowerAdd Plesk bundle](spolarpv-plesk-bundle.md) — Plesk pulls prebuilt dist artifacts; production bundling must include SDKs without usable CommonJS exports.
+- [PowerAdd Plesk Git work tree](spolarpv-plesk-git-worktree.md) — Plesk remote-Git deployment must checkout into the website root, never its internal bare repository or .git directory.
