@@ -1,5 +1,6 @@
 import { useLocation, useParams } from "wouter";
 import { ChevronLeft } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 // Real Power Add / APD conference & factory photos.
 const img1 = "/poweradd/poweradd-news-cmef.jpg";
@@ -57,13 +58,14 @@ export const NEWS_ARTICLES = [
 export default function NewsDetailPage() {
   const params = useParams<{ id: string }>();
   const [, navigate] = useLocation();
+  const { t } = useI18n();
 
   const article = NEWS_ARTICLES.find((a) => a.id === params.id);
 
   if (!article) {
     return (
       <div className="flex flex-col min-h-full items-center justify-center" style={{ background: "#315aab" }}>
-        <p className="text-white/60">文章未找到</p>
+        <p className="text-white/60">{t.articleNotFound}</p>
       </div>
     );
   }

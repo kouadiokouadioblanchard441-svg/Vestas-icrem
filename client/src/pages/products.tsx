@@ -60,14 +60,14 @@ export default function ProductsPage() {
   const country = getCountryByCode(user.country);
   const currency = country?.currency || "USDT";
   const paidProducts = products?.filter(p => !p.isFree) || [];
-  const headerTitle = getContent(settings, "content_products_headerTitle", "产品");
+  const headerTitle = getContent(settings, "content_products_headerTitle", t.products);
 
   const handleBuy = (product: ProductWithOwnership) => {
     if (balance < Number(product.price)) {
       const manque = formatCurrency(Number(product.price) - balance, user.country);
       toast({
-        title: "Solde insuffisant",
-        description: `还需要 ${manque} 才能购买此产品。`,
+        title: t.errorOccurred,
+        description: t.productNeedMore.replace("{0}", manque),
         variant: "destructive",
       });
       return;
@@ -143,7 +143,7 @@ export default function ProductsPage() {
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400 text-xs">{t.duration}</span>
                         <span className="font-bold text-xs text-gray-900">
-                          {product.cycleDays} 天
+                          {product.cycleDays} {t.myProductsDays}
                         </span>
                       </div>
                     </div>

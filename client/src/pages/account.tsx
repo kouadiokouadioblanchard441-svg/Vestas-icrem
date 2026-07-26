@@ -216,7 +216,7 @@ export default function AccountPage() {
             <Button
               onClick={() => {
                 if (adminPin.length < 4) {
-                  toast({ title: "请输入至少4位字符的PIN码", variant: "destructive" });
+                  toast({ title: t.pinMinLength, variant: "destructive" });
                   return;
                 }
                 verifyPinMutation.mutate(adminPin);

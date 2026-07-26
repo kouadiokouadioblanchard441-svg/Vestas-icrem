@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "wouter";
 import { CheckCircle, Loader2, XCircle, Headphones } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 
 export default function DepositCallbackPage() {
   const { refreshUser } = useAuth();
+  const { t } = useI18n();
 
   const { id: depositId } = useParams<{ id: string }>();
 
@@ -67,13 +69,11 @@ export default function DepositCallbackPage() {
     return (
       <Screen>
         <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
-        <h1 className="text-xl font-bold text-gray-800">充值成功！</h1>
-        <p className="text-gray-500 text-sm">
-          您的余额已成功到账。
-        </p>
+        <h1 className="text-xl font-bold text-gray-800">{t.depositSuccessTitle}</h1>
+        <p className="text-gray-500 text-sm">{t.depositSuccessDesc}</p>
         {ref && (
           <p className="text-xs text-gray-400 font-mono bg-gray-50 rounded-lg px-3 py-1.5">
-            参考编号：{ref}
+            {t.depositRefLabel} {ref}
           </p>
         )}
         <Link href="/deposit-history">
@@ -81,12 +81,12 @@ export default function DepositCallbackPage() {
             className="w-full py-3.5 rounded-full text-white font-bold shadow-md"
             style={{ background: "#E8192C" }}
           >
-            查看我的充值记录
+            {t.depositViewHistory}
           </button>
         </Link>
         <Link href="/">
           <button className="w-full py-3 rounded-full text-gray-600 border border-gray-200 text-sm font-medium">
-            返回首页
+            {t.depositGoHome}
           </button>
         </Link>
       </Screen>
@@ -98,21 +98,19 @@ export default function DepositCallbackPage() {
     return (
       <Screen>
         <XCircle className="w-16 h-16 text-red-400 mx-auto" />
-        <h1 className="text-xl font-bold text-gray-800">支付失败</h1>
-        <p className="text-gray-500 text-sm">
-          您的支付未能处理成功，未扣除任何金额。
-        </p>
+        <h1 className="text-xl font-bold text-gray-800">{t.depositFailTitle}</h1>
+        <p className="text-gray-500 text-sm">{t.depositFailDesc}</p>
         <Link href="/deposit">
           <button
             className="w-full py-3.5 rounded-full text-white font-bold shadow-md"
             style={{ background: "#E8192C" }}
           >
-            重试
+            {t.depositRetry}
           </button>
         </Link>
         <Link href="/">
           <button className="w-full py-3 rounded-full text-gray-600 border border-gray-200 text-sm font-medium">
-            返回首页
+            {t.depositGoHome}
           </button>
         </Link>
       </Screen>
@@ -124,13 +122,11 @@ export default function DepositCallbackPage() {
     return (
       <Screen>
         <Headphones className="w-16 h-16 text-[#E8192C] mx-auto" />
-        <h1 className="text-xl font-bold text-gray-800">等待确认中</h1>
-        <p className="text-gray-500 text-sm">
-          您的支付正在处理中。如果10分钟内余额仍未到账，请携带参考编号联系客服。
-        </p>
+        <h1 className="text-xl font-bold text-gray-800">{t.depositPendingTitle}</h1>
+        <p className="text-gray-500 text-sm">{t.depositPendingDesc}</p>
         {ref && (
           <p className="text-xs text-gray-400 font-mono bg-gray-50 rounded-lg px-3 py-1.5">
-            参考编号：{ref}
+            {t.depositRefLabel} {ref}
           </p>
         )}
         <Link href="/service">
@@ -138,12 +134,12 @@ export default function DepositCallbackPage() {
             className="w-full py-3.5 rounded-full text-white font-bold shadow-md"
             style={{ background: "#E8192C" }}
           >
-            联系客服
+            {t.depositContactSupport}
           </button>
         </Link>
         <Link href="/">
           <button className="w-full py-3 rounded-full text-gray-600 border border-gray-200 text-sm font-medium">
-            返回首页
+            {t.depositGoHome}
           </button>
         </Link>
       </Screen>
@@ -154,10 +150,8 @@ export default function DepositCallbackPage() {
   return (
     <Screen>
       <Loader2 className="w-16 h-16 text-[#E8192C] animate-spin mx-auto" />
-      <h1 className="text-xl font-bold text-gray-800">验证中…</h1>
-      <p className="text-gray-500 text-sm">
-        正在通过WestPay确认您的支付，请稍候片刻。
-      </p>
+      <h1 className="text-xl font-bold text-gray-800">{t.depositVerifyingTitle}</h1>
+      <p className="text-gray-500 text-sm">{t.depositVerifyingDesc}</p>
       <div className="flex gap-2 justify-center pt-1">
         {[0, 1, 2].map((i) => (
           <span

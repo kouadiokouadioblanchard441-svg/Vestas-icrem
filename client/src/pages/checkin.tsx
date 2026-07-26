@@ -4,6 +4,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { getCountryByCode } from "@/lib/countries";
 import { getContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 import { ChevronLeft, Loader2, Gift } from "lucide-react";
 import { Link } from "wouter";
 import robotGift from "@assets/file_00000000168c7246a166e7a2da1eb7ba_1773319220043.png";
@@ -19,6 +20,7 @@ interface BonusStatus {
 export default function CheckinPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useI18n();
 
   const { data: bonusStatus } = useQuery<BonusStatus>({
     queryKey: ["/api/daily-bonus-status"],
@@ -55,14 +57,14 @@ export default function CheckinPage() {
   const totalBonusClaimed = bonusStatus?.totalBonusClaimed || 0;
   const daysPointed = bonusStatus?.daysPointed || 0;
 
-  const headerTitle = getContent(settings, "content_checkin_headerTitle", "每日签到");
-  const cardTitle = getContent(settings, "content_checkin_cardTitle", "每日签到");
-  const cardSubtitle = getContent(settings, "content_checkin_cardSubtitle", "开启每日奖励");
-  const dailyRewardLabel = getContent(settings, "content_checkin_dailyRewardLabel", "今日奖励");
-  const streakLabel = getContent(settings, "content_checkin_streakLabel", "连续签到天数");
-  const totalLabel = getContent(settings, "content_checkin_totalLabel", "累计奖励");
-  const rule1 = getContent(settings, "content_checkin_rule1", "1. 每日登录可获得 0.05 USDT 奖励");
-  const rule2 = getContent(settings, "content_checkin_rule2", "2. 每天登录一次即可累计奖励。");
+  const headerTitle = getContent(settings, "content_checkin_headerTitle", t.checkinBtn);
+  const cardTitle = getContent(settings, "content_checkin_cardTitle", t.checkinBtn);
+  const cardSubtitle = getContent(settings, "content_checkin_cardSubtitle", "");
+  const dailyRewardLabel = getContent(settings, "content_checkin_dailyRewardLabel", t.dailyRevenue);
+  const streakLabel = getContent(settings, "content_checkin_streakLabel", t.myProductsDays);
+  const totalLabel = getContent(settings, "content_checkin_totalLabel", t.salaryTotalRewards);
+  const rule1 = getContent(settings, "content_checkin_rule1", "");
+  const rule2 = getContent(settings, "content_checkin_rule2", "");
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
@@ -140,10 +142,10 @@ export default function CheckinPage() {
               {claimMutation.isPending ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  加载中...
+                  {t.loading}
                 </span>
               ) : (
-                "签到"
+                t.checkinBtn
               )}
             </button>
           ) : (
@@ -153,7 +155,7 @@ export default function CheckinPage() {
               style={{ background: "#e0e0e0", color: "#9e9e9e" }}
               data-testid="button-pointer-disabled"
             >
-               {bonusStatus?.hoursRemaining || 0} 小时后再来
+               {t.checkinComeBack.replace("{0}", String(bonusStatus?.hoursRemaining || 0))}
             </button>
           )}
         </div>

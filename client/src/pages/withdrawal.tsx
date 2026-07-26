@@ -163,7 +163,7 @@ export default function WithdrawalPage() {
         <Link href="/account">
           <button className="flex items-center gap-1 text-gray-800" data-testid="button-back">
             <ChevronLeft className="w-5 h-5" />
-            <span className="font-semibold text-base">提现</span>
+            <span className="font-semibold text-base">{t.withdrawTitle}</span>
           </button>
         </Link>
         <div className="w-9 h-9" />
@@ -187,7 +187,7 @@ export default function WithdrawalPage() {
             <span className="text-sm font-semibold mr-1">{currency}</span>
             {balance.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}
           </p>
-          <p className="text-white/80 text-xs mt-0.5">收益余额</p>
+          <p className="text-white/80 text-xs mt-0.5">{t.withdrawalEarningsBalance}</p>
         </div>
       </div>
 
@@ -195,7 +195,7 @@ export default function WithdrawalPage() {
 
         {/* ── Wallet selector ── */}
         <div>
-            <p className="text-white font-semibold text-sm mb-2">提现地址</p>
+            <p className="text-white font-semibold text-sm mb-2">{t.withdrawalAddressLabel}</p>
           <button
             onClick={() => {
               if (!hasWallets) {
@@ -209,12 +209,12 @@ export default function WithdrawalPage() {
           >
             <span className="text-sm text-gray-500">
               {selectedWallet
-                 ? `${selectedWallet.accountName} · ${selectedWallet.accountNumber} · ${WITHDRAWAL_METHOD}`
+                ? `${selectedWallet.accountName} · ${selectedWallet.accountNumber} · ${WITHDRAWAL_METHOD}`
                 : hasWallets
-                    ? "选择 BEP20 地址"
+                    ? t.withdrawalSelectBep20
                   : (
                     <span className="flex items-center gap-2 text-[#E8192C]">
-                       <Plus className="w-4 h-4" /> 添加提现钱包
+                      <Plus className="w-4 h-4" /> {t.withdrawalAddWallet}
                     </span>
                   )
               }
@@ -226,8 +226,8 @@ export default function WithdrawalPage() {
         {/* ── Amount section ── */}
         <div>
           <div className="flex items-center justify-between mb-2">
-             <p className="text-white font-semibold text-sm">提现金额</p>
-             <p className="text-white/70 text-sm">手续费：{withdrawalFee}%</p>
+            <p className="text-white font-semibold text-sm">{t.withdrawAmountLabel}</p>
+            <p className="text-white/70 text-sm">{t.withdrawalFeeLabel} {withdrawalFee}%</p>
           </div>
 
           <div className="border border-gray-300 rounded-md flex items-center overflow-hidden bg-white">
@@ -238,7 +238,7 @@ export default function WithdrawalPage() {
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value ? Number(e.target.value) : "")}
-               placeholder="请输入提现金额"
+               placeholder={t.withdrawalAmountPlaceholder}
               className="flex-1 px-4 py-4 text-sm text-gray-400 outline-none bg-white placeholder:text-gray-400"
               data-testid="input-withdrawal-amount"
             />
@@ -246,19 +246,19 @@ export default function WithdrawalPage() {
 
           <div className="flex items-center justify-between mt-2 px-1">
             <p className="text-white/80 text-xs">
-               到账金额：{" "}
+              {t.withdrawalNetAmountLabel}{" "}
               <span className="font-semibold">{currency} {amountAfterFees.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</span>
             </p>
           </div>
           <p className="text-right text-xs mt-1 px-1" style={{ color: "#ff0000" }}>
-             （最低 {minWithdrawal.toLocaleString()} {currency}）
+            {t.withdrawalMinimumNote.replace("{0}", minWithdrawal.toLocaleString()).replace("{1}", currency)}
           </p>
         </div>
 
         {/* ── Warnings ── */}
         {!withdrawalEnabled && (
           <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-xs font-medium" style={{ color: "#ff0000" }}>
-             管理员暂时关闭了提现功能。
+            {t.withdrawAdminDisabled}
           </div>
         )}
         {!hasActiveProduct && (
@@ -280,7 +280,7 @@ export default function WithdrawalPage() {
           {withdrawMutation.isPending ? (
             <span className="flex items-center justify-center gap-2">
               <Loader2 className="w-5 h-5 animate-spin" />
-               提交中...
+              {t.withdrawalSubmitting}
             </span>
           ) : (
             withdrawalCtaButton

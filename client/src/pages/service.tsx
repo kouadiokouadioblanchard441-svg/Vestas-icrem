@@ -94,7 +94,7 @@ export default function ServicePage() {
   });
 
   const servicePageTitle = getContent(allSettings, "content_service_pageTitle", t.customerService);
-  const serviceWithdrawalHoursText = getContent(allSettings, "content_service_withdrawalHoursText", t.serviceWithdrawalHoursText ?? "");
+  const serviceWithdrawalHoursText = getContent(allSettings, "content_service_withdrawalHoursText", "");
   const serviceSupportHoursLabel = getContent(allSettings, "content_service_supportHoursLabel", t.customerService);
 
   const startHour = parseInt(settings?.withdrawalStartHour || "9", 10);

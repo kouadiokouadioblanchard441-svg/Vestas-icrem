@@ -255,7 +255,7 @@ export default function HomePage() {
             <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
               <Building2 className="w-8 h-8 text-black" />
             </div>
-            <span className="text-gray-700 text-xs font-medium">公司</span>
+            <span className="text-gray-700 text-xs font-medium">{t.companyLabel}</span>
           </button>
         </div>
       </div>

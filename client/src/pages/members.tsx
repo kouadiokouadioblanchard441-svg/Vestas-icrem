@@ -56,9 +56,9 @@ export default function MembersPage() {
   const currency = country?.currency || "USDT";
 
   const levels = [
-    { num: 1 as const, label: `${t('membersLevel')} 1`, members: team?.level1 || [] },
-    { num: 2 as const, label: `${t('membersLevel')} 2`, members: team?.level2 || [] },
-    { num: 3 as const, label: `${t('membersLevel')} 3`, members: team?.level3 || [] },
+    { num: 1 as const, label: `${t.membersLevel} 1`, members: team?.level1 || [] },
+    { num: 2 as const, label: `${t.membersLevel} 2`, members: team?.level2 || [] },
+    { num: 3 as const, label: `${t.membersLevel} 3`, members: team?.level3 || [] },
   ];
 
   const activeMembers = levels[activeLevel - 1].members;
@@ -81,7 +81,7 @@ export default function MembersPage() {
         </button>
         <div className="flex items-center gap-2 flex-1">
           <Users className="w-5 h-5 text-white/80" />
-          <h1 className="text-white font-bold text-base">{t('membersTitle')}</h1>
+          <h1 className="text-white font-bold text-base">{t.membersTitle}</h1>
         </div>
       </div>
 
@@ -119,13 +119,13 @@ export default function MembersPage() {
       >
         <div className="flex divide-x divide-white/20">
           <div className="flex-1 px-5 py-4">
-            <p className="text-white/70 text-xs font-medium mb-1">{t('membersTotalMembers')}</p>
+            <p className="text-white/70 text-xs font-medium mb-1">{t.membersTotalMembers}</p>
             <p className="text-white font-extrabold text-2xl">
               {isLoading ? "—" : activeMembers.length}
             </p>
           </div>
           <div className="flex-1 px-5 py-4">
-            <p className="text-white/70 text-xs font-medium mb-1">{t('membersBonusReceived')}</p>
+            <p className="text-white/70 text-xs font-medium mb-1">{t.membersBonusReceived}</p>
             <p className="text-red-300 font-extrabold text-2xl">
               {isLoading ? "—" : `${totalBonus.toFixed(0)} ${currency}`}
             </p>
@@ -148,10 +148,10 @@ export default function MembersPage() {
               <User className="w-8 h-8" style={{ color: BLUE }} />
             </div>
             <p className="text-gray-700 text-sm font-semibold">
-              {t('membersNoneAtLevel').replace('{0}', String(activeLevel))}
+              {t.membersNoneAtLevel.replace('{0}', String(activeLevel))}
             </p>
             <p className="text-gray-400 text-xs mt-1">
-              {t('membersInviteFriends')}
+              {t.membersInviteFriends}
             </p>
           </div>
         ) : (
@@ -198,7 +198,7 @@ export default function MembersPage() {
 
                   {/* Bonus */}
                   <div className="text-right shrink-0">
-                    <p className="text-gray-400 text-xs font-medium mb-0.5">{t('membersBonus')}</p>
+                    <p className="text-gray-400 text-xs font-medium mb-0.5">{t.membersBonus}</p>
                     <p
                       className="font-extrabold text-base"
                       style={{ color: member.bonusFromMember > 0 ? BLUE : "#9ca3af" }}

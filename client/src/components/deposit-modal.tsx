@@ -13,14 +13,15 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { getPaymentMethodsForCountry, formatCurrency } from "@/lib/countries";
 import { Loader2 } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 import type { PaymentChannel } from "@shared/schema";
 
 const depositSchema = z.object({
-  amount: z.string().min(1, "请输入金额"),
-  accountName: z.string().min(2, "请输入支付账户名称"),
-  accountNumber: z.string().min(8, "请输入支付号码"),
-  paymentMethod: z.string().min(2, "请选择支付方式"),
-  paymentChannelId: z.string().min(1, "请选择充值渠道"),
+  amount: z.string().min(1),
+  accountName: z.string().min(2),
+  accountNumber: z.string().min(8),
+  paymentMethod: z.string().min(2),
+  paymentChannelId: z.string().min(1),
 });
 
 type DepositForm = z.infer<typeof depositSchema>;
@@ -33,6 +34,7 @@ interface DepositModalProps {
 export default function DepositModal({ open, onClose }: DepositModalProps) {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
+  const { t } = useI18n();
   const [step, setStep] = useState<"amount" | "details">("amount");
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
 
@@ -64,7 +66,7 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
       });
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.message || "Erreur");
+        throw new Error(result.message || t.errorOccurred);
       }
       return response.json();
     },
@@ -74,11 +76,11 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
       if (data.redirectUrl) {
         window.open(data.redirectUrl, "_blank");
       }
-       toast({ title: "充值申请已提交！", description: "您的充值正在等待审核。" });
+      toast({ title: t.depositSubmitted, description: t.depositSubmittedDesc });
       handleClose();
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -101,7 +103,7 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
       setSelectedAmount(amount);
       setStep("details");
     } else {
-       toast({ title: "金额无效", description: "最低金额为 2 USDT", variant: "destructive" });
+      toast({ title: t.invalidAmount, description: `${t.minAmountPrefix} 2 USDT`, variant: "destructive" });
     }
   };
 
@@ -116,14 +118,14 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-             {step === "amount" ? "充值" : "支付信息"}
+            {step === "amount" ? t.deposit : t.depositPaymentInfo}
           </DialogTitle>
         </DialogHeader>
 
         {step === "amount" ? (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-               最低金额：{formatCurrency(2000, user.country)}
+              {t.depositMinDesc} {formatCurrency(2000, user.country)}
             </p>
 
             <div className="grid grid-cols-3 gap-2">
@@ -142,13 +144,13 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
             <div className="flex gap-2">
               <Input
                 type="number"
-                 placeholder="自定义金额"
+                placeholder={t.depositCustomAmountPlaceholder}
                 value={form.watch("amount")}
                 onChange={(e) => form.setValue("amount", e.target.value)}
                 data-testid="input-custom-amount"
               />
               <Button onClick={handleCustomAmount} data-testid="button-custom-amount">
-                 继续
+                {t.depositContinueBtn}
               </Button>
             </div>
           </div>
@@ -156,7 +158,7 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
           <Form {...form}>
             <form onSubmit={form.handleSubmit((data) => depositMutation.mutate(data))} className="space-y-4">
               <div className="bg-secondary rounded-lg p-3 text-center">
-                <p className="text-sm text-muted-foreground">金额</p>
+                <p className="text-sm text-muted-foreground">{t.depositAmountLbl}</p>
                 <p className="text-2xl font-bold text-primary">
                   {formatCurrency(selectedAmount || 0, user.country)}
                 </p>
@@ -167,11 +169,11 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
                 name="paymentChannelId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>充值渠道</FormLabel>
+                    <FormLabel>{t.depositChannelLabel}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger data-testid="select-channel">
-                         <SelectValue placeholder="选择渠道" />
+                          <SelectValue placeholder={t.depositSelectChannel} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -192,9 +194,9 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
                 name="accountName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>支付账户名称</FormLabel>
+                    <FormLabel>{t.depositAccountNameLabel}</FormLabel>
                     <FormControl>
-                       <Input {...field} placeholder="请输入您的姓名" data-testid="input-account-name" />
+                      <Input {...field} placeholder={t.walletNamePlaceholder} data-testid="input-account-name" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -206,9 +208,9 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
                 name="accountNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>支付号码</FormLabel>
+                    <FormLabel>{t.depositAccountNumberLabel}</FormLabel>
                     <FormControl>
-                       <Input {...field} type="tel" placeholder="请输入号码" data-testid="input-account-number" />
+                      <Input {...field} type="tel" placeholder={t.depositAccountNumberPlaceholder} data-testid="input-account-number" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -220,11 +222,11 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
                 name="paymentMethod"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>支付方式</FormLabel>
+                    <FormLabel>{t.depositPaymentMethodLabel}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger data-testid="select-payment-method">
-                           <SelectValue placeholder="选择" />
+                          <SelectValue placeholder={t.depositSelectOption} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -242,13 +244,13 @@ export default function DepositModal({ open, onClose }: DepositModalProps) {
 
               <div className="flex gap-2">
                 <Button type="button" variant="outline" onClick={() => setStep("amount")} className="flex-1">
-                   返回
+                  {t.back}
                 </Button>
                 <Button type="submit" className="flex-1" disabled={depositMutation.isPending} data-testid="button-submit-deposit">
                   {depositMutation.isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                     "提交支付"
+                    t.depositSubmitPayment
                   )}
                 </Button>
               </div>
