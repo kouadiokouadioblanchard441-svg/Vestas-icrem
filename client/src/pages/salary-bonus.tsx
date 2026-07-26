@@ -22,7 +22,7 @@ export default function SalaryBonusPage() {
 
   if (!user) return null;
 
-  const headerTitle = getContent(settings, "content_salarybonus_headerTitle", "Centre des tâches");
+  const headerTitle = getContent(settings, "content_salarybonus_headerTitle", "任务中心");
 
   const country = getCountryByCode(user.country);
   const currency = country?.currency || "USDT";
