@@ -22,7 +22,6 @@ import iconWallet from "@assets/portefeuille-chaud-3d-icon-png-download-9878550_
 import iconRevenu from "@assets/3309927_1783248791847.png";
 import iconRecharger from "@assets/1-1_1783245823715.png";
 import iconRetraits from "@assets/2-1_1783245823825.png";
-import profileCardBg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 
 export default function AccountPage() {
   const { user, logout } = useAuth();
@@ -95,14 +94,8 @@ export default function AccountPage() {
     <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
       <div className="flex-1 overflow-y-auto pb-16">
 
-        {/* ── Profile top section (exhibition photo background) ── */}
-        <div
-          style={{
-            background: `linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 100%), url(${profileCardBg})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
+        {/* ── Profile top section ── */}
+        <div style={{ background: "#315aab" }}>
 
           {/* Profile row */}
           <div className="flex items-center justify-between px-5 pt-6 pb-5">
