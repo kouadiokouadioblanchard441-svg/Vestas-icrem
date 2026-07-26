@@ -1,10 +1,84 @@
-const NOWPAYMENTS_API_BASE = "https://api.nowpayments.io/v1";
+/**
+ * NowPayments integration — singleton SDK + raw Payouts API.
+ *
+ * The official SDK (@nowpaymentsio/nowpayments-sdk-nodejs) handles:
+ *   - Payment creation (createDirectPayment, createCheckout, …)
+ *   - IPN signature verification + normalization (parseWebhook)
+ *   - JWT auth lifecycle: token caching, expiry detection, auto-refresh
+ *
+ * The Payouts API (POST /payout, POST /payout/:id/verify, GET /payout/:id)
+ * is NOT covered by the SDK v0.2.1, so those calls are made via raw fetch
+ * using the SDK's own getJwtToken() for auth — no duplicated token logic.
+ */
 
-type NowPaymentsAuthResponse = {
-  token?: string;
-};
+import { NowPaymentsSDK } from "@nowpaymentsio/nowpayments-sdk-nodejs";
 
-type NowPaymentsWithdrawal = {
+// ---------------------------------------------------------------------------
+// Singleton SDK instance
+// ---------------------------------------------------------------------------
+
+let _sdk: NowPaymentsSDK | null = null;
+
+/**
+ * Returns the shared SDK instance, creating it on first call.
+ * Reads env vars at call-time so the instance is created with the correct
+ * values even if secrets are injected after module load.
+ */
+export function getSDK(): NowPaymentsSDK {
+  if (_sdk) return _sdk;
+
+  const apiKey = process.env.NOWPAYMENTS_API_KEY;
+  if (!apiKey) throw new Error("NOWPAYMENTS_API_KEY n'est pas configuré");
+
+  _sdk = new NowPaymentsSDK({
+    apiKey,
+    ...(process.env.NOWPAYMENTS_IPN_SECRET && {
+      ipnSecret: process.env.NOWPAYMENTS_IPN_SECRET,
+    }),
+    // Credentials for JWT-protected endpoints (Payouts API)
+    ...(process.env.NOWPAYMENTS_ACCOUNT_EMAIL && {
+      email: process.env.NOWPAYMENTS_ACCOUNT_EMAIL,
+    }),
+    ...(process.env.NOWPAYMENTS_ACCOUNT_PASSWORD && {
+      password: process.env.NOWPAYMENTS_ACCOUNT_PASSWORD,
+    }),
+    // Switch to sandbox by setting NOWPAYMENTS_SANDBOX=true
+    ...(process.env.NOWPAYMENTS_SANDBOX === "true" && {
+      baseUrl: "https://api-sandbox.nowpayments.io",
+    }),
+  });
+
+  return _sdk;
+}
+
+/** Force re-creation of the singleton (e.g. after env-var changes). */
+export function resetSDK(): void {
+  _sdk = null;
+}
+
+// ---------------------------------------------------------------------------
+// Helpers shared by deposit + payout routes
+// ---------------------------------------------------------------------------
+
+export function getNowPaymentsCallbackUrl(): string | undefined {
+  const baseUrl =
+    process.env.APP_URL ||
+    (process.env.REPLIT_DEV_DOMAIN
+      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+      : null);
+  return baseUrl ? `${baseUrl}/api/nowpayments/ipn` : undefined;
+}
+
+// ---------------------------------------------------------------------------
+// Payouts API — raw fetch, JWT token from the SDK (handles caching + refresh)
+// ---------------------------------------------------------------------------
+
+const PAYOUTS_API_BASE =
+  process.env.NOWPAYMENTS_SANDBOX === "true"
+    ? "https://api-sandbox.nowpayments.io/v1"
+    : "https://api.nowpayments.io/v1";
+
+export type NowPaymentsWithdrawal = {
   id?: string;
   batchWithdrawalId?: string;
   batch_withdrawal_id?: string;
@@ -25,21 +99,9 @@ export type NowPaymentsPayoutStatus = NowPaymentsWithdrawal & {
   batch_withdrawal_id?: string;
 };
 
-let cachedToken: { value: string; expiresAt: number } | null = null;
-
-function getRequiredConfig() {
-  const apiKey = process.env.NOWPAYMENTS_API_KEY;
-  const email = process.env.NOWPAYMENTS_ACCOUNT_EMAIL;
-  const password = process.env.NOWPAYMENTS_ACCOUNT_PASSWORD;
-
-  if (!apiKey || !email || !password) {
-    throw new Error("NOWPayments payouts are not fully configured");
-  }
-
-  return { apiKey, email, password };
-}
-
-async function parseResponse(response: Response): Promise<Record<string, unknown>> {
+async function parsePayoutResponse(
+  response: Response,
+): Promise<Record<string, unknown>> {
   const text = await response.text();
   let body: Record<string, unknown> = {};
   try {
@@ -47,7 +109,6 @@ async function parseResponse(response: Response): Promise<Record<string, unknown
   } catch {
     body = { message: text };
   }
-
   if (!response.ok) {
     const message =
       typeof body.message === "string"
@@ -57,66 +118,44 @@ async function parseResponse(response: Response): Promise<Record<string, unknown
           : `NOWPayments API returned HTTP ${response.status}`;
     throw new Error(message);
   }
-
   return body;
-}
-
-async function getJwtToken(): Promise<string> {
-  const config = getRequiredConfig();
-  if (cachedToken && cachedToken.expiresAt > Date.now() + 30_000) {
-    return cachedToken.value;
-  }
-
-  const response = await fetch(`${NOWPAYMENTS_API_BASE}/auth`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: config.email, password: config.password }),
-  });
-  const body = (await parseResponse(response)) as NowPaymentsAuthResponse;
-
-  if (!body.token) {
-    throw new Error("NOWPayments authentication did not return a token");
-  }
-
-  // NOWPayments documents a five-minute JWT lifetime. Keep a shorter cache
-  // window so an expiry never interrupts a payout request.
-  cachedToken = { value: body.token, expiresAt: Date.now() + 4 * 60 * 1000 };
-  return body.token;
-}
-
-function getCallbackUrl() {
-  const baseUrl =
-    process.env.APP_URL ||
-    (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : null);
-  return baseUrl ? `${baseUrl}/api/nowpayments/ipn` : undefined;
 }
 
 async function payoutRequest(
   path: string,
   init: RequestInit = {},
 ): Promise<Record<string, unknown>> {
-  const { apiKey } = getRequiredConfig();
-  const token = await getJwtToken();
-  const headers = new Headers(init.headers);
-  headers.set("X-API-KEY", apiKey);
+  const apiKey = process.env.NOWPAYMENTS_API_KEY;
+  if (!apiKey) throw new Error("NOWPayments payouts are not fully configured");
+
+  // Delegate JWT lifecycle entirely to the SDK (caching + auto-refresh)
+  const sdk = getSDK();
+  const token = await sdk.getJwtToken();
+
+  const headers = new Headers(init.headers as HeadersInit);
+  headers.set("x-api-key", apiKey);
   headers.set("Authorization", `Bearer ${token}`);
   headers.set("Content-Type", "application/json");
 
-  const response = await fetch(`${NOWPAYMENTS_API_BASE}${path}`, {
+  const response = await fetch(`${PAYOUTS_API_BASE}${path}`, {
     ...init,
     headers,
   });
-  return parseResponse(response);
+  return parsePayoutResponse(response);
 }
 
+/**
+ * Create a payout batch with a single withdrawal.
+ * Requires NOWPAYMENTS_ACCOUNT_EMAIL + NOWPAYMENTS_ACCOUNT_PASSWORD for JWT.
+ */
 export async function createPayout(input: {
   address: string;
   currency: string;
   amount: number;
   uniqueExternalId: string;
   description: string;
-}) {
-  const callbackUrl = getCallbackUrl();
+}): Promise<NowPaymentsPayoutResponse> {
+  const callbackUrl = getNowPaymentsCallbackUrl();
   return payoutRequest("/payout", {
     method: "POST",
     body: JSON.stringify({
@@ -135,14 +174,28 @@ export async function createPayout(input: {
   }) as Promise<NowPaymentsPayoutResponse>;
 }
 
-export async function verifyPayout(batchWithdrawalId: string, verificationCode: string) {
-  return payoutRequest(`/payout/${encodeURIComponent(batchWithdrawalId)}/verify`, {
-    method: "POST",
-    body: JSON.stringify({ verification_code: verificationCode }),
-  });
+/**
+ * Submit the 2FA verification code to release a pending payout batch.
+ */
+export async function verifyPayout(
+  batchWithdrawalId: string,
+  verificationCode: string,
+): Promise<Record<string, unknown>> {
+  return payoutRequest(
+    `/payout/${encodeURIComponent(batchWithdrawalId)}/verify`,
+    {
+      method: "POST",
+      body: JSON.stringify({ verification_code: verificationCode }),
+    },
+  );
 }
 
-export async function getPayoutStatus(payoutId: string) {
+/**
+ * Fetch the current status of a single payout.
+ */
+export async function getPayoutStatus(
+  payoutId: string,
+): Promise<NowPaymentsPayoutStatus | NowPaymentsPayoutStatus[]> {
   return payoutRequest(`/payout/${encodeURIComponent(payoutId)}`, {
     method: "GET",
   }) as Promise<NowPaymentsPayoutStatus | NowPaymentsPayoutStatus[]>;

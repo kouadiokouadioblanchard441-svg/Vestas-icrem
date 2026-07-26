@@ -9,8 +9,8 @@ import ConnectPgSimple from "connect-pg-simple";
 import { db } from "./db";
 import QRCode from "qrcode";
 import crypto from "crypto";
-import { NowPaymentsSDK, verifyWebhookSignature, normalizeWebhook } from "@nowpaymentsio/nowpayments-sdk-nodejs";
-import { createPayout, verifyPayout } from "./nowpayments";
+import { verifyWebhookSignature } from "@nowpaymentsio/nowpayments-sdk-nodejs";
+import { getSDK, getNowPaymentsCallbackUrl, createPayout, verifyPayout } from "./nowpayments";
 
 // --- Brute-force protection (in-memory) ---
 const loginAttempts = new Map<string, { count: number; blockedUntil: number }>();
@@ -745,15 +745,9 @@ export async function registerRoutes(
       }
 
       const orderId = `poweradd-${user.id}-${Date.now()}`;
-      const baseUrl = process.env.APP_URL ||
-        (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : null);
-      const ipnCallbackUrl = baseUrl ? `${baseUrl}/api/nowpayments/ipn` : undefined;
+      const ipnCallbackUrl = getNowPaymentsCallbackUrl();
 
-      const sdk = new NowPaymentsSDK({
-        apiKey,
-        ipnSecret: process.env.NOWPAYMENTS_IPN_SECRET,
-      });
-
+      const sdk = getSDK();
       const payment = await sdk.createDirectPayment({
         amount: Number(amount),
         currency: "usdt",
@@ -806,8 +800,9 @@ export async function registerRoutes(
     try {
       const ipnSecret = process.env.NOWPAYMENTS_IPN_SECRET;
 
+      const sig = req.headers["x-nowpayments-sig"] as string | undefined;
+
       if (ipnSecret) {
-        const sig = req.headers["x-nowpayments-sig"] as string | undefined;
         if (!sig) {
           return res.status(401).json({ message: "Missing signature" });
         }
@@ -873,8 +868,9 @@ export async function registerRoutes(
         return res.status(200).json({ received: true, status: "processing" });
       }
 
-      // Normalize the raw webhook payload using the SDK
-      const webhook = normalizeWebhook(req.body);
+      // Use sdk.parseWebhook() — verifies HMAC-SHA512 + normalizes in one call
+      const sdk = getSDK();
+      const webhook = sdk.parseWebhook(req.body, sig ?? "");
       if (webhook.type !== "payment.status_changed") {
         return res.status(200).json({ received: true, type: webhook.type });
       }
