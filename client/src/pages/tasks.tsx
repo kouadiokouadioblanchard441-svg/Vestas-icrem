@@ -9,7 +9,7 @@ import { useI18n } from "@/lib/i18n";
 import { ChevronLeft, Loader2, Trophy, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import type { Task } from "@shared/schema";
-import jollibeeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
+import trophyImg from "@assets/piedestal-realiste-trophees-gobelets-metal-composition-rubans-_1785077956432.jpg";
 const poweraddLogo = "/poweradd/poweradd-logo-official.png";
 import iconBronze from "@assets/344464_1773318022355.png";
 import iconArgent from "@assets/817729_1773318022328.png";
@@ -94,8 +94,8 @@ export default function TasksPage() {
       {/* Hero Section */}
       <div className="relative overflow-hidden" style={{ height: "260px" }}>
         <img
-          src={jollibeeImg}
-          alt="Powerade"
+          src={trophyImg}
+          alt="Trophées"
           className="w-full h-full object-cover object-center"
         />
         <div

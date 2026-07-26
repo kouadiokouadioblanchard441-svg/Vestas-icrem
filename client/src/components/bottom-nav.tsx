@@ -7,7 +7,7 @@ import iconGains from "@assets/3309927_1783248791847.png";
 import iconEquipe from "@assets/1244758_1783246767217.png";
 import iconCompte from "@assets/téléchargement_(12)_1770815897017.png";
 
-const greenFilter = "brightness(0) saturate(100%) invert(41%) sepia(98%) saturate(1907%) hue-rotate(133deg) brightness(94%) contrast(101%)";
+const greenFilter = "brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(2000%) hue-rotate(340deg) brightness(95%) contrast(110%)";
 const grayFilter = "brightness(0) saturate(0%) opacity(40%)";
 
 export default function BottomNav() {
