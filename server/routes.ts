@@ -763,6 +763,7 @@ export async function registerRoutes(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          price_amount: Number(amount),
           pay_amount: Number(amount),
           pay_currency: payCurrency.toLowerCase(),
           price_currency: "usd",
