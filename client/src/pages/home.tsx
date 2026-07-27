@@ -7,6 +7,7 @@ import { NEWS_ARTICLES } from "@/pages/news-detail";
 import { getContent } from "@/lib/content";
 import { Building2, ChevronLeft, ChevronRight } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
+import { FloatingWheel } from "@/components/floating-wheel";
 import { LanguagePicker } from "@/components/language-picker";
 import { useI18n } from "@/lib/i18n";
 
@@ -298,6 +299,7 @@ export default function HomePage() {
       <div className="pb-16" />
 
       {/* Floating service client button — above bottom nav */}
+      <FloatingWheel bottomOffset={80} />
       <FloatingSupport bottomOffset={80} />
     </div>
   );

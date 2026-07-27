@@ -80,6 +80,7 @@ import DepositOrdersPage from "@/pages/deposit-orders";
 import DepositCallbackPage from "@/pages/deposit-callback";
 import SalaryBonusPage from "@/pages/salary-bonus";
 import NewsDetailPage from "@/pages/news-detail";
+import SpinWheelPage from "@/pages/spin-wheel";
 import NotFound from "@/pages/not-found";
 import { Loader2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
@@ -365,6 +366,11 @@ function RouterComponent() {
           <AppLayout>
             <SalaryBonusPage />
           </AppLayout>
+        </ProtectedRoute>
+      </Route>
+      <Route path="/spin-wheel">
+        <ProtectedRoute>
+          <SpinWheelPage />
         </ProtectedRoute>
       </Route>
       <Route path="/news/:id">
