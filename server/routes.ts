@@ -749,14 +749,35 @@ export async function registerRoutes(
       const orderId = `poweradd-${user.id}-${Date.now()}`;
       const ipnCallbackUrl = getNowPaymentsCallbackUrl();
 
-      const sdk = getSDK();
-      const payment = await sdk.createDirectPayment({
-        amount: Number(amount),
-        currency: "usd",   // prix en USD — évite l'erreur USDT→USDT sur même actif
-        payCurrency: payCurrency.toLowerCase(),
-        orderId,
-        ...(ipnCallbackUrl && { ipnCallbackUrl }),
+      // Use pay_amount directly so NowPayments charges exactly the user-selected
+      // amount — no USD→USDT conversion that would produce a different figure.
+      const nowpaymentsBase =
+        process.env.NOWPAYMENTS_SANDBOX === "true"
+          ? "https://api-sandbox.nowpayments.io/v1"
+          : "https://api.nowpayments.io/v1";
+
+      const npRes = await fetch(`${nowpaymentsBase}/payment`, {
+        method: "POST",
+        headers: {
+          "x-api-key": apiKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          pay_amount: Number(amount),
+          pay_currency: payCurrency.toLowerCase(),
+          price_currency: "usd",
+          order_id: orderId,
+          ...(ipnCallbackUrl && { ipn_callback_url: ipnCallbackUrl }),
+        }),
       });
+
+      const payment = await npRes.json() as Record<string, any>;
+
+      if (!npRes.ok) {
+        const msg = payment?.message || payment?.error || `NOWPayments HTTP ${npRes.status}`;
+        console.error("NOWPayments deposit error:", payment);
+        return res.status(502).json({ message: msg });
+      }
 
       if (!payment.pay_address || !payment.payment_id) {
         console.error("NOWPayments: missing pay_address or payment_id in response", payment);
@@ -785,7 +806,7 @@ export async function registerRoutes(
         depositId: deposit.id,
         paymentId: String(payment.payment_id),
         payAddress: payment.pay_address,
-        payAmount: payment.pay_amount,
+        payAmount: payment.pay_amount ?? Number(amount),
         payCurrency: payment.pay_currency || payCurrency.toLowerCase(),
         qrCode,
       });
