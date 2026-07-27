@@ -10,7 +10,7 @@ import { getContent } from "@/lib/content";
 
 import jollibeeNight from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 import landscapeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
-import vipBadgeImg from "@assets/vip-badge-gift_1785147624494.png";
+import vipBadgeImg from "@assets/0_1001899520_1785147624494.png";
 
 export default function GiftCodePage() {
   const { refreshUser } = useAuth();
