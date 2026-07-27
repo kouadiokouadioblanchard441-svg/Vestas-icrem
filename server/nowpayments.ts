@@ -13,7 +13,7 @@
 
 import { NowPaymentsSDK } from "@nowpaymentsio/nowpayments-sdk-nodejs";
 
-const DEFAULT_PUBLIC_APP_URL = "http://poweradd.xyz";
+const DEFAULT_PUBLIC_APP_URL = "https://www.poweradd.xyz";
 
 // ---------------------------------------------------------------------------
 // Singleton SDK instance
