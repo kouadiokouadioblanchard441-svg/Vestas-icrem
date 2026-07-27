@@ -10,6 +10,7 @@ import { ChevronLeft, Loader2, Trophy, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import type { Task } from "@shared/schema";
 const poweraddLogo = "/poweradd/poweradd-logo-official.png";
+import trophyImg from "@assets/piedestal-realiste-trophees-gobelets-metal-composition-rubans-_1785098538437.jpg";
 import iconBronze from "@assets/344464_1773318022355.png";
 import iconArgent from "@assets/817729_1773318022328.png";
 import iconOr from "@assets/sac-argent-gros-tas-illustration-icone-argent-comptant-icone-p_1773318022388.jpg";
@@ -91,7 +92,17 @@ export default function TasksPage() {
     <div className="flex flex-col min-h-screen" style={{ background: "#f5f7fb" }}>
 
       {/* Hero Section */}
-      <div className="relative overflow-hidden" style={{ height: "260px", background: "#1a3a6b" }}>
+      <div className="relative overflow-hidden" style={{ height: "260px" }}>
+        <img
+          src={trophyImg}
+          alt="Trophées"
+          className="w-full h-full object-cover object-center"
+          style={{ filter: "saturate(0) brightness(0.75)" }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(to bottom, rgba(20,50,120,0.55) 0%, rgba(15,40,100,0.65) 45%, rgba(10,25,70,0.88) 100%)" }}
+        />
 
         {/* Header nav */}
         <div className="absolute top-0 left-0 right-0 flex items-center px-4 pt-4">
