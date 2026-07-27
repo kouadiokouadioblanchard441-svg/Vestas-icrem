@@ -1,4 +1,4 @@
-import { ChevronLeft, ShoppingBag, Users, Sparkles, Gift, Infinity } from "lucide-react";
+import { ChevronLeft, ShoppingBag, Sparkles, Gift } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 interface WheelRulesModalProps {
@@ -6,20 +6,11 @@ interface WheelRulesModalProps {
   onClose: () => void;
 }
 
-function RuleCard({
-  icon,
-  text,
-}: {
-  icon: React.ReactNode;
-  text: string;
-}) {
+function RuleItem({ emoji, text }: { emoji: string; text: string }) {
   return (
-    <div
-      className="flex items-start gap-3 rounded-2xl px-4 py-3"
-      style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.15)" }}
-    >
-      <span className="mt-0.5 shrink-0 text-lg">{icon}</span>
-      <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.92)" }}>{text}</p>
+    <div className="flex items-start gap-3 py-3 border-b" style={{ borderColor: "rgba(255,255,255,0.12)" }}>
+      <span className="text-xl mt-0.5 shrink-0">{emoji}</span>
+      <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.88)" }}>{text}</p>
     </div>
   );
 }
@@ -36,17 +27,25 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mb-5">
-      <div className="flex items-center gap-2 mb-3">
+    <div
+      className="rounded-2xl overflow-hidden mb-4"
+      style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)" }}
+    >
+      {/* Section header */}
+      <div
+        className="flex items-center gap-2 px-4 py-3"
+        style={{ background: "rgba(0,0,0,0.15)", borderBottom: "1px solid rgba(255,255,255,0.1)" }}
+      >
         <div
-          className="w-7 h-7 rounded-full flex items-center justify-center"
+          className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
           style={{ background: accentColor }}
         >
           {icon}
         </div>
-        <h2 className="font-extrabold text-white text-base tracking-wide">{title}</h2>
+        <h2 className="font-bold text-white text-sm tracking-wide uppercase">{title}</h2>
       </div>
-      <div className="space-y-2 pl-1">{children}</div>
+      {/* Section content */}
+      <div className="px-4 pt-1 pb-2">{children}</div>
     </div>
   );
 }
@@ -59,52 +58,36 @@ export default function WheelRulesModal({ open, onClose }: WheelRulesModalProps)
   return (
     <div
       className="fixed inset-0 z-50 flex flex-col overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(160deg, #0d2460 0%, #1a3a8f 35%, #315aab 65%, #1e3d7a 100%)",
-      }}
+      style={{ background: "#315aab" }}
     >
-      {/* Gold rope top bar */}
-      <div
-        style={{
-          height: 6,
-          background:
-            "repeating-linear-gradient(90deg, #b8860b 0px, #ffd700 6px, #ffec6e 10px, #ffd700 14px, #b8860b 20px)",
-          flexShrink: 0,
-        }}
-      />
-
-      {/* Header */}
-      <div className="flex items-center px-4 py-4 shrink-0">
+      {/* White header — like About page */}
+      <header className="flex items-center px-4 py-3 shrink-0 bg-white shadow-sm">
         <button
           onClick={onClose}
-          className="p-2 rounded-full mr-3 active:scale-95 transition-transform"
-          style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)" }}
+          className="p-1.5 rounded-full active:scale-95 transition-transform"
+          style={{ background: "rgba(0,0,0,0.06)" }}
         >
-          <ChevronLeft className="w-5 h-5 text-white" />
+          <ChevronLeft className="w-5 h-5 text-gray-700" />
         </button>
-        <div className="flex-1 text-center">
-          <h1
-            className="font-extrabold text-xl tracking-wide"
-            style={{ color: "#ffd700", textShadow: "0 0 16px rgba(255,215,0,0.5)" }}
-          >
-            {t.wheelRulesTitle}
-          </h1>
-        </div>
-        <div className="w-11" />
-      </div>
+        <h1 className="flex-1 text-center text-lg font-bold text-gray-800 pr-8">
+          {t.wheelRulesTitle}
+        </h1>
+      </header>
 
-      {/* Hero badge */}
-      <div className="flex justify-center mb-5 shrink-0">
-        <div
-          className="px-6 py-2 rounded-full text-sm font-bold"
-          style={{
-            background: "linear-gradient(135deg, #b8860b, #ffd700, #ffec6e, #ffd700, #b8860b)",
-            color: "#1a0a00",
-            boxShadow: "0 4px 16px rgba(255,215,0,0.35)",
-          }}
-        >
-          🎡 LOTERIE
+      {/* Hero banner */}
+      <div
+        className="mx-4 mt-5 mb-4 rounded-2xl p-5 flex items-center gap-4 shrink-0"
+        style={{
+          background: "linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,215,0,0.07))",
+          border: "1px solid rgba(255,215,0,0.4)",
+        }}
+      >
+        <span className="text-4xl">🎡</span>
+        <div>
+          <p className="font-extrabold text-lg text-white leading-tight">LOTERIE PowerAdd</p>
+          <p className="text-xs mt-0.5" style={{ color: "rgba(255,215,0,0.85)" }}>
+            Tournez la roue et remportez des USDT
+          </p>
         </div>
       </div>
 
@@ -117,12 +100,9 @@ export default function WheelRulesModal({ open, onClose }: WheelRulesModalProps)
           title={t.wheelRulesHowToGet}
           accentColor="#ffd700"
         >
-          <RuleCard icon="🛒" text={t.wheelRulesBuyGet} />
-          <RuleCard icon="👥" text={t.wheelRulesReferralGet} />
+          <RuleItem emoji="🛒" text={t.wheelRulesBuyGet} />
+          <RuleItem emoji="👥" text={t.wheelRulesReferralGet} />
         </Section>
-
-        {/* Divider */}
-        <div className="mb-5" style={{ height: 1, background: "rgba(255,255,255,0.12)" }} />
 
         {/* Section 2 — Comment jouer */}
         <Section
@@ -130,12 +110,9 @@ export default function WheelRulesModal({ open, onClose }: WheelRulesModalProps)
           title={t.wheelRulesHowToPlay}
           accentColor="#7c3aed"
         >
-          <RuleCard icon="👆" text={t.wheelRulesHowToPlayDesc} />
-          <RuleCard icon="🎯" text={t.wheelRulesSpinOnce} />
+          <RuleItem emoji="👆" text={t.wheelRulesHowToPlayDesc} />
+          <RuleItem emoji="🎯" text={t.wheelRulesSpinOnce} />
         </Section>
-
-        {/* Divider */}
-        <div className="mb-5" style={{ height: 1, background: "rgba(255,255,255,0.12)" }} />
 
         {/* Section 3 — Les gains */}
         <Section
@@ -143,21 +120,20 @@ export default function WheelRulesModal({ open, onClose }: WheelRulesModalProps)
           title={t.wheelRulesRewards}
           accentColor="#16a34a"
         >
-          <RuleCard icon="💰" text={t.wheelRulesGainCredit} />
-          <RuleCard icon="♾️" text={t.wheelRulesTokenNote} />
+          <RuleItem emoji="💰" text={t.wheelRulesGainCredit} />
+          <RuleItem emoji="♾️" text={t.wheelRulesTokenNote} />
         </Section>
 
-        {/* Bottom decorative card */}
+        {/* Footer note */}
         <div
-          className="mt-2 rounded-2xl p-4 flex items-center gap-3"
+          className="rounded-2xl p-4 text-center mt-2"
           style={{
-            background: "linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.06))",
-            border: "1px solid rgba(255,215,0,0.3)",
+            background: "rgba(0,0,0,0.2)",
+            border: "1px solid rgba(255,255,255,0.1)",
           }}
         >
-          <span className="text-2xl">🏆</span>
-          <p className="text-xs leading-relaxed font-medium" style={{ color: "rgba(255,215,0,0.85)" }}>
-            PowerAdd — {t.wheelRulesTitle}
+          <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+            🏆 PowerAdd — Plateforme d'investissement certifiée
           </p>
         </div>
       </div>
