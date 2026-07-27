@@ -8,8 +8,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { getContent } from "@/lib/content";
 
-import jollibeeNight from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
-import landscapeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 import vipBadgeImg from "@assets/0_1001899520_1785147624494.png";
 
 export default function GiftCodePage() {
@@ -73,9 +71,9 @@ export default function GiftCodePage() {
       {/* Hero image with red overlay + header */}
       <div className="relative">
         <img
-          src={jollibeeNight}
+          src="/powerade-logo.webp"
           alt="Powerade"
-          className="w-full h-52 object-cover"
+          className="w-full h-36 object-contain bg-white"
           data-testid="img-gift-banner"
         />
         {/* Red gradient overlay */}
@@ -179,7 +177,6 @@ export default function GiftCodePage() {
         </div>
 
       </div>
-      <img src={landscapeImg} alt="Powerade" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }
