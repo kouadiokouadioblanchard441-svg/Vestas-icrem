@@ -1305,7 +1305,7 @@ export async function registerRoutes(
     try {
       const settings = await storage.getSettings();
       // Never expose secret keys via this public (unauthenticated) endpoint
-      const { westpayWebhookSecret, omnipayCallbackKey, soleaspayEnabled, soleaspayChannelName, soleaspayCountries, westpayEnabled, ...publicSettings } = settings;
+      const { omnipayCallbackKey, soleaspayEnabled, soleaspayChannelName, soleaspayCountries, ...publicSettings } = settings;
       res.json(publicSettings);
     } catch (error: any) {
       res.status(500).json({ message: error.message });

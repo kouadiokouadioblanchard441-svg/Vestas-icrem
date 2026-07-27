@@ -271,12 +271,10 @@ export async function seed() {
     { key: "level3Commission", value: "1" },
     { key: "soleaspayEnabled", value: "false" },
     { key: "soleaspayCountries", value: "" },
-    { key: "soleaspayChannelName", value: "Westpay" },
+    { key: "soleaspayChannelName", value: "Soleaspay" },
     { key: "omnipayEnabled", value: "false" },
     { key: "omnipayChannelName", value: "OmniPay" },
     { key: "omnipayCallbackKey", value: "" },
-    { key: "westpayEnabled", value: "false" },
-    { key: "westpayWebhookSecret", value: "" },
   ];
 
   for (const settingData of requiredSettings) {

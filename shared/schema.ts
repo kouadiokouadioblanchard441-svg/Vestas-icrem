@@ -12,7 +12,7 @@ export const countries = pgTable("countries", {
   phonePrefix: text("phone_prefix").notNull(),
   operators: text("operators").notNull().default("[]"), // JSON array string
   isActive: boolean("is_active").notNull().default(true),
-  autoPaymentEnabled: boolean("auto_payment_enabled").notNull().default(false), // true = WestPay auto deposits, false = manual (payment numbers)
+  autoPaymentEnabled: boolean("auto_payment_enabled").notNull().default(false), // true = auto deposits (Soleaspay), false = manual (payment numbers)
 });
 
 // Users table
@@ -270,9 +270,9 @@ export const adminAuditLog = pgTable("admin_audit_log", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-// Raw webhook delivery log (diagnostic: records every inbound call to the
-// WestPay webhook endpoint, before signature validation, so we can tell
-// whether the gateway actually reached our server vs. never called it).
+// Raw webhook delivery log (diagnostic: records every inbound webhook call,
+// before signature validation, so we can tell whether the gateway actually
+// reached our server vs. never called it).
 export const webhookLogs = pgTable("webhook_logs", {
   id: serial("id").primaryKey(),
   source: text("source").notNull(),

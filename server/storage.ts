@@ -48,8 +48,6 @@ export interface IStorage {
   getUserDeposits(userId: number): Promise<Deposit[]>;
   updateDeposit(id: number, data: Partial<Deposit>): Promise<Deposit>;
   getDepositByReference(reference: string): Promise<Deposit | undefined>;
-  findProcessingWestpayDeposit(amount: number, payerPhone?: string): Promise<Deposit | undefined>;
-  approveWestpayDeposit(id: number, txId: string, payerPhone?: string): Promise<Deposit | undefined>;
   cleanupDepositScreenshots(): Promise<void>;
   
   // Withdrawals
@@ -568,64 +566,6 @@ export class DatabaseStorage implements IStorage {
 
   async updateDeposit(id: number, data: Partial<Deposit>): Promise<Deposit> {
     const [deposit] = await db.update(deposits).set(data).where(eq(deposits.id, id)).returning();
-    return deposit;
-  }
-
-  async findProcessingWestpayDeposit(amount: number, payerPhone?: string): Promise<Deposit | undefined> {
-    // Load all still-processing WestPay deposits for this amount, oldest first (FIFO).
-    // We can't do an exact SQL match on phone because WestPay's "payer" webhook field
-    // arrives as a full MSISDN (e.g. "+22990150839909"), while our stored accountNumber
-    // is whatever local format the user registered with (e.g. "0150839909") — these
-    // never match char-for-char. Comparing the last 8 digits handles both formats.
-    const candidates = await db.select().from(deposits)
-      .where(and(
-        eq(deposits.channelName, "westpay"),
-        eq(deposits.status, "processing"),
-        eq(deposits.amount, amount),
-      ))
-      .orderBy(deposits.createdAt);
-
-    if (candidates.length === 0) return undefined;
-
-    if (payerPhone) {
-      const targetSuffix = normalizePhoneSuffix(payerPhone);
-      if (targetSuffix) {
-        const match = candidates.find(d => normalizePhoneSuffix(d.accountNumber) === targetSuffix);
-        if (match) return match;
-        // A payer phone WAS provided by the gateway but it doesn't match any
-        // candidate's registered number. Do NOT fall back to FIFO here: with
-        // more than one processing deposit of the same amount, guessing risks
-        // crediting the wrong user's account (confirmed to happen in practice).
-        // Only fall back when there is exactly one candidate — matching amount
-        // alone is then unambiguous regardless of phone formatting differences.
-        if (candidates.length === 1) return candidates[0];
-        return undefined;
-      }
-    }
-
-    // No payer phone supplied at all (some gateways omit it): fall back to the
-    // oldest processing deposit of this amount (FIFO) — still a guess, but the
-    // best available signal when there's nothing else to disambiguate on.
-    return candidates[0];
-  }
-
-  // Atomically flips a deposit from "processing" -> "approved" only if it is
-  // still "processing". Returns undefined if another request already claimed
-  // it (e.g. a WestPay webhook retry / duplicate delivery), which prevents
-  // double-crediting the user's balance.
-  async approveWestpayDeposit(id: number, txId: string, payerPhone?: string): Promise<Deposit | undefined> {
-    const [deposit] = await db.update(deposits)
-      .set({
-        status: "approved",
-        reference: txId,
-        processedAt: new Date(),
-        // Overwrite with the real mobile-money number WestPay reports as having
-        // paid (may differ from the account's registered phone) so the admin
-        // panel shows what was actually used to pay, not just the account owner's number.
-        ...(payerPhone ? { accountNumber: payerPhone } : {}),
-      })
-      .where(and(eq(deposits.id, id), eq(deposits.status, "processing")))
-      .returning();
     return deposit;
   }
 

@@ -341,7 +341,7 @@ async function run() {
       ["withdrawalStartHour", "9"], ["withdrawalEndHour", "17"], ["maxWithdrawalsPerDay", "1"],
       ["level1Commission", "15"], ["level2Commission", "2"], ["level3Commission", "1"],
       ["signupBonus", "200"], ["soleaspayEnabled", "false"], ["soleaspayCountries", ""],
-      ["soleaspayChannelName", "Westpay"], ["omnipayEnabled", "false"],
+      ["soleaspayChannelName", "Soleaspay"], ["omnipayEnabled", "false"],
       ["omnipayChannelName", "OmniPay"], ["omnipayCallbackKey", ""],
       ["supportLink", "https://t.me/intelappgroup"], ["supportType", "telegram"],
       ["supportLabel", "Service client"], ["channelLink", "https://t.me/intelappgroup"],

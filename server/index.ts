@@ -10,9 +10,9 @@ const httpServer = createServer(app);
 
 // SECURITY: the production reverse proxy (Plesk nginx + Passenger) has been
 // observed forwarding internal Passenger env vars (including secrets like
-// SESSION_SECRET, the DB connection string, and WestPay API keys) to this app
-// as literal HTTP request headers named "!~passenger-envvars" and similar
-// (discovered 2026-07-15 via a leaked header on /api/webhook/westpay). This
+// SESSION_SECRET and the DB connection string) to this app
+// as literal HTTP request headers named "!~passenger-envvars" and similar.
+// This
 // is a hosting-level nginx/Passenger misconfiguration outside this app's
 // control. As defense-in-depth, strip any such header on every request
 // before it reaches route handlers, logging, or storage, and warn server-side

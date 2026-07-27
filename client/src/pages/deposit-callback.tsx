@@ -12,7 +12,7 @@ export default function DepositCallbackPage() {
 
   const search = typeof window !== "undefined" ? window.location.search : "";
   const params = new URLSearchParams(search);
-  const westpayStatus = params.get("status");
+  const callbackStatus = params.get("status");
   const ref = params.get("ref");
 
   const [depositStatus, setDepositStatus] = useState<
@@ -22,7 +22,7 @@ export default function DepositCallbackPage() {
   useEffect(() => {
     if (!depositId) return;
 
-    if (westpayStatus === "failed" || westpayStatus === "failure") {
+    if (callbackStatus === "failed" || callbackStatus === "failure") {
       setDepositStatus("rejected");
       return;
     }
@@ -62,7 +62,7 @@ export default function DepositCallbackPage() {
 
     timer = setTimeout(poll, 2000);
     return () => clearTimeout(timer);
-  }, [depositId, westpayStatus]);
+  }, [depositId, callbackStatus]);
 
   /* ── Success ── */
   if (depositStatus === "approved") {
