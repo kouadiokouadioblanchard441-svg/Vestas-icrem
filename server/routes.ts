@@ -1390,6 +1390,13 @@ export async function registerRoutes(
 
   app.post("/api/spin-wheel/spin", requireAuth, async (req, res) => {
     try {
+      const user = await storage.getUser(req.session.userId!);
+      if (!user) return res.status(401).json({ message: "Utilisateur introuvable" });
+
+      if ((user.spinTokens || 0) <= 0) {
+        return res.status(400).json({ message: "Aucun tour disponible. Achetez un produit pour obtenir des tours." });
+      }
+
       const value = await storage.getSetting(SPIN_WHEEL_SETTING_KEY);
       const segments = parseSpinWheelSegments(value);
       const winningSegments = segments.filter((segment) => segment.canWin);
@@ -1399,12 +1406,11 @@ export async function registerRoutes(
       }
 
       const winner = winningSegments[crypto.randomInt(winningSegments.length)];
-      const user = await storage.getUser(req.session.userId!);
-      if (!user) return res.status(401).json({ message: "Utilisateur introuvable" });
-
-      const newBalance = (parseFloat(user.balance) + winner.amount).toFixed(2);
+      const newTokens = Math.max(0, (user.spinTokens || 0) - 1);
+      const newEarnings = (parseFloat(user.totalEarnings) + winner.amount).toFixed(2);
       await storage.updateUser(req.session.userId!, {
-        balance: newBalance,
+        totalEarnings: newEarnings,
+        spinTokens: newTokens,
       });
       await storage.createTransaction({
         userId: req.session.userId!,
@@ -1413,9 +1419,19 @@ export async function registerRoutes(
         description: `Gain roue : ${winner.label}`,
       });
 
-      res.json({ segmentId: winner.id, amount: winner.amount, label: winner.label, balance: newBalance });
+      res.json({ segmentId: winner.id, amount: winner.amount, label: winner.label, spinTokens: newTokens });
     } catch (error: any) {
       console.error("Spin wheel error:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/spin-wheel/history", requireAuth, async (req, res) => {
+    try {
+      const all = await storage.getUserTransactions(req.session.userId!);
+      const history = all.filter((tx) => tx.type === "spin_reward");
+      res.json(history);
+    } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });

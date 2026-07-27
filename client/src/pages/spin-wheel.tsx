@@ -2,7 +2,10 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useLocation } from "wouter";
 import { ChevronLeft, Volume2 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
+import WheelRulesModal from "@/components/wheel-rules-modal";
+import WheelHistoryModal from "@/components/wheel-history-modal";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
@@ -285,7 +288,8 @@ const TICKER_MSGS = [
 /* ── Page ───────────────────────────────────────────────────── */
 export default function SpinWheelPage() {
   const [, navigate] = useLocation();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
+  const { t } = useI18n();
   const { toast } = useToast();
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -294,15 +298,22 @@ export default function SpinWheelPage() {
   const lightAnimRef = useRef<number | null>(null);
   const spinning  = useRef(false);
 
-  const [rotation, setRotation]   = useState(0);
-  const [spinning2, setSpinning2] = useState(false);
-  const [draws, setDraws]         = useState(5);
-  const [totalWon, setTotalWon]   = useState(0);
+  const [rotation, setRotation]     = useState(0);
+  const [spinning2, setSpinning2]   = useState(false);
+  const [spinTokens, setSpinTokens] = useState(() => user?.spinTokens ?? 0);
+  const [totalWon, setTotalWon]     = useState(0);
+  const [showRules, setShowRules]   = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [tickerIdx, setTickerIdx] = useState(0);
   const [timeLeft, setTimeLeft]   = useState(86389); // ~24h
   const [segments, setSegments] = useState<SpinWheelSegment[]>(DEFAULT_SPIN_WHEEL_SEGMENTS);
   const rotationDrawRef = useRef(rotation);
   const segmentsDrawRef = useRef(segments);
+
+  // Keep local spinTokens in sync when user data refreshes
+  useEffect(() => {
+    setSpinTokens(user?.spinTokens ?? 0);
+  }, [user?.spinTokens]);
 
   const { data: configuredSegments } = useQuery<SpinWheelSegment[]>({
     queryKey: ["/api/spin-wheel/config"],
@@ -367,7 +378,7 @@ export default function SpinWheelPage() {
   }, []);
 
   const handleSpin = useCallback(() => {
-    if (spinning.current || draws <= 0 || spinMutation.isPending) return;
+    if (spinning.current || spinTokens <= 0 || spinMutation.isPending) return;
     spinning.current = true;
     setSpinning2(true);
 
@@ -378,28 +389,29 @@ export default function SpinWheelPage() {
         const targetRot = rotRef.current + extra + (Math.PI * 2 - winIdx * ARC);
 
         const duration = 3500;
-        const start    = performance.now();
-        const startRot = rotRef.current;
+        const startTime = performance.now();
+        const startRot  = rotRef.current;
 
-        function ease(t: number) {
-          return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        function ease(p: number) {
+          return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
         }
 
         function tick(now: number) {
-          const elapsed = now - start;
-          const t       = Math.min(elapsed / duration, 1);
-          const current = startRot + (targetRot - startRot) * ease(t);
+          const elapsed  = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const current  = startRot + (targetRot - startRot) * ease(progress);
           rotRef.current = current;
           setRotation(current);
 
-          if (t < 1) {
+          if (progress < 1) {
             animRef.current = requestAnimationFrame(tick);
           } else {
             spinning.current = false;
             setSpinning2(false);
-            setDraws(d => Math.max(0, d - 1));
-            setTotalWon(t => t + result.amount);
-            toast({ title: "🎉 Félicitations !", description: `Vous avez gagné : ${result.amount} USDT` });
+            setSpinTokens(prev => Math.max(0, prev - 1));
+            setTotalWon(prev => prev + result.amount);
+            refreshUser();
+            toast({ title: t.wheelCongrats, description: t.wheelWonDesc.replace("{0}", String(result.amount)) });
           }
         }
 
@@ -408,10 +420,10 @@ export default function SpinWheelPage() {
       onError: (error: Error) => {
         spinning.current = false;
         setSpinning2(false);
-        toast({ title: error.message || "Le tirage est indisponible", variant: "destructive" });
+        toast({ title: error.message || t.wheelErrUnavailable, variant: "destructive" });
       },
     });
-  }, [draws, segments, spinMutation, toast]);
+  }, [spinTokens, segments, spinMutation, toast, t, refreshUser]);
 
   useEffect(() => () => {
     if (animRef.current) cancelAnimationFrame(animRef.current);
@@ -422,6 +434,7 @@ export default function SpinWheelPage() {
   const maskedPhone = phone.length > 4 ? phone.slice(0, 4) + "****" + phone.slice(-3) : phone;
 
   return (
+    <>
     <div
       className="min-h-screen flex flex-col overflow-x-hidden"
       style={{
@@ -452,7 +465,7 @@ export default function SpinWheelPage() {
           <ChevronLeft className="w-5 h-5 text-white" />
         </button>
         <h1 className="text-white font-extrabold text-lg flex-1 text-center tracking-wide drop-shadow">
-          Tirage Au Sort
+          {t.wheelTitle}
         </h1>
         <div className="w-9" />
       </div>
@@ -485,7 +498,7 @@ export default function SpinWheelPage() {
           className="absolute top-0 right-0 px-3 py-1 text-xs font-bold"
           style={{ background: "#222", color: "#fff", borderBottomLeftRadius: 12 }}
         >
-          Mon Compte
+          {t.wheelMyAccount}
         </div>
 
         <div className="flex items-center gap-2 mb-2">
@@ -495,11 +508,24 @@ export default function SpinWheelPage() {
           </div>
           <p className="text-white font-bold text-base">{maskedPhone}</p>
         </div>
-        <p className="text-xs mb-1" style={{ color: "#a78bfa" }}>Récompenses Totales :</p>
+        <p className="text-xs mb-1" style={{ color: "#a78bfa" }}>{t.wheelTotalRewardsLabel}</p>
         <div className="flex items-center justify-between">
           <p className="font-extrabold text-2xl" style={{ color: "#ffd700", textShadow: "0 0 12px #ffd70088" }}>
             {totalWon.toLocaleString("fr-FR", { maximumFractionDigits: 2 })} USDT
           </p>
+        </div>
+
+        {/* Spin tokens counter */}
+        <div className="mt-3 flex items-center gap-2">
+          <span className="text-xl">🎡</span>
+          <span
+            className="text-sm font-bold"
+            style={{ color: spinTokens > 0 ? "#ffd700" : "#a78bfa" }}
+          >
+            {spinTokens > 0
+              ? t.wheelSpinsLeft.replace("{0}", String(spinTokens))
+              : t.wheelNoSpins}
+          </span>
         </div>
 
       </div>
@@ -547,7 +573,8 @@ export default function SpinWheelPage() {
       {/* ── Bottom buttons ── */}
       <div className="mx-4 mb-8 grid grid-cols-2 gap-3">
         <button
-          className="py-3 rounded-2xl font-bold text-sm"
+          onClick={() => setShowRules(true)}
+          className="py-3 rounded-2xl font-bold text-sm active:scale-95 transition-transform"
           style={{
             background: "linear-gradient(135deg, #b8860b 0%, #ffd700 40%, #ffec6e 60%, #ffd700 80%, #b8860b 100%)",
             color: "#1a0a00",
@@ -555,10 +582,11 @@ export default function SpinWheelPage() {
             border: "1px solid #b8860b",
           }}
         >
-          Règles
+          {t.wheelRulesBtn}
         </button>
         <button
-          className="py-3 rounded-2xl font-bold text-sm"
+          onClick={() => setShowHistory(true)}
+          className="py-3 rounded-2xl font-bold text-sm active:scale-95 transition-transform"
           style={{
             background: "linear-gradient(135deg, #b8860b 0%, #ffd700 40%, #ffec6e 60%, #ffd700 80%, #b8860b 100%)",
             color: "#1a0a00",
@@ -566,9 +594,14 @@ export default function SpinWheelPage() {
             border: "1px solid #b8860b",
           }}
         >
-          Enregistrer
+          {t.wheelSaveBtn}
         </button>
       </div>
     </div>
+
+    {/* ── Modals ── */}
+    <WheelRulesModal open={showRules} onClose={() => setShowRules(false)} />
+    <WheelHistoryModal open={showHistory} onClose={() => setShowHistory(false)} />
+    </>
   );
 }

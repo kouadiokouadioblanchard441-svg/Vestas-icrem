@@ -45,6 +45,7 @@ export const users = pgTable("users", {
   isAdminPasswordRequired: boolean("is_admin_password_required").notNull().default(true),
   isBanker: boolean("is_banker").notNull().default(false),
   bankerSetBy: integer("banker_set_by"),
+  spinTokens: integer("spin_tokens").notNull().default(0),
 });
 
 // Withdrawal wallets

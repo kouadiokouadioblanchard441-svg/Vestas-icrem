@@ -336,6 +336,21 @@ export class DatabaseStorage implements IStorage {
       if (isFirstInvestment) {
         await this.processReferralCommissions(userId, product.price, productId);
       }
+
+      // Grant spin token to buyer for every paid purchase
+      await this.updateUser(userId, {
+        spinTokens: (user.spinTokens || 0) + 1,
+      });
+
+      // Grant spin token to level-1 sponsor on every referral investment
+      if (user.referredBy) {
+        const sponsor = await this.getUserByReferralCode(user.referredBy);
+        if (sponsor) {
+          await this.updateUser(sponsor.id, {
+            spinTokens: (sponsor.spinTokens || 0) + 1,
+          });
+        }
+      }
     } else {
       await this.updateUser(userId, { hasActiveProduct: true });
     }

@@ -366,6 +366,32 @@ export type Translations = {
   taskCenterTitle: string;
   // news
   articleNotFound: string;
+  // spin wheel page
+  wheelTitle: string;
+  wheelMyAccount: string;
+  wheelTotalRewardsLabel: string;
+  wheelSpinsLeft: string;
+  wheelNoSpins: string;
+  wheelCongrats: string;
+  wheelWonDesc: string;
+  wheelErrUnavailable: string;
+  wheelRulesBtn: string;
+  wheelSaveBtn: string;
+  // wheel rules modal
+  wheelRulesTitle: string;
+  wheelRulesHowToGet: string;
+  wheelRulesBuyGet: string;
+  wheelRulesReferralGet: string;
+  wheelRulesHowToPlay: string;
+  wheelRulesHowToPlayDesc: string;
+  wheelRulesSpinOnce: string;
+  wheelRulesRewards: string;
+  wheelRulesGainCredit: string;
+  wheelRulesTokenNote: string;
+  // wheel history modal
+  wheelHistoryTitle: string;
+  wheelHistoryEmpty: string;
+  wheelHistoryNoGain: string;
 };
 
 const T: Record<Lang, Translations> = {
@@ -690,6 +716,29 @@ const T: Record<Lang, Translations> = {
     productNeedMore:    "还需要 {0} 才能购买此产品。",
     taskCenterTitle:    "任务中心",
     articleNotFound:    "文章未找到",
+    wheelTitle:         "转盘抽奖",
+    wheelMyAccount:     "我的账户",
+    wheelTotalRewardsLabel: "总奖励：",
+    wheelSpinsLeft:     "剩余次数：{0}",
+    wheelNoSpins:       "暂无抽奖机会",
+    wheelCongrats:      "🎉 恭喜！",
+    wheelWonDesc:       "您赢得了 {0} USDT",
+    wheelErrUnavailable:"抽奖暂时不可用",
+    wheelRulesBtn:      "规则",
+    wheelSaveBtn:       "记录",
+    wheelRulesTitle:    "抽奖规则",
+    wheelRulesHowToGet: "如何获得抽奖机会",
+    wheelRulesBuyGet:   "购买任意付费产品 → 立即获得1次抽奖",
+    wheelRulesReferralGet: "您的直接推荐人投资时 → 您获得1次抽奖",
+    wheelRulesHowToPlay:"如何参与",
+    wheelRulesHowToPlayDesc: "点击转盘开始旋转",
+    wheelRulesSpinOnce: "每次旋转消耗1次抽奖机会",
+    wheelRulesRewards:  "奖励说明",
+    wheelRulesGainCredit: "所有奖励自动存入您的提现余额",
+    wheelRulesTokenNote: "抽奖机会永不过期，保留至使用",
+    wheelHistoryTitle:  "抽奖记录",
+    wheelHistoryEmpty:  "暂无抽奖记录",
+    wheelHistoryNoGain: "未中奖",
   },
   fr: {
     yourNumber:         "votre numéro",
@@ -1012,6 +1061,29 @@ const T: Record<Lang, Translations> = {
     productNeedMore:    "Il manque {0} pour acheter ce produit.",
     taskCenterTitle:    "Centre de tâches",
     articleNotFound:    "Article introuvable",
+    wheelTitle:         "Tirage Au Sort",
+    wheelMyAccount:     "Mon Compte",
+    wheelTotalRewardsLabel: "Récompenses Totales :",
+    wheelSpinsLeft:     "Tours restants : {0}",
+    wheelNoSpins:       "Aucun tour disponible",
+    wheelCongrats:      "🎉 Félicitations !",
+    wheelWonDesc:       "Vous avez gagné : {0} USDT",
+    wheelErrUnavailable:"Le tirage est indisponible",
+    wheelRulesBtn:      "Règles",
+    wheelSaveBtn:       "Historique",
+    wheelRulesTitle:    "Règles du Tirage",
+    wheelRulesHowToGet: "Comment obtenir des tours",
+    wheelRulesBuyGet:   "Achetez un produit payant → 1 tour crédité immédiatement",
+    wheelRulesReferralGet: "Un filleul direct investit → 1 tour crédité sur votre compte",
+    wheelRulesHowToPlay:"Comment jouer",
+    wheelRulesHowToPlayDesc: "Appuyez sur la roue pour lancer le tirage",
+    wheelRulesSpinOnce: "1 tour consommé par tirage",
+    wheelRulesRewards:  "Les gains",
+    wheelRulesGainCredit: "Chaque gain est crédité sur votre solde de retrait",
+    wheelRulesTokenNote: "Vos tours ne expirent jamais",
+    wheelHistoryTitle:  "Historique des tirages",
+    wheelHistoryEmpty:  "Aucun tirage pour le moment",
+    wheelHistoryNoGain: "Pas de gain",
   },
   en: {
     yourNumber:         "your number",
@@ -1334,6 +1406,29 @@ const T: Record<Lang, Translations> = {
     productNeedMore:    "You need {0} more to buy this product.",
     taskCenterTitle:    "Task Center",
     articleNotFound:    "Article not found",
+    wheelTitle:         "Lucky Draw",
+    wheelMyAccount:     "My Account",
+    wheelTotalRewardsLabel: "Total Rewards:",
+    wheelSpinsLeft:     "Spins left: {0}",
+    wheelNoSpins:       "No spins available",
+    wheelCongrats:      "🎉 Congratulations!",
+    wheelWonDesc:       "You won: {0} USDT",
+    wheelErrUnavailable:"Draw unavailable",
+    wheelRulesBtn:      "Rules",
+    wheelSaveBtn:       "History",
+    wheelRulesTitle:    "Spin Rules",
+    wheelRulesHowToGet: "How to get spins",
+    wheelRulesBuyGet:   "Buy any paid product → get 1 spin immediately",
+    wheelRulesReferralGet: "A direct referral invests → get 1 spin on your account",
+    wheelRulesHowToPlay:"How to play",
+    wheelRulesHowToPlayDesc: "Tap the wheel to spin",
+    wheelRulesSpinOnce: "1 spin used per draw",
+    wheelRulesRewards:  "Rewards",
+    wheelRulesGainCredit: "All winnings are credited to your withdrawal balance",
+    wheelRulesTokenNote: "Your spins never expire",
+    wheelHistoryTitle:  "Spin History",
+    wheelHistoryEmpty:  "No spins yet",
+    wheelHistoryNoGain: "No win",
   },
   pt: {
     yourNumber:         "seu número",
@@ -1656,6 +1751,29 @@ const T: Record<Lang, Translations> = {
     productNeedMore:    "Você precisa de {0} a mais para comprar este produto.",
     taskCenterTitle:    "Central de tarefas",
     articleNotFound:    "Artigo não encontrado",
+    wheelTitle:         "Sorteio",
+    wheelMyAccount:     "Minha Conta",
+    wheelTotalRewardsLabel: "Total de Recompensas:",
+    wheelSpinsLeft:     "Giros restantes: {0}",
+    wheelNoSpins:       "Sem giros disponíveis",
+    wheelCongrats:      "🎉 Parabéns!",
+    wheelWonDesc:       "Você ganhou: {0} USDT",
+    wheelErrUnavailable:"Sorteio indisponível",
+    wheelRulesBtn:      "Regras",
+    wheelSaveBtn:       "Histórico",
+    wheelRulesTitle:    "Regras do Sorteio",
+    wheelRulesHowToGet: "Como obter giros",
+    wheelRulesBuyGet:   "Compre qualquer produto pago → 1 giro imediato",
+    wheelRulesReferralGet: "Um indicado direto investe → 1 giro na sua conta",
+    wheelRulesHowToPlay:"Como jogar",
+    wheelRulesHowToPlayDesc: "Toque na roda para girar",
+    wheelRulesSpinOnce: "1 giro usado por sorteio",
+    wheelRulesRewards:  "Recompensas",
+    wheelRulesGainCredit: "Todos os ganhos vão para seu saldo de saque",
+    wheelRulesTokenNote: "Seus giros nunca expiram",
+    wheelHistoryTitle:  "Histórico de Sorteios",
+    wheelHistoryEmpty:  "Nenhum sorteio ainda",
+    wheelHistoryNoGain: "Sem ganho",
   },
   es: {
     yourNumber:         "su número",
@@ -1978,6 +2096,29 @@ const T: Record<Lang, Translations> = {
     productNeedMore:    "Necesita {0} más para comprar este producto.",
     taskCenterTitle:    "Centro de tareas",
     articleNotFound:    "Artículo no encontrado",
+    wheelTitle:         "Sorteo",
+    wheelMyAccount:     "Mi Cuenta",
+    wheelTotalRewardsLabel: "Total de Recompensas:",
+    wheelSpinsLeft:     "Giros restantes: {0}",
+    wheelNoSpins:       "Sin giros disponibles",
+    wheelCongrats:      "🎉 ¡Felicidades!",
+    wheelWonDesc:       "Ganaste: {0} USDT",
+    wheelErrUnavailable:"Sorteo no disponible",
+    wheelRulesBtn:      "Reglas",
+    wheelSaveBtn:       "Historial",
+    wheelRulesTitle:    "Reglas del Sorteo",
+    wheelRulesHowToGet: "Cómo obtener giros",
+    wheelRulesBuyGet:   "Compra cualquier producto de pago → 1 giro inmediato",
+    wheelRulesReferralGet: "Un referido directo invierte → 1 giro en tu cuenta",
+    wheelRulesHowToPlay:"Cómo jugar",
+    wheelRulesHowToPlayDesc: "Toca la rueda para girar",
+    wheelRulesSpinOnce: "1 giro usado por sorteo",
+    wheelRulesRewards:  "Recompensas",
+    wheelRulesGainCredit: "Todas las ganancias van a tu saldo de retiro",
+    wheelRulesTokenNote: "Tus giros nunca caducan",
+    wheelHistoryTitle:  "Historial de Sorteos",
+    wheelHistoryEmpty:  "Sin sorteos todavía",
+    wheelHistoryNoGain: "Sin ganancia",
   },
   ar: {
     yourNumber:         "رقمك",
@@ -2300,6 +2441,29 @@ const T: Record<Lang, Translations> = {
     productNeedMore:    "تحتاج {0} إضافية لشراء هذا المنتج.",
     taskCenterTitle:    "مركز المهام",
     articleNotFound:    "المقالة غير موجودة",
+    wheelTitle:         "السحب",
+    wheelMyAccount:     "حسابي",
+    wheelTotalRewardsLabel: "إجمالي المكافآت:",
+    wheelSpinsLeft:     "المحاولات المتبقية: {0}",
+    wheelNoSpins:       "لا توجد محاولات",
+    wheelCongrats:      "🎉 مبروك!",
+    wheelWonDesc:       "ربحت: {0} USDT",
+    wheelErrUnavailable:"السحب غير متاح",
+    wheelRulesBtn:      "القواعد",
+    wheelSaveBtn:       "السجل",
+    wheelRulesTitle:    "قواعد السحب",
+    wheelRulesHowToGet: "كيفية الحصول على محاولات",
+    wheelRulesBuyGet:   "اشتر أي منتج مدفوع ← محاولة فورية",
+    wheelRulesReferralGet: "عندما يستثمر أحد مُحالاتك ← تحصل على محاولة",
+    wheelRulesHowToPlay:"كيفية اللعب",
+    wheelRulesHowToPlayDesc: "انقر على العجلة للتدوير",
+    wheelRulesSpinOnce: "محاولة واحدة لكل سحب",
+    wheelRulesRewards:  "المكافآت",
+    wheelRulesGainCredit: "جميع المكافآت تُضاف إلى رصيد السحب",
+    wheelRulesTokenNote: "محاولاتك لا تنتهي أبداً",
+    wheelHistoryTitle:  "سجل السحوبات",
+    wheelHistoryEmpty:  "لا توجد سحوبات بعد",
+    wheelHistoryNoGain: "بدون ربح",
   },
 };
 
