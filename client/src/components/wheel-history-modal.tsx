@@ -123,30 +123,16 @@ function HistoryRow({ tx, noGainLabel }: { tx: Transaction; noGainLabel: string 
         </p>
       </div>
 
-      {/* Amount badge */}
-      {won ? (
-        <div
-          className="shrink-0 px-3 py-1 rounded-full text-sm font-bold"
-          style={{
-            background: "linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,215,0,0.08))",
-            border: "1px solid rgba(255,215,0,0.35)",
-            color: "#ffd700",
-          }}
+      {/* Amount */}
+      <div className="shrink-0 text-right">
+        <p
+          className="text-sm font-bold"
+          style={{ color: won ? "#ffd700" : "rgba(255,255,255,0.25)" }}
         >
-          +{amount.toFixed(2)} USDT
-        </div>
-      ) : (
-        <div
-          className="shrink-0 px-3 py-1 rounded-full text-sm font-medium"
-          style={{
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            color: "rgba(255,255,255,0.22)",
-          }}
-        >
-          — USDT
-        </div>
-      )}
+          {won ? `+${amount.toFixed(2)}` : "—"}
+        </p>
+        <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>USDT</p>
+      </div>
     </div>
   );
 }
