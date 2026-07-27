@@ -10,6 +10,7 @@ import { getContent } from "@/lib/content";
 
 import jollibeeNight from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 import landscapeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
+import vipBadgeImg from "@assets/vip-badge-gift_1785147624494.png";
 
 export default function GiftCodePage() {
   const { refreshUser } = useAuth();
@@ -96,9 +97,9 @@ export default function GiftCodePage() {
         </div>
 
         {/* Icon badge */}
-        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center shadow-lg border-2 border-white"
-          style={{ background: "linear-gradient(135deg, #E8192C, #E8192C)" }}>
-          <Gift className="w-6 h-6 text-white" />
+        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-16 h-16 rounded-full flex items-center justify-center shadow-xl border-2 border-white/60 overflow-hidden"
+          style={{ background: "#000" }}>
+          <img src={vipBadgeImg} alt="VIP" className="w-full h-full object-cover" />
         </div>
       </div>
 
