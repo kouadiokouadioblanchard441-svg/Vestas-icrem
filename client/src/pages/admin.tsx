@@ -16,6 +16,7 @@ import AdminCountries from "@/components/admin/countries";
 import AdminContent from "@/components/admin/content";
 import AdminCompanyContent from "@/components/admin/company-content";
 import AdminTasks from "@/components/admin/tasks";
+import AdminWheel from "@/components/admin/wheel";
 
 export default function AdminPage() {
   const { user } = useAuth();
@@ -47,6 +48,7 @@ export default function AdminPage() {
               <TabsTrigger value="giftcodes" data-testid="tab-giftcodes">Codes Cadeaux</TabsTrigger>
               <TabsTrigger value="settings" data-testid="tab-settings">Parametres</TabsTrigger>
               <TabsTrigger value="tasks" data-testid="tab-tasks">Tâches</TabsTrigger>
+              <TabsTrigger value="wheel" data-testid="tab-wheel">Roue</TabsTrigger>
               <TabsTrigger value="content" data-testid="tab-content">Contenu</TabsTrigger>
               <TabsTrigger value="company" data-testid="tab-company">Compagnie</TabsTrigger>
             </TabsList>
@@ -90,6 +92,10 @@ export default function AdminPage() {
 
           <TabsContent value="tasks" className="mt-4">
             <AdminTasks />
+          </TabsContent>
+
+          <TabsContent value="wheel" className="mt-4">
+            <AdminWheel />
           </TabsContent>
 
           <TabsContent value="content" className="mt-4">

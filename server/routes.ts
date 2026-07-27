@@ -11,6 +11,12 @@ import QRCode from "qrcode";
 import crypto from "crypto";
 import { verifyWebhookSignature } from "@nowpaymentsio/nowpayments-sdk-nodejs";
 import { getSDK, getNowPaymentsCallbackUrl, createPayout, verifyPayout } from "./nowpayments";
+import {
+  DEFAULT_SPIN_WHEEL_SEGMENTS,
+  parseSpinWheelSegments,
+  SPIN_WHEEL_SETTING_KEY,
+  type SpinWheelSegment,
+} from "@shared/spin-wheel";
 
 // --- Brute-force protection (in-memory) ---
 const loginAttempts = new Map<string, { count: number; blockedUntil: number }>();
@@ -1371,6 +1377,49 @@ export async function registerRoutes(
     }
   });
 
+  // The wheel configuration is public to authenticated users so every prize
+  // is visible. The actual winning section is always selected on the server.
+  app.get("/api/spin-wheel/config", requireAuth, async (_req, res) => {
+    try {
+      const value = await storage.getSetting(SPIN_WHEEL_SETTING_KEY);
+      res.json(parseSpinWheelSegments(value));
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/spin-wheel/spin", requireAuth, async (req, res) => {
+    try {
+      const value = await storage.getSetting(SPIN_WHEEL_SETTING_KEY);
+      const segments = parseSpinWheelSegments(value);
+      const winningSegments = segments.filter((segment) => segment.canWin);
+
+      if (winningSegments.length === 0) {
+        return res.status(400).json({ message: "Aucun gain n'est actuellement disponible." });
+      }
+
+      const winner = winningSegments[crypto.randomInt(winningSegments.length)];
+      const user = await storage.getUser(req.session.userId!);
+      if (!user) return res.status(401).json({ message: "Utilisateur introuvable" });
+
+      const newBalance = (parseFloat(user.balance) + winner.amount).toFixed(2);
+      await storage.updateUser(req.session.userId!, {
+        balance: newBalance,
+      });
+      await storage.createTransaction({
+        userId: req.session.userId!,
+        type: "spin_reward",
+        amount: winner.amount.toFixed(2),
+        description: `Gain roue : ${winner.label}`,
+      });
+
+      res.json({ segmentId: winner.id, amount: winner.amount, label: winner.label, balance: newBalance });
+    } catch (error: any) {
+      console.error("Spin wheel error:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Admin routes
   app.get("/api/admin/stats", requireAdmin, async (req, res) => {
     try {
@@ -1881,6 +1930,55 @@ export async function registerRoutes(
       res.json(settings);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/spin-wheel/config", requireAdmin, async (_req, res) => {
+    try {
+      const value = await storage.getSetting(SPIN_WHEEL_SETTING_KEY);
+      res.json(parseSpinWheelSegments(value));
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/spin-wheel/config", requireAdmin, async (req, res) => {
+    try {
+      const input = req.body?.segments;
+      if (!Array.isArray(input) || input.length !== DEFAULT_SPIN_WHEEL_SEGMENTS.length) {
+        return res.status(400).json({ message: "La roue doit contenir exactement 8 sections." });
+      }
+
+      const segments: SpinWheelSegment[] = input.map((segment: any, index: number) => {
+        const amount = Number(segment.amount);
+        if (!Number.isFinite(amount) || amount < 0) {
+          throw new Error(`Montant invalide pour la section ${index + 1}`);
+        }
+        if (typeof segment.label !== "string" || !segment.label.trim()) {
+          throw new Error(`Nom obligatoire pour la section ${index + 1}`);
+        }
+        if (typeof segment.color !== "string" || !/^#[0-9a-f]{6}$/i.test(segment.color)) {
+          throw new Error(`Couleur invalide pour la section ${index + 1}`);
+        }
+        return {
+          ...DEFAULT_SPIN_WHEEL_SEGMENTS[index],
+          id: index + 1,
+          label: segment.label.trim().slice(0, 40),
+          amount,
+          color: segment.color,
+          canWin: Boolean(segment.canWin),
+        };
+      });
+
+      if (!segments.some((segment) => segment.canWin)) {
+        return res.status(400).json({ message: "Au moins une section doit être gagnable." });
+      }
+
+      await storage.setSetting(SPIN_WHEEL_SETTING_KEY, JSON.stringify(segments), req.session.userId);
+      await storage.logAdminAction(req.session.userId!, "update_spin_wheel", null, "Configuration de la roue modifiée");
+      res.json(segments);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   });
 

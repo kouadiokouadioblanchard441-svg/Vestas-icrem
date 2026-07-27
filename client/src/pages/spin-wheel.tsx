@@ -3,23 +3,19 @@ import { useLocation } from "wouter";
 import { ChevronLeft, Volume2 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import {
+  DEFAULT_SPIN_WHEEL_SEGMENTS,
+  type SpinWheelSegment,
+} from "@shared/spin-wheel";
 
 /* ── Segments ──────────────────────────────────────────────── */
-const SEGMENTS = [
-  { label: "Cash",          color: "#315aab", dark: "#1e3d7a", prize: "10 USDT" },
-  { label: "2 lucky\ndraws", color: "#16a34a", dark: "#0d6b31", prize: "2 Tirages" },
-  { label: "Special\nBonus",color: "#dc2626", dark: "#991b1b", prize: "Special Bonus" },
-  { label: "Cash\nRewards", color: "#7c3aed", dark: "#4c1d95", prize: "50 USDT" },
-  { label: "Grand\nPrize",  color: "#ea580c", dark: "#9a3412", prize: "100 USDT" },
-  { label: "5 lucky\ndraws",color: "#ca8a04", dark: "#854d0e", prize: "5 Tirages" },
-  { label: "Cash",          color: "#0891b2", dark: "#0c4a6e", prize: "10 USDT" },
-  { label: "Cash\nRewards", color: "#db2777", dark: "#831843", prize: "20 USDT" },
-];
-const N = SEGMENTS.length;
+const N = DEFAULT_SPIN_WHEEL_SEGMENTS.length;
 const ARC = (2 * Math.PI) / N;
 
 /* ── Draw wheel ─────────────────────────────────────────────── */
-function drawWheel(canvas: HTMLCanvasElement, rotation: number) {
+function drawWheel(canvas: HTMLCanvasElement, rotation: number, segments: SpinWheelSegment[]) {
   const ctx = canvas.getContext("2d")!;
   const W = canvas.width;
   const cx = W / 2;
@@ -64,7 +60,7 @@ function drawWheel(canvas: HTMLCanvasElement, rotation: number) {
 
   /* segments */
   for (let i = 0; i < N; i++) {
-    const seg = SEGMENTS[i];
+    const seg = segments[i];
     const start = rotation + i * ARC - Math.PI / 2;
     const end   = start + ARC;
 
@@ -106,22 +102,26 @@ function drawWheel(canvas: HTMLCanvasElement, rotation: number) {
     ctx.textBaseline = "middle";
     ctx.fillText("$", coinX, coinY);
 
-    /* label text */
+    /* Prize amount and label: keep both visible in every section. */
     const midA = start + ARC / 2;
-    const textD = segR * 0.42;
     ctx.save();
-    ctx.translate(cx + Math.cos(midA) * textD, cy + Math.sin(midA) * textD);
+    ctx.translate(cx + Math.cos(midA) * segR * 0.42, cy + Math.sin(midA) * segR * 0.42);
     ctx.rotate(midA + Math.PI / 2);
     ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 10px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.shadowColor = "rgba(0,0,0,0.6)";
     ctx.shadowBlur = 3;
-    const lines = seg.label.split("\n");
-    lines.forEach((line, li) => {
-      ctx.fillText(line, 0, (li - (lines.length - 1) / 2) * 13);
-    });
+    ctx.font = "900 14px sans-serif";
+    const amountLabel = `${seg.amount} USDT`;
+    ctx.fillText(amountLabel, 0, -7);
+    ctx.font = "bold 8px sans-serif";
+    const label = seg.canWin ? seg.label : `${seg.label} (non gagnable)`;
+    const words = label.split(/\s+/);
+    const labelLines = words.length > 2
+      ? [words.slice(0, Math.ceil(words.length / 2)).join(" "), words.slice(Math.ceil(words.length / 2)).join(" ")]
+      : [label];
+    labelLines.forEach((line, li) => ctx.fillText(line, 0, 7 + li * 10));
     ctx.shadowBlur = 0;
     ctx.restore();
   }
@@ -186,6 +186,26 @@ export default function SpinWheelPage() {
   const [totalWon, setTotalWon]   = useState(0);
   const [tickerIdx, setTickerIdx] = useState(0);
   const [timeLeft, setTimeLeft]   = useState(86389); // ~24h
+  const [segments, setSegments] = useState<SpinWheelSegment[]>(DEFAULT_SPIN_WHEEL_SEGMENTS);
+
+  const { data: configuredSegments } = useQuery<SpinWheelSegment[]>({
+    queryKey: ["/api/spin-wheel/config"],
+  });
+
+  useEffect(() => {
+    if (configuredSegments?.length === N) setSegments(configuredSegments);
+  }, [configuredSegments]);
+
+  const spinMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/spin-wheel/spin", {});
+      return response.json() as Promise<{
+        segmentId: number;
+        amount: number;
+        label: string;
+      }>;
+    },
+  });
 
   /* ticker */
   useEffect(() => {
@@ -210,59 +230,64 @@ export default function SpinWheelPage() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    drawWheel(canvas, rotation);
-  }, [rotation]);
+    drawWheel(canvas, rotation, segments);
+  }, [rotation, segments]);
 
   /* initial draw */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    drawWheel(canvas, 0);
-  }, []);
+    drawWheel(canvas, 0, segments);
+  }, [segments]);
 
   const handleSpin = useCallback(() => {
-    if (spinning.current || draws <= 0) return;
+    if (spinning.current || draws <= 0 || spinMutation.isPending) return;
     spinning.current = true;
     setSpinning2(true);
     setPrize(null);
 
-    const winIdx    = Math.floor(Math.random() * N);
-    const extra     = Math.PI * 2 * (6 + Math.random() * 4); // 6-10 full turns
-    const targetRot = rotRef.current + extra + (Math.PI * 2 - winIdx * ARC);
+    spinMutation.mutate(undefined, {
+      onSuccess: (result) => {
+        const winIdx = Math.max(0, segments.findIndex((segment) => segment.id === result.segmentId));
+        const extra     = Math.PI * 2 * (6 + Math.random() * 4); // 6-10 full turns
+        const targetRot = rotRef.current + extra + (Math.PI * 2 - winIdx * ARC);
 
-    const duration = 3500;
-    const start    = performance.now();
-    const startRot = rotRef.current;
+        const duration = 3500;
+        const start    = performance.now();
+        const startRot = rotRef.current;
 
-    function ease(t: number) {
-      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    }
+        function ease(t: number) {
+          return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
 
-    function tick(now: number) {
-      const elapsed = now - start;
-      const t       = Math.min(elapsed / duration, 1);
-      const current = startRot + (targetRot - startRot) * ease(t);
-      rotRef.current = current;
-      setRotation(current);
+        function tick(now: number) {
+          const elapsed = now - start;
+          const t       = Math.min(elapsed / duration, 1);
+          const current = startRot + (targetRot - startRot) * ease(t);
+          rotRef.current = current;
+          setRotation(current);
 
-      if (t < 1) {
+          if (t < 1) {
+            animRef.current = requestAnimationFrame(tick);
+          } else {
+            spinning.current = false;
+            setSpinning2(false);
+            setPrize(`${result.amount} USDT — ${result.label}`);
+            setDraws(d => Math.max(0, d - 1));
+            setTotalWon(t => t + result.amount);
+            toast({ title: "🎉 Félicitations !", description: `Vous avez gagné : ${result.amount} USDT` });
+          }
+        }
+
         animRef.current = requestAnimationFrame(tick);
-      } else {
+      },
+      onError: (error: Error) => {
         spinning.current = false;
         setSpinning2(false);
-        const won = SEGMENTS[winIdx];
-        setPrize(won.prize);
-        setDraws(d => Math.max(0, d - 1));
-        if (!won.prize.includes("Tirage")) {
-          const amount = parseFloat(won.prize);
-          if (!isNaN(amount)) setTotalWon(t => t + amount);
-        }
-        toast({ title: `🎉 Félicitations !`, description: `Vous avez gagné : ${won.prize}` });
-      }
-    }
-
-    animRef.current = requestAnimationFrame(tick);
-  }, [draws, toast]);
+        toast({ title: error.message || "Le tirage est indisponible", variant: "destructive" });
+      },
+    });
+  }, [draws, segments, spinMutation, toast]);
 
   useEffect(() => () => { if (animRef.current) cancelAnimationFrame(animRef.current); }, []);
 
