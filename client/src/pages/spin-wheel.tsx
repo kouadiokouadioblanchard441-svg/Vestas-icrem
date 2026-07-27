@@ -155,13 +155,41 @@ function drawWheel(
     ctx.stroke();
 
     /*
-     * Keep both the amount and label visible in every section.
-     * The text is intentionally placed toward the outer edge so it stays
-     * clear of the center GO badge, including on small screens.
+     * Keep every amount and label inside its own section. Text is measured
+     * against the available arc width before it is drawn, so long admin
+     * labels shrink/wrap instead of crossing into another section.
      */
     const midA = start + ARC / 2;
+    const textRadius = segR * 0.60;
+    const maxTextWidth = segR * 0.42;
+    const fitFontSize = (text: string, weight: string, preferred: number, minimum: number) => {
+      let size = preferred;
+      while (size > minimum) {
+        ctx.font = `${weight} ${size}px sans-serif`;
+        if (ctx.measureText(text).width <= maxTextWidth) return size;
+        size -= 0.5;
+      }
+      return minimum;
+    };
+    const wrapLabel = (text: string, fontSize: number) => {
+      ctx.font = `bold ${fontSize}px sans-serif`;
+      const lines: string[] = [];
+      let line = "";
+      for (const word of text.split(/\s+/)) {
+        const candidate = line ? `${line} ${word}` : word;
+        if (line && ctx.measureText(candidate).width > maxTextWidth) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = candidate;
+        }
+      }
+      if (line) lines.push(line);
+      return lines.slice(0, 2);
+    };
+
     ctx.save();
-    ctx.translate(cx + Math.cos(midA) * segR * 0.68, cy + Math.sin(midA) * segR * 0.68);
+    ctx.translate(cx + Math.cos(midA) * textRadius, cy + Math.sin(midA) * textRadius);
     let textRotation = midA + Math.PI / 2;
     if (textRotation > Math.PI / 2 && textRotation < Math.PI * 1.5) {
       textRotation += Math.PI;
@@ -172,15 +200,16 @@ function drawWheel(
     ctx.textBaseline = "middle";
     ctx.shadowColor = "rgba(0,0,0,0.95)";
     ctx.shadowBlur = 6;
-    ctx.font = "900 16px sans-serif";
-    ctx.fillText(`${seg.amount} USDT`, 0, -8);
-    ctx.font = "bold 9px sans-serif";
+    const amountText = `${seg.amount} USDT`;
+    const amountFontSize = fitFontSize(amountText, "900", 16, 10);
+    ctx.font = `900 ${amountFontSize}px sans-serif`;
+    ctx.fillText(amountText, 0, -8);
+
     const label = seg.canWin ? seg.label : `${seg.label} · indisponible`;
-    const words = label.split(/\s+/);
-    const labelLines = words.length > 2
-      ? [words.slice(0, Math.ceil(words.length / 2)).join(" "), words.slice(Math.ceil(words.length / 2)).join(" ")]
-      : [label];
-    labelLines.slice(0, 2).forEach((line, li) => ctx.fillText(line, 0, 8 + li * 10));
+    const labelFontSize = fitFontSize(label, "bold", 9, 7);
+    const labelLines = wrapLabel(label, labelFontSize);
+    ctx.font = `bold ${labelFontSize}px sans-serif`;
+    labelLines.forEach((line, li) => ctx.fillText(line, 0, 7 + li * (labelFontSize + 2)));
     ctx.shadowBlur = 0;
     ctx.restore();
   }
@@ -267,7 +296,6 @@ export default function SpinWheelPage() {
 
   const [rotation, setRotation]   = useState(0);
   const [spinning2, setSpinning2] = useState(false);
-  const [prize, setPrize]         = useState<string | null>(null);
   const [draws, setDraws]         = useState(5);
   const [totalWon, setTotalWon]   = useState(0);
   const [tickerIdx, setTickerIdx] = useState(0);
@@ -342,7 +370,6 @@ export default function SpinWheelPage() {
     if (spinning.current || draws <= 0 || spinMutation.isPending) return;
     spinning.current = true;
     setSpinning2(true);
-    setPrize(null);
 
     spinMutation.mutate(undefined, {
       onSuccess: (result) => {
@@ -370,7 +397,6 @@ export default function SpinWheelPage() {
           } else {
             spinning.current = false;
             setSpinning2(false);
-            setPrize(`${result.amount} USDT — ${result.label}`);
             setDraws(d => Math.max(0, d - 1));
             setTotalWon(t => t + result.amount);
             toast({ title: "🎉 Félicitations !", description: `Vous avez gagné : ${result.amount} USDT` });
@@ -516,18 +542,6 @@ export default function SpinWheelPage() {
           />
         </div>
 
-        {prize && (
-          <div
-            className="mt-4 px-6 py-3 rounded-2xl text-center font-extrabold text-lg shadow-xl"
-            style={{
-              background: "linear-gradient(135deg, #ffd700, #f59e0b)",
-              color: "#1a0a00",
-              boxShadow: "0 8px 24px rgba(255,215,0,0.4)",
-            }}
-          >
-            🎉 Vous avez gagné : {prize}
-          </div>
-        )}
       </div>
 
       {/* ── Bottom buttons ── */}
