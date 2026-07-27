@@ -177,6 +177,10 @@ export async function seed() {
     }
   }
 
+  // Remove free products and obsolete settings from DB if any still exist (migration)
+  await db.delete(products).where(eq(products.isFree, true));
+  await db.delete(platformSettings).where(eq(platformSettings.key, "signupBonus"));
+
   // Always sync VIP product images (safe — only touches imageUrl, never prices or earnings)
   const vipImages = ['/poweradd/poweradd-pps180s.png', '/poweradd/poweradd-pps210s.jpg', '/poweradd/poweradd-pps350.jpg'];
   const allProducts = await db.select().from(products);
@@ -187,9 +191,8 @@ export async function seed() {
 
   // Seed products only if table is empty (first install only — never overwrite admin changes)
   const existingProducts = allProducts;
-  if (existingProducts.length === 0) {
+  if (existingProducts.filter(p => !p.isFree).length === 0) {
     const defaultProducts = [
-      { name: "Bonus Gratuit", price: 0, dailyEarnings: 50, cycleDays: 1, totalReturn: 50, isFree: true, sortOrder: 0 },
       { name: "VIP 1", price: 4000, dailyEarnings: 300, cycleDays: 90, totalReturn: 27000, imageUrl: '/solar-panel-1.webp', sortOrder: 1 },
       { name: "VIP 2", price: 10000, dailyEarnings: 800, cycleDays: 90, totalReturn: 72000, imageUrl: '/solar-panel-2.webp', sortOrder: 2 },
       { name: "VIP 3", price: 15000, dailyEarnings: 1500, cycleDays: 90, totalReturn: 135000, imageUrl: '/solar-panel-3.jpg', sortOrder: 3 },
@@ -266,7 +269,6 @@ export async function seed() {
     { key: "level1Commission", value: "25" },
     { key: "level2Commission", value: "1" },
     { key: "level3Commission", value: "1" },
-    { key: "signupBonus", value: "200" },
     { key: "soleaspayEnabled", value: "false" },
     { key: "soleaspayCountries", value: "" },
     { key: "soleaspayChannelName", value: "Westpay" },

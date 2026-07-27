@@ -172,27 +172,13 @@ export class DatabaseStorage implements IStorage {
     const referralCode = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedPassword = await bcrypt.hash(data.password!, 10);
 
-    // Get signup bonus from settings (default 200)
-    let signupBonus = "200";
-    try {
-      const settings = await this.getSettings();
-      signupBonus = settings.signupBonus || "200";
-    } catch {}
-
     const [user] = await db.insert(users).values({
       ...data,
       password: hashedPassword,
       referralCode,
-      balance: signupBonus,
+      balance: "0",
       totalEarnings: "0",
     } as any).returning();
-    
-    await this.createTransaction({
-      userId: user.id,
-      type: "bonus",
-      amount: signupBonus,
-      description: "Bonus d'inscription",
-    });
     
     return user;
   }

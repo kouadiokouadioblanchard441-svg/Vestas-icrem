@@ -41,7 +41,6 @@ const settingsSchema = z.object({
   support2Enabled: z.boolean(),
   channelEnabled: z.boolean(),
   groupEnabled: z.boolean(),
-  signupBonus: z.string().min(1, "奖励金额必填"),
   minDeposit: z.string().min(1, "Montant requis"),
   depositPresetAmounts: z.string().min(1, "Montants requis"),
   minWithdrawal: z.string().min(1, "Montant requis"),
@@ -112,7 +111,6 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
       support2Enabled: true,
       channelEnabled: true,
       groupEnabled: true,
-      signupBonus: "200",
       minDeposit: "4000",
       depositPresetAmounts: "3500,5000,7000,10000,15000,20000,50000,70000",
       minWithdrawal: "1500",
@@ -147,7 +145,6 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         support2Enabled: settings.support2Enabled !== "false",
         channelEnabled: settings.channelEnabled !== "false",
         groupEnabled: settings.groupEnabled !== "false",
-        signupBonus: settings.signupBonus || "200",
         minDeposit: settings.minDeposit || "4000",
         depositPresetAmounts: settings.depositPresetAmounts || "3500,5000,7000,10000,15000,20000,50000,70000",
         minWithdrawal: settings.minWithdrawal || "1500",
@@ -503,15 +500,6 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
                 </FormItem>
               )} />
             </div>
-            <FormField control={form.control} name="signupBonus" render={({ field }) => (
-              <FormItem>
-                <FormLabel>注册奖励 (USDT)</FormLabel>
-                <FormControl><Input {...field} type="number" min="0" /></FormControl>
-                <FormDescription>新用户注册时获得的奖励金额。</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )} />
-
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="minDeposit" render={({ field }) => (
                 <FormItem>

@@ -343,16 +343,10 @@ export async function registerRoutes(
         }
       });
       
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const canClaimFree = !user?.lastFreeProductClaim || 
-        new Date(user.lastFreeProductClaim) < today;
-
       const productsWithOwnership = products.map(p => ({
         ...p,
         isOwned: productCounts.has(p.id),
         ownedCount: productCounts.get(p.id) || 0,
-        canClaimFree: p.isFree && canClaimFree,
       }));
 
       res.json(productsWithOwnership);
@@ -371,51 +365,11 @@ export async function registerRoutes(
       }
       
       if (product.isFree) {
-        return res.status(400).json({ message: "Utilisez /claim-free pour ce produit" });
+        return res.status(400).json({ message: "Ce produit n'est pas disponible à l'achat" });
       }
 
       const userProduct = await storage.purchaseProduct(req.session.userId!, productId);
       res.json(userProduct);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  });
-
-  app.post("/api/products/:id/claim-free", requireAuth, async (req, res) => {
-    try {
-      const productId = parseInt(req.params.id as string);
-      const product = await storage.getProduct(productId);
-      
-      if (!product || !product.isFree) {
-        return res.status(400).json({ message: "Produit non valide" });
-      }
-
-      const user = await storage.getUser(req.session.userId!);
-      if (!user) {
-        return res.status(401).json({ message: "Non authentifié" });
-      }
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      if (user.lastFreeProductClaim && new Date(user.lastFreeProductClaim) >= today) {
-        return res.status(400).json({ message: "Déjà réclamé aujourd'hui" });
-      }
-
-      const newTotalEarnings = parseFloat(user.totalEarnings || "0") + product.dailyEarnings;
-      await storage.updateUser(user.id, { 
-        totalEarnings: newTotalEarnings.toFixed(2),
-        lastFreeProductClaim: new Date(),
-      });
-
-      await storage.createTransaction({
-        userId: user.id,
-        type: "free_claim",
-        amount: product.dailyEarnings.toString(),
-        description: "Bonus produit gratuit",
-      });
-
-      res.json({ success: true });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }

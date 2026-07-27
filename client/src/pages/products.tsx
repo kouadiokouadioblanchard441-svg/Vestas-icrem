@@ -16,7 +16,6 @@ import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
 
 interface ProductWithOwnership extends Product {
   isOwned: boolean;
-  canClaimFree: boolean;
   ownedCount?: number;
 }
 
