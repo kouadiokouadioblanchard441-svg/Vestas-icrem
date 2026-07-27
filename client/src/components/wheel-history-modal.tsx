@@ -1,4 +1,4 @@
-import { ChevronLeft, Loader2, TrendingUp, RotateCcw, XCircle, Trophy } from "lucide-react";
+import { ChevronLeft, Loader2, XCircle } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useQuery } from "@tanstack/react-query";
 import type { Transaction } from "@shared/schema";
@@ -26,34 +26,55 @@ function StatCard({
   value,
   sub,
   accent,
-  icon,
+  img,
+  imgPosition = "center",
 }: {
   label: string;
   value: string;
   sub?: string;
   accent: string;
-  icon: React.ReactNode;
+  img: string;
+  imgPosition?: string;
 }) {
   return (
     <div
-      className="rounded-2xl p-4 flex flex-col gap-1"
+      className="rounded-2xl overflow-hidden flex flex-col"
       style={{
-        background: "rgba(255,255,255,0.06)",
-        border: `1px solid ${accent}33`,
+        background: "linear-gradient(160deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%)",
+        border: `1.5px solid ${accent}55`,
+        boxShadow: `0 4px 18px rgba(0,0,0,0.35)`,
       }}
     >
-      <div className="flex items-center gap-2 mb-1">
-        <span style={{ color: accent }}>{icon}</span>
-        <p className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>
+      {/* Image */}
+      <div className="w-full h-20 overflow-hidden relative">
+        <img
+          src={img}
+          alt={label}
+          className="w-full h-full object-cover"
+          style={{ objectPosition: imgPosition, filter: "brightness(0.85)" }}
+        />
+        {/* bottom fade into card */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-6"
+          style={{ background: "linear-gradient(to bottom, transparent, rgba(0,0,0,0.55))" }}
+        />
+      </div>
+
+      {/* Text */}
+      <div className="px-3 pt-2 pb-3">
+        <p
+          className="text-xs font-semibold uppercase tracking-wide mb-0.5"
+          style={{ color: accent }}
+        >
           {label}
         </p>
+        <p className="font-extrabold text-xl leading-tight text-white">{value}</p>
+        {sub && (
+          <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.55)" }}>
+            {sub}
+          </p>
+        )}
       </div>
-      <p className="font-extrabold text-xl text-white">{value}</p>
-      {sub && (
-        <p className="text-xs" style={{ color: accent }}>
-          {sub}
-        </p>
-      )}
     </div>
   );
 }
@@ -146,7 +167,6 @@ export default function WheelHistoryModal({ open, onClose }: WheelHistoryModalPr
   );
   const spinCount = history?.length ?? 0;
   const winCount = (history ?? []).filter((tx) => parseFloat(tx.amount) > 0).length;
-  const winRate = spinCount > 0 ? Math.round((winCount / spinCount) * 100) : 0;
 
   return (
     <div
@@ -194,27 +214,22 @@ export default function WheelHistoryModal({ open, onClose }: WheelHistoryModalPr
 
       {/* Stats strip */}
       {!isLoading && spinCount > 0 && (
-        <div className="px-4 pt-4 pb-2 grid grid-cols-3 gap-2 shrink-0">
+        <div className="px-4 pt-4 pb-2 grid grid-cols-2 gap-3 shrink-0">
           <StatCard
             label="Total gagné"
             value={`${totalWon.toFixed(2)}`}
             sub="USDT"
             accent="#ffd700"
-            icon={<Trophy className="w-4 h-4" />}
+            img="/trophy.jpg"
+            imgPosition="center 20%"
           />
           <StatCard
             label="Tirages"
             value={String(spinCount)}
             sub={`${winCount} gagnants`}
             accent="#a78bfa"
-            icon={<RotateCcw className="w-4 h-4" />}
-          />
-          <StatCard
-            label="Taux gain"
-            value={`${winRate}%`}
-            sub={winRate >= 50 ? "Bonne série !" : "Continuez !"}
-            accent={winRate >= 50 ? "#4ade80" : "#fb923c"}
-            icon={<TrendingUp className="w-4 h-4" />}
+            img="/vip-badge.png"
+            imgPosition="center center"
           />
         </div>
       )}
