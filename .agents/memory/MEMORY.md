@@ -3,3 +3,4 @@
 - [PowerAdd WestPay webhook secret](spolarpv-westpay-webhook.md) — secret now DB-backed (admin-panel editable) since production runs on external Plesk; dev DB = shared/production Supabase.
 - [PowerAdd Plesk bundle](spolarpv-plesk-bundle.md) — Plesk pulls prebuilt dist artifacts; production bundling must include SDKs without usable CommonJS exports.
 - [PowerAdd Plesk Git work tree](spolarpv-plesk-git-worktree.md) — Plesk remote-Git deployment must checkout into the website root, never its internal bare repository or .git directory.
+- [PowerAdd Supabase pooler](spolarpv-supabase-pooler.md) — the app needs Supabase's exact PostgreSQL pooler URI; public API URLs and malformed/old pooler tenants fail before login.
