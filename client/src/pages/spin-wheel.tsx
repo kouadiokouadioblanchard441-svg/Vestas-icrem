@@ -356,14 +356,6 @@ export default function SpinWheelPage() {
           </button>
         </div>
 
-        {/* Rewards won */}
-        <div
-          className="mt-3 rounded-xl px-3 py-2 flex items-center justify-between"
-          style={{ background: "linear-gradient(135deg, #c9a227, #ffd700)", color: "#1a0a00" }}
-        >
-          <p className="text-xs font-bold">Récompenses Gagnées</p>
-          <p className="text-xs font-extrabold">XOF {totalWon > 0 ? (totalWon * 655).toLocaleString("fr-FR") : "0"}</p>
-        </div>
       </div>
 
 
