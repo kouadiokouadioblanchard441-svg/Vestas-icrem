@@ -55,6 +55,9 @@ expertMode = true
 [userenv.shared]
 WESTPAY_MERCHANT_SLUG = "business"
 
+[userenv.development]
+APP_URL = "https://bf6a3a6e-dc21-47b7-be81-e5b0c723caf4-00-2sfkwcf8cdsig.worf.replit.dev"
+
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 20000
