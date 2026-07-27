@@ -409,13 +409,23 @@ export default function SpinWheelPage() {
       <div className="mx-4 mb-8 grid grid-cols-2 gap-3">
         <button
           className="py-3 rounded-2xl font-bold text-sm"
-          style={{ background: "rgba(255,255,255,0.12)", color: "#fff", border: "1px solid rgba(255,255,255,0.2)" }}
+          style={{
+            background: "linear-gradient(135deg, #b8860b 0%, #ffd700 40%, #ffec6e 60%, #ffd700 80%, #b8860b 100%)",
+            color: "#1a0a00",
+            boxShadow: "0 4px 12px rgba(255,215,0,0.4)",
+            border: "1px solid #b8860b",
+          }}
         >
           Règles
         </button>
         <button
           className="py-3 rounded-2xl font-bold text-sm"
-          style={{ background: "rgba(255,255,255,0.12)", color: "#fff", border: "1px solid rgba(255,255,255,0.2)" }}
+          style={{
+            background: "linear-gradient(135deg, #b8860b 0%, #ffd700 40%, #ffec6e 60%, #ffd700 80%, #b8860b 100%)",
+            color: "#1a0a00",
+            boxShadow: "0 4px 12px rgba(255,215,0,0.4)",
+            border: "1px solid #b8860b",
+          }}
         >
           Enregistrer
         </button>
