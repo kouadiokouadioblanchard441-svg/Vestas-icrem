@@ -356,12 +356,6 @@ export default function SpinWheelPage() {
           </button>
         </div>
 
-        {/* Progress bar */}
-        <div className="mt-3 h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.15)" }}>
-          <div className="h-full rounded-full" style={{ width: "0%", background: "linear-gradient(90deg, #ffd700, #f59e0b)" }} />
-        </div>
-        <p className="text-xs mt-1" style={{ color: "#a78bfa" }}>0%</p>
-
         {/* Rewards won */}
         <div
           className="mt-3 rounded-xl px-3 py-2 flex items-center justify-between"
@@ -372,15 +366,6 @@ export default function SpinWheelPage() {
         </div>
       </div>
 
-      {/* ── Timer badge ── */}
-      <div className="flex justify-center mb-4">
-        <div
-          className="px-5 py-2 rounded-full text-white font-bold text-sm shadow-lg"
-          style={{ background: "#dc2626", boxShadow: "0 4px 16px rgba(220,38,38,0.5)" }}
-        >
-          🎰 Loterie : {draws} &nbsp;·&nbsp; Expire après {fmtTime(timeLeft)}
-        </div>
-      </div>
 
       {/* ── Wheel ── */}
       <div className="flex flex-col items-center px-4 mb-4">
@@ -426,26 +411,6 @@ export default function SpinWheelPage() {
             🎉 Vous avez gagné : {prize}
           </div>
         )}
-      </div>
-
-      {/* ── Gift box banner ── */}
-      <div className="mx-4 mb-4">
-        <div
-          className="rounded-2xl px-4 py-3 flex items-center gap-3"
-          style={{
-            background: "linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #1e3a8a 100%)",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
-          }}
-        >
-          <div
-            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-            style={{ background: "#f97316" }}
-          >
-            →
-          </div>
-          <p className="text-white font-bold text-sm flex-1">Coffret cadeau de retrait</p>
-          <span className="text-2xl">🎁</span>
-        </div>
       </div>
 
       {/* ── Bottom buttons ── */}
