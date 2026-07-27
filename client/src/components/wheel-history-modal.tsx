@@ -1,4 +1,4 @@
-import { ChevronLeft, Loader2, TrendingUp, RotateCcw, XCircle } from "lucide-react";
+import { ChevronLeft, Loader2, TrendingUp, RotateCcw, XCircle, Trophy } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useQuery } from "@tanstack/react-query";
 import type { Transaction } from "@shared/schema";
