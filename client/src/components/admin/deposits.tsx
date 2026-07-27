@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useI18n } from "@/lib/i18n";
 import { Check, X, Ban, Search, Loader2, ImageIcon, MessageSquare } from "lucide-react";
 import type { Deposit } from "@shared/schema";
 
@@ -23,6 +24,7 @@ interface DepositWithUser extends Deposit {
 
 export default function AdminDeposits() {
   const { toast } = useToast();
+  const { t } = useI18n();
   const [filter, setFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "processing" | "approved" | "rejected">("pending");
   const [screenshotModal, setScreenshotModal] = useState<string | null>(null);
@@ -53,10 +55,10 @@ export default function AdminDeposits() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/deposits"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
-      toast({ title: "Dépôt traité !" });
+      toast({ title: t.depositProcessed });
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -107,7 +109,7 @@ export default function AdminDeposits() {
             className="whitespace-nowrap"
             data-testid={`button-filter-${status}`}
           >
-            {status === "all" ? "Tous" : status === "pending" ? `En attente${pendingCount > 0 ? ` (${pendingCount})` : ""}` : status === "processing" ? `En cours${processingCount > 0 ? ` (${processingCount})` : ""}` : status === "approved" ? "Approuvés" : "Rejetés"}
+            {status === "all" ? t.bankerAll : status === "pending" ? `${t.statusPending}${pendingCount > 0 ? ` (${pendingCount})` : ""}` : status === "processing" ? `${t.statusProcessing}${processingCount > 0 ? ` (${processingCount})` : ""}` : status === "approved" ? t.statusApproved : t.statusRejected}
           </Button>
         ))}
       </div>
@@ -139,7 +141,7 @@ export default function AdminDeposits() {
                       variant={deposit.status === "pending" ? "secondary" : deposit.status === "approved" ? "default" : deposit.status === "processing" ? "outline" : "destructive"}
                       className={deposit.status === "processing" ? "bg-blue-600 text-white border-blue-600" : ""}
                     >
-                      {deposit.status === "pending" ? "En attente" : deposit.status === "processing" ? "En cours" : deposit.status === "approved" ? "Approuvé" : "Rejeté"}
+                      {deposit.status === "pending" ? t.statusPending : deposit.status === "processing" ? t.statusProcessing : deposit.status === "approved" ? t.statusApproved : t.statusRejected}
                     </Badge>
                   </div>
 

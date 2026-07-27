@@ -117,7 +117,7 @@ export default function GiftCodePage() {
         <div className="bg-white rounded-2xl shadow-sm p-4 space-y-3">
           <div className="flex items-center gap-2 mb-1">
             <Tag className="w-4 h-4" style={{ color: "#E8192C" }} />
-            <span className="text-gray-800 font-semibold text-sm">Code cadeau</span>
+            <span className="text-gray-800 font-semibold text-sm">{t.giftCodeLabel}</span>
           </div>
 
           <div className="relative">
@@ -125,7 +125,7 @@ export default function GiftCodePage() {
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
-              placeholder="Saisir le code ici"
+              placeholder={t.giftCodeInputPlaceholder}
               className="w-full px-4 py-3 rounded-xl border-2 text-center text-sm font-mono tracking-widest outline-none transition-colors"
               style={{
                 borderColor: code ? "#E8192C" : "#e5e7eb",
@@ -153,7 +153,7 @@ export default function GiftCodePage() {
             ) : (
               <>
                 <Gift className="w-5 h-5" />
-                Recevoir ma récompense
+                {t.giftCodeReceiveBtn}
               </>
             )}
           </button>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
+import { useI18n } from "@/lib/i18n";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -20,6 +21,7 @@ import AdminWheel from "@/components/admin/wheel";
 
 export default function AdminPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("dashboard");
 
@@ -31,26 +33,26 @@ export default function AdminPage() {
         <Button size="icon" variant="ghost" onClick={() => navigate("/account")} data-testid="button-back">
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        <h1 className="text-xl font-bold text-secondary-foreground" data-testid="text-admin-title">Administration</h1>
+        <h1 className="text-xl font-bold text-secondary-foreground" data-testid="text-admin-title">{t.adminPanel}</h1>
       </header>
 
       <div className="p-4">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="overflow-x-auto -mx-4 px-4">
             <TabsList className="w-max">
-              <TabsTrigger value="dashboard" data-testid="tab-dashboard">Tableau de bord</TabsTrigger>
-              <TabsTrigger value="deposits" data-testid="tab-deposits">Depots</TabsTrigger>
-              <TabsTrigger value="withdrawals" data-testid="tab-withdrawals">Retraits</TabsTrigger>
-              <TabsTrigger value="users" data-testid="tab-users">Utilisateurs</TabsTrigger>
-              <TabsTrigger value="products" data-testid="tab-products">Produits</TabsTrigger>
-              <TabsTrigger value="payment-numbers" data-testid="tab-payment-numbers">Numéros</TabsTrigger>
-              <TabsTrigger value="countries" data-testid="tab-countries">Pays</TabsTrigger>
-              <TabsTrigger value="giftcodes" data-testid="tab-giftcodes">Codes Cadeaux</TabsTrigger>
-              <TabsTrigger value="settings" data-testid="tab-settings">Parametres</TabsTrigger>
-              <TabsTrigger value="tasks" data-testid="tab-tasks">Tâches</TabsTrigger>
-              <TabsTrigger value="wheel" data-testid="tab-wheel">Roue</TabsTrigger>
-              <TabsTrigger value="content" data-testid="tab-content">Contenu</TabsTrigger>
-              <TabsTrigger value="company" data-testid="tab-company">Compagnie</TabsTrigger>
+              <TabsTrigger value="dashboard" data-testid="tab-dashboard">{t.adminTabDashboard}</TabsTrigger>
+              <TabsTrigger value="deposits" data-testid="tab-deposits">{t.adminTabDeposits}</TabsTrigger>
+              <TabsTrigger value="withdrawals" data-testid="tab-withdrawals">{t.adminTabWithdrawals}</TabsTrigger>
+              <TabsTrigger value="users" data-testid="tab-users">{t.adminTabUsers}</TabsTrigger>
+              <TabsTrigger value="products" data-testid="tab-products">{t.adminTabProducts}</TabsTrigger>
+              <TabsTrigger value="payment-numbers" data-testid="tab-payment-numbers">{t.adminTabNumbers}</TabsTrigger>
+              <TabsTrigger value="countries" data-testid="tab-countries">{t.adminTabCountries}</TabsTrigger>
+              <TabsTrigger value="giftcodes" data-testid="tab-giftcodes">{t.adminTabGiftCodes}</TabsTrigger>
+              <TabsTrigger value="settings" data-testid="tab-settings">{t.adminTabSettings}</TabsTrigger>
+              <TabsTrigger value="tasks" data-testid="tab-tasks">{t.adminTabTasks}</TabsTrigger>
+              <TabsTrigger value="wheel" data-testid="tab-wheel">{t.adminTabWheel}</TabsTrigger>
+              <TabsTrigger value="content" data-testid="tab-content">{t.adminTabContent}</TabsTrigger>
+              <TabsTrigger value="company" data-testid="tab-company">{t.adminTabCompany}</TabsTrigger>
             </TabsList>
           </div>
 

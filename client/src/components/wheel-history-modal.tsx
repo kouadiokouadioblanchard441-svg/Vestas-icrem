@@ -202,7 +202,7 @@ export default function WheelHistoryModal({ open, onClose }: WheelHistoryModalPr
       {!isLoading && spinCount > 0 && (
         <div className="px-4 pt-4 pb-2 grid grid-cols-2 gap-3 shrink-0">
           <StatCard
-            label="Total gagné"
+            label={t.wheelTotalRewardsLabel.replace(":", "")}
             value={`${totalWon.toFixed(2)}`}
             sub="USDT"
             accent="#ffd700"
@@ -210,9 +210,9 @@ export default function WheelHistoryModal({ open, onClose }: WheelHistoryModalPr
             imgPosition="center 20%"
           />
           <StatCard
-            label="Tirages"
+            label={t.wheelHistoryTitle}
             value={String(spinCount)}
-            sub={`${winCount} gagnants`}
+            sub={t.wheelWinnersCount.replace("{0}", String(winCount))}
             accent="#a78bfa"
             img="/vip-badge.png"
             imgPosition="center center"
@@ -225,7 +225,7 @@ export default function WheelHistoryModal({ open, onClose }: WheelHistoryModalPr
         <div className="mx-4 mt-2 mb-1 flex items-center gap-2 shrink-0">
           <div className="flex-1 h-px" style={{ background: "rgba(255,215,0,0.18)" }} />
           <p className="text-xs font-medium" style={{ color: "rgba(255,215,0,0.55)" }}>
-            Historique des tirages
+            {t.wheelHistoryDividerLabel}
           </p>
           <div className="flex-1 h-px" style={{ background: "rgba(255,215,0,0.18)" }} />
         </div>
@@ -237,7 +237,7 @@ export default function WheelHistoryModal({ open, onClose }: WheelHistoryModalPr
           <div className="flex flex-col items-center justify-center h-48 gap-3">
             <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#ffd700" }} />
             <p className="text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
-              Chargement…
+              {t.loading}
             </p>
           </div>
         ) : !history || history.length === 0 ? (
@@ -246,7 +246,7 @@ export default function WheelHistoryModal({ open, onClose }: WheelHistoryModalPr
             <div>
               <p className="font-semibold text-white mb-1">{t.wheelHistoryEmpty}</p>
               <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
-                Faites votre premier tirage pour voir vos résultats ici.
+                {t.wheelFirstSpinHint}
               </p>
             </div>
           </div>

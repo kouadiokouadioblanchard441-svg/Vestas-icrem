@@ -406,6 +406,50 @@ export type Translations = {
   methodLabel: string;
   checkinBonusTitle: string;
   checkinBonusDesc: string;
+  // banker page
+  bankerTitle: string;
+  bankerPendingDepositsLabel: string;
+  bankerPendingWithdrawalsLabel: string;
+  bankerDepositApproved: string;
+  bankerDepositRejected: string;
+  bankerWithdrawalApproved: string;
+  bankerWithdrawalRejectedRefunded: string;
+  bankerAll: string;
+  bankerDepositsTab: string;
+  bankerWithdrawalsTab: string;
+  bankerHistoryTab: string;
+  bankerNoHistory: string;
+  depositProcessed: string;
+  withdrawalProcessed: string;
+  // wallet page extras
+  walletAddCard: string;
+  walletAddMethod: string;
+  // team-details page
+  teamHistoryTitle: string;
+  teamMemberAccount: string;
+  teamMemberDate: string;
+  // gift-code page
+  giftCodeLabel: string;
+  giftCodeInputPlaceholder: string;
+  giftCodeReceiveBtn: string;
+  // wheel history extras
+  wheelFirstSpinHint: string;
+  wheelWinnersCount: string;
+  wheelHistoryDividerLabel: string;
+  // admin tab labels
+  adminTabDashboard: string;
+  adminTabDeposits: string;
+  adminTabWithdrawals: string;
+  adminTabUsers: string;
+  adminTabProducts: string;
+  adminTabNumbers: string;
+  adminTabCountries: string;
+  adminTabGiftCodes: string;
+  adminTabSettings: string;
+  adminTabTasks: string;
+  adminTabWheel: string;
+  adminTabContent: string;
+  adminTabCompany: string;
 };
 
 const T: Record<Lang, Translations> = {
@@ -766,6 +810,44 @@ const T: Record<Lang, Translations> = {
     methodLabel:        "方式",
     checkinBonusTitle:  "奖励已获取！",
     checkinBonusDesc:   "每日奖励已添加至您的余额",
+    bankerTitle:            "收款员工作区",
+    bankerPendingDepositsLabel: "待处理充值",
+    bankerPendingWithdrawalsLabel: "待处理提现",
+    bankerDepositApproved:  "充值已批准！",
+    bankerDepositRejected:  "充值已拒绝",
+    bankerWithdrawalApproved: "提现已批准！",
+    bankerWithdrawalRejectedRefunded: "提现已拒绝并退款",
+    bankerAll:              "全部",
+    bankerDepositsTab:      "充值",
+    bankerWithdrawalsTab:   "提现",
+    bankerHistoryTab:       "历史",
+    bankerNoHistory:        "暂无历史记录",
+    depositProcessed:       "充值已处理！",
+    withdrawalProcessed:    "提现已处理！",
+    walletAddCard:          "添加卡片",
+    walletAddMethod:        "添加提现方式",
+    teamHistoryTitle:       "团队历史",
+    teamMemberAccount:      "账号：",
+    teamMemberDate:         "日期：",
+    giftCodeLabel:          "礼品码",
+    giftCodeInputPlaceholder: "在此输入代码",
+    giftCodeReceiveBtn:     "领取奖励",
+    wheelFirstSpinHint:     "完成第一次抽奖后查看结果。",
+    wheelWinnersCount:      "{0} 获奖者",
+    wheelHistoryDividerLabel: "抽奖记录",
+    adminTabDashboard:      "仪表板",
+    adminTabDeposits:       "充值",
+    adminTabWithdrawals:    "提现",
+    adminTabUsers:          "用户",
+    adminTabProducts:       "产品",
+    adminTabNumbers:        "号码",
+    adminTabCountries:      "国家",
+    adminTabGiftCodes:      "礼品码",
+    adminTabSettings:       "设置",
+    adminTabTasks:          "任务",
+    adminTabWheel:          "抽奖",
+    adminTabContent:        "内容",
+    adminTabCompany:        "公司",
   },
   fr: {
     yourNumber:         "votre numéro",
@@ -1124,6 +1206,44 @@ const T: Record<Lang, Translations> = {
     methodLabel:        "Méthode",
     checkinBonusTitle:  "Bonus reçu !",
     checkinBonusDesc:   "Bonus quotidien ajouté à votre solde",
+    bankerTitle:            "Espace Bankier",
+    bankerPendingDepositsLabel: "Dépôts en attente",
+    bankerPendingWithdrawalsLabel: "Retraits en attente",
+    bankerDepositApproved:  "Dépôt validé !",
+    bankerDepositRejected:  "Dépôt rejeté",
+    bankerWithdrawalApproved: "Retrait approuvé !",
+    bankerWithdrawalRejectedRefunded: "Retrait rejeté et remboursé",
+    bankerAll:              "Tous",
+    bankerDepositsTab:      "Dépôts",
+    bankerWithdrawalsTab:   "Retraits",
+    bankerHistoryTab:       "Historique",
+    bankerNoHistory:        "Aucun historique trouvé",
+    depositProcessed:       "Dépôt traité !",
+    withdrawalProcessed:    "Retrait traité !",
+    walletAddCard:          "Ajouter une carte",
+    walletAddMethod:        "Ajouter un moyen de retrait",
+    teamHistoryTitle:       "Historique d'équipe",
+    teamMemberAccount:      "Compte :",
+    teamMemberDate:         "Date :",
+    giftCodeLabel:          "Code cadeau",
+    giftCodeInputPlaceholder: "Saisir le code ici",
+    giftCodeReceiveBtn:     "Recevoir ma récompense",
+    wheelFirstSpinHint:     "Faites votre premier tirage pour voir vos résultats ici.",
+    wheelWinnersCount:      "{0} gagnants",
+    wheelHistoryDividerLabel: "Historique des tirages",
+    adminTabDashboard:      "Tableau de bord",
+    adminTabDeposits:       "Dépôts",
+    adminTabWithdrawals:    "Retraits",
+    adminTabUsers:          "Utilisateurs",
+    adminTabProducts:       "Produits",
+    adminTabNumbers:        "Numéros",
+    adminTabCountries:      "Pays",
+    adminTabGiftCodes:      "Codes Cadeaux",
+    adminTabSettings:       "Paramètres",
+    adminTabTasks:          "Tâches",
+    adminTabWheel:          "Roue",
+    adminTabContent:        "Contenu",
+    adminTabCompany:        "Compagnie",
   },
   en: {
     yourNumber:         "your number",
@@ -1482,6 +1602,44 @@ const T: Record<Lang, Translations> = {
     methodLabel:        "Method",
     checkinBonusTitle:  "Bonus received!",
     checkinBonusDesc:   "Daily bonus added to your balance",
+    bankerTitle:            "Banker Space",
+    bankerPendingDepositsLabel: "Pending deposits",
+    bankerPendingWithdrawalsLabel: "Pending withdrawals",
+    bankerDepositApproved:  "Deposit approved!",
+    bankerDepositRejected:  "Deposit rejected",
+    bankerWithdrawalApproved: "Withdrawal approved!",
+    bankerWithdrawalRejectedRefunded: "Withdrawal rejected and refunded",
+    bankerAll:              "All",
+    bankerDepositsTab:      "Deposits",
+    bankerWithdrawalsTab:   "Withdrawals",
+    bankerHistoryTab:       "History",
+    bankerNoHistory:        "No history found",
+    depositProcessed:       "Deposit processed!",
+    withdrawalProcessed:    "Withdrawal processed!",
+    walletAddCard:          "Add a card",
+    walletAddMethod:        "Add withdrawal method",
+    teamHistoryTitle:       "Team History",
+    teamMemberAccount:      "Account:",
+    teamMemberDate:         "Date:",
+    giftCodeLabel:          "Bonus Code",
+    giftCodeInputPlaceholder: "Enter code here",
+    giftCodeReceiveBtn:     "Receive my reward",
+    wheelFirstSpinHint:     "Make your first spin to see your results here.",
+    wheelWinnersCount:      "{0} winners",
+    wheelHistoryDividerLabel: "Spin history",
+    adminTabDashboard:      "Dashboard",
+    adminTabDeposits:       "Deposits",
+    adminTabWithdrawals:    "Withdrawals",
+    adminTabUsers:          "Users",
+    adminTabProducts:       "Products",
+    adminTabNumbers:        "Numbers",
+    adminTabCountries:      "Countries",
+    adminTabGiftCodes:      "Gift Codes",
+    adminTabSettings:       "Settings",
+    adminTabTasks:          "Tasks",
+    adminTabWheel:          "Wheel",
+    adminTabContent:        "Content",
+    adminTabCompany:        "Company",
   },
   pt: {
     yourNumber:         "seu número",
@@ -1840,6 +1998,44 @@ const T: Record<Lang, Translations> = {
     methodLabel:        "Método",
     checkinBonusTitle:  "Bônus recebido!",
     checkinBonusDesc:   "Bônus diário adicionado ao seu saldo",
+    bankerTitle:            "Espaço Bancário",
+    bankerPendingDepositsLabel: "Depósitos pendentes",
+    bankerPendingWithdrawalsLabel: "Saques pendentes",
+    bankerDepositApproved:  "Depósito aprovado!",
+    bankerDepositRejected:  "Depósito rejeitado",
+    bankerWithdrawalApproved: "Saque aprovado!",
+    bankerWithdrawalRejectedRefunded: "Saque rejeitado e reembolsado",
+    bankerAll:              "Todos",
+    bankerDepositsTab:      "Depósitos",
+    bankerWithdrawalsTab:   "Saques",
+    bankerHistoryTab:       "Histórico",
+    bankerNoHistory:        "Nenhum histórico encontrado",
+    depositProcessed:       "Depósito processado!",
+    withdrawalProcessed:    "Saque processado!",
+    walletAddCard:          "Adicionar cartão",
+    walletAddMethod:        "Adicionar método de saque",
+    teamHistoryTitle:       "Histórico da equipa",
+    teamMemberAccount:      "Conta:",
+    teamMemberDate:         "Data:",
+    giftCodeLabel:          "Código de bónus",
+    giftCodeInputPlaceholder: "Inserir código aqui",
+    giftCodeReceiveBtn:     "Receber a minha recompensa",
+    wheelFirstSpinHint:     "Faça o seu primeiro giro para ver os resultados aqui.",
+    wheelWinnersCount:      "{0} vencedores",
+    wheelHistoryDividerLabel: "Histórico de giros",
+    adminTabDashboard:      "Painel",
+    adminTabDeposits:       "Depósitos",
+    adminTabWithdrawals:    "Saques",
+    adminTabUsers:          "Utilizadores",
+    adminTabProducts:       "Produtos",
+    adminTabNumbers:        "Números",
+    adminTabCountries:      "Países",
+    adminTabGiftCodes:      "Códigos de presente",
+    adminTabSettings:       "Definições",
+    adminTabTasks:          "Tarefas",
+    adminTabWheel:          "Roda",
+    adminTabContent:        "Conteúdo",
+    adminTabCompany:        "Empresa",
   },
   es: {
     yourNumber:         "su número",
@@ -2198,6 +2394,44 @@ const T: Record<Lang, Translations> = {
     methodLabel:        "Método",
     checkinBonusTitle:  "¡Bono recibido!",
     checkinBonusDesc:   "Bono diario agregado a tu saldo",
+    bankerTitle:            "Espacio Bancario",
+    bankerPendingDepositsLabel: "Depósitos pendientes",
+    bankerPendingWithdrawalsLabel: "Retiros pendientes",
+    bankerDepositApproved:  "¡Depósito aprobado!",
+    bankerDepositRejected:  "Depósito rechazado",
+    bankerWithdrawalApproved: "¡Retiro aprobado!",
+    bankerWithdrawalRejectedRefunded: "Retiro rechazado y reembolsado",
+    bankerAll:              "Todos",
+    bankerDepositsTab:      "Depósitos",
+    bankerWithdrawalsTab:   "Retiros",
+    bankerHistoryTab:       "Historial",
+    bankerNoHistory:        "No se encontró historial",
+    depositProcessed:       "¡Depósito procesado!",
+    withdrawalProcessed:    "¡Retiro procesado!",
+    walletAddCard:          "Agregar tarjeta",
+    walletAddMethod:        "Agregar método de retiro",
+    teamHistoryTitle:       "Historial del equipo",
+    teamMemberAccount:      "Cuenta:",
+    teamMemberDate:         "Fecha:",
+    giftCodeLabel:          "Código de bonificación",
+    giftCodeInputPlaceholder: "Ingresar código aquí",
+    giftCodeReceiveBtn:     "Recibir mi recompensa",
+    wheelFirstSpinHint:     "Haz tu primer giro para ver tus resultados aquí.",
+    wheelWinnersCount:      "{0} ganadores",
+    wheelHistoryDividerLabel: "Historial de giros",
+    adminTabDashboard:      "Panel",
+    adminTabDeposits:       "Depósitos",
+    adminTabWithdrawals:    "Retiros",
+    adminTabUsers:          "Usuarios",
+    adminTabProducts:       "Productos",
+    adminTabNumbers:        "Números",
+    adminTabCountries:      "Países",
+    adminTabGiftCodes:      "Códigos de regalo",
+    adminTabSettings:       "Ajustes",
+    adminTabTasks:          "Tareas",
+    adminTabWheel:          "Rueda",
+    adminTabContent:        "Contenido",
+    adminTabCompany:        "Empresa",
   },
   ar: {
     yourNumber:         "رقمك",
@@ -2556,6 +2790,44 @@ const T: Record<Lang, Translations> = {
     methodLabel:        "الطريقة",
     checkinBonusTitle:  "تم استلام المكافأة!",
     checkinBonusDesc:   "تمت إضافة المكافأة اليومية إلى رصيدك",
+    bankerTitle:            "مساحة المصرفي",
+    bankerPendingDepositsLabel: "الإيداعات المعلقة",
+    bankerPendingWithdrawalsLabel: "السحوبات المعلقة",
+    bankerDepositApproved:  "تم الموافقة على الإيداع!",
+    bankerDepositRejected:  "تم رفض الإيداع",
+    bankerWithdrawalApproved: "تم الموافقة على السحب!",
+    bankerWithdrawalRejectedRefunded: "تم رفض السحب واسترداد المبلغ",
+    bankerAll:              "الكل",
+    bankerDepositsTab:      "الإيداعات",
+    bankerWithdrawalsTab:   "السحوبات",
+    bankerHistoryTab:       "السجل",
+    bankerNoHistory:        "لم يتم العثور على سجل",
+    depositProcessed:       "تمت معالجة الإيداع!",
+    withdrawalProcessed:    "تمت معالجة السحب!",
+    walletAddCard:          "إضافة بطاقة",
+    walletAddMethod:        "إضافة طريقة سحب",
+    teamHistoryTitle:       "سجل الفريق",
+    teamMemberAccount:      "الحساب:",
+    teamMemberDate:         "التاريخ:",
+    giftCodeLabel:          "رمز المكافأة",
+    giftCodeInputPlaceholder: "أدخل الرمز هنا",
+    giftCodeReceiveBtn:     "استلام مكافأتي",
+    wheelFirstSpinHint:     "أجرِ أول دوران لترى نتائجك هنا.",
+    wheelWinnersCount:      "{0} فائزون",
+    wheelHistoryDividerLabel: "سجل الدورانات",
+    adminTabDashboard:      "لوحة التحكم",
+    adminTabDeposits:       "الإيداعات",
+    adminTabWithdrawals:    "السحوبات",
+    adminTabUsers:          "المستخدمون",
+    adminTabProducts:       "المنتجات",
+    adminTabNumbers:        "الأرقام",
+    adminTabCountries:      "الدول",
+    adminTabGiftCodes:      "رموز الهدايا",
+    adminTabSettings:       "الإعدادات",
+    adminTabTasks:          "المهام",
+    adminTabWheel:          "العجلة",
+    adminTabContent:        "المحتوى",
+    adminTabCompany:        "الشركة",
   },
 };
 

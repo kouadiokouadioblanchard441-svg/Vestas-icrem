@@ -59,12 +59,12 @@ export default function WalletPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/wallets"] });
-      toast({ title: "Portefeuille ajouté !" });
+      toast({ title: t.walletAdded });
       form.reset();
       setShowForm(false);
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -79,10 +79,10 @@ export default function WalletPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/wallets"] });
-      toast({ title: "Portefeuille supprimé !" });
+      toast({ title: t.walletDeleted });
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -99,7 +99,7 @@ export default function WalletPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/wallets"] });
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -133,7 +133,7 @@ export default function WalletPage() {
             <ChevronLeft className="w-6 h-6 text-white" />
           </button>
           <h1 className="flex-1 text-center text-white font-bold text-base mr-6">
-            Ajouter un moyen de retrait
+            {t.walletAddMethod}
           </h1>
         </div>
 
@@ -349,7 +349,7 @@ export default function WalletPage() {
                 style={{ background: "linear-gradient(135deg, #E8192C, #E8192C)" }}
                 data-testid="button-add-wallet"
               >
-                + Ajouter une carte
+                + {t.walletAddCard}
               </button>
             )}
           </div>
@@ -361,7 +361,7 @@ export default function WalletPage() {
             style={{ background: "linear-gradient(135deg, #E8192C, #E8192C)" }}
             data-testid="button-add-wallet"
           >
-            Ajouter un moyen de retrait
+            {t.walletAddMethod}
           </button>
         )}
       </div>

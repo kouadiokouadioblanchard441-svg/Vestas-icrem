@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 import { Search, Check, X, LogOut, Loader2, ArrowDownCircle, ArrowUpCircle, History, RefreshCw } from "lucide-react";
 import type { Deposit, Withdrawal } from "@shared/schema";
 
@@ -20,6 +21,7 @@ interface WithdrawalWithUser extends Withdrawal {
 }
 
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useI18n();
   const variants: Record<string, string> = {
     pending: "bg-yellow-500/15 text-yellow-600 border-yellow-500/30",
     approved: "bg-green-500/15 text-green-600 border-green-500/30",
@@ -27,7 +29,10 @@ function StatusBadge({ status }: { status: string }) {
     processing: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30",
   };
   const labels: Record<string, string> = {
-    pending: "En attente", approved: "Validé", rejected: "Rejeté", processing: "En cours",
+    pending: t.statusPending,
+    approved: t.statusApproved,
+    rejected: t.statusRejected,
+    processing: t.statusProcessing,
   };
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${variants[status] || "bg-secondary"}`}>
@@ -38,6 +43,7 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function BankerPage() {
   const { user, logout } = useAuth();
+  const { t } = useI18n();
   const { toast } = useToast();
   const [depositSearch, setDepositSearch] = useState("");
   const [depositStatus, setDepositStatus] = useState<"all" | "pending" | "approved" | "rejected">("pending");
@@ -74,22 +80,22 @@ export default function BankerPage() {
     },
     onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ["/api/banker/deposits"] });
-      toast({ title: vars.action === "approve" ? "Dépôt validé !" : "Dépôt rejeté" });
+      toast({ title: vars.action === "approve" ? t.bankerDepositApproved : t.bankerDepositRejected });
     },
-    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
+    onError: (e: any) => toast({ title: e.message || t.errorOccurred, variant: "destructive" }),
   });
 
   const withdrawalMutation = useMutation({
     mutationFn: async ({ id, action }: { id: number; action: "approve" | "reject" }) => {
       const res = await apiRequest("POST", `/api/banker/withdrawals/${id}/${action}`, {});
-      if (!res.ok) { const d = await res.json(); throw new Error(d.message || "Erreur"); }
+      if (!res.ok) { const d = await res.json(); throw new Error(d.message || t.errorOccurred); }
       return res.json();
     },
     onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ["/api/banker/withdrawals"] });
-      toast({ title: vars.action === "approve" ? "Retrait validé !" : "Retrait rejeté et remboursé" });
+      toast({ title: vars.action === "approve" ? t.bankerWithdrawalApproved : t.bankerWithdrawalRejectedRefunded });
     },
-    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
+    onError: (e: any) => toast({ title: e.message || t.errorOccurred, variant: "destructive" }),
   });
 
   const filterDeposits = (items: DepositWithUser[]) => {
@@ -156,7 +162,7 @@ export default function BankerPage() {
       {/* Header */}
       <div className="sticky top-0 z-50 bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between shadow-md">
         <div>
-          <h1 className="text-lg font-bold">Espace Bankier</h1>
+          <h1 className="text-lg font-bold">{t.bankerTitle}</h1>
           <p className="text-xs opacity-80">{user?.fullName}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -177,7 +183,7 @@ export default function BankerPage() {
             data-testid="button-logout"
           >
             <LogOut className="w-4 h-4 mr-1" />
-            Déconnexion
+            {t.logout}
           </Button>
         </div>
       </div>
@@ -187,13 +193,13 @@ export default function BankerPage() {
         <Card className="border-yellow-500/30 bg-yellow-500/5">
           <CardContent className="p-3 text-center">
             <p className="text-2xl font-bold text-yellow-600">{pendingDepositsCount}</p>
-            <p className="text-xs text-muted-foreground mt-1">Dépôts en attente</p>
+            <p className="text-xs text-muted-foreground mt-1">{t.bankerPendingDepositsLabel}</p>
           </CardContent>
         </Card>
         <Card className="border-emerald-500/30 bg-emerald-500/5">
           <CardContent className="p-3 text-center">
             <p className="text-2xl font-bold text-emerald-600">{pendingWithdrawalsCount}</p>
-            <p className="text-xs text-muted-foreground mt-1">Retraits en attente</p>
+            <p className="text-xs text-muted-foreground mt-1">{t.bankerPendingWithdrawalsLabel}</p>
           </CardContent>
         </Card>
       </div>
@@ -204,7 +210,7 @@ export default function BankerPage() {
           <TabsList className="w-full grid grid-cols-3 mb-4">
             <TabsTrigger value="deposits" className="relative" data-testid="tab-deposits">
               <ArrowDownCircle className="w-4 h-4 mr-1" />
-              Dépôts
+              {t.bankerDepositsTab}
               {pendingDepositsCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                   {pendingDepositsCount > 9 ? "9+" : pendingDepositsCount}
@@ -213,7 +219,7 @@ export default function BankerPage() {
             </TabsTrigger>
             <TabsTrigger value="withdrawals" className="relative" data-testid="tab-withdrawals">
               <ArrowUpCircle className="w-4 h-4 mr-1" />
-              Retraits
+              {t.bankerWithdrawalsTab}
               {pendingWithdrawalsCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                   {pendingWithdrawalsCount > 9 ? "9+" : pendingWithdrawalsCount}
@@ -222,7 +228,7 @@ export default function BankerPage() {
             </TabsTrigger>
             <TabsTrigger value="history" data-testid="tab-history">
               <History className="w-4 h-4 mr-1" />
-              Historique
+              {t.bankerHistoryTab}
             </TabsTrigger>
           </TabsList>
 
@@ -244,7 +250,7 @@ export default function BankerPage() {
               {(["pending", "approved", "rejected", "all"] as const).map(s => (
                 <Button key={s} size="sm" variant={depositStatus === s ? "default" : "outline"}
                   onClick={() => setDepositStatus(s)} className="whitespace-nowrap" data-testid={`button-deposit-filter-${s}`}>
-                  {s === "all" ? "Tous" : s === "pending" ? "En attente" : s === "approved" ? "Validés" : "Rejetés"}
+                  {s === "all" ? t.bankerAll : s === "pending" ? t.statusPending : s === "approved" ? t.statusApproved : t.statusRejected}
                 </Button>
               ))}
             </div>
@@ -338,7 +344,7 @@ export default function BankerPage() {
               {(["pending", "approved", "rejected", "processing", "all"] as const).map(s => (
                 <Button key={s} size="sm" variant={withdrawalStatus === s ? "default" : "outline"}
                   onClick={() => setWithdrawalStatus(s)} className="whitespace-nowrap" data-testid={`button-withdrawal-filter-${s}`}>
-                  {s === "all" ? "Tous" : s === "pending" ? "En attente" : s === "approved" ? "Validés" : s === "rejected" ? "Rejetés" : "En cours"}
+                  {s === "all" ? t.bankerAll : s === "pending" ? t.statusPending : s === "approved" ? t.statusApproved : s === "rejected" ? t.statusRejected : t.statusProcessing}
                 </Button>
               ))}
             </div>
@@ -348,7 +354,7 @@ export default function BankerPage() {
             ) : (
               <div className="space-y-3">
                 {filterWithdrawals(allWithdrawals || []).length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">Aucun retrait trouvé</div>
+                  <div className="text-center py-8 text-muted-foreground">{t.noWithdrawals}</div>
                 ) : filterWithdrawals(allWithdrawals || []).map(w => (
                   <Card key={w.id} className={w.status === "pending" ? "border-yellow-500/30" : ""}>
                     <CardContent className="p-4">
@@ -433,10 +439,10 @@ export default function BankerPage() {
               </div>
             </div>
             <div className="flex gap-2">
-              {(["all", "deposit", "withdrawal"] as const).map(t => (
-                <Button key={t} size="sm" variant={historyType === t ? "default" : "outline"}
-                  onClick={() => setHistoryType(t)} className="whitespace-nowrap" data-testid={`button-history-filter-${t}`}>
-                  {t === "all" ? "Tous" : t === "deposit" ? "Dépôts" : "Retraits"}
+              {(["all", "deposit", "withdrawal"] as const).map(type => (
+                <Button key={type} size="sm" variant={historyType === type ? "default" : "outline"}
+                  onClick={() => setHistoryType(type)} className="whitespace-nowrap" data-testid={`button-history-filter-${type}`}>
+                  {type === "all" ? t.bankerAll : type === "deposit" ? t.bankerDepositsTab : t.bankerWithdrawalsTab}
                 </Button>
               ))}
             </div>
@@ -446,7 +452,7 @@ export default function BankerPage() {
             ) : (
               <div className="space-y-2">
                 {filterHistory().length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">Aucun historique trouvé</div>
+                  <div className="text-center py-8 text-muted-foreground">{t.bankerNoHistory}</div>
                 ) : filterHistory().map(({ type, item, date }) => (
                   <Card key={`${type}-${item.id}`}>
                     <CardContent className="p-3">

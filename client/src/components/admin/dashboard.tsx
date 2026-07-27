@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Users, ArrowDownToLine, ArrowUpFromLine, ShoppingCart, Wallet, Clock, TrendingUp, Award, Calendar, RotateCcw, Loader2, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useI18n } from "@/lib/i18n";
 
 interface DashboardStats {
   totalUsers: number;
@@ -36,6 +37,7 @@ interface AdminDashboardProps {
 
 export default function AdminDashboard({ isSuperAdmin }: AdminDashboardProps) {
   const { toast } = useToast();
+  const { t } = useI18n();
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [appliedDates, setAppliedDates] = useState<{start: string, end: string}>({start: "", end: ""});

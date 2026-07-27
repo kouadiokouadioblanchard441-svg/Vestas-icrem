@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useI18n } from "@/lib/i18n";
 import { Check, X, Search, Loader2, ShieldCheck } from "lucide-react";
 import type { Withdrawal } from "@shared/schema";
 
@@ -22,6 +23,7 @@ interface WithdrawalWithUser extends Withdrawal {
 
 export default function AdminWithdrawals() {
   const { toast } = useToast();
+  const { t } = useI18n();
   const [filter, setFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "pending_2fa" | "processing" | "approved" | "rejected" | "failed">("pending");
   const [verificationCodes, setVerificationCodes] = useState<Record<number, string>>({});
@@ -51,10 +53,10 @@ export default function AdminWithdrawals() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/withdrawals"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
-      toast({ title: "Retrait traité !" });
+      toast({ title: t.withdrawalProcessed });
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -105,18 +107,18 @@ export default function AdminWithdrawals() {
             onClick={() => setStatusFilter(status)}
           >
             {status === "all"
-              ? "Tous"
+              ? t.bankerAll
               : status === "pending"
-                ? "En attente"
+                ? t.statusPending
                 : status === "pending_2fa"
-                  ? "2FA requis"
+                  ? "2FA"
                   : status === "processing"
-                    ? "En cours"
+                    ? t.statusProcessing
                     : status === "approved"
-                      ? "Approuvés"
+                      ? t.statusApproved
                       : status === "failed"
-                        ? "Échoués"
-                        : "Rejetés"}
+                        ? t.statusFailed
+                        : t.statusRejected}
           </Button>
         ))}
       </div>
@@ -143,16 +145,16 @@ export default function AdminWithdrawals() {
                     withdrawal.status === "processing" || withdrawal.status === "pending_2fa" ? "outline" : "destructive"
                   }>
                     {withdrawal.status === "pending"
-                      ? "En attente"
+                      ? t.statusPending
                       : withdrawal.status === "pending_2fa"
-                        ? "2FA NOWPayments requis"
+                        ? "2FA NOWPayments"
                         : withdrawal.status === "processing"
-                          ? "En cours"
+                          ? t.statusProcessing
                           : withdrawal.status === "approved"
-                            ? "Approuvé"
+                            ? t.statusApproved
                             : withdrawal.status === "failed"
-                              ? "Échoué"
-                              : "Rejeté"}
+                              ? t.statusFailed
+                              : t.statusRejected}
                   </Badge>
                 </div>
 

@@ -102,7 +102,7 @@ export default function TeamDetailsPage() {
           style={{ color: GREEN }}
           data-testid="text-page-title"
         >
-          Historique d'équipe
+          {t.teamHistoryTitle}
         </h1>
       </div>
 
@@ -167,10 +167,10 @@ export default function TeamDetailsPage() {
               <User className="w-7 h-7" style={{ color: GREEN }} />
             </div>
             <p className="text-gray-500 text-sm font-medium">
-              Aucun membre au niveau {activeLevel}
+              {t.membersNoneAtLevel.replace("{0}", String(activeLevel))}
             </p>
             <p className="text-gray-400 text-xs mt-1">
-              Invitez des amis pour agrandir votre équipe
+              {t.membersInviteFriends}
             </p>
           </div>
         ) : (
@@ -194,10 +194,10 @@ export default function TeamDetailsPage() {
                   className="text-sm font-semibold text-gray-800 truncate"
                   data-testid={`text-member-phone-${member.id}`}
                 >
-                  Compte : {maskPhone(member.phone)}
+                  {t.teamMemberAccount} {maskPhone(member.phone)}
                 </p>
                 <p className="text-xs text-gray-400 mt-0.5">
-                  Date : {formatDate(member.createdAt)}
+                  {t.teamMemberDate} {formatDate(member.createdAt)}
                 </p>
               </div>
 
