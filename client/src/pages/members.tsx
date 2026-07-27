@@ -36,11 +36,16 @@ const BLUE = "#315aab";
 const BLUE_LIGHT = "#e8eef8";
 const BLUE_MID = "#4a72c4";
 
-const VIP_COLORS: Record<number, { bg: string; text: string; label: string }> = {
-  1: { bg: "linear-gradient(135deg, #315aab 0%, #254a91 100%)", text: "#fff", label: "VIP 1" },
-  2: { bg: "linear-gradient(135deg, #4a72c4 0%, #315aab 100%)", text: "#fff", label: "VIP 2" },
-  3: { bg: "linear-gradient(135deg, #1a3a7a 0%, #0f2555 100%)", text: "#fff", label: "VIP 3" },
-};
+const VIP_ACTIVE = { bg: "linear-gradient(135deg, #315aab 0%, #254a91 100%)", text: "#fff", label: "VIP" };
+
+function getMemberInitials(fullName: string, phone: string): string {
+  if (fullName && fullName.trim().length > 0) {
+    const parts = fullName.trim().split(/\s+/);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return parts[0][0].toUpperCase();
+  }
+  return phone ? phone[0] : "?";
+}
 
 export default function MembersPage() {
   const [activeLevel, setActiveLevel] = useState<1 | 2 | 3>(1);
@@ -156,7 +161,7 @@ export default function MembersPage() {
           </div>
         ) : (
           activeMembers.map((member) => {
-            const vip = VIP_COLORS[member.vipLevel] || VIP_COLORS[1];
+            const initials = getMemberInitials(member.fullName, member.phone);
             return (
               <div
                 key={member.id}
@@ -165,16 +170,16 @@ export default function MembersPage() {
                 {/* Top strip */}
                 <div
                   className="h-1 w-full"
-                  style={{ background: vip.bg }}
+                  style={{ background: BLUE }}
                 />
 
                 <div className="flex items-center px-4 py-3.5 gap-3">
-                  {/* Avatar */}
+                  {/* Avatar with initials */}
                   <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-sm"
-                    style={{ background: BLUE_LIGHT }}
+                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-sm font-bold text-white text-lg select-none"
+                    style={{ background: `linear-gradient(135deg, ${BLUE} 0%, #254a91 100%)` }}
                   >
-                    <User className="w-6 h-6" style={{ color: BLUE }} />
+                    {initials}
                   </div>
 
                   {/* Center info */}
@@ -187,13 +192,15 @@ export default function MembersPage() {
                       {maskPhone(member.phone)}
                     </p>
 
-                    {/* VIP badge */}
-                    <span
-                      className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-xs font-bold"
-                      style={{ background: vip.bg, color: vip.text }}
-                    >
-                      {vip.label}
-                    </span>
+                    {/* VIP badge — uniquement si le membre a un produit actif */}
+                    {member.hasActiveProduct && (
+                      <span
+                        className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-xs font-bold"
+                        style={{ background: VIP_ACTIVE.bg, color: VIP_ACTIVE.text }}
+                      >
+                        {VIP_ACTIVE.label}
+                      </span>
+                    )}
                   </div>
 
                   {/* Bonus */}
