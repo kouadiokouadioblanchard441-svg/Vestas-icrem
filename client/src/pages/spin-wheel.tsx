@@ -80,48 +80,33 @@ function drawWheel(canvas: HTMLCanvasElement, rotation: number, segments: SpinWh
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    /* coin icon on segment */
-    const coinA = start + ARC / 2;
-    const coinD = segR * 0.72;
-    const coinX = cx + Math.cos(coinA) * coinD;
-    const coinY = cy + Math.sin(coinA) * coinD;
-    ctx.beginPath();
-    ctx.arc(coinX, coinY, 11, 0, 2 * Math.PI);
-    const ic = ctx.createRadialGradient(coinX - 3, coinY - 3, 0, coinX, coinY, 11);
-    ic.addColorStop(0, "#fff8c0");
-    ic.addColorStop(0.5, "#ffd700");
-    ic.addColorStop(1, "#b8860b");
-    ctx.fillStyle = ic;
-    ctx.fill();
-    ctx.strokeStyle = "#8B6914";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    ctx.fillStyle = "#8B6914";
-    ctx.font = "bold 9px sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("$", coinX, coinY);
-
-    /* Prize amount and label: keep both visible in every section. */
+    /*
+     * Keep both the amount and label visible in every section.
+     * The text is intentionally placed toward the outer edge so it stays
+     * clear of the center GO badge, including on small screens.
+     */
     const midA = start + ARC / 2;
     ctx.save();
-    ctx.translate(cx + Math.cos(midA) * segR * 0.42, cy + Math.sin(midA) * segR * 0.42);
-    ctx.rotate(midA + Math.PI / 2);
-    ctx.fillStyle = "#ffffff";
+    ctx.translate(cx + Math.cos(midA) * segR * 0.68, cy + Math.sin(midA) * segR * 0.68);
+    let textRotation = midA + Math.PI / 2;
+    if (textRotation > Math.PI / 2 && textRotation < Math.PI * 1.5) {
+      textRotation += Math.PI;
+    }
+    ctx.rotate(textRotation);
+    ctx.fillStyle = "#fffde7";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.shadowColor = "rgba(0,0,0,0.6)";
-    ctx.shadowBlur = 3;
-    ctx.font = "900 14px sans-serif";
-    const amountLabel = `${seg.amount} USDT`;
-    ctx.fillText(amountLabel, 0, -7);
-    ctx.font = "bold 8px sans-serif";
-    const label = seg.canWin ? seg.label : `${seg.label} (non gagnable)`;
+    ctx.shadowColor = "rgba(0,0,0,0.9)";
+    ctx.shadowBlur = 5;
+    ctx.font = "900 16px sans-serif";
+    ctx.fillText(`${seg.amount} USDT`, 0, -8);
+    ctx.font = "bold 9px sans-serif";
+    const label = seg.canWin ? seg.label : `${seg.label} · indisponible`;
     const words = label.split(/\s+/);
     const labelLines = words.length > 2
       ? [words.slice(0, Math.ceil(words.length / 2)).join(" "), words.slice(Math.ceil(words.length / 2)).join(" ")]
       : [label];
-    labelLines.forEach((line, li) => ctx.fillText(line, 0, 7 + li * 10));
+    labelLines.slice(0, 2).forEach((line, li) => ctx.fillText(line, 0, 8 + li * 10));
     ctx.shadowBlur = 0;
     ctx.restore();
   }
@@ -160,12 +145,12 @@ function drawWheel(canvas: HTMLCanvasElement, rotation: number, segments: SpinWh
 
 /* ── Ticker messages ────────────────────────────────────────── */
 const TICKER_MSGS = [
-  "050****414 a retiré avec succès 2 040 XOF",
-  "067****821 a retiré avec succès 5 200 XOF",
-  "055****113 a gagné Special Bonus",
-  "078****990 a retiré avec succès 1 500 XOF",
-  "091****357 a gagné Grand Prize",
-  "066****442 a retiré avec succès 3 780 XOF",
+  "050****414 a gagné 2 USDT",
+  "067****821 a gagné 5 USDT",
+  "055****113 a gagné un bonus spécial",
+  "078****990 a gagné 10 USDT",
+  "091****357 a gagné le grand prix",
+  "066****442 a gagné 20 USDT",
 ];
 
 /* ── Page ───────────────────────────────────────────────────── */
@@ -371,21 +356,15 @@ export default function SpinWheelPage() {
         <p className="text-xs mb-1" style={{ color: "#a78bfa" }}>Récompenses Totales :</p>
         <div className="flex items-center justify-between">
           <p className="font-extrabold text-2xl" style={{ color: "#ffd700", textShadow: "0 0 12px #ffd70088" }}>
-            XOF {(totalWon * 655).toLocaleString("fr-FR") || "0"}
+            {totalWon.toLocaleString("fr-FR", { maximumFractionDigits: 2 })} USDT
           </p>
-          <button
-            className="px-4 py-1.5 rounded-full text-sm font-bold"
-            style={{ background: "linear-gradient(135deg, #ffd700, #f59e0b)", color: "#1a0a00" }}
-          >
-            Retrait
-          </button>
         </div>
 
       </div>
 
 
       {/* ── Wheel ── */}
-      <div className="flex flex-col items-center px-4 mb-4">
+      <div className="flex flex-col items-center px-2 mb-4">
         {/* Pointer */}
         <div className="relative mb-[-12px] z-10 flex flex-col items-center">
           <div
@@ -410,9 +389,14 @@ export default function SpinWheelPage() {
         >
           <canvas
             ref={canvasRef}
-            width={300}
-            height={300}
-            style={{ display: "block", borderRadius: "50%" }}
+             width={360}
+             height={360}
+             style={{
+               display: "block",
+               width: "min(92vw, 360px)",
+               height: "min(92vw, 360px)",
+               borderRadius: "50%",
+             }}
           />
         </div>
 
