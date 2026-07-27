@@ -140,7 +140,7 @@ export async function registerRoutes(
           ? { connectionString: sessionDbUrl, ssl: { rejectUnauthorized: false } }
           : undefined,
         tableName: "session",
-        createTableIfMissing: false,
+        createTableIfMissing: true,
         pruneSessionInterval: 60 * 60,
       }),
       secret: process.env.SESSION_SECRET || "fb2e4a19c3d87b650a12e4f98c23d17a84b6e9c5f2301a8d7bc4e506a90f3812",
@@ -285,11 +285,16 @@ export async function registerRoutes(
     if (!req.session.userId) {
       return res.status(401).json({ message: "Non authentifié" });
     }
-    const user = await storage.getUser(req.session.userId);
-    if (!user) {
-      return res.status(401).json({ message: "Non authentifié" });
+    try {
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(401).json({ message: "Non authentifié" });
+      }
+      res.json({ user: { ...user, password: undefined } });
+    } catch (error: any) {
+      console.error("Auth/me error:", error);
+      res.status(500).json({ message: "Erreur serveur" });
     }
-    res.json({ user: { ...user, password: undefined } });
   });
 
   app.post("/api/auth/logout", (req, res) => {

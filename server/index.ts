@@ -90,7 +90,15 @@ app.use((req, res, next) => {
   next();
 });
 
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled rejection — server will continue:", reason);
+});
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught exception:", err);
+});
+
 (async () => {
+  try {
   // Seed database with initial data
   await seed().catch(console.error);
   
@@ -167,4 +175,8 @@ app.use((req, res, next) => {
       log(`serving on port ${port}`);
     },
   );
+  } catch (err) {
+    console.error("Fatal startup error:", err);
+    process.exit(1);
+  }
 })();
