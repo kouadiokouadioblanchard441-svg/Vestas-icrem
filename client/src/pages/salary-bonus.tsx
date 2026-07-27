@@ -1,49 +1,67 @@
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import newBannerImg from "@assets/piedestal-realiste-trophees-gobelets-metal-composition-rubans-_1785144220204.jpg";
-import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ChevronLeft, CheckCircle2, Users, Trophy } from "lucide-react";
 import { getCountryByCode } from "@/lib/countries";
-import { getContent } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
+import { apiRequest } from "@/lib/queryClient";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SalaryBonusPage() {
   const { user } = useAuth();
   const { t } = useI18n();
   const [, navigate] = useLocation();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const [claimingId, setClaimingId] = useState<number | null>(null);
 
-  const { data: teamStats } = useQuery<any>({
-    queryKey: ["/api/team/stats"],
+  const { data: tasks = [], isLoading } = useQuery<any[]>({
+    queryKey: ["/api/tasks"],
+    refetchInterval: 30000,
+    staleTime: 0,
   });
 
   const { data: settings } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
   });
 
-  if (!user) return null;
+  const claimMutation = useMutation({
+    mutationFn: async (taskId: number) => {
+      const res = await apiRequest("POST", `/api/tasks/${taskId}/claim`, {});
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Erreur");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      toast({ title: t.tasksRewardClaimed, description: t.tasksRewardClaimedDesc });
+      setClaimingId(null);
+    },
+    onError: (err: any) => {
+      toast({ title: "Erreur", description: err.message, variant: "destructive" });
+      setClaimingId(null);
+    },
+  });
 
-  const headerTitle = getContent(settings, "content_salarybonus_headerTitle", "任务中心");
+  if (!user) return null;
 
   const country = getCountryByCode(user.country);
   const currency = country?.currency || "USDT";
-  const level1Count = teamStats?.level1Count || 0;
-  const totalCommission = parseFloat(teamStats?.totalCommission || "0");
-  const totalPeople = (teamStats?.level1Count || 0) + (teamStats?.level2Count || 0) + (teamStats?.level3Count || 0);
-
-  const levels = [
-    { lv: 1, required: 3,   reward: 1000  },
-    { lv: 2, required: 10,  reward: 3000  },
-    { lv: 3, required: 30,  reward: 5000  },
-    { lv: 4, required: 50,  reward: 10000 },
-    { lv: 5, required: 100, reward: 20000 },
-    { lv: 6, required: 200, reward: 50000 },
-  ];
+  const activeMembers = tasks.length > 0 ? ((tasks[0] as any).currentInvites || 0) : 0;
+  const totalClaimed = (tasks as any[])
+    .filter((tk) => tk.isCompleted)
+    .reduce((sum, tk) => sum + (tk.reward || 0), 0);
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#f0f4ff" }}>
 
       {/* ── Header ── */}
-      <div className="flex items-center gap-3 px-4 pt-6 pb-4 bg-white shadow-sm">
+      <div className="flex items-center gap-3 px-4 pt-6 pb-4 bg-white shadow-sm sticky top-0 z-10">
         <button
           onClick={() => navigate("/account")}
           className="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100"
@@ -52,106 +70,167 @@ export default function SalaryBonusPage() {
           <ChevronLeft className="w-5 h-5 text-gray-700" />
         </button>
         <p className="flex-1 text-center text-gray-900 font-extrabold text-lg pr-9">
-          {headerTitle}
+          {t.salaryPageTitle}
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-16 px-3 pt-3 space-y-2">
+      <div className="flex-1 overflow-y-auto pb-10 px-4 pt-4 space-y-4">
 
-        {/* ── Stats card ── */}
-        <div
-          className="rounded-xl px-4 py-3 flex items-center relative overflow-hidden"
-          style={{
-            background: `url(${newBannerImg})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
-          <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.35)" }} />
-          <div className="relative z-10 flex-1 text-center">
-            <p className="text-white font-extrabold text-lg">{currency} {totalCommission.toFixed(0)}</p>
-            <p className="text-white/70 text-[11px] mt-0.5">{t.salaryTotalRewards}</p>
-          </div>
-          <div className="relative z-10 w-px h-8 bg-white/30" />
-          <div className="relative z-10 flex-1 text-center">
-            <p className="text-white font-extrabold text-lg">{totalPeople}</p>
-            <p className="text-white/70 text-[11px] mt-0.5">{t.salaryTotalPeople}</p>
+        {/* ── Stats banner ── */}
+        <div className="rounded-2xl overflow-hidden relative" style={{ minHeight: 96 }}>
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `url(${newBannerImg})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+          <div className="absolute inset-0" style={{ background: "rgba(15,35,90,0.68)" }} />
+          <div className="relative z-10 flex items-center px-4 py-5 gap-4">
+            <div className="flex-1 text-center">
+              <div className="flex items-center justify-center gap-1.5 mb-0.5">
+                <Users className="w-4 h-4 text-blue-200" />
+                <p className="text-blue-100 text-[11px] font-medium">{t.salaryActiveMembers}</p>
+              </div>
+              <p className="text-white font-extrabold text-2xl">{activeMembers}</p>
+            </div>
+            <div className="w-px h-12 bg-white/20" />
+            <div className="flex-1 text-center">
+              <div className="flex items-center justify-center gap-1.5 mb-0.5">
+                <Trophy className="w-4 h-4 text-yellow-200" />
+                <p className="text-blue-100 text-[11px] font-medium">{t.salaryTotalRewards}</p>
+              </div>
+              <p className="text-white font-extrabold text-2xl">
+                {totalClaimed.toLocaleString()}{" "}
+                <span className="text-sm font-normal">{currency}</span>
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* ── Level cards ── */}
-        {levels.map(({ lv, required, reward }) => {
-          const current = level1Count;
-          const reached = current >= required;
-          const progress = Math.min(current, required);
+        {/* ── Info note ── */}
+        <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 text-blue-700 text-xs leading-relaxed">
+          <span className="font-bold">✦ {t.salaryActiveMemberDef}</span>
+        </div>
 
-          return (
-            <div
-              key={lv}
-              className="rounded-xl overflow-hidden shadow-sm flex"
-              style={{ background: "#fff" }}
-              data-testid={`level-card-${lv}`}
-            >
-              {/* Left bar */}
+        {/* ── Reward cards ── */}
+        {isLoading ? (
+          <div className="flex justify-center py-16">
+            <div className="w-9 h-9 rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin" />
+          </div>
+        ) : (
+          (tasks as any[]).map((task, index) => {
+            const current = task.currentInvites || 0;
+            const required = task.requiredInvites || 1;
+            const progress = Math.min(current, required);
+            const pct = Math.min((progress / required) * 100, 100);
+            const missing = Math.max(0, required - current);
+            const isThisClaiming = claimingId === task.id;
+
+            const headerGradient = task.isCompleted
+              ? "linear-gradient(135deg, #16a34a, #15803d)"
+              : task.canClaim
+              ? "linear-gradient(135deg, #d97706, #b45309)"
+              : "linear-gradient(135deg, #1d4ed8, #1e40af)";
+
+            const barGradient = task.isCompleted
+              ? "linear-gradient(90deg, #22c55e, #16a34a)"
+              : task.canClaim
+              ? "linear-gradient(90deg, #f59e0b, #d97706)"
+              : "linear-gradient(90deg, #60a5fa, #1d4ed8)";
+
+            return (
               <div
-                className="flex items-center justify-center px-3 py-3"
-                style={{ background: "linear-gradient(160deg, #E8192C, #ff5a5a)", minWidth: 56 }}
+                key={task.id}
+                className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100"
+                data-testid={`reward-card-${index + 1}`}
               >
-                <p className="text-white font-extrabold text-sm">Lv{lv}</p>
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 px-3 py-2.5">
-                <p className="text-gray-700 text-[11px] text-center leading-snug mb-2">
-                  {t.salaryInviteDesc.replace("{0}", String(required))}{" "}
-                  <span className="font-bold" style={{ color: "#E8192C" }}>{currency} {reward.toLocaleString()}</span>
-                </p>
-
-                {/* Stats row */}
-                <div className="flex justify-around mb-2">
-                  <div className="text-center">
-                    <p className="text-gray-900 font-extrabold text-sm">{current}</p>
-                    <p className="text-gray-400 text-[10px]">{t.salaryCurrent}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-gray-900 font-extrabold text-sm">{required}</p>
-                    <p className="text-gray-400 text-[10px]">{t.salaryTarget}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-gray-900 font-extrabold text-sm">{progress}/{required}</p>
-                    <p className="text-gray-400 text-[10px]">{t.salaryProgress}</p>
-                  </div>
-                </div>
-
-                {/* Progress bar */}
-                <div className="w-full h-1 rounded-full bg-gray-100 mb-2">
-                  <div
-                    className="h-full rounded-full transition-all"
-                    style={{
-                      width: `${(progress / required) * 100}%`,
-                      background: "linear-gradient(90deg, #E8192C, #ff5a5a)",
-                    }}
-                  />
-                </div>
-
-                {/* Button */}
-                <button
-                  className="w-full py-1.5 rounded-lg text-xs font-bold transition-all"
-                  style={reached
-                    ? { background: "linear-gradient(90deg, #E8192C, #ff5a5a)", color: "#fff" }
-                    : { background: "#F3F4F6", color: "#6B7280" }
-                  }
-                  data-testid={`button-level-${lv}`}
+                {/* Card header */}
+                <div
+                  className="px-4 py-3 flex items-center justify-between"
+                  style={{ background: headerGradient }}
                 >
-                  {reached ? t.salaryClaim : t.salaryInProgress}
-                </button>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🎁</span>
+                    <span className="text-white font-bold text-base">
+                      {t.salaryRewardLabel} {index + 1}
+                    </span>
+                  </div>
+                  {task.isCompleted ? (
+                    <span className="flex items-center gap-1 bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                      <CheckCircle2 className="w-3 h-3" />
+                      {t.salaryClaimed}
+                    </span>
+                  ) : task.canClaim ? (
+                    <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                      {t.salaryUnlocked}
+                    </span>
+                  ) : null}
+                </div>
+
+                {/* Card body */}
+                <div className="px-4 py-4">
+
+                  {/* Amount */}
+                  <div className="text-center mb-4">
+                    <p className="text-4xl font-extrabold" style={{ color: "#1d4ed8" }}>
+                      {(task.reward || 0).toLocaleString()}
+                    </p>
+                    <p className="text-sm text-gray-400 font-medium mt-0.5">{currency}</p>
+                  </div>
+
+                  {/* Progress label */}
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-gray-500 text-xs font-medium">
+                      {t.salaryProgress}
+                    </span>
+                    <span className="font-bold text-sm text-gray-800">
+                      {progress}/{required}
+                    </span>
+                  </div>
+
+                  {/* Animated progress bar */}
+                  <div className="w-full h-3 rounded-full bg-gray-100 overflow-hidden mb-4">
+                    <div
+                      className="h-full rounded-full transition-all duration-700 ease-out"
+                      style={{ width: `${pct}%`, background: barGradient }}
+                    />
+                  </div>
+
+                  {/* CTA */}
+                  {task.isCompleted ? (
+                    <div className="w-full py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 font-bold text-sm flex items-center justify-center gap-2">
+                      <CheckCircle2 className="w-4 h-4" />
+                      {t.salaryClaimed}
+                    </div>
+                  ) : task.canClaim ? (
+                    <button
+                      className="w-full py-3 rounded-xl text-white font-bold text-sm transition-opacity disabled:opacity-60"
+                      style={{ background: "linear-gradient(135deg, #d97706, #b45309)" }}
+                      disabled={isThisClaiming}
+                      onClick={() => {
+                        setClaimingId(task.id);
+                        claimMutation.mutate(task.id);
+                      }}
+                    >
+                      {isThisClaiming ? "..." : t.salaryClaim}
+                    </button>
+                  ) : (
+                    <button
+                      className="w-full py-3 rounded-xl bg-gray-100 text-gray-400 font-semibold text-sm cursor-not-allowed"
+                      disabled
+                    >
+                      {t.salaryMissing.replace("{0}", String(missing))}
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
 
       </div>
-      <img src={solarPanelImg} alt="Powerade" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }

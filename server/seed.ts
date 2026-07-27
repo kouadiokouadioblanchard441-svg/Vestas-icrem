@@ -204,18 +204,23 @@ export async function seed() {
     console.log(`Products skipped — ${existingProducts.length} existing products preserved`);
   }
 
-  // Seed tasks only if table is empty (first install only — never overwrite admin changes)
+  // Seed tasks — migrate to new 4-reward parrainage structure if needed
   const existingTasks = await db.select().from(tasks);
-  if (existingTasks.length === 0) {
-    await db.insert(tasks).values([
-      { name: "Parrain Bronze", description: "Inviter 3 personnes", requiredInvites: 3, reward: 350, sortOrder: 1 },
-      { name: "Parrain Argent", description: "Inviter 5 personnes", requiredInvites: 5, reward: 750, sortOrder: 2 },
-      { name: "Parrain Or", description: "Inviter 10 personnes", requiredInvites: 10, reward: 2500, sortOrder: 3 },
-      { name: "Parrain Platine", description: "Inviter 30 personnes", requiredInvites: 30, reward: 6500, sortOrder: 4 },
-      { name: "Parrain Diamant", description: "Inviter 100 personnes", requiredInvites: 100, reward: 15000, sortOrder: 5 },
-      { name: "Parrain Elite", description: "Inviter 300 personnes", requiredInvites: 300, reward: 50000, sortOrder: 6 },
-    ]);
-    console.log("Tasks seeded (first install)");
+  const newRewardTasks = [
+    { name: "🎁 Récompense 1", description: "3 membres actifs requis",  requiredInvites: 3,  reward: 1000,  sortOrder: 1 },
+    { name: "🎁 Récompense 2", description: "10 membres actifs requis", requiredInvites: 10, reward: 3000,  sortOrder: 2 },
+    { name: "🎁 Récompense 3", description: "30 membres actifs requis", requiredInvites: 30, reward: 5000,  sortOrder: 3 },
+    { name: "🎁 Récompense 4", description: "50 membres actifs requis", requiredInvites: 50, reward: 10000, sortOrder: 4 },
+  ];
+  // Detect old structure (legacy task names like "Parrain Bronze")
+  const hasLegacyTasks = existingTasks.some(t => t.name.startsWith("Parrain "));
+  if (existingTasks.length === 0 || hasLegacyTasks) {
+    if (hasLegacyTasks) {
+      // Remove old tasks (user_tasks FK rows are preserved; only tasks without claims are removed cleanly)
+      await db.delete(tasks);
+    }
+    await db.insert(tasks).values(newRewardTasks);
+    console.log("Reward tasks seeded (new 4-reward structure)");
   } else {
     console.log(`Tasks skipped — ${existingTasks.length} existing tasks preserved`);
   }

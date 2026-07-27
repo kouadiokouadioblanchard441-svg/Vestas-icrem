@@ -138,6 +138,13 @@ export type Translations = {
   membersInviteFriends: string;
   membersBonus: string;
   // salary-bonus / task center page
+  salaryPageTitle: string;
+  salaryRewardLabel: string;
+  salaryActiveMembers: string;
+  salaryActiveMemberDef: string;
+  salaryUnlocked: string;
+  salaryClaimed: string;
+  salaryMissing: string;
   salaryTotalRewards: string;
   salaryTotalPeople: string;
   salaryInviteDesc: string;
@@ -583,6 +590,13 @@ const T: Record<Lang, Translations> = {
     membersNoneAtLevel:  "第{0}级暂无成员",
     membersInviteFriends:"邀请好友壮大您的团队",
     membersBonus:        "佣金",
+    salaryPageTitle:        "推荐奖励",
+    salaryRewardLabel:      "奖励",
+    salaryActiveMembers:    "活跃会员",
+    salaryActiveMemberDef:  "活跃会员：直接推荐并至少购买了 VIP 1 的用户",
+    salaryUnlocked:         "已解锁",
+    salaryClaimed:          "已领取",
+    salaryMissing:          "还差 {0} 名活跃会员",
     salaryTotalRewards: "总奖励",
     salaryTotalPeople:  "总人数",
     salaryInviteDesc:   "邀请 {0} 名1级投资者即可获得：",
@@ -898,6 +912,13 @@ const T: Record<Lang, Translations> = {
     membersNoneAtLevel:  "Aucun membre au niveau {0}",
     membersInviteFriends:"Invitez des amis pour agrandir votre équipe",
     membersBonus:        "Bonus",
+    salaryPageTitle:        "Récompenses de parrainage",
+    salaryRewardLabel:      "Récompense",
+    salaryActiveMembers:    "Membres actifs",
+    salaryActiveMemberDef:  "Filleul direct ayant acheté au minimum VIP 1",
+    salaryUnlocked:         "Débloquée",
+    salaryClaimed:          "Réclamée ✓",
+    salaryMissing:          "Il vous manque {0} membres actifs",
     salaryTotalRewards: "Total des récompenses",
     salaryTotalPeople:  "Total de personnes",
     salaryInviteDesc:   "Invitez {0} investisseurs de niveau 1 pour obtenir :",
@@ -1213,6 +1234,13 @@ const T: Record<Lang, Translations> = {
     membersNoneAtLevel:  "No members at level {0}",
     membersInviteFriends:"Invite friends to grow your team",
     membersBonus:        "Bonus",
+    salaryPageTitle:        "Referral Rewards",
+    salaryRewardLabel:      "Reward",
+    salaryActiveMembers:    "Active members",
+    salaryActiveMemberDef:  "Direct referral who has purchased at least VIP 1",
+    salaryUnlocked:         "Unlocked",
+    salaryClaimed:          "Claimed ✓",
+    salaryMissing:          "You need {0} more active members",
     salaryTotalRewards: "Total rewards",
     salaryTotalPeople:  "Total people",
     salaryInviteDesc:   "Invite {0} level-1 investors to earn:",
@@ -1528,6 +1556,13 @@ const T: Record<Lang, Translations> = {
     membersNoneAtLevel:  "Nenhum membro no nível {0}",
     membersInviteFriends:"Convide amigos para expandir sua equipe",
     membersBonus:        "Bônus",
+    salaryPageTitle:        "Recompensas de indicação",
+    salaryRewardLabel:      "Recompensa",
+    salaryActiveMembers:    "Membros ativos",
+    salaryActiveMemberDef:  "Indicado direto que comprou pelo menos VIP 1",
+    salaryUnlocked:         "Desbloqueada",
+    salaryClaimed:          "Recebida ✓",
+    salaryMissing:          "Faltam {0} membros ativos",
     salaryTotalRewards: "Total de recompensas",
     salaryTotalPeople:  "Total de pessoas",
     salaryInviteDesc:   "Convide {0} investidores nível 1 para ganhar:",
@@ -1843,6 +1878,13 @@ const T: Record<Lang, Translations> = {
     membersNoneAtLevel:  "Sin miembros en nivel {0}",
     membersInviteFriends:"Invite amigos para agrandar su equipo",
     membersBonus:        "Bono",
+    salaryPageTitle:        "Recompensas de referido",
+    salaryRewardLabel:      "Recompensa",
+    salaryActiveMembers:    "Miembros activos",
+    salaryActiveMemberDef:  "Referido directo que compró al menos VIP 1",
+    salaryUnlocked:         "Desbloqueada",
+    salaryClaimed:          "Reclamada ✓",
+    salaryMissing:          "Te faltan {0} miembros activos",
     salaryTotalRewards: "Total de recompensas",
     salaryTotalPeople:  "Total de personas",
     salaryInviteDesc:   "Invite {0} inversores de nivel 1 para ganar:",
@@ -2158,6 +2200,13 @@ const T: Record<Lang, Translations> = {
     membersNoneAtLevel:  "لا يوجد أعضاء في المستوى {0}",
     membersInviteFriends:"ادعُ أصدقاء لتوسيع فريقك",
     membersBonus:        "مكافأة",
+    salaryPageTitle:        "مكافآت الإحالة",
+    salaryRewardLabel:      "مكافأة",
+    salaryActiveMembers:    "الأعضاء النشطون",
+    salaryActiveMemberDef:  "إحالة مباشرة اشترت على الأقل VIP 1",
+    salaryUnlocked:         "مفتوحة",
+    salaryClaimed:          "تم الاستلام ✓",
+    salaryMissing:          "تحتاج {0} أعضاء نشطين إضافيين",
     salaryTotalRewards: "إجمالي المكافآت",
     salaryTotalPeople:  "إجمالي الأشخاص",
     salaryInviteDesc:   "ادعُ {0} مستثمرًا من المستوى 1 للحصول على:",

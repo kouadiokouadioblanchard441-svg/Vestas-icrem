@@ -1065,23 +1065,27 @@ export class DatabaseStorage implements IStorage {
     if (!user) return [];
 
     const level1Refs = await this.getReferrals(userId, 1);
-    // Only direct referrals with at least one approved deposit count toward
-    // task progress. Registration alone is not enough.
-    const rechargedReferralIds = new Set<number>();
+    // Active member = direct referral not banned who has at least one active
+    // purchase of a non-free product (VIP 1 or higher).
+    // We do NOT use hasActiveProduct because it is also set for free products.
+    let currentInvites = 0;
     if (level1Refs.length > 0) {
-      const approvedDeposits = await db
-        .select({ userId: deposits.userId })
-        .from(deposits)
-        .where(and(
-          eq(deposits.status, "approved"),
-          inArray(deposits.userId, level1Refs.map(referral => referral.id)),
-        ));
-
-      for (const deposit of approvedDeposits) {
-        rechargedReferralIds.add(deposit.userId);
+      const eligibleIds = level1Refs
+        .filter(r => !r.isBanned)
+        .map(r => r.id);
+      if (eligibleIds.length > 0) {
+        const rows = await db
+          .selectDistinct({ userId: userProducts.userId })
+          .from(userProducts)
+          .innerJoin(products, eq(userProducts.productId, products.id))
+          .where(and(
+            inArray(userProducts.userId, eligibleIds),
+            eq(products.isFree, false),
+            eq(userProducts.isActive, true),
+          ));
+        currentInvites = rows.length;
       }
     }
-    const currentInvites = level1Refs.filter(referral => rechargedReferralIds.has(referral.id)).length;
 
     const completedTasks = await db.select().from(userTasks).where(eq(userTasks.userId, userId));
     const completedIds = new Set(completedTasks.map(t => t.taskId));
