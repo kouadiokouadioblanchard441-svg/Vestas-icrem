@@ -97,11 +97,10 @@ export default function TasksPage() {
           src={trophyImg}
           alt="Trophées"
           className="w-full h-full object-cover object-center"
-          style={{ filter: "saturate(0) brightness(0.75)" }}
         />
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(to bottom, rgba(20,50,120,0.55) 0%, rgba(15,40,100,0.65) 45%, rgba(10,25,70,0.88) 100%)" }}
+          style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.85) 100%)" }}
         />
 
         {/* Header nav */}

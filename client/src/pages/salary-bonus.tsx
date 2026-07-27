@@ -5,7 +5,6 @@ import { ChevronLeft } from "lucide-react";
 import { getCountryByCode } from "@/lib/countries";
 import { getContent } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
-import solarPanelImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 
 export default function SalaryBonusPage() {
   const { user } = useAuth();
@@ -61,11 +60,7 @@ export default function SalaryBonusPage() {
         {/* ── Stats card ── */}
         <div
           className="rounded-xl px-4 py-3 flex items-center relative overflow-hidden"
-          style={{
-            background: `linear-gradient(120deg, rgba(0,166,81,0.75), rgba(0,200,83,0.55)), url(${solarPanelImg})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
+          style={{ background: "linear-gradient(120deg, #1a3a6b, #2a4f96)" }}
         >
           <div className="flex-1 text-center">
             <p className="text-white font-extrabold text-lg">{currency} {totalCommission.toFixed(0)}</p>
