@@ -1,5 +1,6 @@
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
+import newBannerImg from "@assets/piedestal-realiste-trophees-gobelets-metal-composition-rubans-_1785144220204.jpg";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { getCountryByCode } from "@/lib/countries";
@@ -60,14 +61,19 @@ export default function SalaryBonusPage() {
         {/* ── Stats card ── */}
         <div
           className="rounded-xl px-4 py-3 flex items-center relative overflow-hidden"
-          style={{ background: "linear-gradient(120deg, #1a3a6b, #2a4f96)" }}
+          style={{
+            background: `url(${newBannerImg})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
         >
-          <div className="flex-1 text-center">
+          <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.35)" }} />
+          <div className="relative z-10 flex-1 text-center">
             <p className="text-white font-extrabold text-lg">{currency} {totalCommission.toFixed(0)}</p>
             <p className="text-white/70 text-[11px] mt-0.5">{t.salaryTotalRewards}</p>
           </div>
-          <div className="w-px h-8 bg-white/30" />
-          <div className="flex-1 text-center">
+          <div className="relative z-10 w-px h-8 bg-white/30" />
+          <div className="relative z-10 flex-1 text-center">
             <p className="text-white font-extrabold text-lg">{totalPeople}</p>
             <p className="text-white/70 text-[11px] mt-0.5">{t.salaryTotalPeople}</p>
           </div>
