@@ -66,7 +66,7 @@ export default function AdminTeamPage() {
             <p className="font-medium text-foreground text-lg">{member.fullName}</p>
             <p className="text-sm text-muted-foreground">{member.phone} - {member.country}</p>
             <p className="text-xs text-muted-foreground">
-              Inscrit le {new Date(member.createdAt).toLocaleDateString("fr-FR")}
+              Inscrit le {new Date(member.createdAt).toLocaleDateString()}
             </p>
           </div>
           <div className="flex flex-col items-end gap-1">

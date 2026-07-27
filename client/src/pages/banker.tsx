@@ -286,7 +286,7 @@ export default function BankerPage() {
                         </div>
                         <div className="col-span-2">
                           <p className="text-muted-foreground text-xs">Date</p>
-                          <p className="text-sm">{new Date(deposit.createdAt).toLocaleString("fr-FR")}</p>
+                          <p className="text-sm">{new Date(deposit.createdAt).toLocaleString()}</p>
                         </div>
                       </div>
 
@@ -384,7 +384,7 @@ export default function BankerPage() {
                         </div>
                         <div>
                           <p className="text-muted-foreground text-xs">Date</p>
-                          <p className="text-sm">{new Date(w.createdAt).toLocaleString("fr-FR")}</p>
+                          <p className="text-sm">{new Date(w.createdAt).toLocaleString()}</p>
                         </div>
                       </div>
 
@@ -463,7 +463,7 @@ export default function BankerPage() {
                             <p className="text-xs text-muted-foreground mt-0.5">
                               {type === "deposit" ? `Ref: ${item.reference || item.accountNumber}` : `${item.accountName} · ${item.accountNumber}`}
                             </p>
-                            <p className="text-xs text-muted-foreground">{date.toLocaleString("fr-FR")}</p>
+                            <p className="text-xs text-muted-foreground">{date.toLocaleString()}</p>
                           </div>
                         </div>
                         <div className="text-right">

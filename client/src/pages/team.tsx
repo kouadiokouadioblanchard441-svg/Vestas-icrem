@@ -218,7 +218,7 @@ export default function TeamPage() {
               </p>
               <div className="mt-3">
                 <p className="text-white font-extrabold text-xl leading-none drop-shadow">
-                  {Number(teamDeposits).toLocaleString("fr-FR")}
+                  {Number(teamDeposits).toLocaleString()}
                 </p>
                 <p className="text-white/80 text-xs mt-0.5 drop-shadow">{currency}</p>
               </div>
@@ -242,7 +242,7 @@ export default function TeamPage() {
               </p>
               <div className="mt-3">
                 <p className="text-white font-extrabold text-xl leading-none drop-shadow">
-                  {Number(teamWithdrawals).toLocaleString("fr-FR")}
+                  {Number(teamWithdrawals).toLocaleString()}
                 </p>
                 <p className="text-white/80 text-xs mt-0.5 drop-shadow">{currency}</p>
               </div>
@@ -269,7 +269,7 @@ export default function TeamPage() {
                   {t.teamRechargeAmount}
                 </p>
                 <p className="font-extrabold text-sm" style={{ color: BLUE }}>
-                  {Number(lvl.recharged).toLocaleString("fr-FR")}
+                  {Number(lvl.recharged).toLocaleString()}
                 </p>
                 <p className="text-gray-400 text-[10px] mt-0.5">{currency}</p>
               </div>

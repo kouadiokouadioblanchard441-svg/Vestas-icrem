@@ -7,32 +7,34 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { getContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 
 import vipBadgeImg from "@assets/0_1001899520_1785147624494.png";
 
 export default function GiftCodePage() {
   const { refreshUser } = useAuth();
   const { toast } = useToast();
+  const { t } = useI18n();
   const [code, setCode] = useState("");
 
   const { data: settings } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
   });
 
-  const headerTitle = getContent(settings, "content_giftcode_headerTitle", "Code Bonus");
-  const infoLine1 = getContent(settings, "content_giftcode_infoLine1", "Entrez votre code bonus pour recevoir votre récompense instantanément");
-  const infoLine2 = getContent(settings, "content_giftcode_infoLine2", "Les codes sont disponibles chaque soir à 17h GMT");
-  const howToTitle = getContent(settings, "content_giftcode_howToTitle", "Comment obtenir des codes ?");
-  const step1 = getContent(settings, "content_giftcode_step1", "Rejoignez notre canal Telegram officiel");
-  const step2 = getContent(settings, "content_giftcode_step2", "Suivez les annonces chaque soir à 17h GMT");
-  const step3 = getContent(settings, "content_giftcode_step3", "Copiez le code et collez-le ici avant expiration");
+  const headerTitle = getContent(settings, "content_giftcode_headerTitle", "Bonus Code");
+  const infoLine1 = getContent(settings, "content_giftcode_infoLine1", "Enter your bonus code to receive your reward instantly");
+  const infoLine2 = getContent(settings, "content_giftcode_infoLine2", "Codes are available every evening at 5pm GMT");
+  const howToTitle = getContent(settings, "content_giftcode_howToTitle", "How to get codes?");
+  const step1 = getContent(settings, "content_giftcode_step1", "Join our official Telegram channel");
+  const step2 = getContent(settings, "content_giftcode_step2", "Follow announcements every evening at 5pm GMT");
+  const step3 = getContent(settings, "content_giftcode_step3", "Copy the code and paste it here before it expires");
 
   const claimMutation = useMutation({
     mutationFn: async (giftCode: string) => {
       const response = await apiRequest("POST", "/api/gift-codes/claim", { code: giftCode });
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || "Erreur");
+        throw new Error(data.message || t.errorOccurred);
       }
       return response.json();
     },
@@ -40,13 +42,13 @@ export default function GiftCodePage() {
       refreshUser();
       setCode("");
       toast({
-        title: "Félicitations !",
+        title: "🎉 " + t.purchaseSuccess,
         description: data.message,
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Erreur",
+        title: t.errorOccurred,
         description: error.message,
         variant: "destructive",
       });
@@ -56,8 +58,8 @@ export default function GiftCodePage() {
   const handleSubmit = () => {
     if (!code.trim()) {
       toast({
-        title: "Erreur",
-        description: "Veuillez saisir un code",
+        title: t.errorOccurred,
+        description: t.requiredFields,
         variant: "destructive",
       });
       return;

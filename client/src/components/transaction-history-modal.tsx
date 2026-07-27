@@ -52,7 +52,7 @@ export default function TransactionHistoryModal({ open, onClose }: TransactionHi
   };
 
   const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("fr-FR", {
+    return new Date(date).toLocaleDateString(undefined, {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",

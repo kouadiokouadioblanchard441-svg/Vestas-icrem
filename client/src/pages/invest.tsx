@@ -35,7 +35,7 @@ export default function InvestPage() {
       const response = await apiRequest("POST", `/api/products/${productId}/purchase`, {});
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || "Erreur");
+        throw new Error(data.message || t.errorOccurred);
       }
       return response.json();
     },
@@ -98,19 +98,19 @@ export default function InvestPage() {
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[11px]">{t.price}</span>
                       <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
-                        {currency} {Number(product.price).toLocaleString("fr-FR")}
+                        {currency} {Number(product.price).toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[11px]">{t.dailyRevenue}</span>
                       <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
-                        {currency} {Number(product.dailyEarnings).toLocaleString("fr-FR")}
+                        {currency} {Number(product.dailyEarnings).toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-[11px]">{t.totalRevenue}</span>
                       <span className="font-bold text-[11px]" style={{ color: "#E8192C" }}>
-                        {currency} {Number(product.totalReturn).toLocaleString("fr-FR")}
+                        {currency} {Number(product.totalReturn).toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
@@ -123,7 +123,7 @@ export default function InvestPage() {
 
                   <div className="mt-auto px-3 pb-3 pt-2">
                     <p className="text-gray-800 font-black text-base text-center mb-2">
-                      {currency} {Number(product.price).toLocaleString("fr-FR")}
+                      {currency} {Number(product.price).toLocaleString()}
                     </p>
                     <div className="flex justify-center">
                       <button
@@ -175,15 +175,15 @@ export default function InvestPage() {
               <div className="flex-1 space-y-1.5">
                 <div>
                   <p className="text-white/60 text-xs">{t.price}</p>
-                  <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.price).toLocaleString("fr-FR")}</p>
+                  <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.price).toLocaleString()}</p>
                 </div>
                 <div>
                   <p className="text-white/60 text-xs">{t.dailyRevenue}</p>
-                  <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.dailyEarnings).toLocaleString("fr-FR")}</p>
+                  <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.dailyEarnings).toLocaleString()}</p>
                 </div>
                 <div>
                   <p className="text-white/60 text-xs">{t.totalRevenue}</p>
-                  <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.totalReturn).toLocaleString("fr-FR")}</p>
+                  <p className="text-white font-bold text-sm">{currency} {Number(confirmProduct.totalReturn).toLocaleString()}</p>
                 </div>
                 <div>
                   <p className="text-white/60 text-xs">{t.investCycleDays}</p>

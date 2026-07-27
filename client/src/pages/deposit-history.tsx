@@ -84,7 +84,7 @@ export default function DepositHistoryPage() {
                       {parseFloat(withdrawal.amount).toLocaleString()} {currency}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {date.toLocaleDateString('fr-FR')} a {date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                      {date.toLocaleDateString()} {date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(withdrawal.status)}`}>

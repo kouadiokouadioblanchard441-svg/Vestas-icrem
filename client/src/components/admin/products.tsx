@@ -136,12 +136,12 @@ export default function AdminProducts() {
 
   const handleUpdate = (data: ProductForm) => {
     if (!selectedProduct) return;
-    const price = parseInt(data.price);
-    const dailyEarnings = parseInt(data.dailyEarnings);
+    const price = parseFloat(data.price);
+    const dailyEarnings = parseFloat(data.dailyEarnings);
     const cycleDays = parseInt(data.cycleDays);
     updateMutation.mutate({
       id: selectedProduct.id,
-      data: { name: data.name, price, dailyEarnings, cycleDays, totalReturn: dailyEarnings * cycleDays, imageUrl: data.imageUrl || null },
+      data: { name: data.name, price, dailyEarnings, cycleDays, totalReturn: parseFloat((dailyEarnings * cycleDays).toFixed(2)), imageUrl: data.imageUrl || null },
     });
   };
 
@@ -258,7 +258,7 @@ export default function AdminProducts() {
         <div className="bg-primary/10 rounded-lg p-3 text-sm">
           <p className="text-muted-foreground">Retour total estimé :</p>
           <p className="font-bold text-primary text-lg">
-            {(parseInt(form.watch("dailyEarnings") || "0") * parseInt(form.watch("cycleDays") || "0")).toLocaleString()} USDT
+            {(parseFloat(form.watch("dailyEarnings") || "0") * parseInt(form.watch("cycleDays") || "0")).toLocaleString()} USDT
           </p>
         </div>
       )}

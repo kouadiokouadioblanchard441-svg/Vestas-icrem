@@ -37,12 +37,12 @@ export default function WithdrawalHistoryPage() {
   const currency = "USDT";
 
   const STATUS = {
-    approved: { label: t.statusApproved, color: "#16a34a" },
-    pending:  { label: t.statusPending,  color: "#f59e0b" },
-    pending_2fa: { label: "Validation 2FA requise", color: "#d97706" },
-    processing: { label: "En cours", color: "#2563eb" },
-    rejected: { label: t.statusRejected, color: "#dc2626" },
-    failed: { label: "Échoué — remboursé", color: "#dc2626" },
+    approved: { label: t.statusApproved,   color: "#16a34a" },
+    pending:  { label: t.statusPending,    color: "#f59e0b" },
+    pending_2fa: { label: t.status2FA,     color: "#d97706" },
+    processing: { label: t.statusProcessing, color: "#2563eb" },
+    rejected: { label: t.statusRejected,   color: "#dc2626" },
+    failed:   { label: t.statusFailed,     color: "#dc2626" },
   } as Record<string, { label: string; color: string }>;
 
   const { data: withdrawals = [], isLoading } = useQuery<Withdrawal[]>({
@@ -95,11 +95,11 @@ export default function WithdrawalHistoryPage() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <p className="font-bold text-sm" style={{ color: "#dc2626" }}>
-                        RETRAIT {currency} {amountNum.toLocaleString("fr-FR")}
+                        {t.withdrawalLabel} {currency} {amountNum.toLocaleString()}
                       </p>
                       {netNum !== null && (
                         <p className="text-gray-500 text-xs mt-0.5">
-                          {currency} {netNum.toLocaleString("fr-FR")}
+                          {currency} {netNum.toLocaleString()}
                         </p>
                       )}
                       <p className="text-gray-400 text-xs mt-0.5">{formatDate(w.createdAt)}</p>

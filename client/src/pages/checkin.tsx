@@ -36,17 +36,17 @@ export default function CheckinPage() {
       const res = await apiRequest("POST", "/api/claim-daily-bonus", {});
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message || "Erreur");
+        throw new Error(data.message || t.errorOccurred);
       }
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/daily-bonus-status"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      toast({ title: "Bonus reçu !", description: "Bonus quotidien ajouté à votre solde" });
+      toast({ title: t.checkinBonusTitle, description: t.checkinBonusDesc });
     },
     onError: (error: Error) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 

@@ -175,7 +175,7 @@ export default function WithdrawalPage() {
       <div className="relative w-full" style={{ height: "180px" }}>
         <img
           src="/poweradd/poweradd-energycell-banner.jpg"
-          alt="Retrait"
+          alt=""
           className="w-full h-full object-cover"
         />
         {/* Dark overlay */}
@@ -187,7 +187,7 @@ export default function WithdrawalPage() {
         <div className="absolute bottom-4 left-4">
           <p className="text-white font-bold text-2xl" data-testid="text-balance">
             <span className="text-sm font-semibold mr-1">{currency}</span>
-            {balance.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}
+            {balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </p>
           <p className="text-white/80 text-xs mt-0.5">{t.withdrawalEarningsBalance}</p>
         </div>
@@ -249,7 +249,7 @@ export default function WithdrawalPage() {
           <div className="flex items-center justify-between mt-2 px-1">
             <p className="text-white/80 text-xs">
               {t.withdrawalNetAmountLabel}{" "}
-              <span className="font-semibold">{currency} {amountAfterFees.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</span>
+              <span className="font-semibold">{currency} {amountAfterFees.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
             </p>
           </div>
           <p className="text-right text-xs mt-1 px-1" style={{ color: "#ff0000" }}>

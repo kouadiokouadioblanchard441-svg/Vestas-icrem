@@ -23,15 +23,15 @@ export default function RulesModal({ open, onClose }: RulesModalProps) {
   const lv2 = settings?.level2Commission || "2";
   const lv3 = settings?.level3Commission || "1";
 
-  const title = getContent(settings, "content_rules_title", "Règles de la plateforme");
-  const s1Title = getContent(settings, "content_rules_section1Title", "1. Dépôts");
-  const s1Body = getContent(settings, "content_rules_section1Body", `- Montant minimum : ${parseInt(minDeposit).toLocaleString()} USDT\n- Les dépôts sont traités dans les plus brefs délais\n- Assurez-vous que les informations de paiement sont correctes`);
-  const s2Title = getContent(settings, "content_rules_section2Title", "2. Retraits");
-  const s2Body = getContent(settings, "content_rules_section2Body", `- Montant minimum : ${parseInt(minWithdrawal).toLocaleString()} USDT\n- Frais de retrait : ${withdrawalFees}%\n- Horaires : ${withdrawalStartHour}h - ${withdrawalEndHour}h\n- Maximum ${maxWithdrawalsPerDay} retrait(s) par jour\n- Un produit actif est requis pour retirer\n- Un portefeuille de retrait doit être enregistré`);
-  const s3Title = getContent(settings, "content_rules_section3Title", "3. Produits");
-  const s3Body = getContent(settings, "content_rules_section3Body", "- Cycle standard : 80 jours\n- Gains journaliers automatiques\n- Les gains sont crédités 24h après l'achat");
-  const s4Title = getContent(settings, "content_rules_section4Title", "4. Parrainage");
-  const s4Body = getContent(settings, "content_rules_section4Body", `- Niveau 1 : ${lv1}% de commission\n- Niveau 2 : ${lv2}% de commission\n- Niveau 3 : ${lv3}% de commission\n- Commissions sur les achats de produits`);
+  const title = getContent(settings, "content_rules_title", "Platform Rules");
+  const s1Title = getContent(settings, "content_rules_section1Title", "1. Deposits");
+  const s1Body = getContent(settings, "content_rules_section1Body", `- Minimum amount: ${parseInt(minDeposit).toLocaleString()} USDT\n- Deposits are processed promptly\n- Make sure payment information is correct`);
+  const s2Title = getContent(settings, "content_rules_section2Title", "2. Withdrawals");
+  const s2Body = getContent(settings, "content_rules_section2Body", `- Minimum amount: ${parseInt(minWithdrawal).toLocaleString()} USDT\n- Withdrawal fee: ${withdrawalFees}%\n- Hours: ${withdrawalStartHour}h - ${withdrawalEndHour}h\n- Maximum ${maxWithdrawalsPerDay} withdrawal(s) per day\n- An active product is required to withdraw\n- A withdrawal wallet must be registered`);
+  const s3Title = getContent(settings, "content_rules_section3Title", "3. Products");
+  const s3Body = getContent(settings, "content_rules_section3Body", "- Standard cycle: 80 days\n- Daily automatic earnings\n- Earnings are credited 24h after purchase");
+  const s4Title = getContent(settings, "content_rules_section4Title", "4. Referral");
+  const s4Body = getContent(settings, "content_rules_section4Body", `- Level 1: ${lv1}% commission\n- Level 2: ${lv2}% commission\n- Level 3: ${lv3}% commission\n- Commissions on product purchases`);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

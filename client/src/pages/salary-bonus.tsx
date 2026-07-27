@@ -32,7 +32,7 @@ export default function SalaryBonusPage() {
       const res = await apiRequest("POST", `/api/tasks/${taskId}/claim`, {});
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.message || "Erreur");
+        throw new Error(err.message || t.errorOccurred);
       }
       return res.json();
     },
@@ -43,7 +43,7 @@ export default function SalaryBonusPage() {
       setClaimingId(null);
     },
     onError: (err: any) => {
-      toast({ title: "Erreur", description: err.message, variant: "destructive" });
+      toast({ title: t.errorOccurred, description: err.message, variant: "destructive" });
       setClaimingId(null);
     },
   });

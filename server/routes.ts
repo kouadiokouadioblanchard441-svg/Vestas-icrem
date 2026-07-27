@@ -1796,15 +1796,15 @@ export async function registerRoutes(
       if (!name || !price || !dailyEarnings || !cycleDays) {
         return res.status(400).json({ message: "Champs requis manquants" });
       }
-      const priceInt = parseInt(price);
-      const dailyInt = parseInt(dailyEarnings);
+      const priceNum = parseFloat(price);
+      const dailyNum = parseFloat(dailyEarnings);
       const cycleInt = parseInt(cycleDays);
       const product = await storage.createProduct({
         name,
-        price: priceInt,
-        dailyEarnings: dailyInt,
+        price: priceNum,
+        dailyEarnings: dailyNum,
         cycleDays: cycleInt,
-        totalReturn: dailyInt * cycleInt,
+        totalReturn: parseFloat((dailyNum * cycleInt).toFixed(2)),
         imageUrl: imageUrl || null,
         isFree: false,
         isActive: true,

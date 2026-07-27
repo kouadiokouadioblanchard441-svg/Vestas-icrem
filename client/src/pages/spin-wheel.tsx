@@ -511,7 +511,7 @@ export default function SpinWheelPage() {
         <p className="text-xs mb-1" style={{ color: "#a78bfa" }}>{t.wheelTotalRewardsLabel}</p>
         <div className="flex items-center justify-between">
           <p className="font-extrabold text-2xl" style={{ color: "#ffd700", textShadow: "0 0 12px #ffd70088" }}>
-            {totalWon.toLocaleString("fr-FR", { maximumFractionDigits: 2 })} USDT
+            {totalWon.toLocaleString(undefined, { maximumFractionDigits: 2 })} USDT
           </p>
         </div>
 

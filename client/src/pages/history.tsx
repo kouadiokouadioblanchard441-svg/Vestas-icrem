@@ -113,7 +113,7 @@ export default function HistoryPage() {
             <ChevronLeft className="w-5 h-5 text-gray-700" />
           </button>
         </Link>
-        <p className="flex-1 text-center text-white font-extrabold text-lg pr-9">Détails</p>
+        <p className="flex-1 text-center text-white font-extrabold text-lg pr-9">{t.historyTitle}</p>
       </div>
 
       {/* ── Tabs ── */}
@@ -127,7 +127,7 @@ export default function HistoryPage() {
           }}
           data-testid="tab-deposits"
         >
-          Recharger
+          {t.historyTabDeposit}
         </button>
         <button
           onClick={() => setActiveTab("withdrawals")}
@@ -138,7 +138,7 @@ export default function HistoryPage() {
           }}
           data-testid="tab-withdrawals"
         >
-          Retirer
+          {t.historyTabWithdrawal}
         </button>
       </div>
 
@@ -151,7 +151,7 @@ export default function HistoryPage() {
           </div>
         ) : (activeTab === "deposits" ? deposits : withdrawals).length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <img src={nodataImg} alt="Aucune donnée" className="w-28 h-28 object-contain opacity-90" />
+            <img src={nodataImg} alt="" className="w-28 h-28 object-contain opacity-90" />
             <p className="text-white/70 text-sm">{t.noTransactions}</p>
           </div>
         ) : activeTab === "deposits" ? (
@@ -173,7 +173,7 @@ export default function HistoryPage() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-sm" style={{ color: "#16a34a" }}>
-                        DÉPÔT {depositCurrency} {parseFloat(deposit.amount).toLocaleString("fr-FR")}
+                        {t.depositLabel} {depositCurrency} {parseFloat(deposit.amount).toLocaleString()}
                       </p>
                       <p className="text-gray-400 text-xs mt-0.5">{formatDate(deposit.createdAt)}</p>
                     </div>
@@ -206,11 +206,11 @@ export default function HistoryPage() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-sm" style={{ color: "#dc2626" }}>
-                         RETRAIT {withdrawalCurrency} {parseFloat(withdrawal.amount).toLocaleString("fr-FR")}
+                        {t.withdrawalLabel} {withdrawalCurrency} {parseFloat(withdrawal.amount).toLocaleString()}
                       </p>
                       {netNum !== null && (
                         <p className="text-gray-500 text-xs mt-0.5">
-                           {withdrawalCurrency} {netNum.toLocaleString("fr-FR")}
+                           {withdrawalCurrency} {netNum.toLocaleString()}
                         </p>
                       )}
                       <p className="text-gray-400 text-xs mt-0.5">{formatDate(withdrawal.createdAt)}</p>

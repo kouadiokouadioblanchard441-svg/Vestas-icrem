@@ -38,7 +38,7 @@ export default function ProductsPage() {
       const response = await apiRequest("POST", `/api/products/${productId}/purchase`, {});
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || "Erreur");
+        throw new Error(data.message || t.errorOccurred);
       }
       return response.json();
     },
@@ -124,19 +124,19 @@ export default function ProductsPage() {
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400 text-xs">{t.price}</span>
                         <span className="font-bold text-xs text-gray-900">
-                          {currency} {Number(product.price).toLocaleString("fr-FR")}
+                          {currency} {Number(product.price).toLocaleString()}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400 text-xs">{t.dailyRevenue}</span>
                         <span className="font-bold text-xs text-gray-900">
-                          {currency} {Number(product.dailyEarnings).toLocaleString("fr-FR")}
+                          {currency} {Number(product.dailyEarnings).toLocaleString()}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400 text-xs">{t.totalRevenue}</span>
                         <span className="font-bold text-xs text-gray-900">
-                          {currency} {Number(product.totalReturn).toLocaleString("fr-FR")}
+                          {currency} {Number(product.totalReturn).toLocaleString()}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">

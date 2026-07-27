@@ -392,6 +392,20 @@ export type Translations = {
   wheelHistoryTitle: string;
   wheelHistoryEmpty: string;
   wheelHistoryNoGain: string;
+  // history page
+  historyTitle: string;
+  historyTabDeposit: string;
+  historyTabWithdrawal: string;
+  withdrawalLabel: string;
+  statusProcessing: string;
+  status2FA: string;
+  statusFailed: string;
+  levelLabel: string;
+  registeredOn: string;
+  amountLabel: string;
+  methodLabel: string;
+  checkinBonusTitle: string;
+  checkinBonusDesc: string;
 };
 
 const T: Record<Lang, Translations> = {
@@ -739,6 +753,19 @@ const T: Record<Lang, Translations> = {
     wheelHistoryTitle:  "抽奖记录",
     wheelHistoryEmpty:  "暂无抽奖记录",
     wheelHistoryNoGain: "未中奖",
+    historyTitle:       "历史记录",
+    historyTabDeposit:  "充值",
+    historyTabWithdrawal: "提现",
+    withdrawalLabel:    "提现",
+    statusProcessing:   "处理中",
+    status2FA:          "需要2FA验证",
+    statusFailed:       "失败 — 已退款",
+    levelLabel:         "级别",
+    registeredOn:       "注册于",
+    amountLabel:        "金额",
+    methodLabel:        "方式",
+    checkinBonusTitle:  "奖励已获取！",
+    checkinBonusDesc:   "每日奖励已添加至您的余额",
   },
   fr: {
     yourNumber:         "votre numéro",
@@ -1084,6 +1111,19 @@ const T: Record<Lang, Translations> = {
     wheelHistoryTitle:  "Historique des tirages",
     wheelHistoryEmpty:  "Aucun tirage pour le moment",
     wheelHistoryNoGain: "Pas de gain",
+    historyTitle:       "Détails",
+    historyTabDeposit:  "Recharger",
+    historyTabWithdrawal: "Retirer",
+    withdrawalLabel:    "RETRAIT",
+    statusProcessing:   "En cours",
+    status2FA:          "Validation 2FA requise",
+    statusFailed:       "Échoué — remboursé",
+    levelLabel:         "Niveau",
+    registeredOn:       "Inscrit le",
+    amountLabel:        "Montant",
+    methodLabel:        "Méthode",
+    checkinBonusTitle:  "Bonus reçu !",
+    checkinBonusDesc:   "Bonus quotidien ajouté à votre solde",
   },
   en: {
     yourNumber:         "your number",
@@ -1429,6 +1469,19 @@ const T: Record<Lang, Translations> = {
     wheelHistoryTitle:  "Spin History",
     wheelHistoryEmpty:  "No spins yet",
     wheelHistoryNoGain: "No win",
+    historyTitle:       "History",
+    historyTabDeposit:  "Deposits",
+    historyTabWithdrawal: "Withdrawals",
+    withdrawalLabel:    "WITHDRAWAL",
+    statusProcessing:   "PROCESSING",
+    status2FA:          "2FA Required",
+    statusFailed:       "Failed — refunded",
+    levelLabel:         "Level",
+    registeredOn:       "Registered on",
+    amountLabel:        "Amount",
+    methodLabel:        "Method",
+    checkinBonusTitle:  "Bonus received!",
+    checkinBonusDesc:   "Daily bonus added to your balance",
   },
   pt: {
     yourNumber:         "seu número",
@@ -1774,6 +1827,19 @@ const T: Record<Lang, Translations> = {
     wheelHistoryTitle:  "Histórico de Sorteios",
     wheelHistoryEmpty:  "Nenhum sorteio ainda",
     wheelHistoryNoGain: "Sem ganho",
+    historyTitle:       "Histórico",
+    historyTabDeposit:  "Depósitos",
+    historyTabWithdrawal: "Saques",
+    withdrawalLabel:    "SAQUE",
+    statusProcessing:   "Em processamento",
+    status2FA:          "2FA Necessário",
+    statusFailed:       "Falhou — reembolsado",
+    levelLabel:         "Nível",
+    registeredOn:       "Registrado em",
+    amountLabel:        "Valor",
+    methodLabel:        "Método",
+    checkinBonusTitle:  "Bônus recebido!",
+    checkinBonusDesc:   "Bônus diário adicionado ao seu saldo",
   },
   es: {
     yourNumber:         "su número",
@@ -2119,6 +2185,19 @@ const T: Record<Lang, Translations> = {
     wheelHistoryTitle:  "Historial de Sorteos",
     wheelHistoryEmpty:  "Sin sorteos todavía",
     wheelHistoryNoGain: "Sin ganancia",
+    historyTitle:       "Historial",
+    historyTabDeposit:  "Depósitos",
+    historyTabWithdrawal: "Retiros",
+    withdrawalLabel:    "RETIRO",
+    statusProcessing:   "Procesando",
+    status2FA:          "2FA Requerido",
+    statusFailed:       "Fallido — reembolsado",
+    levelLabel:         "Nivel",
+    registeredOn:       "Registrado el",
+    amountLabel:        "Cantidad",
+    methodLabel:        "Método",
+    checkinBonusTitle:  "¡Bono recibido!",
+    checkinBonusDesc:   "Bono diario agregado a tu saldo",
   },
   ar: {
     yourNumber:         "رقمك",
@@ -2464,6 +2543,19 @@ const T: Record<Lang, Translations> = {
     wheelHistoryTitle:  "سجل السحوبات",
     wheelHistoryEmpty:  "لا توجد سحوبات بعد",
     wheelHistoryNoGain: "بدون ربح",
+    historyTitle:       "السجل",
+    historyTabDeposit:  "الإيداعات",
+    historyTabWithdrawal: "السحوبات",
+    withdrawalLabel:    "سحب",
+    statusProcessing:   "قيد المعالجة",
+    status2FA:          "مطلوب 2FA",
+    statusFailed:       "فشل — مسترد",
+    levelLabel:         "مستوى",
+    registeredOn:       "مسجل في",
+    amountLabel:        "المبلغ",
+    methodLabel:        "الطريقة",
+    checkinBonusTitle:  "تم استلام المكافأة!",
+    checkinBonusDesc:   "تمت إضافة المكافأة اليومية إلى رصيدك",
   },
 };
 
@@ -2476,14 +2568,14 @@ interface I18nCtx {
 }
 
 const I18nContext = createContext<I18nCtx>({
-  lang: "zh",
+  lang: "en",
   setLang: () => {},
-  t: T.zh,
+  t: T.en,
 });
 
 // Version the preference key so visitors who used an older default language
 // are migrated to Chinese once. New selections are still remembered.
-const STORAGE_KEY = "powerade_lang_v2";
+const STORAGE_KEY = "powerade_lang_v3";
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => {
@@ -2491,7 +2583,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       const saved = localStorage.getItem(STORAGE_KEY) as Lang | null;
       if (saved && saved in T) return saved;
     } catch {}
-    return "zh";
+    return "en";
   });
 
   const setLang = (l: Lang) => {

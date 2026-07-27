@@ -91,7 +91,7 @@ export default function MyProductsPage() {
               <div>
                 <p className="text-white/80 text-xs mb-1">{t.myProductsEarnings}</p>
                 <p className="text-white font-black text-lg leading-tight">
-                  {currency} {totalEarned.toLocaleString("fr-FR")}
+                  {currency} {totalEarned.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -118,7 +118,7 @@ export default function MyProductsPage() {
               const cycleDays = up.product?.cycleDays || 60;
               const daysRemaining = up.daysRemaining || 0;
               const daysCompleted = Math.max(0, cycleDays - daysRemaining);
-              const dailyEarnings = up.product?.dailyEarnings || 0;
+              const dailyEarnings = Number(up.product?.dailyEarnings || 0);
               const earnedSoFar = parseFloat(up.totalEarned || "0");
               const progress = cycleDays > 0 ? Math.round((daysCompleted / cycleDays) * 100) : 0;
 
@@ -150,13 +150,13 @@ export default function MyProductsPage() {
                       <div className="flex justify-between">
                         <span className="text-gray-400 text-xs">{t.myProductsDailyRevenue}</span>
                         <span className="font-bold text-sm text-gray-900">
-                          {currency} {dailyEarnings.toLocaleString("fr-FR")}
+                          {currency} {dailyEarnings.toLocaleString()}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400 text-xs">{t.myProductsEarned}</span>
                         <span className="font-bold text-sm text-gray-900">
-                          {currency} {earnedSoFar.toLocaleString("fr-FR")}
+                          {currency} {earnedSoFar.toLocaleString()}
                         </span>
                       </div>
                       <div className="flex justify-between">

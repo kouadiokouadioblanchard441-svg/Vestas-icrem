@@ -64,10 +64,10 @@ export const withdrawalWallets = pgTable("withdrawal_wallets", {
 export const products = pgTable("products", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  price: integer("price").notNull(),
-  dailyEarnings: integer("daily_earnings").notNull(),
+  price: decimal("price", { precision: 15, scale: 2 }).notNull(),
+  dailyEarnings: decimal("daily_earnings", { precision: 15, scale: 2 }).notNull(),
   cycleDays: integer("cycle_days").notNull().default(80),
-  totalReturn: integer("total_return").notNull(),
+  totalReturn: decimal("total_return", { precision: 15, scale: 2 }).notNull(),
   imageUrl: text("image_url"),
   isFree: boolean("is_free").notNull().default(false),
   isActive: boolean("is_active").notNull().default(true),

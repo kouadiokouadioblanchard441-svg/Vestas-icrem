@@ -72,7 +72,7 @@ export default function DepositOrdersPage() {
 
                 <div className="px-5 py-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500 text-sm">Montant</span>
+                    <span className="text-gray-500 text-sm">{t.amountLabel}</span>
                     <span className="text-[#E8192C] font-bold text-base">
                       {parseFloat(d.amount).toLocaleString()}
                     </span>
@@ -80,7 +80,7 @@ export default function DepositOrdersPage() {
 
                   {d.paymentMethod && (
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-500 text-sm">Méthode</span>
+                      <span className="text-gray-500 text-sm">{t.methodLabel}</span>
                       <span className="text-gray-700 text-sm font-medium">{d.paymentMethod}</span>
                     </div>
                   )}

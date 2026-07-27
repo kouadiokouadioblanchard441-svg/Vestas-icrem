@@ -56,7 +56,7 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
       });
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.message || "Erreur");
+        throw new Error(result.message || "Error");
       }
       return response.json();
     },
@@ -76,7 +76,7 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
       const response = await apiRequest("DELETE", `/api/wallets/${walletId}`, {});
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.message || "Erreur");
+        throw new Error(result.message || "Error");
       }
       return response.json();
     },
@@ -94,7 +94,7 @@ export default function WalletModal({ open, onClose }: WalletModalProps) {
       const response = await apiRequest("PATCH", `/api/wallets/${walletId}/default`, {});
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.message || "Erreur");
+        throw new Error(result.message || "Error");
       }
       return response.json();
     },

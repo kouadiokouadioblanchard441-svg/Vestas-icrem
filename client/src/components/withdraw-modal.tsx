@@ -59,7 +59,7 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
       });
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.message || "Erreur");
+        throw new Error(result.message || "Error");
       }
       return response.json();
     },
@@ -135,7 +135,7 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
 
               <div className="bg-secondary rounded-lg p-3 text-center">
                 <p className="text-sm text-muted-foreground">{t.withdrawAvailableBalance}</p>
-                <p className="text-xl font-bold text-foreground">{balance.toLocaleString("fr-FR")} {currency}</p>
+                <p className="text-xl font-bold text-foreground">{balance.toLocaleString()} {currency}</p>
               </div>
 
               <FormField
@@ -161,15 +161,15 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
                 <div className="bg-muted rounded-lg p-3 space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">{t.withdrawAmountRow}</span>
-                    <span className="text-foreground">{amount.toLocaleString("fr-FR")} {currency}</span>
+                    <span className="text-foreground">{amount.toLocaleString()} {currency}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">{t.depositSec1} ({fees}%)</span>
-                    <span className="text-destructive">-{feeAmount.toLocaleString("fr-FR")} {currency}</span>
+                    <span className="text-destructive">-{feeAmount.toLocaleString()} {currency}</span>
                   </div>
                   <div className="flex justify-between border-t pt-2">
                     <span className="font-medium text-foreground">{t.withdrawNetAmount}</span>
-                    <span className="font-bold text-primary">{netAmount.toLocaleString("fr-FR")} {currency}</span>
+                    <span className="font-bold text-primary">{netAmount.toLocaleString()} {currency}</span>
                   </div>
                 </div>
               )}

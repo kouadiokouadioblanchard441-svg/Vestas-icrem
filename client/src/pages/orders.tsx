@@ -89,10 +89,10 @@ export default function OrdersPage() {
           <div className="space-y-4">
             {filteredProducts.map((up: any, index: number) => {
               const daysCompleted = (up.product?.cycleDays || 0) - (up.daysRemaining || 0);
-              const totalEarned = daysCompleted * (up.product?.dailyEarnings || 0);
+              const totalEarned = daysCompleted * Number(up.product?.dailyEarnings || 0);
               const purchaseDateTime = up.purchasedAt ? new Date(up.purchasedAt) : null;
-              const purchaseDate = purchaseDateTime ? purchaseDateTime.toLocaleDateString('fr-FR') : '-';
-              const purchaseTime = purchaseDateTime ? purchaseDateTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '-';
+              const purchaseDate = purchaseDateTime ? purchaseDateTime.toLocaleDateString() : '-';
+              const purchaseTime = purchaseDateTime ? purchaseDateTime.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) : '-';
 
               return (
                 <div
@@ -125,10 +125,10 @@ export default function OrdersPage() {
 
                       <div className="space-y-0.5 text-[12px]">
                         <p className="text-gray-600">
-                          {t.price}：<span className="text-green-500 font-medium">{up.product?.price?.toLocaleString() || 0} USDT</span>
+                          {t.price}：<span className="text-green-500 font-medium">{Number(up.product?.price || 0).toLocaleString() || 0} USDT</span>
                         </p>
                         <p className="text-gray-600">
-                          {t.ordersDailyLbl}：<span className="text-green-500 font-medium">{up.product?.dailyEarnings?.toLocaleString() || 0} USDT</span>
+                          {t.ordersDailyLbl}：<span className="text-green-500 font-medium">{Number(up.product?.dailyEarnings || 0).toLocaleString() || 0} USDT</span>
                         </p>
                         <p className="text-gray-600">
                           {t.ordersCycleLbl}：<span className="text-green-500 font-medium">{up.product?.cycleDays || 0} {t.ordersDaysLbl}</span>

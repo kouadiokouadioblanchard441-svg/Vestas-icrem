@@ -11,13 +11,13 @@ interface WheelHistoryModalProps {
 function formatDate(dateStr: string | Date) {
   const d = new Date(dateStr);
   return (
-    d.toLocaleDateString("fr-FR", {
+    d.toLocaleDateString(undefined, {
       day: "2-digit",
       month: "short",
       year: "numeric",
     }) +
     " · " +
-    d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+    d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })
   );
 }
 

@@ -6,6 +6,7 @@ import { ChevronLeft, User } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth";
 import { getCountryByCode } from "@/lib/countries";
+import { useI18n } from "@/lib/i18n";
 
 interface TeamMember {
   id: number;
@@ -49,6 +50,7 @@ export default function TeamDetailsPage() {
   const [activeLevel, setActiveLevel] = useState<1 | 2 | 3>(1);
   const [, navigate] = useLocation();
   const { user } = useAuth();
+  const { t } = useI18n();
 
   const { data: team, isLoading } = useQuery<TeamDetails>({
     queryKey: ["/api/team/details"],
@@ -60,19 +62,19 @@ export default function TeamDetailsPage() {
   const levels = [
     {
       num: 1 as const,
-      label: "Niveau 1",
+      label: t.teamLevel1,
       members: team?.level1 || [],
       totalInvested: team?.totalLevel1Invested || 0,
     },
     {
       num: 2 as const,
-      label: "Niveau 2",
+      label: t.teamLevel2,
       members: team?.level2 || [],
       totalInvested: team?.totalLevel2Invested || 0,
     },
     {
       num: 3 as const,
-      label: "Niveau 3",
+      label: t.teamLevel3,
       members: team?.level3 || [],
       totalInvested: team?.totalLevel3Invested || 0,
     },
@@ -145,7 +147,7 @@ export default function TeamDetailsPage() {
           >
             {isLoading
               ? "—"
-              : `${currency} ${Number(totalInvested).toLocaleString("fr-FR")}`}
+              : `${currency} ${Number(totalInvested).toLocaleString()}`}
           </p>
         </div>
       </div>
@@ -204,7 +206,7 @@ export default function TeamDetailsPage() {
                 className="text-sm font-bold shrink-0 text-gray-700"
                 data-testid={`text-member-invested-${member.id}`}
               >
-                {currency} {Number(member.totalInvested).toLocaleString("fr-FR")}
+                {currency} {Number(member.totalInvested).toLocaleString()}
               </p>
             </div>
           ))

@@ -61,7 +61,7 @@ export default function TasksPage() {
       const response = await apiRequest("POST", `/api/tasks/${taskId}/claim`, {});
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || "Erreur");
+        throw new Error(data.message || "Error");
       }
       return response.json();
     },

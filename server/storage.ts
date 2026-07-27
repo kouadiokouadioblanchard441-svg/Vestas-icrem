@@ -306,7 +306,8 @@ export class DatabaseStorage implements IStorage {
 
     if (!product.isFree && !assignedByAdmin) {
       const balance = parseFloat(user.balance);
-      if (balance < product.price) throw new Error("Solde insuffisant");
+      const productPrice = parseFloat(product.price as string);
+      if (balance < productPrice) throw new Error("Solde insuffisant");
       
       // Check if this is user's first paid investment
       const existingPaidProducts = await db.select()
@@ -321,20 +322,20 @@ export class DatabaseStorage implements IStorage {
       const isFirstInvestment = existingPaidProducts.length === 0;
       
       await this.updateUser(userId, { 
-        balance: (balance - product.price).toFixed(2),
+        balance: (balance - productPrice).toFixed(2),
         hasActiveProduct: true,
       });
 
       await this.createTransaction({
         userId,
         type: "purchase",
-        amount: (-product.price).toString(),
+        amount: (-productPrice).toString(),
         description: `Achat ${product.name}`,
       });
 
       // Process referral commissions ONLY on first investment
       if (isFirstInvestment) {
-        await this.processReferralCommissions(userId, product.price, productId);
+        await this.processReferralCommissions(userId, productPrice, productId);
       }
 
       // Grant spin token to buyer for every paid purchase
@@ -490,8 +491,8 @@ export class DatabaseStorage implements IStorage {
 
         if (cyclesSinceLastEarning >= 1 && daysSincePurchase >= 1) {
           const cyclesToCredit = Math.min(cyclesSinceLastEarning, userProduct.daysRemaining);
-          const earningsPerCycle = product.dailyEarnings;
-          const totalEarningsForProduct = earningsPerCycle * cyclesToCredit;
+          const earningsPerCycle = parseFloat(product.dailyEarnings as string);
+          const totalEarningsForProduct = parseFloat((earningsPerCycle * cyclesToCredit).toFixed(2));
 
           const newLastEarningDate = new Date(lastEarning.getTime() + (cyclesToCredit * 24 * 60 * 60 * 1000));
 
