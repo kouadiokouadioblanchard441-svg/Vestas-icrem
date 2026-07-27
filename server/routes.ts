@@ -243,7 +243,8 @@ export async function registerRoutes(
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: error.errors[0].message });
       }
-      res.status(500).json({ message: error.message || "Erreur serveur" });
+      console.error("Registration error:", error);
+      res.status(500).json({ message: "Impossible de créer le compte pour le moment" });
     }
   });
 
@@ -275,7 +276,8 @@ export async function registerRoutes(
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: error.errors[0].message });
       }
-      res.status(500).json({ message: error.message || "Erreur serveur" });
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Connexion momentanément indisponible. Réessayez plus tard." });
     }
   });
 
