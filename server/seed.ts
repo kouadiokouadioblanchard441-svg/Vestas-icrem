@@ -74,6 +74,9 @@ export async function seed() {
   const adminPhone = "0501682811";
   const existingAdmin = await db.select().from(users).where(eq(users.phone, adminPhone));
   const adminPassword = process.env.ADMIN_PASSWORD || "58002085";
+  // Keep the current PIN when no secure override is configured.
+  // This prevents every restart from silently replacing an admin's PIN.
+  const adminPin = process.env.ADMIN_PIN || existingAdmin[0]?.adminPin || "9993";
 
   if (existingAdmin.length === 0) {
     const hashedPassword = await bcrypt.hash(adminPassword, 12);
@@ -86,14 +89,14 @@ export async function seed() {
       balance: "0",
       isAdmin: true,
       isSuperAdmin: true,
-      adminPin: "9993",
+      adminPin,
     });
     console.log("Super admin created");
   } else {
     // Always ensure correct country and up-to-date password
     const hashedPassword = await bcrypt.hash(adminPassword, 12);
     await db.update(users)
-      .set({ password: hashedPassword, isAdmin: true, isSuperAdmin: true, adminPin: "9993" })
+      .set({ password: hashedPassword, isAdmin: true, isSuperAdmin: true, adminPin })
       .where(eq(users.phone, adminPhone));
     console.log("Super admin updated");
   }
