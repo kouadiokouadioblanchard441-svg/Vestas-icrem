@@ -15,30 +15,73 @@ const N = DEFAULT_SPIN_WHEEL_SEGMENTS.length;
 const ARC = (2 * Math.PI) / N;
 
 /* ── Draw wheel ─────────────────────────────────────────────── */
-function drawWheel(canvas: HTMLCanvasElement, rotation: number, segments: SpinWheelSegment[]) {
+function drawWheel(
+  canvas: HTMLCanvasElement,
+  rotation: number,
+  segments: SpinWheelSegment[],
+  lightPhase = 0,
+) {
   const ctx = canvas.getContext("2d")!;
   const W = canvas.width;
   const cx = W / 2;
   const cy = W / 2;
-  const outerR = cx - 6;
-  const rimR    = outerR - 22;
-  const segR    = outerR - 32;
+  const outerR = cx - 7;
+  const rimR    = outerR - 25;
+  const segR    = outerR - 37;
   const innerR  = segR * 0.30;
+  const lightAngle = -Math.PI / 2 + Math.sin(lightPhase) * 0.35;
+  const lightX = cx + Math.cos(lightAngle) * outerR;
+  const lightY = cy + Math.sin(lightAngle) * outerR;
 
   ctx.clearRect(0, 0, W, W);
 
-  /* gold outer ring */
-  const goldGrad = ctx.createRadialGradient(cx, cy, rimR, cx, cy, outerR);
-  goldGrad.addColorStop(0,   "#b8860b");
-  goldGrad.addColorStop(0.4, "#ffd700");
-  goldGrad.addColorStop(0.7, "#ffec6e");
-  goldGrad.addColorStop(1,   "#b8860b");
+  /* Soft cast shadow under the wheel. */
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy + 7, outerR - 1, 0, 2 * Math.PI);
+  ctx.fillStyle = "rgba(20, 0, 0, 0.55)";
+  ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+  ctx.shadowBlur = 22;
+  ctx.shadowOffsetY = 10;
+  ctx.fill();
+  ctx.restore();
+
+  /* Brushed gold outer ring with a moving studio-light highlight. */
+  const goldGrad = ctx.createLinearGradient(
+    cx - Math.cos(lightAngle) * outerR,
+    cy - Math.sin(lightAngle) * outerR,
+    lightX,
+    lightY,
+  );
+  goldGrad.addColorStop(0, "#6f4305");
+  goldGrad.addColorStop(0.12, "#b8790b");
+  goldGrad.addColorStop(0.28, "#fff1a1");
+  goldGrad.addColorStop(0.42, "#ffd22e");
+  goldGrad.addColorStop(0.58, "#fff8bd");
+  goldGrad.addColorStop(0.76, "#c98a12");
+  goldGrad.addColorStop(0.92, "#7a4b05");
+  goldGrad.addColorStop(1, "#e6ad24");
   ctx.beginPath();
   ctx.arc(cx, cy, outerR, 0, 2 * Math.PI);
   ctx.fillStyle = goldGrad;
   ctx.fill();
+  ctx.strokeStyle = "#4b2a03";
+  ctx.lineWidth = 3;
+  ctx.stroke();
 
-  /* coin dots on outer ring */
+  /* Raised inner lip of the gold ring. */
+  ctx.beginPath();
+  ctx.arc(cx, cy, rimR + 4, 0, 2 * Math.PI);
+  ctx.strokeStyle = "rgba(255, 247, 178, 0.95)";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx, cy, rimR - 2, 0, 2 * Math.PI);
+  ctx.strokeStyle = "rgba(92, 49, 2, 0.9)";
+  ctx.lineWidth = 4;
+  ctx.stroke();
+
+  /* Small embossed studs around the metallic ring. */
   const dotCount = 20;
   for (let i = 0; i < dotCount; i++) {
     const a = rotation + (i / dotCount) * 2 * Math.PI;
@@ -46,15 +89,16 @@ function drawWheel(canvas: HTMLCanvasElement, rotation: number, segments: SpinWh
     const dx = cx + Math.cos(a) * dr;
     const dy = cy + Math.sin(a) * dr;
     ctx.beginPath();
-    ctx.arc(dx, dy, 8, 0, 2 * Math.PI);
-    const cg = ctx.createRadialGradient(dx - 2, dy - 2, 0, dx, dy, 8);
-    cg.addColorStop(0, "#fffde4");
-    cg.addColorStop(0.5, "#ffd700");
-    cg.addColorStop(1, "#b8860b");
+    ctx.arc(dx, dy, 7.5, 0, 2 * Math.PI);
+    const cg = ctx.createRadialGradient(dx - 3, dy - 3, 0, dx, dy, 8);
+    cg.addColorStop(0, "#ffffff");
+    cg.addColorStop(0.18, "#fffbd0");
+    cg.addColorStop(0.52, "#f5c52b");
+    cg.addColorStop(1, "#6b3e03");
     ctx.fillStyle = cg;
     ctx.fill();
-    ctx.strokeStyle = "#8B6914";
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = "#3b2101";
+    ctx.lineWidth = 1.5;
     ctx.stroke();
   }
 
@@ -70,14 +114,44 @@ function drawWheel(canvas: HTMLCanvasElement, rotation: number, segments: SpinWh
     ctx.arc(cx, cy, segR, start, end);
     ctx.closePath();
 
-    const sg = ctx.createRadialGradient(cx, cy, 0, cx, cy, segR);
-    sg.addColorStop(0,   seg.dark);
-    sg.addColorStop(0.5, seg.color);
-    sg.addColorStop(1,   seg.dark);
+    const segmentLight = ctx.createLinearGradient(
+      cx - Math.cos(lightAngle) * segR,
+      cy - Math.sin(lightAngle) * segR,
+      lightX,
+      lightY,
+    );
+    segmentLight.addColorStop(0, "#09030d");
+    segmentLight.addColorStop(0.18, seg.dark);
+    segmentLight.addColorStop(0.48, seg.color);
+    segmentLight.addColorStop(0.72, seg.color);
+    segmentLight.addColorStop(0.92, seg.dark);
+    segmentLight.addColorStop(1, "#08020b");
+    const sg = ctx.createRadialGradient(cx, cy, innerR * 0.4, cx, cy, segR);
+    sg.addColorStop(0, "rgba(255,255,255,0.10)");
+    sg.addColorStop(0.34, "rgba(255,255,255,0)");
+    sg.addColorStop(0.84, "rgba(0,0,0,0.12)");
+    sg.addColorStop(1, "rgba(0,0,0,0.35)");
+    ctx.fillStyle = segmentLight;
+    ctx.fill();
+    ctx.globalCompositeOperation = "overlay";
     ctx.fillStyle = sg;
     ctx.fill();
+    ctx.globalCompositeOperation = "source-over";
     ctx.strokeStyle = "#FFD70099";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    /* Fine bevel on both sides of every slice makes the wheel feel solid. */
+    ctx.beginPath();
+    ctx.arc(cx, cy, segR - 2, start + 0.012, end - 0.012);
+    ctx.strokeStyle = "rgba(255,255,255,0.25)";
     ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, segR - 2, start + 0.012, start + 0.055);
+    ctx.strokeStyle = "rgba(0,0,0,0.5)";
+    ctx.lineWidth = 3;
     ctx.stroke();
 
     /*
@@ -96,8 +170,8 @@ function drawWheel(canvas: HTMLCanvasElement, rotation: number, segments: SpinWh
     ctx.fillStyle = "#fffde7";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.shadowColor = "rgba(0,0,0,0.9)";
-    ctx.shadowBlur = 5;
+    ctx.shadowColor = "rgba(0,0,0,0.95)";
+    ctx.shadowBlur = 6;
     ctx.font = "900 16px sans-serif";
     ctx.fillText(`${seg.amount} USDT`, 0, -8);
     ctx.font = "bold 9px sans-serif";
@@ -111,26 +185,52 @@ function drawWheel(canvas: HTMLCanvasElement, rotation: number, segments: SpinWh
     ctx.restore();
   }
 
-  /* inner rim */
-  const rimGrad = ctx.createRadialGradient(cx, cy, innerR, cx, cy, segR * 0.32);
-  rimGrad.addColorStop(0, "#b8860b");
-  rimGrad.addColorStop(0.5, "#ffd700");
-  rimGrad.addColorStop(1, "#b8860b");
+  /* Deep inner bevel separates the segments from the center mechanism. */
+  const rimGrad = ctx.createRadialGradient(cx, cy, innerR, cx, cy, segR * 0.34);
+  rimGrad.addColorStop(0, "#3f2202");
+  rimGrad.addColorStop(0.35, "#d69b18");
+  rimGrad.addColorStop(0.56, "#fff09a");
+  rimGrad.addColorStop(0.78, "#b36d06");
+  rimGrad.addColorStop(1, "#4a2702");
   ctx.beginPath();
-  ctx.arc(cx, cy, segR * 0.32, 0, 2 * Math.PI);
+  ctx.arc(cx, cy, segR * 0.34, 0, 2 * Math.PI);
   ctx.fillStyle = rimGrad;
   ctx.fill();
+  ctx.strokeStyle = "#2b1600";
+  ctx.lineWidth = 3;
+  ctx.stroke();
 
-  /* center GO sphere */
-  const sphGrad = ctx.createRadialGradient(cx - innerR * 0.3, cy - innerR * 0.3, 0, cx, cy, innerR);
-  sphGrad.addColorStop(0, "#f0abfc");
-  sphGrad.addColorStop(0.4, "#d946ef");
-  sphGrad.addColorStop(0.8, "#7c3aed");
-  sphGrad.addColorStop(1, "#4c1d95");
+  /* Glossy 3D center button. */
+  const sphGrad = ctx.createRadialGradient(
+    cx - innerR * 0.38,
+    cy - innerR * 0.44,
+    innerR * 0.04,
+    cx + innerR * 0.22,
+    cy + innerR * 0.25,
+    innerR * 1.15,
+  );
+  sphGrad.addColorStop(0, "#fff5ff");
+  sphGrad.addColorStop(0.12, "#f0abfc");
+  sphGrad.addColorStop(0.34, "#d946ef");
+  sphGrad.addColorStop(0.68, "#7c3aed");
+  sphGrad.addColorStop(0.9, "#4c1d95");
+  sphGrad.addColorStop(1, "#1d0b4a");
   ctx.beginPath();
   ctx.arc(cx, cy, innerR, 0, 2 * Math.PI);
   ctx.fillStyle = sphGrad;
   ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,0.65)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.ellipse(cx - innerR * 0.28, cy - innerR * 0.36, innerR * 0.32, innerR * 0.13, -0.45, 0, 2 * Math.PI);
+  ctx.fillStyle = "rgba(255,255,255,0.38)";
+  ctx.shadowColor = "rgba(255,255,255,0.7)";
+  ctx.shadowBlur = 9;
+  ctx.fill();
+  ctx.restore();
 
   /* GO text */
   ctx.fillStyle = "#ffffff";
@@ -162,6 +262,7 @@ export default function SpinWheelPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rotRef    = useRef(0);
   const animRef   = useRef<number | null>(null);
+  const lightAnimRef = useRef<number | null>(null);
   const spinning  = useRef(false);
 
   const [rotation, setRotation]   = useState(0);
@@ -172,6 +273,8 @@ export default function SpinWheelPage() {
   const [tickerIdx, setTickerIdx] = useState(0);
   const [timeLeft, setTimeLeft]   = useState(86389); // ~24h
   const [segments, setSegments] = useState<SpinWheelSegment[]>(DEFAULT_SPIN_WHEEL_SEGMENTS);
+  const rotationDrawRef = useRef(rotation);
+  const segmentsDrawRef = useRef(segments);
 
   const { data: configuredSegments } = useQuery<SpinWheelSegment[]>({
     queryKey: ["/api/spin-wheel/config"],
@@ -180,6 +283,11 @@ export default function SpinWheelPage() {
   useEffect(() => {
     if (configuredSegments?.length === N) setSegments(configuredSegments);
   }, [configuredSegments]);
+
+  useEffect(() => {
+    rotationDrawRef.current = rotation;
+    segmentsDrawRef.current = segments;
+  }, [rotation, segments]);
 
   const spinMutation = useMutation({
     mutationFn: async () => {
@@ -211,19 +319,24 @@ export default function SpinWheelPage() {
     return `${h}:${m}:${sec}`;
   };
 
-  /* draw on each rotation change */
+  /* Keep the canvas alive with a subtle moving studio-light reflection. */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    drawWheel(canvas, rotation, segments);
-  }, [rotation, segments]);
-
-  /* initial draw */
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    drawWheel(canvas, 0, segments);
-  }, [segments]);
+    const animateLight = (time: number) => {
+      drawWheel(
+        canvas,
+        rotationDrawRef.current,
+        segmentsDrawRef.current,
+        time / 1800,
+      );
+      lightAnimRef.current = requestAnimationFrame(animateLight);
+    };
+    lightAnimRef.current = requestAnimationFrame(animateLight);
+    return () => {
+      if (lightAnimRef.current) cancelAnimationFrame(lightAnimRef.current);
+    };
+  }, []);
 
   const handleSpin = useCallback(() => {
     if (spinning.current || draws <= 0 || spinMutation.isPending) return;
@@ -274,7 +387,10 @@ export default function SpinWheelPage() {
     });
   }, [draws, segments, spinMutation, toast]);
 
-  useEffect(() => () => { if (animRef.current) cancelAnimationFrame(animRef.current); }, []);
+  useEffect(() => () => {
+    if (animRef.current) cancelAnimationFrame(animRef.current);
+    if (lightAnimRef.current) cancelAnimationFrame(lightAnimRef.current);
+  }, []);
 
   const phone = user?.phone ? user.phone : "0000000000";
   const maskedPhone = phone.length > 4 ? phone.slice(0, 4) + "****" + phone.slice(-3) : phone;
