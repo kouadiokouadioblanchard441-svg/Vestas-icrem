@@ -1,4 +1,4 @@
-import { ChevronLeft, Trophy, Loader2, TrendingUp, RotateCcw, XCircle } from "lucide-react";
+import { ChevronLeft, Loader2, TrendingUp, RotateCcw, XCircle } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useQuery } from "@tanstack/react-query";
 import type { Transaction } from "@shared/schema";
@@ -79,7 +79,11 @@ function HistoryRow({ tx, noGainLabel }: { tx: Transaction; noGainLabel: string 
         }}
       >
         {won ? (
-          <Trophy className="w-5 h-5 text-white" />
+          <img
+            src="/trophy.jpg"
+            alt="Trophée"
+            className="w-full h-full rounded-full object-cover object-top"
+          />
         ) : (
           <XCircle className="w-5 h-5" style={{ color: "rgba(255,255,255,0.3)" }} />
         )}

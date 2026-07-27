@@ -76,18 +76,46 @@ export default function WheelRulesModal({ open, onClose }: WheelRulesModalProps)
 
       {/* Hero banner */}
       <div
-        className="mx-4 mt-5 mb-4 rounded-2xl p-5 flex items-center gap-4 shrink-0"
+        className="mx-4 mt-5 mb-4 rounded-2xl overflow-hidden shrink-0 relative"
         style={{
-          background: "linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,215,0,0.07))",
           border: "1px solid rgba(255,215,0,0.4)",
+          minHeight: 110,
         }}
       >
-        <span className="text-4xl">🎡</span>
-        <div>
-          <p className="font-extrabold text-lg text-white leading-tight">LOTERIE PowerAdd</p>
-          <p className="text-xs mt-0.5" style={{ color: "rgba(255,215,0,0.85)" }}>
-            Tournez la roue et remportez des USDT
-          </p>
+        {/* Background image */}
+        <img
+          src="/trophy.jpg"
+          alt="Trophées"
+          className="absolute inset-0 w-full h-full object-cover object-top"
+          style={{ filter: "brightness(0.38)" }}
+        />
+        {/* Gradient overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 60%, transparent 100%)",
+          }}
+        />
+        {/* Content */}
+        <div className="relative z-10 flex items-center gap-4 p-4">
+          <img
+            src="/trophy.jpg"
+            alt="Trophée"
+            className="w-16 h-16 rounded-xl object-cover object-center shrink-0"
+            style={{
+              border: "2px solid rgba(255,215,0,0.6)",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.5)",
+            }}
+          />
+          <div>
+            <p className="font-extrabold text-xl text-white leading-tight tracking-wide">
+              LOTERIE PowerAdd
+            </p>
+            <p className="text-sm mt-1 font-medium" style={{ color: "rgba(255,215,0,0.9)" }}>
+              🎡 Tournez la roue et remportez des USDT
+            </p>
+          </div>
         </div>
       </div>
 
@@ -124,18 +152,6 @@ export default function WheelRulesModal({ open, onClose }: WheelRulesModalProps)
           <RuleItem emoji="♾️" text={t.wheelRulesTokenNote} />
         </Section>
 
-        {/* Footer note */}
-        <div
-          className="rounded-2xl p-4 text-center mt-2"
-          style={{
-            background: "rgba(0,0,0,0.2)",
-            border: "1px solid rgba(255,255,255,0.1)",
-          }}
-        >
-          <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
-            🏆 PowerAdd — Plateforme d'investissement certifiée
-          </p>
-        </div>
       </div>
     </div>
   );
