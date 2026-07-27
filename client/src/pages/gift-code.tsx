@@ -139,15 +139,21 @@ export default function GiftCodePage() {
           <button
             onClick={handleSubmit}
             disabled={claimMutation.isPending}
-            className="w-full py-3.5 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2 transition-opacity active:opacity-80"
-            style={{ background: "linear-gradient(135deg, #E8192C, #E8192C)" }}
+            className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform"
+            style={{
+              background: "linear-gradient(135deg, #ff416c 0%, #ff8c00 40%, #ffd700 70%, #ff8c00 85%, #ff416c 100%)",
+              color: "#fff",
+              boxShadow: "0 4px 20px rgba(255,140,0,0.5), 0 2px 8px rgba(255,65,108,0.4)",
+              border: "1.5px solid rgba(255,255,255,0.35)",
+              textShadow: "0 1px 3px rgba(0,0,0,0.3)",
+            }}
             data-testid="button-submit-code"
           >
             {claimMutation.isPending ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <>
-                <Gift className="w-4 h-4" />
+                <Gift className="w-5 h-5" />
                 Recevoir ma récompense
               </>
             )}
