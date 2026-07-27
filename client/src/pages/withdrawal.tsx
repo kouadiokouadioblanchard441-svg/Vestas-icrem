@@ -128,10 +128,7 @@ export default function WithdrawalPage() {
       toast({ title: t.errorOccurred, variant: "destructive" });
       return;
     }
-    if (!isWithinWithdrawalHours) {
-      toast({ title: t.errorOccurred, variant: "destructive" });
-      return;
-    }
+
     if (!hasActiveProduct) {
       toast({ title: t.errorOccurred, variant: "destructive" });
       return;

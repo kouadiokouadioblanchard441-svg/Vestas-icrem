@@ -109,9 +109,6 @@ export default function GiftCodePage() {
           <p className="text-gray-700 text-sm font-medium">
             {infoLine1}
           </p>
-          <p className="text-xs text-gray-400 mt-1">
-            {infoLine2}
-          </p>
         </div>
 
         {/* Input card */}

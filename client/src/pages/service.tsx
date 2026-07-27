@@ -180,11 +180,8 @@ export default function ServicePage() {
       {/* ── Hours Card ── */}
       <div className="mx-3 mt-3 pb-24">
         <div className="bg-white rounded-2xl shadow-sm px-6 py-5 text-center">
-          <p className="text-2xl font-black text-gray-900 tracking-wide">{hoursDisplay}</p>
-          <p className="text-xs text-gray-400 mt-2">{serviceWithdrawalHoursText}</p>
-          <p className="text-xs text-gray-400 mt-0.5">
-             {serviceSupportHoursLabel} {startHour}:00 - {endHour}:00。
-          </p>
+          <p className="text-2xl font-black text-gray-900 tracking-wide">24h/24h</p>
+          <p className="text-xs text-gray-400 mt-2">{serviceSupportHoursLabel}</p>
         </div>
       </div>
 
