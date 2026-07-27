@@ -205,12 +205,12 @@ export async function seed() {
   const existingTasks = await db.select().from(tasks);
   if (existingTasks.length === 0) {
     await db.insert(tasks).values([
-      { name: "Parrain Bronze", description: "Inviter 3 personnes a investir", requiredInvites: 3, reward: 350, sortOrder: 1 },
-      { name: "Parrain Argent", description: "Inviter 5 personnes a investir", requiredInvites: 5, reward: 750, sortOrder: 2 },
-      { name: "Parrain Or", description: "Inviter 10 personnes a investir", requiredInvites: 10, reward: 2500, sortOrder: 3 },
-      { name: "Parrain Platine", description: "Inviter 30 personnes a investir", requiredInvites: 30, reward: 6500, sortOrder: 4 },
-      { name: "Parrain Diamant", description: "Inviter 100 personnes a investir", requiredInvites: 100, reward: 15000, sortOrder: 5 },
-      { name: "Parrain Elite", description: "Inviter 300 personnes a investir", requiredInvites: 300, reward: 50000, sortOrder: 6 },
+      { name: "Parrain Bronze", description: "Inviter 3 personnes", requiredInvites: 3, reward: 350, sortOrder: 1 },
+      { name: "Parrain Argent", description: "Inviter 5 personnes", requiredInvites: 5, reward: 750, sortOrder: 2 },
+      { name: "Parrain Or", description: "Inviter 10 personnes", requiredInvites: 10, reward: 2500, sortOrder: 3 },
+      { name: "Parrain Platine", description: "Inviter 30 personnes", requiredInvites: 30, reward: 6500, sortOrder: 4 },
+      { name: "Parrain Diamant", description: "Inviter 100 personnes", requiredInvites: 100, reward: 15000, sortOrder: 5 },
+      { name: "Parrain Elite", description: "Inviter 300 personnes", requiredInvites: 300, reward: 50000, sortOrder: 6 },
     ]);
     console.log("Tasks seeded (first install)");
   } else {

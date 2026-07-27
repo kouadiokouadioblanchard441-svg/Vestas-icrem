@@ -185,7 +185,11 @@ export default function TasksPage() {
               const tier = TIER_COLORS[index] || TIER_COLORS[0];
               const label = TIER_LABELS[index] || `${t.tasksTierFallback} ${index + 1}`;
               const icon = TIER_ICONS[index] || TIER_ICONS[0];
-              const progress = Math.min((task.currentInvites / task.requiredInvites) * 100, 100);
+              const progress = Math.min(
+                (task.currentInvites / Math.max(task.requiredInvites, 1)) * 100,
+                100,
+              );
+              const progressComplete = task.currentInvites >= task.requiredInvites;
 
               return (
                 <div
@@ -226,7 +230,9 @@ export default function TasksPage() {
                         </div>
                         <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full rounded-full transition-all duration-500 bg-[#E8192C]"
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              progressComplete ? "bg-green-500" : "bg-[#E8192C]"
+                            }`}
                             style={{ width: `${progress}%` }}
                           />
                         </div>

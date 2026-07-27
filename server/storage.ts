@@ -7,7 +7,7 @@ import {
   type GiftCode, type GiftCodeClaim, type Country
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, asc, desc, sql, gte, lte, or } from "drizzle-orm";
+import { eq, and, asc, desc, sql, gte, lte, or, inArray } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 // Compares phone numbers regardless of local vs international MSISDN format
@@ -1065,37 +1065,23 @@ export class DatabaseStorage implements IStorage {
     if (!user) return [];
 
     const level1Refs = await this.getReferrals(userId, 1);
-    
-    let currentInvites = 0;
-    for (const ref of level1Refs) {
-      const hasApprovedDeposit = ref.hasDeposited === true;
-      
-      if (!hasApprovedDeposit) {
-        const refDeposits = await db.select().from(deposits)
-          .where(and(eq(deposits.userId, ref.id), eq(deposits.status, "approved")))
-          .limit(1);
-        if (refDeposits.length > 0) {
-          currentInvites++;
-          continue;
-        }
-      } else {
-        currentInvites++;
-        continue;
-      }
-
-      const refProducts = await db.select()
-        .from(userProducts)
-        .innerJoin(products, eq(userProducts.productId, products.id))
+    // Only direct referrals with at least one approved deposit count toward
+    // task progress. Registration alone is not enough.
+    const rechargedReferralIds = new Set<number>();
+    if (level1Refs.length > 0) {
+      const approvedDeposits = await db
+        .select({ userId: deposits.userId })
+        .from(deposits)
         .where(and(
-          eq(userProducts.userId, ref.id),
-          eq(products.isFree, false)
-        ))
-        .limit(1);
+          eq(deposits.status, "approved"),
+          inArray(deposits.userId, level1Refs.map(referral => referral.id)),
+        ));
 
-      if (refProducts.length > 0) {
-        currentInvites++;
+      for (const deposit of approvedDeposits) {
+        rechargedReferralIds.add(deposit.userId);
       }
     }
+    const currentInvites = level1Refs.filter(referral => rechargedReferralIds.has(referral.id)).length;
 
     const completedTasks = await db.select().from(userTasks).where(eq(userTasks.userId, userId));
     const completedIds = new Set(completedTasks.map(t => t.taskId));
@@ -1114,21 +1100,40 @@ export class DatabaseStorage implements IStorage {
 
     if (!taskStatus) throw new Error("Tâche non trouvée");
     if (taskStatus.isCompleted) throw new Error("Tâche déjà réclamée");
-    if (!taskStatus.canClaim) throw new Error("Conditions non remplies (recharge et achat requis)");
+    if (!taskStatus.canClaim) {
+      throw new Error(`Invitations insuffisantes (${taskStatus.currentInvites}/${taskStatus.requiredInvites})`);
+    }
 
     const user = await this.getUser(userId);
     if (!user) throw new Error("Utilisateur non trouvé");
 
-    await db.insert(userTasks).values({ userId, taskId });
-    
-    const newBalance = parseFloat(user.balance) + taskStatus.reward;
-    await this.updateUser(userId, { balance: newBalance.toFixed(2) });
-    
-    await this.createTransaction({
-      userId,
-      type: "task_reward",
-      amount: taskStatus.reward.toString(),
-      description: `Récompense: ${taskStatus.name}`,
+    await db.transaction(async (tx) => {
+      const existingClaim = await tx.select({ id: userTasks.id })
+        .from(userTasks)
+        .where(and(eq(userTasks.userId, userId), eq(userTasks.taskId, taskId)))
+        .limit(1);
+
+      if (existingClaim.length > 0) {
+        throw new Error("Tâche déjà réclamée");
+      }
+
+      await tx.insert(userTasks).values({
+        userId,
+        taskId,
+        rewardClaimed: true,
+      });
+
+      const newBalance = parseFloat(user.balance) + taskStatus.reward;
+      await tx.update(users)
+        .set({ balance: newBalance.toFixed(2) })
+        .where(eq(users.id, userId));
+
+      await tx.insert(transactions).values({
+        userId,
+        type: "task_reward",
+        amount: taskStatus.reward.toString(),
+        description: `Récompense: ${taskStatus.name}`,
+      });
     });
   }
 
