@@ -9,10 +9,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Loader2, Save, FileText } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 import { CONTENT_GROUPS, ALL_CONTENT_FIELDS } from "@shared/content-fields";
 
 export default function AdminContent() {
   const { toast } = useToast();
+  const { t } = useI18n();
   const [values, setValues] = useState<Record<string, string>>({});
 
   const { data: settings, isLoading } = useQuery<Record<string, string>>({
@@ -34,17 +36,17 @@ export default function AdminContent() {
       const response = await apiRequest("POST", "/api/admin/settings", data);
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.message || "Erreur");
+        throw new Error(result.message || t.errorOccurred);
       }
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
       queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
-      toast({ title: "Textes enregistrés !" });
+      toast({ title: t.adminContentSaved });
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -55,7 +57,7 @@ export default function AdminContent() {
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Modifiez ici tous les textes, messages et pop-up affichés dans l'application. Les modifications sont appliquées immédiatement après enregistrement.
+        {t.adminContentDesc}
       </p>
 
       {CONTENT_GROUPS.map((group) => (
@@ -104,7 +106,7 @@ export default function AdminContent() {
         ) : (
           <>
             <Save className="w-4 h-4 mr-2" />
-            Enregistrer les textes
+            {t.adminContentSave}
           </>
         )}
       </Button>

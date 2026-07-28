@@ -18,14 +18,6 @@ import { Plus, Edit, Trash2, Loader2, Link } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import type { PaymentChannel } from "@shared/schema";
 
-const channelSchema = z.object({
-  name: z.string().min(2, "Nom requis"),
-  redirectUrl: z.string().min(5, "URL requise"),
-  isApi: z.boolean().default(false),
-});
-
-type ChannelForm = z.infer<typeof channelSchema>;
-
 interface AdminChannelsProps {
   isSuperAdmin: boolean;
 }
@@ -35,6 +27,13 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
   const { t } = useI18n();
   const [showForm, setShowForm] = useState(false);
   const [editChannel, setEditChannel] = useState<PaymentChannel | null>(null);
+
+  const channelSchema = z.object({
+    name: z.string().min(2, t.adminChannelName),
+    redirectUrl: z.string().min(5, t.adminRedirectUrl),
+    isApi: z.boolean().default(false),
+  });
+  type ChannelForm = z.infer<typeof channelSchema>;
 
   const { data: channels, isLoading } = useQuery<PaymentChannel[]>({
     queryKey: ["/api/admin/channels"],
@@ -54,18 +53,18 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
       const response = await apiRequest("POST", "/api/admin/channels", data);
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.message || "Erreur");
+        throw new Error(result.message || t.errorOccurred);
       }
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/channels"] });
-      toast({ title: "Canal créé!" });
+      toast({ title: t.adminChannelCreated });
       setShowForm(false);
       form.reset();
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -74,17 +73,17 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
       const response = await apiRequest("PATCH", `/api/admin/channels/${id}`, data);
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.message || "Erreur");
+        throw new Error(result.message || t.errorOccurred);
       }
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/channels"] });
-      toast({ title: "Canal mis à jour!" });
+      toast({ title: t.adminChannelUpdated });
       setEditChannel(null);
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -93,16 +92,16 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
       const response = await apiRequest("DELETE", `/api/admin/channels/${id}`, {});
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.message || "Erreur");
+        throw new Error(result.message || t.errorOccurred);
       }
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/channels"] });
-      toast({ title: "Canal supprimé!" });
+      toast({ title: t.adminChannelDeleted });
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -111,7 +110,7 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
       const response = await apiRequest("PATCH", `/api/admin/channels/${id}`, { isActive });
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.message || "Erreur");
+        throw new Error(result.message || t.errorOccurred);
       }
       return response.json();
     },
@@ -119,7 +118,7 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/channels"] });
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: error.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -201,7 +200,7 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nom du canal</FormLabel>
+                    <FormLabel>{t.adminChannelName}</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="Ex: LeekPay" />
                     </FormControl>
@@ -215,7 +214,7 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
                 name="redirectUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>URL de redirection</FormLabel>
+                    <FormLabel>{t.adminRedirectUrl}</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="https://..." />
                     </FormControl>
@@ -232,7 +231,7 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
                     <FormControl>
                       <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
-                    <FormLabel className="!mt-0">Paiement API automatique</FormLabel>
+                    <FormLabel className="!mt-0">{t.adminApiPayment}</FormLabel>
                   </FormItem>
                 )}
               />
@@ -241,9 +240,9 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
                 {(createMutation.isPending || updateMutation.isPending) ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : editChannel ? (
-                  "Enregistrer"
+                  t.adminSave
                 ) : (
-                  "Créer"
+                  t.adminCreate
                 )}
               </Button>
             </form>

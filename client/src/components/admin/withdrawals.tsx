@@ -41,13 +41,13 @@ export default function AdminWithdrawals() {
     setModeToggling(true);
     try {
       const response = await apiRequest("POST", "/api/admin/settings", { withdrawalMode: newMode });
-      if (!response.ok) throw new Error("Erreur serveur");
+      if (!response.ok) throw new Error(t.adminWithdrawalServerError);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
       toast({
         title: newMode === "manual" ? t.adminManualModeActivated : t.adminAutoModeActivated,
       });
     } catch (e: any) {
-      toast({ title: e.message || "Erreur", variant: "destructive" });
+      toast({ title: e.message || t.errorOccurred, variant: "destructive" });
     } finally {
       setModeToggling(false);
     }
@@ -89,17 +89,17 @@ export default function AdminWithdrawals() {
     mutationFn: async ({ id, verificationCode }: { id: number; verificationCode: string }) => {
       const response = await apiRequest("POST", `/api/admin/withdrawals/${id}/verify-nowpayments`, { verificationCode });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Validation NOWPayments échouée");
+      if (!response.ok) throw new Error(data.message || t.adminWithdrawal2FAFailed);
       return data;
     },
     onSuccess: (_data, variables) => {
       setVerificationCodes((current) => ({ ...current, [variables.id]: "" }));
       queryClient.invalidateQueries({ queryKey: ["/api/admin/withdrawals"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
-      toast({ title: "Payout NOWPayments validé", description: "Le retrait est maintenant en cours de traitement." });
+      toast({ title: t.adminWithdrawal2FAValidated, description: t.adminWithdrawal2FAProcessing });
     },
     onError: (error: any) => {
-      toast({ title: error.message || "Validation NOWPayments échouée", variant: "destructive" });
+      toast({ title: error.message || t.adminWithdrawal2FAFailed, variant: "destructive" });
     },
   });
 
@@ -120,12 +120,10 @@ export default function AdminWithdrawals() {
             : <Zap className="w-5 h-5 text-blue-500 shrink-0" />}
           <div className="min-w-0">
             <p className={`text-sm font-bold ${isManual ? "text-orange-700 dark:text-orange-300" : "text-blue-700 dark:text-blue-300"}`}>
-              {isManual ? "Mode Manuel" : "Mode Automatique"}
+              {isManual ? t.adminManualModeLabel : t.adminAutoModeLabel}
             </p>
             <p className="text-xs text-muted-foreground truncate">
-              {isManual
-                ? "Vous validez chaque retrait manuellement"
-                : "NOWPayments traite automatiquement + code 2FA"}
+              {isManual ? t.adminManualModeDesc : t.adminAutoModeDesc}
             </p>
           </div>
         </div>
@@ -139,8 +137,8 @@ export default function AdminWithdrawals() {
           {modeToggling
             ? <Loader2 className="w-3 h-3 animate-spin" />
             : isManual
-              ? <><Zap className="w-3 h-3 mr-1" />Auto</>
-              : <><HandCoins className="w-3 h-3 mr-1" />Manuel</>}
+              ? <><Zap className="w-3 h-3 mr-1" />{t.adminWithdrawalAutoBtn}</>
+              : <><HandCoins className="w-3 h-3 mr-1" />{t.adminWithdrawalManualBtn}</>}
         </Button>
       </div>
 
@@ -148,7 +146,7 @@ export default function AdminWithdrawals() {
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Rechercher par numero ou nom..."
+            placeholder={t.adminWithdrawalSearchPlaceholder}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             className="pl-10"
@@ -169,7 +167,7 @@ export default function AdminWithdrawals() {
               : status === "pending"
                 ? t.statusPending
                 : status === "pending_2fa"
-                  ? "2FA"
+                  ? t.adminWithdrawal2FALabel
                   : status === "processing"
                     ? t.statusProcessing
                     : status === "approved"
@@ -205,7 +203,7 @@ export default function AdminWithdrawals() {
                     {withdrawal.status === "pending"
                       ? t.statusPending
                       : withdrawal.status === "pending_2fa"
-                        ? "2FA NOWPayments"
+                        ? t.adminWithdrawal2FALabel
                         : withdrawal.status === "processing"
                           ? t.statusProcessing
                           : withdrawal.status === "approved"
@@ -231,7 +229,7 @@ export default function AdminWithdrawals() {
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t.method}</p>
-                    <p className="font-medium text-foreground">USDT BEP20</p>
+                    <p className="font-medium text-foreground">USDT BEP20</p>{/* network label — intentionally not translated */}
                   </div>
                   <div className="col-span-2">
                     <p className="text-muted-foreground">{t.bep20Address}</p>
@@ -239,7 +237,7 @@ export default function AdminWithdrawals() {
                   </div>
                   {withdrawal.nowPaymentsPayoutId && (
                     <div className="col-span-2 text-xs text-muted-foreground">
-                      Payout NOWPayments : {withdrawal.nowPaymentsPayoutId}
+                      {t.adminWithdrawalPayoutId} {withdrawal.nowPaymentsPayoutId}
                       {withdrawal.nowPaymentsStatus ? ` · ${withdrawal.nowPaymentsStatus}` : ""}
                     </div>
                   )}
@@ -317,7 +315,7 @@ export default function AdminWithdrawals() {
           ))
         ) : (
           <div className="text-center py-8 text-muted-foreground">
-            Aucun retrait trouvé
+            {t.adminNoWithdrawals}
           </div>
         )}
       </div>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Plus, Pencil, Trash2, Globe } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 import type { Country } from "@shared/schema";
 
 interface CountryForm {
@@ -34,6 +35,7 @@ const emptyForm: CountryForm = {
 
 export default function AdminCountries() {
   const { toast } = useToast();
+  const { t } = useI18n();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<CountryForm>(emptyForm);
@@ -64,13 +66,13 @@ export default function AdminCountries() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/countries"] });
       queryClient.invalidateQueries({ queryKey: ["/api/countries"] });
-      toast({ title: editingId ? "Pays mis à jour!" : "Pays ajouté!" });
+      toast({ title: editingId ? t.adminCountryUpdated : t.adminCountryAdded });
       setDialogOpen(false);
       setForm(emptyForm);
       setEditingId(null);
     },
     onError: (e: any) => {
-      toast({ title: e.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: e.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -83,11 +85,11 @@ export default function AdminCountries() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/countries"] });
       queryClient.invalidateQueries({ queryKey: ["/api/countries"] });
-      toast({ title: "Pays supprimé!" });
+      toast({ title: t.adminCountryDeleted });
       setDeleteId(null);
     },
     onError: (e: any) => {
-      toast({ title: e.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: e.message || t.errorOccurred, variant: "destructive" });
     },
   });
 
@@ -135,15 +137,15 @@ export default function AdminCountries() {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <Globe className="w-5 h-5" />
-          Gestion des Pays ({countriesList?.length ?? 0})
+          {t.adminCountriesTitle} ({countriesList?.length ?? 0})
         </h2>
         <Button onClick={openAdd} size="sm" data-testid="button-add-country">
           <Plus className="w-4 h-4 mr-1" />
-          Ajouter un pays
+          {t.adminAddCountry}
         </Button>
       </div>
 
-      {isLoading && <p className="text-muted-foreground text-sm">Chargement...</p>}
+      {isLoading && <p className="text-muted-foreground text-sm">{t.loading}</p>}
 
       <div className="grid gap-3">
         {countriesList?.map((c) => {
@@ -158,10 +160,10 @@ export default function AdminCountries() {
                       <span className="font-semibold text-base">{c.name}</span>
                       <Badge variant="outline" className="text-xs">{c.code}</Badge>
                       <Badge variant="secondary" className="text-xs">{c.currency}</Badge>
-                      <Badge variant="outline" className="text-xs">Paiement manuel</Badge>
+                      <Badge variant="outline" className="text-xs">{t.adminManualPayment}</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mb-1">
-                      Indicatif: +{c.phonePrefix}
+                      {t.adminCountryPhoneDisplay}{c.phonePrefix}
                     </p>
                     {ops.length > 0 && (
                       <div className="flex flex-wrap gap-1">
@@ -175,7 +177,7 @@ export default function AdminCountries() {
                     <Switch
                       checked={c.isActive}
                       onCheckedChange={(v) => toggleMutation.mutate({ id: c.id, isActive: v })}
-                      title="Pays actif"
+                      title={t.adminCountryActiveLabel}
                       data-testid={`switch-country-active-${c.id}`}
                     />
                     <Button size="icon" variant="ghost" onClick={() => openEdit(c)} data-testid={`button-edit-country-${c.id}`}>
@@ -191,7 +193,7 @@ export default function AdminCountries() {
           );
         })}
         {countriesList?.length === 0 && (
-          <p className="text-muted-foreground text-sm text-center py-8">Aucun pays configuré</p>
+          <p className="text-muted-foreground text-sm text-center py-8">{t.adminNoCountries}</p>
         )}
       </div>
 
@@ -199,12 +201,12 @@ export default function AdminCountries() {
       <Dialog open={dialogOpen} onOpenChange={(v) => { if (!v) { setDialogOpen(false); setEditingId(null); setForm(emptyForm); }}}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{editingId ? "Modifier le pays" : "Ajouter un pays"}</DialogTitle>
+            <DialogTitle>{editingId ? t.adminEditCountry : t.adminAddCountry}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Code pays (ex: CM)</Label>
+                <Label>{t.adminCountryCodeLabel}</Label>
                 <Input
                   value={form.code}
                   onChange={e => setForm({ ...form, code: e.target.value.toUpperCase() })}
@@ -216,7 +218,7 @@ export default function AdminCountries() {
                 />
               </div>
               <div>
-                <Label>Devise (ex: USDT)</Label>
+                <Label>{t.adminCountryCurrencyLabel}</Label>
                 <Input
                   value={form.currency}
                   onChange={e => setForm({ ...form, currency: e.target.value.toUpperCase() })}
@@ -228,7 +230,7 @@ export default function AdminCountries() {
               </div>
             </div>
             <div>
-              <Label>Nom du pays</Label>
+              <Label>{t.adminCountryNameLabel}</Label>
               <Input
                 value={form.name}
                 onChange={e => setForm({ ...form, name: e.target.value })}
@@ -238,7 +240,7 @@ export default function AdminCountries() {
               />
             </div>
             <div>
-              <Label>Indicatif téléphonique (sans +)</Label>
+              <Label>{t.adminCountryPhoneLabel}</Label>
               <Input
                 value={form.phonePrefix}
                 onChange={e => setForm({ ...form, phonePrefix: e.target.value })}
@@ -248,14 +250,14 @@ export default function AdminCountries() {
               />
             </div>
             <div>
-              <Label>Opérateurs (séparés par virgule)</Label>
+              <Label>{t.adminCountryOperatorsLabel}</Label>
               <Input
                 value={form.operators}
                 onChange={e => setForm({ ...form, operators: e.target.value })}
                 placeholder="Airtel Money, Moov Money"
                 data-testid="input-country-operators"
               />
-              <p className="text-xs text-muted-foreground mt-1">Exemple: Airtel Money, Moov Money</p>
+              <p className="text-xs text-muted-foreground mt-1">{t.adminCountryOperatorsHint}</p>
             </div>
             <div className="flex items-center gap-2">
               <Switch
@@ -263,14 +265,14 @@ export default function AdminCountries() {
                 onCheckedChange={v => setForm({ ...form, isActive: v })}
                 id="country-active"
               />
-              <Label htmlFor="country-active">Pays actif</Label>
+              <Label htmlFor="country-active">{t.adminCountryActiveLabel}</Label>
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => { setDialogOpen(false); setEditingId(null); setForm(emptyForm); }}>
-                Annuler
+                {t.adminCancel}
               </Button>
               <Button type="submit" disabled={saveMutation.isPending} data-testid="button-save-country">
-                {saveMutation.isPending ? "Enregistrement..." : "Enregistrer"}
+                {saveMutation.isPending ? t.saving : t.adminSave}
               </Button>
             </DialogFooter>
           </form>
@@ -281,13 +283,13 @@ export default function AdminCountries() {
       <Dialog open={deleteId !== null} onOpenChange={(v) => !v && setDeleteId(null)}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Supprimer ce pays ?</DialogTitle>
+            <DialogTitle>{t.adminDeleteCountryTitle}</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">Cette action est irréversible.</p>
+          <p className="text-sm text-muted-foreground">{t.adminCountryIrreversible}</p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)}>Annuler</Button>
+            <Button variant="outline" onClick={() => setDeleteId(null)}>{t.adminCancel}</Button>
             <Button variant="destructive" onClick={() => deleteId && deleteMutation.mutate(deleteId)} disabled={deleteMutation.isPending}>
-              Supprimer
+              {t.adminTaskDelete}
             </Button>
           </DialogFooter>
         </DialogContent>
