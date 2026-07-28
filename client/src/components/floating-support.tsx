@@ -86,7 +86,7 @@ export function FloatingSupport({ bottomOffset = 24 }: FloatingSupportProps) {
         width: 64,
         height: 64,
         borderRadius: "50%",
-        border: "3px solid #16A34A",
+        border: "none",
         padding: 0,
         cursor: "grab",
         background: "#fff",
