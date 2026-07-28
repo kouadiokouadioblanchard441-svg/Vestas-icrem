@@ -99,13 +99,14 @@ export default function RegisterPage() {
   }
 
   const inputStyle: React.CSSProperties = {
-    background: "rgba(255,255,255,0.92)",
+    background: "#ffffff",
     borderRadius: 999,
     border: "none",
     height: 54,
     display: "flex",
     alignItems: "center",
     overflow: "hidden",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
   };
 
   return (
