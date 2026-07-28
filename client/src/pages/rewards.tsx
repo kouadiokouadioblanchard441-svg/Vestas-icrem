@@ -97,34 +97,34 @@ export default function RewardsPage() {
               {tasks?.map((task, index) => (
                 <div
                   key={task.id}
-                  className={`flex items-center px-4 py-4 gap-3 ${index < (tasks.length - 1) ? "border-b border-gray-100" : ""}`}
+                  className={`flex items-center px-3 py-2 gap-2 ${index < (tasks.length - 1) ? "border-b border-gray-100" : ""}`}
                   data-testid={`task-item-${task.id}`}
                 >
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ backgroundColor: "#e3f2fd" }}>
-                    <Users className="w-5 h-5" style={{ color: "#2196F3" }} />
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: "#e3f2fd" }}>
+                    <Users className="w-3.5 h-3.5" style={{ color: "#2196F3" }} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{task.description}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{t.rewardsRewardLabel}: {task.reward.toLocaleString()} {currency}</p>
+                    <p className="text-xs font-medium text-gray-800 truncate">{task.description}</p>
+                    <p className="text-[10px] text-gray-400 leading-none mt-0.5">{t.rewardsRewardLabel}: {task.reward.toLocaleString()} {currency}</p>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-xs text-gray-500">({task.currentInvites}/{task.requiredInvites})</span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="text-[10px] text-gray-400">({task.currentInvites}/{task.requiredInvites})</span>
                     {task.isCompleted ? (
-                      <span className="text-xs font-semibold px-3 py-1.5 rounded-md bg-green-50 text-green-600" data-testid={`task-completed-${task.id}`}>
+                      <span className="text-[10px] font-semibold px-2 py-1 rounded bg-green-50 text-green-600" data-testid={`task-completed-${task.id}`}>
                         {t.rewardsClaimed}
                       </span>
                     ) : task.canClaim ? (
                       <button
                         onClick={() => claimMutation.mutate(task.id)}
                         disabled={claimMutation.isPending}
-                        className="text-xs font-semibold px-3 py-1.5 rounded-md text-white"
+                        className="text-[10px] font-semibold px-2 py-1 rounded text-white"
                         style={{ backgroundColor: "#2196F3" }}
                         data-testid={`button-claim-${task.id}`}
                       >
                         {t.rewardsClaim}
                       </button>
                     ) : (
-                      <span className="text-xs font-semibold px-3 py-1.5 rounded-md bg-gray-100 text-gray-400" data-testid={`task-locked-${task.id}`}>
+                      <span className="text-[10px] font-semibold px-2 py-1 rounded bg-gray-100 text-gray-400" data-testid={`task-locked-${task.id}`}>
                         {t.rewardsReceived}
                       </span>
                     )}
