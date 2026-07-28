@@ -152,7 +152,7 @@ export default function ServicePage() {
       <div className="w-full bg-white flex items-center justify-center" style={{ height: 160 }}>
         <img
           src={heroImg}
-          alt="Service client"
+          alt={t.serviceTitle}
           className="h-full object-contain"
           data-testid="img-service-hero"
         />

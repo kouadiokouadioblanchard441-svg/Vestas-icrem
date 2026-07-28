@@ -421,6 +421,12 @@ export type Translations = {
   bankerNoHistory: string;
   depositProcessed: string;
   withdrawalProcessed: string;
+  comingSoon: string;
+  withdrawalCreated: string;
+  withdrawalSubmitted: string;
+  withdrawalCreatedDesc: string;
+  withdrawalSubmittedDesc: string;
+  searchPlaceholder: string;
   // wallet page extras
   walletAddCard: string;
   walletAddMethod: string;
@@ -824,6 +830,12 @@ const T: Record<Lang, Translations> = {
     bankerNoHistory:        "暂无历史记录",
     depositProcessed:       "充值已处理！",
     withdrawalProcessed:    "提现已处理！",
+    comingSoon:             "即将发布。",
+    withdrawalCreated:      "提现已创建",
+    withdrawalSubmitted:    "申请已提交",
+    withdrawalCreatedDesc:  "已创建支付。管理员需输入2FA验证码以发起转账。",
+    withdrawalSubmittedDesc:"您的提现申请已发送。",
+    searchPlaceholder:      "搜索姓名、电话、参考号...",
     walletAddCard:          "添加卡片",
     walletAddMethod:        "添加提现方式",
     teamHistoryTitle:       "团队历史",
@@ -1220,6 +1232,12 @@ const T: Record<Lang, Translations> = {
     bankerNoHistory:        "Aucun historique trouvé",
     depositProcessed:       "Dépôt traité !",
     withdrawalProcessed:    "Retrait traité !",
+    comingSoon:             "Bientôt disponible.",
+    withdrawalCreated:      "Retrait créé",
+    withdrawalSubmitted:    "Demande envoyée",
+    withdrawalCreatedDesc:  "Le payout est créé. L'administrateur doit saisir le code 2FA NOWPayments pour lancer l'envoi.",
+    withdrawalSubmittedDesc:"Votre demande de retrait a été envoyée.",
+    searchPlaceholder:      "Rechercher nom, téléphone, référence...",
     walletAddCard:          "Ajouter une carte",
     walletAddMethod:        "Ajouter un moyen de retrait",
     teamHistoryTitle:       "Historique d'équipe",
@@ -1616,6 +1634,12 @@ const T: Record<Lang, Translations> = {
     bankerNoHistory:        "No history found",
     depositProcessed:       "Deposit processed!",
     withdrawalProcessed:    "Withdrawal processed!",
+    comingSoon:             "Coming soon.",
+    withdrawalCreated:      "Withdrawal created",
+    withdrawalSubmitted:    "Request submitted",
+    withdrawalCreatedDesc:  "The payout has been created. The admin must enter the 2FA NOWPayments code to initiate the transfer.",
+    withdrawalSubmittedDesc:"Your withdrawal request has been submitted.",
+    searchPlaceholder:      "Search name, phone, reference...",
     walletAddCard:          "Add a card",
     walletAddMethod:        "Add withdrawal method",
     teamHistoryTitle:       "Team History",
@@ -2012,6 +2036,12 @@ const T: Record<Lang, Translations> = {
     bankerNoHistory:        "Nenhum histórico encontrado",
     depositProcessed:       "Depósito processado!",
     withdrawalProcessed:    "Saque processado!",
+    comingSoon:             "Em breve.",
+    withdrawalCreated:      "Saque criado",
+    withdrawalSubmitted:    "Pedido enviado",
+    withdrawalCreatedDesc:  "O pagamento foi criado. O administrador deve inserir o código 2FA NOWPayments para iniciar a transferência.",
+    withdrawalSubmittedDesc:"O seu pedido de saque foi enviado.",
+    searchPlaceholder:      "Pesquisar nome, telefone, referência...",
     walletAddCard:          "Adicionar cartão",
     walletAddMethod:        "Adicionar método de saque",
     teamHistoryTitle:       "Histórico da equipa",
@@ -2408,6 +2438,12 @@ const T: Record<Lang, Translations> = {
     bankerNoHistory:        "No se encontró historial",
     depositProcessed:       "¡Depósito procesado!",
     withdrawalProcessed:    "¡Retiro procesado!",
+    comingSoon:             "Próximamente.",
+    withdrawalCreated:      "Retiro creado",
+    withdrawalSubmitted:    "Solicitud enviada",
+    withdrawalCreatedDesc:  "El pago ha sido creado. El administrador debe ingresar el código 2FA de NOWPayments para iniciar la transferencia.",
+    withdrawalSubmittedDesc:"Su solicitud de retiro ha sido enviada.",
+    searchPlaceholder:      "Buscar nombre, teléfono, referencia...",
     walletAddCard:          "Agregar tarjeta",
     walletAddMethod:        "Agregar método de retiro",
     teamHistoryTitle:       "Historial del equipo",
@@ -2804,6 +2840,12 @@ const T: Record<Lang, Translations> = {
     bankerNoHistory:        "لم يتم العثور على سجل",
     depositProcessed:       "تمت معالجة الإيداع!",
     withdrawalProcessed:    "تمت معالجة السحب!",
+    comingSoon:             "قريباً.",
+    withdrawalCreated:      "تم إنشاء السحب",
+    withdrawalSubmitted:    "تم إرسال الطلب",
+    withdrawalCreatedDesc:  "تم إنشاء الدفع. يجب على المشرف إدخال رمز 2FA لـ NOWPayments لبدء التحويل.",
+    withdrawalSubmittedDesc:"تم إرسال طلب السحب الخاص بك.",
+    searchPlaceholder:      "بحث بالاسم والهاتف والمرجع...",
     walletAddCard:          "إضافة بطاقة",
     walletAddMethod:        "إضافة طريقة سحب",
     teamHistoryTitle:       "سجل الفريق",

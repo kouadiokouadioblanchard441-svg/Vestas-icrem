@@ -238,7 +238,7 @@ export default function BankerPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder="Rechercher nom, téléphone, référence..."
+                  placeholder={t.searchPlaceholder}
                   value={depositSearch}
                   onChange={(e) => setDepositSearch(e.target.value)}
                   className="pl-10"
@@ -260,7 +260,7 @@ export default function BankerPage() {
             ) : (
               <div className="space-y-3">
                 {filterDeposits(allDeposits || []).length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">Aucun dépôt trouvé</div>
+                  <div className="text-center py-8 text-muted-foreground">{t.noDeposits}</div>
                 ) : filterDeposits(allDeposits || []).map(deposit => (
                   <Card key={deposit.id} className={deposit.status === "pending" ? "border-yellow-500/30" : ""}>
                     <CardContent className="p-4">
@@ -268,30 +268,30 @@ export default function BankerPage() {
                         <div>
                           <p className="font-semibold text-foreground">{deposit.user.fullName}</p>
                           <p className="text-sm text-muted-foreground">{deposit.user.phone} · {deposit.user.country}</p>
-                          {deposit.user.isPromoter && <Badge className="text-xs mt-1">Promoteur</Badge>}
+                          {deposit.user.isPromoter && <Badge className="text-xs mt-1">{t.promoter}</Badge>}
                         </div>
                         <StatusBadge status={deposit.status} />
                       </div>
 
                       <div className="grid grid-cols-2 gap-2 text-sm bg-secondary/50 rounded-lg p-3 mb-3">
                         <div>
-                          <p className="text-muted-foreground text-xs">Montant</p>
+                          <p className="text-muted-foreground text-xs">{t.amount}</p>
                           <p className="font-bold text-lg text-primary">{Number(deposit.amount).toLocaleString()} USDT</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground text-xs">Canal</p>
+                          <p className="text-muted-foreground text-xs">{t.channel}</p>
                           <p className="font-medium">{deposit.channelName || "Manuel"}</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground text-xs">Numéro payeur</p>
+                          <p className="text-muted-foreground text-xs">{t.payerNumber}</p>
                           <p className="font-mono font-medium">{deposit.accountNumber}</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground text-xs">Référence</p>
+                          <p className="text-muted-foreground text-xs">{t.reference}</p>
                           <p className="font-mono text-sm">{deposit.reference || "—"}</p>
                         </div>
                         <div className="col-span-2">
-                          <p className="text-muted-foreground text-xs">Date</p>
+                          <p className="text-muted-foreground text-xs">{t.date}</p>
                           <p className="text-sm">{new Date(deposit.createdAt).toLocaleString()}</p>
                         </div>
                       </div>
@@ -305,7 +305,7 @@ export default function BankerPage() {
                             disabled={depositMutation.isPending}
                             data-testid={`button-approve-deposit-${deposit.id}`}
                           >
-                            {depositMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Check className="w-4 h-4 mr-1" />Valider</>}
+                            {depositMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Check className="w-4 h-4 mr-1" />{t.approve}</>}
                           </Button>
                           <Button
                             variant="destructive"
@@ -315,7 +315,7 @@ export default function BankerPage() {
                             disabled={depositMutation.isPending}
                             data-testid={`button-reject-deposit-${deposit.id}`}
                           >
-                            <X className="w-4 h-4 mr-1" />Rejeter
+                            <X className="w-4 h-4 mr-1" />{t.reject}
                           </Button>
                         </div>
                       )}
@@ -332,7 +332,7 @@ export default function BankerPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder="Rechercher nom, téléphone, numéro..."
+                  placeholder={t.searchPlaceholder}
                   value={withdrawalSearch}
                   onChange={(e) => setWithdrawalSearch(e.target.value)}
                   className="pl-10"
@@ -362,34 +362,34 @@ export default function BankerPage() {
                         <div>
                           <p className="font-semibold text-foreground">{w.user.fullName}</p>
                           <p className="text-sm text-muted-foreground">{w.user.phone} · {w.user.country}</p>
-                          {w.user.isPromoter && <Badge className="text-xs mt-1">Promoteur</Badge>}
+                          {w.user.isPromoter && <Badge className="text-xs mt-1">{t.promoter}</Badge>}
                         </div>
                         <StatusBadge status={w.status} />
                       </div>
 
                       <div className="grid grid-cols-2 gap-2 text-sm bg-secondary/50 rounded-lg p-3 mb-3">
                         <div>
-                          <p className="text-muted-foreground text-xs">Montant brut</p>
+                          <p className="text-muted-foreground text-xs">{t.grossAmount}</p>
                            <p className="font-bold text-lg">{Number(w.amount).toLocaleString()} USDT</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground text-xs">Montant net</p>
+                          <p className="text-muted-foreground text-xs">{t.netAmount}</p>
                            <p className="font-bold text-lg text-primary">{Number(w.netAmount).toLocaleString()} USDT</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground text-xs">Bénéficiaire</p>
+                          <p className="text-muted-foreground text-xs">{t.beneficiary}</p>
                           <p className="font-medium">{w.accountName}</p>
                         </div>
                         <div>
-                           <p className="text-muted-foreground text-xs">Adresse BEP20</p>
+                           <p className="text-muted-foreground text-xs">{t.bep20Address}</p>
                           <p className="font-mono font-medium">{w.accountNumber}</p>
                         </div>
                         <div>
-                           <p className="text-muted-foreground text-xs">Méthode</p>
+                           <p className="text-muted-foreground text-xs">{t.method}</p>
                            <p className="font-medium">USDT BEP20</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground text-xs">Date</p>
+                          <p className="text-muted-foreground text-xs">{t.date}</p>
                           <p className="text-sm">{new Date(w.createdAt).toLocaleString()}</p>
                         </div>
                       </div>
@@ -403,7 +403,7 @@ export default function BankerPage() {
                             disabled={withdrawalMutation.isPending}
                             data-testid={`button-approve-withdrawal-${w.id}`}
                           >
-                            {withdrawalMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Check className="w-4 h-4 mr-1" />Valider</>}
+                            {withdrawalMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Check className="w-4 h-4 mr-1" />{t.approve}</>}
                           </Button>
                           <Button
                             variant="destructive"
@@ -413,7 +413,7 @@ export default function BankerPage() {
                             disabled={withdrawalMutation.isPending}
                             data-testid={`button-reject-withdrawal-${w.id}`}
                           >
-                            <X className="w-4 h-4 mr-1" />Rejeter
+                            <X className="w-4 h-4 mr-1" />{t.reject}
                           </Button>
                         </div>
                       )}
@@ -430,7 +430,7 @@ export default function BankerPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder="Nom, téléphone, numéro, référence..."
+                  placeholder={t.searchPlaceholder}
                   value={historySearch}
                   onChange={(e) => setHistorySearch(e.target.value)}
                   className="pl-10"

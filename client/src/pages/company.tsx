@@ -2,9 +2,11 @@ import { Building2, ChevronLeft, Image as ImageIcon } from "lucide-react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { getContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 import type { CompanyContent } from "@shared/schema";
 
 export default function CompanyPage() {
+  const { t } = useI18n();
   const { data: settings } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
   });
@@ -72,7 +74,7 @@ export default function CompanyPage() {
         ) : (
           <section className="rounded-2xl bg-white p-8 text-center text-gray-500">
             <ImageIcon className="mx-auto mb-2 w-8 h-8 text-gray-300" />
-            公司信息即将发布。
+            {t.comingSoon}
           </section>
         )}
       </main>

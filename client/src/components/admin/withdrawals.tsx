@@ -134,10 +134,10 @@ export default function AdminWithdrawals() {
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-medium text-foreground">{withdrawal.user.fullName}</p>
-                      {withdrawal.user.isPromoter && <Badge className="text-xs">Promoteur</Badge>}
+                      {withdrawal.user.isPromoter && <Badge className="text-xs">{t.promoter}</Badge>}
                     </div>
                     <p className="text-sm text-muted-foreground">{withdrawal.user.phone}</p>
-                    <p className="text-sm text-muted-foreground">Pays: {withdrawal.user.country}</p>
+                    <p className="text-sm text-muted-foreground">{t.country}: {withdrawal.user.country}</p>
                   </div>
                   <Badge variant={
                     withdrawal.status === "pending" ? "secondary" :
@@ -160,23 +160,23 @@ export default function AdminWithdrawals() {
 
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
-                    <p className="text-muted-foreground">Montant demandé</p>
+                    <p className="text-muted-foreground">{t.grossAmount}</p>
                       <p className="font-medium text-foreground">{withdrawal.amount.toLocaleString()} USDT</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Montant net</p>
+                    <p className="text-muted-foreground">{t.netAmount}</p>
                       <p className="font-medium text-primary">{withdrawal.netAmount.toLocaleString()} USDT</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Frais</p>
+                    <p className="text-muted-foreground">{t.fees}</p>
                       <p className="font-medium text-destructive">{withdrawal.fees.toLocaleString()} USDT</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Moyen</p>
+                    <p className="text-muted-foreground">{t.method}</p>
                     <p className="font-medium text-foreground">USDT BEP20</p>
                   </div>
                   <div className="col-span-2">
-                    <p className="text-muted-foreground">Adresse USDT BEP20</p>
+                    <p className="text-muted-foreground">{t.bep20Address}</p>
                     <p className="font-medium text-foreground">{withdrawal.accountNumber} - {withdrawal.accountName}</p>
                   </div>
                   {withdrawal.nowPaymentsPayoutId && (
@@ -186,13 +186,13 @@ export default function AdminWithdrawals() {
                     </div>
                   )}
                   <div className="col-span-2">
-                    <p className="text-muted-foreground">Date et heure</p>
+                    <p className="text-muted-foreground">{t.dateTime}</p>
                     <p className="font-medium text-foreground">
-                      {new Date(withdrawal.createdAt).toLocaleDateString("fr-FR", {
+                      {new Date(withdrawal.createdAt).toLocaleDateString(undefined, {
                         day: "2-digit",
                         month: "2-digit",
                         year: "numeric"
-                      })} à {new Date(withdrawal.createdAt).toLocaleTimeString("fr-FR", {
+                      })} à {new Date(withdrawal.createdAt).toLocaleTimeString(undefined, {
                         hour: "2-digit",
                         minute: "2-digit"
                       })}
@@ -204,7 +204,7 @@ export default function AdminWithdrawals() {
                   <div className="rounded-lg border border-amber-400/40 bg-amber-50/60 p-3 space-y-2">
                     <div className="flex items-center gap-2 text-sm font-medium text-amber-800">
                       <ShieldCheck className="w-4 h-4" />
-                      Saisissez le code 2FA reçu de NOWPayments
+                      {t.enter2FACode}
                     </div>
                     <div className="flex gap-2">
                       <Input
@@ -226,7 +226,7 @@ export default function AdminWithdrawals() {
                         })}
                         disabled={verifyMutation.isPending || (verificationCodes[withdrawal.id] || "").length !== 6}
                       >
-                        {verifyMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Valider"}
+                        {verifyMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : t.approve}
                       </Button>
                     </div>
                   </div>
@@ -241,7 +241,7 @@ export default function AdminWithdrawals() {
                       disabled={processMutation.isPending}
                       data-testid={`button-approve-${withdrawal.id}`}
                     >
-                      {processMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Check className="w-4 h-4 mr-1" /> Valider</>}
+                      {processMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Check className="w-4 h-4 mr-1" /> {t.approve}</>}
                     </Button>
                     <Button
                       size="sm"
@@ -250,7 +250,7 @@ export default function AdminWithdrawals() {
                       disabled={processMutation.isPending}
                       data-testid={`button-reject-${withdrawal.id}`}
                     >
-                      <X className="w-4 h-4 mr-1" /> Rejeter
+                      <X className="w-4 h-4 mr-1" /> {t.reject}
                     </Button>
                   </div>
                 )}

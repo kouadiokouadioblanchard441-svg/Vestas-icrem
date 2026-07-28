@@ -133,7 +133,7 @@ export default function MyProductsPage() {
                     className="flex items-center justify-between px-4 py-2.5"
                     style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
                   >
-                    <p className="text-white font-bold text-sm">{up.product?.name || "Produit"}</p>
+                    <p className="text-white font-bold text-sm">{up.product?.name || t.adminTabProducts}</p>
                     <span className="text-white/70 text-xs">{formatDateTime(up.purchasedAt)}</span>
                   </div>
 
@@ -142,7 +142,7 @@ export default function MyProductsPage() {
                     <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
                       <img
                         src={up.product?.imageUrl || productImgFallback}
-                        alt={up.product?.name || "Produit"}
+                        alt={up.product?.name || t.adminTabProducts}
                         className="w-full h-full object-cover"
                       />
                     </div>

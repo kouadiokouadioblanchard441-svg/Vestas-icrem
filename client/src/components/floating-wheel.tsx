@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { useI18n } from "@/lib/i18n";
 
 interface FloatingWheelProps {
   bottomOffset?: number;
@@ -7,6 +8,7 @@ interface FloatingWheelProps {
 
 export function FloatingWheel({ bottomOffset = 24 }: FloatingWheelProps) {
   const [, navigate] = useLocation();
+  const { t } = useI18n();
   const btnRef = useRef<HTMLButtonElement>(null);
   const dragging = useRef(false);
   const didDrag = useRef(false);
@@ -60,7 +62,7 @@ export function FloatingWheel({ bottomOffset = 24 }: FloatingWheelProps) {
   return (
     <button
       ref={btnRef}
-      aria-label="Roue de la fortune"
+      aria-label={t.wheelTitle}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}

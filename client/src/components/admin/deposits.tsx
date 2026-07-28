@@ -148,30 +148,30 @@ export default function AdminDeposits() {
                   {/* Main info */}
                   <div className="grid grid-cols-2 gap-2 text-sm bg-secondary/50 rounded-xl p-3">
                     <div>
-                      <p className="text-muted-foreground text-xs">Montant</p>
+                      <p className="text-muted-foreground text-xs">{t.amount}</p>
                       <p className="font-bold text-lg text-primary">{deposit.amount.toLocaleString()} USDT</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground text-xs">Opérateur</p>
+                      <p className="text-muted-foreground text-xs">{t.operator}</p>
                       <p className="font-medium">{deposit.paymentMethod}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground text-xs">Numéro payeur</p>
+                      <p className="text-muted-foreground text-xs">{t.payerNumber}</p>
                       <p className="font-mono font-medium">{deposit.accountNumber}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground text-xs">Date</p>
+                      <p className="text-muted-foreground text-xs">{t.date}</p>
                       <p className="font-medium text-xs">
-                        {new Date(deposit.createdAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                        {new Date(deposit.createdAt).toLocaleDateString(undefined, { day: "2-digit", month: "2-digit", year: "numeric" })}
                         {" "}
-                        {new Date(deposit.createdAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                        {new Date(deposit.createdAt).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
                       </p>
                     </div>
 
                     {/* Payment number (channel) used */}
                     {(deposit as any).channelName && (
                       <div className="col-span-2">
-                        <p className="text-muted-foreground text-xs">Numéro destinataire utilisé</p>
+                        <p className="text-muted-foreground text-xs">{t.recipientNumber}</p>
                         <p className="font-bold text-red-600">{(deposit as any).channelName}</p>
                       </div>
                     )}
@@ -179,7 +179,7 @@ export default function AdminDeposits() {
                     {/* Reference */}
                     {(deposit as any).reference && (
                       <div className="col-span-2">
-                        <p className="text-muted-foreground text-xs">Référence</p>
+                        <p className="text-muted-foreground text-xs">{t.reference}</p>
                         <p className="font-mono font-medium">{(deposit as any).reference}</p>
                       </div>
                     )}
@@ -190,7 +190,7 @@ export default function AdminDeposits() {
                     <div className="bg-green-50 dark:bg-green-950 rounded-xl p-3">
                       <div className="flex items-center gap-1 mb-1">
                         <MessageSquare className="w-3.5 h-3.5 text-green-600" />
-                        <p className="text-xs font-medium text-green-600">Message de paiement reçu</p>
+                        <p className="text-xs font-medium text-green-600">{t.paymentMessageReceived}</p>
                       </div>
                       <p className="text-sm text-foreground whitespace-pre-wrap">{(deposit as any).paymentMessage}</p>
                     </div>
@@ -201,7 +201,7 @@ export default function AdminDeposits() {
                     <div>
                       <div className="flex items-center gap-1 mb-2">
                         <ImageIcon className="w-3.5 h-3.5 text-muted-foreground" />
-                        <p className="text-xs font-medium text-muted-foreground">Capture d'écran</p>
+                        <p className="text-xs font-medium text-muted-foreground">{t.screenshot}</p>
                       </div>
                       <button
                         onClick={() => setScreenshotModal((deposit as any).screenshot)}
@@ -227,7 +227,7 @@ export default function AdminDeposits() {
                         disabled={processMutation.isPending}
                         data-testid={`button-approve-${deposit.id}`}
                       >
-                        {processMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Check className="w-4 h-4 mr-1" />Valider</>}
+                        {processMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Check className="w-4 h-4 mr-1" />{t.approve}</>}
                       </Button>
                       <Button
                         size="sm"
@@ -236,14 +236,14 @@ export default function AdminDeposits() {
                         disabled={processMutation.isPending}
                         data-testid={`button-reject-${deposit.id}`}
                       >
-                        <X className="w-4 h-4 mr-1" />Rejeter
+                        <X className="w-4 h-4 mr-1" />{t.reject}
                       </Button>
                       <Button
                         size="sm"
                         variant="destructive"
                         onClick={() => processMutation.mutate({ id: deposit.id, action: "reject", ban: true })}
                         disabled={processMutation.isPending}
-                        title="Rejeter et bannir"
+                        title={t.rejectAndBan}
                         data-testid={`button-ban-${deposit.id}`}
                       >
                         <Ban className="w-4 h-4" />
@@ -256,7 +256,7 @@ export default function AdminDeposits() {
           })
         ) : (
           <div className="text-center py-8 text-muted-foreground">
-            Aucun dépôt trouvé
+            {t.noDeposits}
           </div>
         )}
       </div>
@@ -265,7 +265,7 @@ export default function AdminDeposits() {
       <Dialog open={!!screenshotModal} onOpenChange={() => setScreenshotModal(null)}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Capture d'écran du paiement</DialogTitle>
+            <DialogTitle>{t.screenshot}</DialogTitle>
           </DialogHeader>
           {screenshotModal && (
             <img src={screenshotModal} alt="Capture" className="w-full rounded-xl object-contain max-h-[70vh]" />

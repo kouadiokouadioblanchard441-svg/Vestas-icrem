@@ -95,7 +95,7 @@ export default function TasksPage() {
       <div className="relative overflow-hidden" style={{ height: "260px" }}>
         <img
           src={trophyImg}
-          alt="Trophées"
+          alt={t.rewardsTitle}
           className="w-full h-full object-cover object-center"
         />
         <div

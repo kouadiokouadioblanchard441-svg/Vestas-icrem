@@ -139,7 +139,7 @@ export default function TeamDetailsPage() {
 
         {/* Dépôts */}
         <div className="flex-1 bg-white rounded-2xl shadow-sm px-4 py-3">
-          <p className="text-xs text-gray-400 mb-1">Dépôts de l'équipe</p>
+          <p className="text-xs text-gray-400 mb-1">{t.teamDeposits}</p>
           <p
             className="text-xl font-black"
             style={{ color: GREEN }}
