@@ -26,6 +26,204 @@ const productSchema = z.object({
 
 type ProductForm = z.infer<typeof productSchema>;
 
+// Drizzle types decimal columns as `string` in TypeScript, but the DB and
+// Drizzle's set() both accept numbers at runtime. We use this local type so
+// the mutation call is correctly typed without spurious string conversions.
+interface ProductUpdatePayload {
+  name: string;
+  price: number;
+  dailyEarnings: number;
+  cycleDays: number;
+  totalReturn: number;
+  imageUrl: string | null | undefined;
+}
+
+// ─── ImageUploadField ────────────────────────────────────────────────────────
+// Defined OUTSIDE AdminProducts so React never sees it as a new component type
+// on re-renders, which would cause unmount/remount and reset the imageUrl value.
+
+interface ImageUploadFieldProps {
+  form: any;
+  onToast: (opts: { title: string; description?: string; variant?: "destructive" }) => void;
+}
+
+function ImageUploadField({ form, onToast }: ImageUploadFieldProps) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const currentValue: string = form.watch("imageUrl") || "";
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      onToast({ title: "Image trop lourde", description: "Maximum 2 Mo", variant: "destructive" });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      form.setValue("imageUrl", reader.result as string, { shouldValidate: true, shouldDirty: true });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  return (
+    <FormField
+      control={form.control}
+      name="imageUrl"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>
+            Image <span className="text-muted-foreground font-normal">(optionnel)</span>
+          </FormLabel>
+          <div className="space-y-2">
+            {/* Preview */}
+            {currentValue && (
+              <div className="relative w-full h-28 rounded-xl border border-border overflow-hidden bg-secondary/30">
+                <img src={currentValue} alt="Aperçu" className="w-full h-full object-contain" />
+                <button
+                  type="button"
+                  onClick={() => form.setValue("imageUrl", "", { shouldValidate: true, shouldDirty: true })}
+                  className="absolute top-1 right-1 bg-destructive text-white rounded-full p-0.5"
+                  data-testid="button-clear-image"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+            {/* Hidden file input */}
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFile}
+              data-testid="input-file-image"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={() => fileRef.current?.click()}
+            >
+              <ImagePlus className="w-4 h-4 mr-2" />
+              {currentValue ? "Changer l'image" : "Choisir depuis la galerie"}
+            </Button>
+            {/* URL fallback — only shown / editable when not a data URL */}
+            <FormControl>
+              <Input
+                placeholder="Ou coller une URL https://..."
+                value={currentValue.startsWith("data:") ? "" : currentValue}
+                onChange={(e) =>
+                  form.setValue("imageUrl", e.target.value, { shouldValidate: true, shouldDirty: true })
+                }
+                onBlur={field.onBlur}
+                name={field.name}
+                ref={field.ref}
+              />
+            </FormControl>
+          </div>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+
+// ─── ProductFormFields ───────────────────────────────────────────────────────
+// Also defined outside to keep a stable component identity across re-renders.
+
+interface ProductFormFieldsProps {
+  form: any;
+  isPending: boolean;
+  submitLabel: string;
+  onSubmit: (data: ProductForm) => void;
+  onToast: (opts: { title: string; description?: string; variant?: "destructive" }) => void;
+}
+
+function ProductFormFields({ form, isPending, submitLabel, onSubmit, onToast }: ProductFormFieldsProps) {
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <FormField
+        control={form.control}
+        name="name"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Nom du produit</FormLabel>
+            <FormControl>
+              <Input {...field} placeholder="Ex: VIP 3" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Prix (USDT)</FormLabel>
+              <FormControl>
+                <Input {...field} type="number" placeholder="Ex: 15000" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="dailyEarnings"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Gains/jour (USDT)</FormLabel>
+              <FormControl>
+                <Input {...field} type="number" placeholder="Ex: 300" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+      <FormField
+        control={form.control}
+        name="cycleDays"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Durée (jours)</FormLabel>
+            <FormControl>
+              <Input {...field} type="number" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <ImageUploadField form={form} onToast={onToast} />
+      {form.watch("price") && form.watch("dailyEarnings") && form.watch("cycleDays") && (
+        <div className="bg-primary/10 rounded-lg p-3 text-sm">
+          <p className="text-muted-foreground">Retour total estimé :</p>
+          <p className="font-bold text-primary text-lg">
+            {(
+              parseFloat(form.watch("dailyEarnings") || "0") *
+              parseInt(form.watch("cycleDays") || "0")
+            ).toLocaleString()}{" "}
+            USDT
+          </p>
+        </div>
+      )}
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={isPending}
+        data-testid="button-save-product"
+      >
+        {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : submitLabel}
+      </Button>
+    </form>
+  );
+}
+
+// ─── AdminProducts ────────────────────────────────────────────────────────────
+
 export default function AdminProducts() {
   const { toast } = useToast();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -67,7 +265,7 @@ export default function AdminProducts() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<Product> }) => {
+    mutationFn: async ({ id, data }: { id: number; data: ProductUpdatePayload }) => {
       const response = await apiRequest("PATCH", `/api/admin/products/${id}`, data);
       if (!response.ok) {
         const result = await response.json();
@@ -141,7 +339,14 @@ export default function AdminProducts() {
     const cycleDays = parseInt(data.cycleDays);
     updateMutation.mutate({
       id: selectedProduct.id,
-      data: { name: data.name, price, dailyEarnings, cycleDays, totalReturn: parseFloat((dailyEarnings * cycleDays).toFixed(2)), imageUrl: data.imageUrl || null },
+      data: {
+        name: data.name,
+        price,
+        dailyEarnings,
+        cycleDays,
+        totalReturn: parseFloat((dailyEarnings * cycleDays).toFixed(2)),
+        imageUrl: data.imageUrl || null,
+      },
     });
   };
 
@@ -149,130 +354,14 @@ export default function AdminProducts() {
     createMutation.mutate(data);
   };
 
-  const ImageUploadField = ({ form }: { form: any }) => {
-    const fileRef = useRef<HTMLInputElement>(null);
-    const currentValue: string = form.watch("imageUrl") || "";
-
-    const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      if (file.size > 2 * 1024 * 1024) {
-        toast({ title: "Image trop lourde", description: "Maximum 2 Mo", variant: "destructive" });
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = () => {
-        form.setValue("imageUrl", reader.result as string, { shouldValidate: true });
-      };
-      reader.readAsDataURL(file);
-      e.target.value = "";
-    };
-
-    return (
-      <FormField control={form.control} name="imageUrl" render={({ field }) => (
-        <FormItem>
-          <FormLabel>Image <span className="text-muted-foreground font-normal">(optionnel)</span></FormLabel>
-          <div className="space-y-2">
-            {/* Preview */}
-            {currentValue && (
-              <div className="relative w-full h-28 rounded-xl border border-border overflow-hidden bg-secondary/30">
-                <img src={currentValue} alt="Aperçu" className="w-full h-full object-contain" />
-                <button
-                  type="button"
-                  onClick={() => form.setValue("imageUrl", "", { shouldValidate: true })}
-                  className="absolute top-1 right-1 bg-destructive text-white rounded-full p-0.5"
-                  data-testid="button-clear-image"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            )}
-            {/* Upload button */}
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleFile}
-              data-testid="input-file-image"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={() => fileRef.current?.click()}
-            >
-              <ImagePlus className="w-4 h-4 mr-2" />
-              {currentValue ? "Changer l'image" : "Choisir depuis la galerie"}
-            </Button>
-            {/* URL fallback */}
-            <FormControl>
-              <Input
-                {...field}
-                placeholder="Ou coller une URL https://..."
-                value={currentValue.startsWith("data:") ? "" : currentValue}
-                onChange={(e) => form.setValue("imageUrl", e.target.value, { shouldValidate: true })}
-              />
-            </FormControl>
-          </div>
-          <FormMessage />
-        </FormItem>
-      )} />
-    );
-  };
-
-  const ProductFormFields = ({ form, isPending, submitLabel }: { form: any; isPending: boolean; submitLabel: string }) => (
-    <form onSubmit={form.handleSubmit(submitLabel === "Créer" ? handleCreate : handleUpdate)} className="space-y-4">
-      <FormField control={form.control} name="name" render={({ field }) => (
-        <FormItem>
-          <FormLabel>Nom du produit</FormLabel>
-          <FormControl><Input {...field} placeholder="Ex: VIP 3" /></FormControl>
-          <FormMessage />
-        </FormItem>
-      )} />
-      <div className="grid grid-cols-2 gap-4">
-        <FormField control={form.control} name="price" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Prix (USDT)</FormLabel>
-            <FormControl><Input {...field} type="number" placeholder="Ex: 15000" /></FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
-        <FormField control={form.control} name="dailyEarnings" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Gains/jour (USDT)</FormLabel>
-            <FormControl><Input {...field} type="number" placeholder="Ex: 300" /></FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
-      </div>
-      <FormField control={form.control} name="cycleDays" render={({ field }) => (
-        <FormItem>
-          <FormLabel>Durée (jours)</FormLabel>
-          <FormControl><Input {...field} type="number" /></FormControl>
-          <FormMessage />
-        </FormItem>
-      )} />
-      <ImageUploadField form={form} />
-      {form.watch("price") && form.watch("dailyEarnings") && form.watch("cycleDays") && (
-        <div className="bg-primary/10 rounded-lg p-3 text-sm">
-          <p className="text-muted-foreground">Retour total estimé :</p>
-          <p className="font-bold text-primary text-lg">
-            {(parseFloat(form.watch("dailyEarnings") || "0") * parseInt(form.watch("cycleDays") || "0")).toLocaleString()} USDT
-          </p>
-        </div>
-      )}
-      <Button type="submit" className="w-full" disabled={isPending} data-testid="button-save-product">
-        {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : submitLabel}
-      </Button>
-    </form>
-  );
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">{products?.length || 0} produit(s)</p>
-        <Button onClick={() => { setShowCreateForm(true); createForm.reset(); }} data-testid="button-add-product">
+        <Button
+          onClick={() => { setShowCreateForm(true); createForm.reset(); }}
+          data-testid="button-add-product"
+        >
           <Plus className="w-4 h-4 mr-2" />
           Nouveau produit
         </Button>
@@ -287,7 +376,11 @@ export default function AdminProducts() {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   {product.imageUrl ? (
-                    <img src={product.imageUrl} alt={product.name} className="w-12 h-12 rounded-lg object-contain border border-border" />
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      className="w-12 h-12 rounded-lg object-contain border border-border"
+                    />
                   ) : (
                     <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
                       <TrendingUp className="w-6 h-6 text-primary" />
@@ -312,7 +405,12 @@ export default function AdminProducts() {
                     onCheckedChange={(checked) => toggleMutation.mutate({ id: product.id, isActive: checked })}
                     data-testid={`switch-product-${product.id}`}
                   />
-                  <Button size="icon" variant="ghost" onClick={() => openEdit(product)} data-testid={`button-edit-product-${product.id}`}>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => openEdit(product)}
+                    data-testid={`button-edit-product-${product.id}`}
+                  >
                     <Edit className="w-4 h-4" />
                   </Button>
                   {!product.isFree && (
@@ -320,7 +418,9 @@ export default function AdminProducts() {
                       size="icon"
                       variant="ghost"
                       className="text-destructive"
-                      onClick={() => { if (confirm(`Supprimer "${product.name}" ?`)) deleteMutation.mutate(product.id); }}
+                      onClick={() => {
+                        if (confirm(`Supprimer "${product.name}" ?`)) deleteMutation.mutate(product.id);
+                      }}
                       disabled={deleteMutation.isPending}
                       data-testid={`button-delete-product-${product.id}`}
                     >
@@ -348,19 +448,26 @@ export default function AdminProducts() {
           </Card>
         ))
       ) : (
-        <div className="text-center py-8 text-muted-foreground">
-          Aucun produit
-        </div>
+        <div className="text-center py-8 text-muted-foreground">Aucun produit</div>
       )}
 
       {/* Create Dialog */}
-      <Dialog open={showCreateForm} onOpenChange={(open) => { if (!open) { setShowCreateForm(false); createForm.reset(); } }}>
+      <Dialog
+        open={showCreateForm}
+        onOpenChange={(open) => { if (!open) { setShowCreateForm(false); createForm.reset(); } }}
+      >
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Nouveau produit</DialogTitle>
           </DialogHeader>
           <Form {...createForm}>
-            <ProductFormFields form={createForm} isPending={createMutation.isPending} submitLabel="Créer" />
+            <ProductFormFields
+              form={createForm}
+              isPending={createMutation.isPending}
+              submitLabel="Créer"
+              onSubmit={handleCreate}
+              onToast={toast}
+            />
           </Form>
         </DialogContent>
       </Dialog>
@@ -372,7 +479,13 @@ export default function AdminProducts() {
             <DialogTitle>Modifier — {selectedProduct?.name}</DialogTitle>
           </DialogHeader>
           <Form {...editForm}>
-            <ProductFormFields form={editForm} isPending={updateMutation.isPending} submitLabel="Enregistrer" />
+            <ProductFormFields
+              form={editForm}
+              isPending={updateMutation.isPending}
+              submitLabel="Enregistrer"
+              onSubmit={handleUpdate}
+              onToast={toast}
+            />
           </Form>
         </DialogContent>
       </Dialog>
