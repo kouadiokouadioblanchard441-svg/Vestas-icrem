@@ -1603,11 +1603,11 @@ export async function registerRoutes(
         processedBy: req.session.userId,
       });
 
-      // Refund the user
+      // Refund the user — withdrawals are deducted from totalEarnings, so refund there
       const user = await storage.getUser(withdrawal.userId);
       if (user) {
-        const newBalance = parseFloat(user.balance) + withdrawal.amount;
-        await storage.updateUser(user.id, { balance: newBalance.toFixed(2) });
+        const newEarnings = parseFloat(user.totalEarnings || "0") + withdrawal.amount;
+        await storage.updateUser(user.id, { totalEarnings: newEarnings.toFixed(2) });
       }
 
       await storage.logAdminAction(req.session.userId!, "reject_withdrawal", withdrawal.userId, `Retrait ${withdrawal.id} rejeté et remboursé`);
@@ -2361,8 +2361,8 @@ export async function registerRoutes(
       });
       const user = await storage.getUser(withdrawal.userId);
       if (user) {
-        const newBalance = parseFloat(user.balance) + withdrawal.amount;
-        await storage.updateUser(user.id, { balance: newBalance.toFixed(2) });
+        const newEarnings = parseFloat(user.totalEarnings || "0") + withdrawal.amount;
+        await storage.updateUser(user.id, { totalEarnings: newEarnings.toFixed(2) });
       }
       await storage.logAdminAction(req.session.userId!, "reject_withdrawal", withdrawal.userId, `Retrait ${withdrawal.id} rejeté par bankier et remboursé`);
       res.json(withdrawal);
