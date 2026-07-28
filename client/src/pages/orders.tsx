@@ -101,7 +101,7 @@ export default function OrdersPage() {
                   data-testid={`order-card-${up.id}`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="w-14 h-14 flex-shrink-0">
+                    <div className="w-24 h-24 flex-shrink-0">
                       <img
                         src={getProductImage(up.productId ? up.productId % productImages.length : index)}
                         alt={up.product?.name || t.noProducts}
