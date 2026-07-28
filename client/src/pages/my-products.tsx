@@ -44,29 +44,14 @@ export default function MyProductsPage() {
     <div className="flex flex-col min-h-full" style={{ background: "#315aab" }}>
       <div className="flex-1 overflow-y-auto pb-16">
 
-        {/* Hero banner with back button */}
-        <div className="relative">
-          <img
-            src={heroBanner}
-            alt="Powerade"
-            className="w-full object-cover"
-            style={{ height: 200 }}
-          />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.65) 100%)" }} />
-
-          {/* Back button */}
-          <div className="absolute top-3 left-3">
-            <Link href="/account">
-              <button className="p-2 bg-white/20 rounded-full backdrop-blur-sm" data-testid="button-back">
-                <ChevronLeft className="w-5 h-5 text-white" />
-              </button>
-            </Link>
-          </div>
-
-          {/* Title on banner */}
-          <div className="absolute bottom-4 left-4">
-            <p className="text-white text-xl font-black tracking-tight">{t.myProductsTitle}</p>
-          </div>
+        {/* Header */}
+        <div className="flex items-center px-3 pt-4 pb-3">
+          <Link href="/account">
+            <button className="p-2 bg-white/20 rounded-full backdrop-blur-sm" data-testid="button-back">
+              <ChevronLeft className="w-5 h-5 text-white" />
+            </button>
+          </Link>
+          <p className="text-white text-xl font-black tracking-tight ml-3">{t.myProductsTitle}</p>
         </div>
 
         {/* Stats cards */}
