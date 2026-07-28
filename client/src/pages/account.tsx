@@ -11,7 +11,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/lib/i18n";
 
-import avatarImg from "@assets/IMG_20260326_091340_948_1782691806785.jpg";
+import { getUserAvatar } from "@/lib/avatar";
 import iconRecords from "@assets/mine-mod-records-DgHXSKa1_1782689837747.png";
 import iconGift from "@assets/téléchargement_(66)_1782689859239.png";
 import iconAbout from "@assets/mine-mod-aboutus-xnaBhqOq_1782689895455.png";
@@ -101,7 +101,7 @@ export default function AccountPage() {
           <div className="flex items-center justify-between px-5 pt-6 pb-5">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white/40 shrink-0">
-                <img src={avatarImg} alt="avatar" className="w-full h-full object-cover" />
+                <img src={getUserAvatar(user.id)} alt="avatar" className="w-full h-full object-cover" />
               </div>
               <div>
                 <p className="text-white font-bold text-base leading-tight drop-shadow" data-testid="text-phone">

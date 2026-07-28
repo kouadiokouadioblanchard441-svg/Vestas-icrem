@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import landscapeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 import { useLocation } from "wouter";
 import { ChevronLeft, User } from "lucide-react";
+import { getUserAvatar } from "@/lib/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth";
 import { getCountryByCode } from "@/lib/countries";
@@ -180,12 +181,9 @@ export default function TeamDetailsPage() {
               className="bg-white rounded-2xl shadow-sm flex items-center px-4 py-3 gap-3"
               data-testid={`team-member-${member.id}`}
             >
-              {/* Green avatar circle */}
-              <div
-                className="w-11 h-11 rounded-full border-2 flex items-center justify-center shrink-0"
-                style={{ borderColor: GREEN, backgroundColor: GREEN_BG }}
-              >
-                <User className="w-5 h-5" style={{ color: GREEN }} />
+              {/* Avatar */}
+              <div className="w-11 h-11 rounded-full overflow-hidden shrink-0 border-2" style={{ borderColor: GREEN }}>
+                <img src={getUserAvatar(member.id)} alt="avatar" className="w-full h-full object-cover" />
               </div>
 
               {/* Info */}

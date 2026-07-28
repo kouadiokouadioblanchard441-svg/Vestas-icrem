@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { ChevronLeft, User, Users } from "lucide-react";
+import { getUserAvatar } from "@/lib/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth";
 import { getCountryByCode } from "@/lib/countries";
@@ -174,12 +175,9 @@ export default function MembersPage() {
                 />
 
                 <div className="flex items-center px-4 py-3.5 gap-3">
-                  {/* Avatar with initials */}
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-sm font-bold text-white text-lg select-none"
-                    style={{ background: `linear-gradient(135deg, ${BLUE} 0%, #254a91 100%)` }}
-                  >
-                    {initials}
+                  {/* Avatar */}
+                  <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 shadow-sm border-2" style={{ borderColor: BLUE }}>
+                    <img src={getUserAvatar(member.id)} alt="avatar" className="w-full h-full object-cover" />
                   </div>
 
                   {/* Center info */}
