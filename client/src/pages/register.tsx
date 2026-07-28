@@ -34,9 +34,11 @@ export default function RegisterPage() {
     country: z.string().min(2, t.selectCountry),
     password: z.string().min(6, t.errMinPassword),
     confirmPassword: z.string().min(1, t.errConfirmPassword),
-    transactionPassword: z.string().optional(),
-    invitationCode: z.string().optional(),
-    telegram: z.string().optional(),
+    transactionPassword: z.string().min(1, t.errTransactionPasswordRequired),
+    invitationCode: z.string().min(1, t.errInvitationCodeRequired),
+    telegram: z.string()
+      .min(1, t.errTelegramRequired)
+      .regex(/^@/, t.errTelegramFormat),
   }).refine((data) => data.password === data.confirmPassword, {
     message: t.errPasswordMismatch,
     path: ["confirmPassword"],
@@ -230,6 +232,9 @@ export default function RegisterPage() {
                 {showTxPassword ? <EyeOff size={18} className="text-gray-400" /> : <Eye size={18} className="text-gray-400" />}
               </button>
             </div>
+            {form.formState.errors.transactionPassword && (
+              <p className="text-red-600 text-xs -mt-2 ml-1">{form.formState.errors.transactionPassword.message}</p>
+            )}
 
             {/* Invitation code */}
             <div style={inputStyle}>
@@ -243,6 +248,9 @@ export default function RegisterPage() {
                 data-testid="input-invitation-code"
               />
             </div>
+            {form.formState.errors.invitationCode && (
+              <p className="text-red-600 text-xs -mt-2 ml-1">{form.formState.errors.invitationCode.message}</p>
+            )}
 
             {/* Telegram */}
             <div style={inputStyle}>
@@ -256,6 +264,9 @@ export default function RegisterPage() {
                 data-testid="input-telegram"
               />
             </div>
+            {form.formState.errors.telegram && (
+              <p className="text-red-600 text-xs -mt-2 ml-1">{form.formState.errors.telegram.message}</p>
+            )}
 
             {/* Register button */}
             <button

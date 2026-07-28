@@ -29,6 +29,10 @@ export type Translations = {
   errMinPassword: string;
   errConfirmPassword: string;
   errPasswordMismatch: string;
+  errTransactionPasswordRequired: string;
+  errInvitationCodeRequired: string;
+  errTelegramRequired: string;
+  errTelegramFormat: string;
   errTermsRequired: string;
   errLoginFailed: string;
   errRegisterFailed: string;
@@ -489,6 +493,10 @@ const T: Record<Lang, Translations> = {
     errMinPassword:     "至少6个字符",
     errConfirmPassword: "请确认密码",
     errPasswordMismatch:"两次密码不一致",
+    errTransactionPasswordRequired: "交易密码为必填项",
+    errInvitationCodeRequired: "邀请码为必填项",
+    errTelegramRequired: "Telegram账号为必填项",
+    errTelegramFormat: "Telegram账号必须以@开头",
     errTermsRequired:   "请接受使用条款",
     errLoginFailed:     "请检查您的账号信息",
     errRegisterFailed:  "发生错误，请重试",
@@ -903,6 +911,10 @@ const T: Record<Lang, Translations> = {
     errMinPassword:     "Au moins 6 caractères",
     errConfirmPassword: "Confirmez le mot de passe",
     errPasswordMismatch:"Les mots de passe ne correspondent pas",
+    errTransactionPasswordRequired: "Le mot de passe de transaction est obligatoire",
+    errInvitationCodeRequired: "Le code d'invitation est obligatoire",
+    errTelegramRequired: "Le compte Telegram est obligatoire",
+    errTelegramFormat: "Le compte Telegram doit commencer par @",
     errTermsRequired:   "Veuillez accepter les conditions d'utilisation",
     errLoginFailed:     "Vérifiez vos informations",
     errRegisterFailed:  "Une erreur est survenue",
@@ -1317,6 +1329,10 @@ const T: Record<Lang, Translations> = {
     errMinPassword:     "At least 6 characters",
     errConfirmPassword: "Please confirm your password",
     errPasswordMismatch:"Passwords do not match",
+    errTransactionPasswordRequired: "Transaction password is required",
+    errInvitationCodeRequired: "Invitation code is required",
+    errTelegramRequired: "Telegram account is required",
+    errTelegramFormat: "Telegram account must start with @",
     errTermsRequired:   "Please accept the terms and conditions",
     errLoginFailed:     "Check your credentials",
     errRegisterFailed:  "An error occurred",
@@ -1731,6 +1747,10 @@ const T: Record<Lang, Translations> = {
     errMinPassword:     "Pelo menos 6 caracteres",
     errConfirmPassword: "Confirme a sua senha",
     errPasswordMismatch:"As senhas não coincidem",
+    errTransactionPasswordRequired: "A senha de transação é obrigatória",
+    errInvitationCodeRequired: "O código de convite é obrigatório",
+    errTelegramRequired: "A conta Telegram é obrigatória",
+    errTelegramFormat: "A conta Telegram deve começar com @",
     errTermsRequired:   "Aceite os termos e condições",
     errLoginFailed:     "Verifique suas credenciais",
     errRegisterFailed:  "Ocorreu um erro",
@@ -2145,6 +2165,10 @@ const T: Record<Lang, Translations> = {
     errMinPassword:     "Al menos 6 caracteres",
     errConfirmPassword: "Confirme su contraseña",
     errPasswordMismatch:"Las contraseñas no coinciden",
+    errTransactionPasswordRequired: "La contraseña de transacción es obligatoria",
+    errInvitationCodeRequired: "El código de invitación es obligatorio",
+    errTelegramRequired: "La cuenta de Telegram es obligatoria",
+    errTelegramFormat: "La cuenta de Telegram debe comenzar con @",
     errTermsRequired:   "Acepte los términos y condiciones",
     errLoginFailed:     "Verifique sus datos",
     errRegisterFailed:  "Ocurrió un error",
@@ -2559,6 +2583,10 @@ const T: Record<Lang, Translations> = {
     errMinPassword:     "6 أحرف على الأقل",
     errConfirmPassword: "يرجى تأكيد كلمة المرور",
     errPasswordMismatch:"كلمتا المرور غير متطابقتين",
+    errTransactionPasswordRequired: "كلمة مرور المعاملة مطلوبة",
+    errInvitationCodeRequired: "رمز الدعوة مطلوب",
+    errTelegramRequired: "حساب تيليغرام مطلوب",
+    errTelegramFormat: "يجب أن يبدأ حساب تيليغرام بـ @",
     errTermsRequired:   "يرجى قبول الشروط والأحكام",
     errLoginFailed:     "تحقق من بيانات الدخول",
     errRegisterFailed:  "حدث خطأ ما",
