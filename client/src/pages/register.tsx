@@ -10,7 +10,7 @@ import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
 import { WORLD_COUNTRIES } from "@/lib/world-countries";
 import { CountrySelector } from "@/components/country-selector";
 import { useI18n, LANGUAGES, type Lang } from "@/lib/i18n";
-import { Loader2, ChevronDown, Eye, EyeOff, Sun, ChevronRight } from "lucide-react";
+import { Loader2, Eye, EyeOff, Globe, ChevronRight, Smartphone, Lock, ThumbsUp, Send, KeyRound } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
 
 export default function RegisterPage() {
@@ -99,8 +99,8 @@ export default function RegisterPage() {
   }
 
   const inputStyle: React.CSSProperties = {
-    background: "rgba(255,255,255,0.88)",
-    borderRadius: "14px",
+    background: "rgba(255,255,255,0.92)",
+    borderRadius: 999,
     border: "none",
     height: 54,
     display: "flex",
@@ -133,12 +133,11 @@ export default function RegisterPage() {
           <button
             type="button"
             onClick={() => setLangOpen(true)}
-            className="flex items-center gap-1"
-            style={{ color: "#222", fontWeight: 500, fontSize: 13 }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+            style={{ background: "rgba(255,255,255,0.22)", backdropFilter: "blur(6px)", color: "#fff", fontWeight: 500, fontSize: 13 }}
           >
-            <Sun size={18} style={{ color: "#f5a623" }} />
-            <span>{LANGUAGES.find(l => l.code === lang)?.flag} {t.languageLabel}</span>
-            <ChevronRight size={14} />
+            <Globe size={15} style={{ color: "#fff" }} />
+            <span>{LANGUAGES.find(l => l.code === lang)?.nativeName}</span>
           </button>
         </div>
 
@@ -149,15 +148,18 @@ export default function RegisterPage() {
 
             {/* Phone */}
             <div style={inputStyle}>
+              <div className="pl-4 pr-2 flex items-center shrink-0">
+                <Smartphone size={18} className="text-gray-400" />
+              </div>
               <button
                 type="button"
                 onClick={() => setCountryModalOpen(true)}
-                className="flex items-center gap-1 px-4 h-full font-bold text-sm shrink-0 border-r"
-                style={{ color: "#333", borderColor: "rgba(0,0,0,0.12)" }}
+                className="flex items-center gap-1 pr-3 h-full font-bold text-sm shrink-0 border-r"
+                style={{ color: "#333", borderColor: "rgba(0,0,0,0.15)" }}
                 data-testid="button-select-country"
               >
                 +{countryData?.phonePrefix || "1"}
-                <ChevronRight size={14} />
+                <ChevronRight size={13} />
               </button>
               <input
                 {...form.register("phone")}
@@ -173,11 +175,14 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div style={inputStyle}>
+              <div className="pl-4 pr-3 flex items-center shrink-0">
+                <Lock size={18} className="text-gray-400" />
+              </div>
               <input
                 {...form.register("password")}
                 type={showPassword ? "text" : "password"}
                 placeholder={t.passwordPlaceholder}
-                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
+                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none"
                 data-testid="input-password"
               />
               <button type="button" onClick={() => setShowPassword(v => !v)} className="pr-4 pl-2 flex items-center shrink-0">
@@ -190,11 +195,14 @@ export default function RegisterPage() {
 
             {/* Confirm password */}
             <div style={inputStyle}>
+              <div className="pl-4 pr-3 flex items-center shrink-0">
+                <Lock size={18} className="text-gray-400" />
+              </div>
               <input
                 {...form.register("confirmPassword")}
                 type={showConfirm ? "text" : "password"}
                 placeholder={t.confirmPasswordPlaceholder}
-                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
+                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none"
                 data-testid="input-confirm-password"
               />
               <button type="button" onClick={() => setShowConfirm(v => !v)} className="pr-4 pl-2 flex items-center shrink-0">
@@ -207,11 +215,14 @@ export default function RegisterPage() {
 
             {/* Transaction password */}
             <div style={inputStyle}>
+              <div className="pl-4 pr-3 flex items-center shrink-0">
+                <KeyRound size={18} className="text-gray-400" />
+              </div>
               <input
                 {...form.register("transactionPassword")}
                 type={showTxPassword ? "text" : "password"}
                 placeholder={t.transactionPasswordPlaceholder}
-                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
+                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none"
                 data-testid="input-transaction-password"
               />
               <button type="button" onClick={() => setShowTxPassword(v => !v)} className="pr-4 pl-2 flex items-center shrink-0">
@@ -221,20 +232,26 @@ export default function RegisterPage() {
 
             {/* Invitation code */}
             <div style={inputStyle}>
+              <div className="pl-4 pr-3 flex items-center shrink-0">
+                <ThumbsUp size={18} className="text-gray-400" />
+              </div>
               <input
                 {...form.register("invitationCode")}
                 placeholder={t.invitationCodePlaceholder}
-                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
+                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none pr-4"
                 data-testid="input-invitation-code"
               />
             </div>
 
             {/* Telegram */}
             <div style={inputStyle}>
+              <div className="pl-4 pr-3 flex items-center shrink-0">
+                <Send size={18} className="text-gray-400" />
+              </div>
               <input
                 {...form.register("telegram")}
                 placeholder={t.telegramPlaceholder}
-                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-4"
+                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none pr-4"
                 data-testid="input-telegram"
               />
             </div>
