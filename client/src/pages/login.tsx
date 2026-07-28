@@ -223,8 +223,8 @@ export default function LoginPage() {
               style={{
                 height: 56,
                 borderRadius: 28,
-                background: "linear-gradient(135deg, #315aab 0%, #254a91 100%)",
-                boxShadow: "0 4px 16px rgba(49,90,171,0.45)",
+                background: "#1a56db",
+                boxShadow: "0 4px 16px rgba(26,86,219,0.55)",
               }}
               data-testid="button-login"
             >
@@ -244,8 +244,8 @@ export default function LoginPage() {
               style={{
                 height: 56,
                 borderRadius: 28,
-                background: "linear-gradient(135deg, #315aab 0%, #254a91 100%)",
-                boxShadow: "0 4px 16px rgba(49,90,171,0.45)",
+                background: "#1a56db",
+                boxShadow: "0 4px 16px rgba(26,86,219,0.55)",
               }}
               data-testid="link-register"
             >
