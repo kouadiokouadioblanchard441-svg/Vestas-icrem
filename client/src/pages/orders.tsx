@@ -97,10 +97,10 @@ export default function OrdersPage() {
               return (
                 <div
                   key={up.id}
-                  className="bg-white rounded-xl p-3 shadow-sm border"
+                  className="bg-white rounded-xl p-2 shadow-sm border"
                   data-testid={`order-card-${up.id}`}
                 >
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-start gap-2">
                     <div className="w-24 h-24 flex-shrink-0">
                       <img
                         src={getProductImage(up.productId ? up.productId % productImages.length : index)}
