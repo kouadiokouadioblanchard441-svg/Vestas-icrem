@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useLocation } from "wouter";
 import { ChevronLeft, Volume2 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
@@ -23,6 +23,7 @@ function drawWheel(
   rotation: number,
   segments: SpinWheelSegment[],
   lightPhase = 0,
+  unavailableText = "unavailable",
 ) {
   const ctx = canvas.getContext("2d")!;
   const W = canvas.width;
@@ -208,7 +209,7 @@ function drawWheel(
     ctx.font = `900 ${amountFontSize}px sans-serif`;
     ctx.fillText(amountText, 0, -8);
 
-    const label = seg.canWin ? seg.label : `${seg.label} · indisponible`;
+    const label = seg.canWin ? seg.label : `${seg.label} · ${unavailableText}`;
     const labelFontSize = fitFontSize(label, "bold", 9, 7);
     const labelLines = wrapLabel(label, labelFontSize);
     ctx.font = `bold ${labelFontSize}px sans-serif`;
@@ -275,15 +276,7 @@ function drawWheel(
   ctx.shadowBlur = 0;
 }
 
-/* ── Ticker messages ────────────────────────────────────────── */
-const TICKER_MSGS = [
-  "050****414 a gagné 2 USDT",
-  "067****821 a gagné 5 USDT",
-  "055****113 a gagné un bonus spécial",
-  "078****990 a gagné 10 USDT",
-  "091****357 a gagné le grand prix",
-  "066****442 a gagné 20 USDT",
-];
+/* ── Ticker messages ── built dynamically from i18n (see useTickerMsgs below) */
 
 /* ── Page ───────────────────────────────────────────────────── */
 export default function SpinWheelPage() {
@@ -304,11 +297,25 @@ export default function SpinWheelPage() {
   const [totalWon, setTotalWon]     = useState(0);
   const [showRules, setShowRules]   = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const [tickerIdx, setTickerIdx] = useState(0);
+  const [tickerIdx, setTickerIdx]   = useState(0);
+
+  const TICKER_MSGS = useMemo(() => [
+    t.wheelTickerWon.replace("{0}", "050****414").replace("{1}", "2"),
+    t.wheelTickerWon.replace("{0}", "067****821").replace("{1}", "5"),
+    t.wheelTickerWonSpecialBonus.replace("{0}", "055****113"),
+    t.wheelTickerWon.replace("{0}", "078****990").replace("{1}", "10"),
+    t.wheelTickerWonGrandPrize.replace("{0}", "091****357"),
+    t.wheelTickerWon.replace("{0}", "066****442").replace("{1}", "20"),
+  ], [t]);
   const [timeLeft, setTimeLeft]   = useState(86389); // ~24h
   const [segments, setSegments] = useState<SpinWheelSegment[]>(DEFAULT_SPIN_WHEEL_SEGMENTS);
   const rotationDrawRef = useRef(rotation);
   const segmentsDrawRef = useRef(segments);
+  const unavailableTextRef = useRef(t.wheelSegmentUnavailable);
+
+  useEffect(() => {
+    unavailableTextRef.current = t.wheelSegmentUnavailable;
+  }, [t.wheelSegmentUnavailable]);
 
   // Keep local spinTokens in sync when user data refreshes
   useEffect(() => {
@@ -368,6 +375,7 @@ export default function SpinWheelPage() {
         rotationDrawRef.current,
         segmentsDrawRef.current,
         time / 1800,
+        unavailableTextRef.current,
       );
       lightAnimRef.current = requestAnimationFrame(animateLight);
     };

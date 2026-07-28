@@ -377,6 +377,10 @@ export type Translations = {
   wheelErrUnavailable: string;
   wheelRulesBtn: string;
   wheelSaveBtn: string;
+  wheelTickerWon: string;
+  wheelTickerWonGrandPrize: string;
+  wheelTickerWonSpecialBonus: string;
+  wheelSegmentUnavailable: string;
   // wheel rules modal
   wheelRulesTitle: string;
   wheelRulesHowToGet: string;
@@ -790,6 +794,10 @@ const T: Record<Lang, Translations> = {
     wheelErrUnavailable:"抽奖暂时不可用",
     wheelRulesBtn:      "规则",
     wheelSaveBtn:       "记录",
+    wheelTickerWon:             "{0} 赢得了 {1} USDT",
+    wheelTickerWonGrandPrize:   "{0} 赢得了大奖",
+    wheelTickerWonSpecialBonus: "{0} 赢得了特别奖励",
+    wheelSegmentUnavailable:    "不可用",
     wheelRulesTitle:    "抽奖规则",
     wheelRulesHowToGet: "如何获得抽奖机会",
     wheelRulesBuyGet:   "购买任意付费产品 → 立即获得1次抽奖",
@@ -1192,6 +1200,10 @@ const T: Record<Lang, Translations> = {
     wheelErrUnavailable:"Le tirage est indisponible",
     wheelRulesBtn:      "Règles",
     wheelSaveBtn:       "Historique",
+    wheelTickerWon:             "{0} a gagné {1} USDT",
+    wheelTickerWonGrandPrize:   "{0} a gagné le grand prix",
+    wheelTickerWonSpecialBonus: "{0} a gagné un bonus spécial",
+    wheelSegmentUnavailable:    "indisponible",
     wheelRulesTitle:    "Règles du Tirage",
     wheelRulesHowToGet: "Comment obtenir des tours",
     wheelRulesBuyGet:   "Achetez un produit payant → 1 tour crédité immédiatement",
@@ -1594,6 +1606,10 @@ const T: Record<Lang, Translations> = {
     wheelErrUnavailable:"Draw unavailable",
     wheelRulesBtn:      "Rules",
     wheelSaveBtn:       "History",
+    wheelTickerWon:             "{0} won {1} USDT",
+    wheelTickerWonGrandPrize:   "{0} won the grand prize",
+    wheelTickerWonSpecialBonus: "{0} won a special bonus",
+    wheelSegmentUnavailable:    "unavailable",
     wheelRulesTitle:    "Spin Rules",
     wheelRulesHowToGet: "How to get spins",
     wheelRulesBuyGet:   "Buy any paid product → get 1 spin immediately",
@@ -1996,6 +2012,10 @@ const T: Record<Lang, Translations> = {
     wheelErrUnavailable:"Sorteio indisponível",
     wheelRulesBtn:      "Regras",
     wheelSaveBtn:       "Histórico",
+    wheelTickerWon:             "{0} ganhou {1} USDT",
+    wheelTickerWonGrandPrize:   "{0} ganhou o grande prémio",
+    wheelTickerWonSpecialBonus: "{0} ganhou um bónus especial",
+    wheelSegmentUnavailable:    "indisponível",
     wheelRulesTitle:    "Regras do Sorteio",
     wheelRulesHowToGet: "Como obter giros",
     wheelRulesBuyGet:   "Compre qualquer produto pago → 1 giro imediato",
@@ -2398,6 +2418,10 @@ const T: Record<Lang, Translations> = {
     wheelErrUnavailable:"Sorteo no disponible",
     wheelRulesBtn:      "Reglas",
     wheelSaveBtn:       "Historial",
+    wheelTickerWon:             "{0} ganó {1} USDT",
+    wheelTickerWonGrandPrize:   "{0} ganó el gran premio",
+    wheelTickerWonSpecialBonus: "{0} ganó un bono especial",
+    wheelSegmentUnavailable:    "no disponible",
     wheelRulesTitle:    "Reglas del Sorteo",
     wheelRulesHowToGet: "Cómo obtener giros",
     wheelRulesBuyGet:   "Compra cualquier producto de pago → 1 giro inmediato",
@@ -2800,6 +2824,10 @@ const T: Record<Lang, Translations> = {
     wheelErrUnavailable:"السحب غير متاح",
     wheelRulesBtn:      "القواعد",
     wheelSaveBtn:       "السجل",
+    wheelTickerWon:             "{0} ربح {1} USDT",
+    wheelTickerWonGrandPrize:   "{0} ربح الجائزة الكبرى",
+    wheelTickerWonSpecialBonus: "{0} ربح مكافأة خاصة",
+    wheelSegmentUnavailable:    "غير متاح",
     wheelRulesTitle:    "قواعد السحب",
     wheelRulesHowToGet: "كيفية الحصول على محاولات",
     wheelRulesBuyGet:   "اشتر أي منتج مدفوع ← محاولة فورية",
