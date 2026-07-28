@@ -24,54 +24,41 @@ const SEGMENTS = [
   { color: "#457b9d", label: "1"  },
 ];
 
-function RealisticWheel({ size = 40 }: { size?: number }) {
+function RealisticWheel({ size = 56 }: { size?: number }) {
   const cx = size / 2;
   const cy = size / 2;
-  const outerR = size / 2 - 1;
-  const innerR = outerR - 4;
-  const hubR = size / 7;
+  const r = size / 2 - 1;
+  const hubR = size / 8;
   const n = SEGMENTS.length;
 
   const paths = SEGMENTS.map(({ color }, i) => {
     const arc = (2 * Math.PI) / n;
     const a1 = i * arc - Math.PI / 2;
     const a2 = a1 + arc;
-    const x1 = cx + Math.cos(a1) * innerR;
-    const y1 = cy + Math.sin(a1) * innerR;
-    const x2 = cx + Math.cos(a2) * innerR;
-    const y2 = cy + Math.sin(a2) * innerR;
+    const x1 = cx + Math.cos(a1) * r;
+    const y1 = cy + Math.sin(a1) * r;
+    const x2 = cx + Math.cos(a2) * r;
+    const y2 = cy + Math.sin(a2) * r;
     return (
       <path
         key={i}
-        d={`M ${cx} ${cy} L ${x1} ${y1} A ${innerR} ${innerR} 0 0 1 ${x2} ${y2} Z`}
+        d={`M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2} Z`}
         fill={color}
       />
     );
   });
 
-  // Divider lines
   const dividers = SEGMENTS.map((_, i) => {
     const angle = i * (2 * Math.PI / n) - Math.PI / 2;
-    const x = cx + Math.cos(angle) * innerR;
-    const y = cy + Math.sin(angle) * innerR;
-    return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#ffd700" strokeWidth="0.8" />;
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="white" strokeWidth="1.2" />;
   });
 
-  // Outer decorative pegs (small circles around the rim)
-  const pegCount = 24;
-  const pegs = Array.from({ length: pegCount }).map((_, i) => {
-    const angle = (i / pegCount) * 2 * Math.PI - Math.PI / 2;
-    const r = outerR - 1.5;
-    const px = cx + Math.cos(angle) * r;
-    const py = cy + Math.sin(angle) * r;
-    return <circle key={i} cx={px} cy={py} r="1.2" fill={i % 2 === 0 ? "#ffd700" : "#fff"} />;
-  });
-
-  // Small text labels in each segment
   const labels = SEGMENTS.map(({ label }, i) => {
     const arc = (2 * Math.PI) / n;
     const mid = i * arc + arc / 2 - Math.PI / 2;
-    const lr = innerR * 0.62;
+    const lr = r * 0.60;
     const lx = cx + Math.cos(mid) * lr;
     const ly = cy + Math.sin(mid) * lr;
     return (
@@ -81,10 +68,9 @@ function RealisticWheel({ size = 40 }: { size?: number }) {
         y={ly}
         textAnchor="middle"
         dominantBaseline="central"
-        fontSize={size / 13}
+        fontSize={size / 11}
         fontWeight="bold"
         fill="white"
-        style={{ textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}
       >
         {label}
       </text>
@@ -93,39 +79,36 @@ function RealisticWheel({ size = 40 }: { size?: number }) {
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: "block" }}>
-      {/* Outer gold ring */}
-      <circle cx={cx} cy={cy} r={outerR} fill="#b8860b" />
-      <circle cx={cx} cy={cy} r={outerR - 3} fill="#ffd700" />
-
-      {/* Segments */}
-      {paths}
-      {dividers}
-
-      {/* Gold outer border over segments */}
-      <circle cx={cx} cy={cy} r={innerR} fill="none" stroke="#ffd700" strokeWidth="1" />
-
-      {/* Decorative pegs */}
-      {pegs}
-
-      {/* Labels */}
-      {labels}
-
-      {/* Center hub — metallic */}
-      <circle cx={cx} cy={cy} r={hubR + 1} fill="#ffd700" />
-      <circle cx={cx} cy={cy} r={hubR} fill="url(#hubGrad)" />
       <defs>
-        <radialGradient id="hubGrad" cx="35%" cy="35%">
+        <radialGradient id="hubGrad2" cx="35%" cy="35%">
           <stop offset="0%" stopColor="#fff9c4" />
           <stop offset="60%" stopColor="#ffd700" />
           <stop offset="100%" stopColor="#b8860b" />
         </radialGradient>
+        <clipPath id="wheelClip">
+          <circle cx={cx} cy={cy} r={r} />
+        </clipPath>
       </defs>
+
+      {/* Segments clipped to circle */}
+      <g clipPath="url(#wheelClip)">
+        {paths}
+        {dividers}
+        {labels}
+      </g>
+
+      {/* Thin outer border */}
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="white" strokeWidth="1.5" />
+
+      {/* Center hub */}
+      <circle cx={cx} cy={cy} r={hubR + 1} fill="white" />
+      <circle cx={cx} cy={cy} r={hubR} fill="url(#hubGrad2)" />
       <text
         x={cx}
         y={cy}
         textAnchor="middle"
         dominantBaseline="central"
-        fontSize={size / 10}
+        fontSize={size / 11}
         fontWeight="bold"
         fill="#7c2d12"
       >
@@ -207,43 +190,27 @@ export function FloatingWheel({ bottomOffset = 24 }: FloatingWheelProps) {
           border: "none",
           padding: 0,
           cursor: "grab",
-          background: "radial-gradient(circle at 35% 35%, #1a0a00, #3b1005)",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.5), 0 0 14px rgba(255,215,0,0.5)",
+          background: "transparent",
+          boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
           overflow: "hidden",
           touchAction: "none",
           userSelect: "none",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          flexDirection: "column",
-          gap: 1,
         }}
       >
-        {/* Pointer triangle fixed at top */}
-        <div style={{
-          position: "absolute",
-          top: 2,
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: 0,
-          height: 0,
-          borderLeft: "5px solid transparent",
-          borderRight: "5px solid transparent",
-          borderTop: "9px solid #ffd700",
-          zIndex: 2,
-          filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.6))",
-        }} />
-
-        {/* Spinning wheel */}
+        {/* Spinning wheel fills the button */}
         <div style={{
           animation: "floatWheelSpin 4s linear infinite",
           transformOrigin: "center",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          marginTop: 6,
+          width: "100%",
+          height: "100%",
         }}>
-          <RealisticWheel size={48} />
+          <RealisticWheel size={64} />
         </div>
       </button>
     </>
