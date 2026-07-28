@@ -97,11 +97,11 @@ export default function OrdersPage() {
               return (
                 <div
                   key={up.id}
-                  className="bg-white rounded-xl p-4 shadow-sm border"
+                  className="bg-white rounded-xl p-3 shadow-sm border"
                   data-testid={`order-card-${up.id}`}
                 >
-                  <div className="flex items-start gap-4">
-                    <div className="w-24 h-24 flex-shrink-0">
+                  <div className="flex items-start gap-3">
+                    <div className="w-14 h-14 flex-shrink-0">
                       <img
                         src={getProductImage(up.productId ? up.productId % productImages.length : index)}
                         alt={up.product?.name || t.noProducts}
@@ -110,11 +110,11 @@ export default function OrdersPage() {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start mb-2">
-                        <p className="text-red-500 font-bold text-sm">
+                      <div className="flex justify-between items-start mb-1">
+                        <p className="text-red-500 font-bold text-xs">
                           {up.product?.name || t.noProducts}
                         </p>
-                        <span className={`px-2 py-0.5 text-[11px] font-semibold rounded ${
+                        <span className={`px-1.5 py-0.5 text-[10px] font-semibold rounded ${
                           up.status === 'active'
                             ? 'bg-green-100 text-green-600'
                             : 'bg-gray-100 text-gray-600'
@@ -123,7 +123,7 @@ export default function OrdersPage() {
                         </span>
                       </div>
 
-                      <div className="space-y-0.5 text-[12px]">
+                      <div className="space-y-0.5 text-[11px]">
                         <p className="text-gray-600">
                           {t.price}：<span className="text-green-500 font-medium">{Number(up.product?.price || 0).toLocaleString() || 0} USDT</span>
                         </p>
