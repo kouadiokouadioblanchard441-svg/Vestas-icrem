@@ -26,10 +26,8 @@ export function FloatingSupport({ bottomOffset = 24 }: FloatingSupportProps) {
   const startPos = useRef({ x: 0, y: 0 });
   const startOffset = useRef({ x: 0, y: 0 });
 
-  // Position: start at fixed bottom-right
   const [pos, setPos] = useState<{ right: number; bottom: number } | null>(null);
 
-  // Initialise position after mount so we know window size
   useEffect(() => {
     setPos({ right: 18, bottom: bottomOffset + 40 });
   }, [bottomOffset]);
@@ -40,7 +38,6 @@ export function FloatingSupport({ bottomOffset = 24 }: FloatingSupportProps) {
     didDrag.current = false;
     btnRef.current.setPointerCapture(e.pointerId);
     startPos.current = { x: e.clientX, y: e.clientY };
-    // Convert right/bottom to left/top for free movement
     const rect = btnRef.current.getBoundingClientRect();
     startOffset.current = { x: rect.left, y: rect.top };
     e.preventDefault();
@@ -58,14 +55,13 @@ export function FloatingSupport({ bottomOffset = 24 }: FloatingSupportProps) {
     const clampedLeft = Math.max(0, Math.min(window.innerWidth - btnSize, newLeft));
     const clampedTop = Math.max(0, Math.min(window.innerHeight - btnSize, newTop));
 
-    // Convert back to right/bottom
     setPos({
       right: window.innerWidth - clampedLeft - btnSize,
       bottom: window.innerHeight - clampedTop - btnSize,
     });
   };
 
-  const onPointerUp = (e: React.PointerEvent) => {
+  const onPointerUp = () => {
     if (!dragging.current) return;
     dragging.current = false;
     if (!didDrag.current && link && link !== "#") {
@@ -93,15 +89,15 @@ export function FloatingSupport({ bottomOffset = 24 }: FloatingSupportProps) {
         border: "3px solid #16A34A",
         padding: 0,
         cursor: "grab",
-        background: "transparent",
-        boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
+        background: "#fff",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.25), 0 0 10px rgba(22,163,74,0.3)",
         overflow: "hidden",
         touchAction: "none",
         userSelect: "none",
       }}
     >
       <img
-        src="/support-avatar.png"
+        src="/support-avatar_2.png"
         alt="Service client"
         draggable={false}
         style={{
