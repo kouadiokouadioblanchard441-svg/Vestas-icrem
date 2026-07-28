@@ -254,14 +254,23 @@ export default function RegisterPage() {
 
             {/* Telegram */}
             <div style={inputStyle}>
-              <div className="pl-4 pr-3 flex items-center shrink-0">
+              <div className="pl-4 pr-2 flex items-center shrink-0">
                 <Send size={18} className="text-gray-400" />
               </div>
+              <span className="text-gray-500 font-semibold text-sm pr-1 shrink-0">@</span>
               <input
                 {...form.register("telegram")}
                 placeholder={t.telegramPlaceholder}
                 className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none pr-4"
                 data-testid="input-telegram"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val && !val.startsWith("@")) {
+                    form.setValue("telegram", "@" + val, { shouldValidate: true });
+                  } else {
+                    form.setValue("telegram", val, { shouldValidate: true });
+                  }
+                }}
               />
             </div>
             {form.formState.errors.telegram && (
