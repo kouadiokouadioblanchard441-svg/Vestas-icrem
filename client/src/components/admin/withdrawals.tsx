@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useI18n } from "@/lib/i18n";
-import { Check, X, Search, Loader2, ShieldCheck } from "lucide-react";
+import { Check, X, Search, Loader2, ShieldCheck, HandCoins, Zap } from "lucide-react";
 import type { Withdrawal } from "@shared/schema";
 
 interface WithdrawalWithUser extends Withdrawal {
@@ -27,6 +27,31 @@ export default function AdminWithdrawals() {
   const [filter, setFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "pending_2fa" | "processing" | "approved" | "rejected" | "failed">("pending");
   const [verificationCodes, setVerificationCodes] = useState<Record<number, string>>({});
+  const [modeToggling, setModeToggling] = useState(false);
+
+  const { data: settings } = useQuery<Record<string, string>>({
+    queryKey: ["/api/admin/settings"],
+  });
+
+  const withdrawalMode = settings?.withdrawalMode || "manual";
+  const isManual = withdrawalMode === "manual";
+
+  const toggleMode = async () => {
+    const newMode = isManual ? "auto" : "manual";
+    setModeToggling(true);
+    try {
+      const response = await apiRequest("POST", "/api/admin/settings", { withdrawalMode: newMode });
+      if (!response.ok) throw new Error("Erreur serveur");
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
+      toast({
+        title: newMode === "manual" ? "✋ Mode Manuel activé" : "⚡ Mode Automatique (NOWPayments) activé",
+      });
+    } catch (e: any) {
+      toast({ title: e.message || "Erreur", variant: "destructive" });
+    } finally {
+      setModeToggling(false);
+    }
+  };
 
   const { data: allWithdrawals, isLoading } = useQuery<WithdrawalWithUser[]>({
     queryKey: ["/api/admin/withdrawals"],
@@ -86,6 +111,39 @@ export default function AdminWithdrawals() {
 
   return (
     <div className="space-y-4">
+
+      {/* ── Bandeau mode retrait ── */}
+      <div className={`rounded-xl border-2 p-3 flex items-center justify-between gap-3 ${isManual ? "border-orange-400/60 bg-orange-50/50 dark:bg-orange-950/20" : "border-blue-400/60 bg-blue-50/50 dark:bg-blue-950/20"}`}>
+        <div className="flex items-center gap-2 min-w-0">
+          {isManual
+            ? <HandCoins className="w-5 h-5 text-orange-500 shrink-0" />
+            : <Zap className="w-5 h-5 text-blue-500 shrink-0" />}
+          <div className="min-w-0">
+            <p className={`text-sm font-bold ${isManual ? "text-orange-700 dark:text-orange-300" : "text-blue-700 dark:text-blue-300"}`}>
+              {isManual ? "Mode Manuel" : "Mode Automatique"}
+            </p>
+            <p className="text-xs text-muted-foreground truncate">
+              {isManual
+                ? "Vous validez chaque retrait manuellement"
+                : "NOWPayments traite automatiquement + code 2FA"}
+            </p>
+          </div>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          className={`shrink-0 ${isManual ? "border-blue-400 text-blue-600 hover:bg-blue-50" : "border-orange-400 text-orange-600 hover:bg-orange-50"}`}
+          disabled={modeToggling}
+          onClick={toggleMode}
+        >
+          {modeToggling
+            ? <Loader2 className="w-3 h-3 animate-spin" />
+            : isManual
+              ? <><Zap className="w-3 h-3 mr-1" />Auto</>
+              : <><HandCoins className="w-3 h-3 mr-1" />Manuel</>}
+        </Button>
+      </div>
+
       <div className="flex gap-2">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />

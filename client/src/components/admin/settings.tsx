@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Loader2, Save, Link, Clock, Users, PowerOff, Power } from "lucide-react";
+import { Loader2, Save, Link, Clock, Users, PowerOff, Power, HandCoins, Zap } from "lucide-react";
 
 const NETWORKS = [
   { value: "telegram", label: "Telegram" },
@@ -55,6 +55,77 @@ const settingsSchema = z.object({
 });
 
 type SettingsForm = z.infer<typeof settingsSchema>;
+
+// ── Composant toggle mode retrait ──────────────────────────────────────────
+function WithdrawalModeToggle() {
+  const { toast } = useToast();
+  const { data: settings, isLoading } = useQuery<Record<string, string>>({
+    queryKey: ["/api/admin/settings"],
+  });
+  const [toggling, setToggling] = useState(false);
+
+  const currentMode = settings?.withdrawalMode || "manual";
+
+  const toggle = async () => {
+    const newMode = currentMode === "manual" ? "auto" : "manual";
+    setToggling(true);
+    try {
+      const response = await apiRequest("POST", "/api/admin/settings", { withdrawalMode: newMode });
+      if (!response.ok) throw new Error("Erreur serveur");
+      await queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
+      toast({
+        title: newMode === "manual"
+          ? "✋ Mode Manuel activé"
+          : "⚡ Mode Automatique (NOWPayments) activé",
+        description: newMode === "manual"
+          ? "Vous devrez valider chaque retrait manuellement."
+          : "NOWPayments traitera automatiquement les retraits.",
+      });
+    } catch (e: any) {
+      toast({ title: e.message || "Erreur", variant: "destructive" });
+    } finally {
+      setToggling(false);
+    }
+  };
+
+  if (isLoading) return null;
+
+  const isManual = currentMode === "manual";
+
+  return (
+    <div className={`rounded-lg border-2 p-4 space-y-3 ${isManual ? "border-orange-400/60 bg-orange-50/40 dark:bg-orange-950/20" : "border-blue-400/60 bg-blue-50/40 dark:bg-blue-950/20"}`}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {isManual
+            ? <HandCoins className="w-5 h-5 text-orange-500" />
+            : <Zap className="w-5 h-5 text-blue-500" />}
+          <p className="text-sm font-semibold">Mode de traitement des retraits</p>
+        </div>
+        <span className={`text-xs font-bold px-2 py-1 rounded-full ${isManual ? "bg-orange-500/20 text-orange-700 dark:text-orange-300" : "bg-blue-500/20 text-blue-700 dark:text-blue-300"}`}>
+          {isManual ? "MANUEL" : "AUTO (NOWPayments)"}
+        </span>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        {isManual
+          ? "✋ Les retraits restent en attente jusqu'à votre validation manuelle dans le panel."
+          : "⚡ NOWPayments est appelé immédiatement. Vous entrez un code 2FA pour débloquer le paiement crypto."}
+      </p>
+      <Button
+        type="button"
+        variant="outline"
+        className={`w-full ${isManual ? "border-blue-400 text-blue-600 hover:bg-blue-50" : "border-orange-400 text-orange-600 hover:bg-orange-50"}`}
+        disabled={toggling}
+        onClick={toggle}
+      >
+        {toggling
+          ? <Loader2 className="w-4 h-4 animate-spin mr-2" />
+          : isManual
+            ? <><Zap className="w-4 h-4 mr-2" />Passer en mode Automatique (NOWPayments)</>
+            : <><HandCoins className="w-4 h-4 mr-2" />Passer en mode Manuel</>}
+      </Button>
+    </div>
+  );
+}
 
 interface AdminSettingsProps {
   isSuperAdmin: boolean;
@@ -500,6 +571,9 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
                 </FormItem>
               )} />
             </div>
+
+            {/* Mode de traitement des retraits */}
+            <WithdrawalModeToggle />
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="minDeposit" render={({ field }) => (
                 <FormItem>

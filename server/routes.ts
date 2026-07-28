@@ -1036,6 +1036,25 @@ export async function registerRoutes(
         totalEarnings: (balance - amount).toFixed(2),
       });
 
+      const withdrawalMode = settings.withdrawalMode || "manual";
+
+      if (withdrawalMode === "manual") {
+        // ── Mode Manuel ── le retrait reste en pending, l'admin valide manuellement
+        const withdrawal = await storage.createWithdrawal({
+          userId: user.id,
+          amount,
+          netAmount,
+          fees: feeAmount,
+          accountName: wallet.accountName,
+          accountNumber: wallet.accountNumber,
+          country: user.country,
+          paymentMethod: "USDT BEP20",
+          status: "pending",
+        });
+        return res.json({ ...withdrawal, payoutRequiresVerification: false });
+      }
+
+      // ── Mode Auto (NOWPayments) ──
       const withdrawal = await storage.createWithdrawal({
         userId: user.id,
         amount,
