@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Search } from "lucide-react";
 import { WORLD_COUNTRIES, getFlagEmoji } from "@/lib/world-countries";
+import { useI18n } from "@/lib/i18n";
 
 interface CountrySelectorProps {
   open: boolean;
@@ -10,6 +11,7 @@ interface CountrySelectorProps {
 }
 
 export function CountrySelector({ open, onClose, onSelect, selectedCode }: CountrySelectorProps) {
+  const { t } = useI18n();
   const [search, setSearch] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -65,7 +67,7 @@ export function CountrySelector({ open, onClose, onSelect, selectedCode }: Count
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search country or dial code..."
+              placeholder={t.searchCountryPlaceholder}
               className="flex-1 bg-transparent outline-none"
               style={{ fontSize: 15, color: "#1a1a1a", letterSpacing: "0.03em" }}
             />

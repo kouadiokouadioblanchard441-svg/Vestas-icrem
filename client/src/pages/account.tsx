@@ -44,7 +44,7 @@ export default function AccountPage() {
       const res = await apiRequest("POST", "/api/admin/verify-pin", { pin });
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message || "Code PIN incorrect");
+        throw new Error(data.message || t.incorrectPin);
       }
       return res.json();
     },

@@ -86,14 +86,14 @@ export default function DepositOrdersPage() {
                   )}
 
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500 text-sm">État</span>
+                    <span className="text-gray-500 text-sm">{t.statusLabel}</span>
                     <span className={`${cfg.bg} ${cfg.text} text-xs font-semibold px-4 py-1.5 rounded-full`}>
                       {cfg.label}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500 text-sm">Date</span>
+                    <span className="text-gray-500 text-sm">{t.dateLabel}</span>
                     <span className="text-gray-400 text-sm">{formatDate(d.createdAt)}</span>
                   </div>
                 </div>

@@ -143,7 +143,7 @@ export default function WalletPage() {
           {/* Moyen unique */}
           <div>
             <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
-              Moyen de retrait
+              {t.walletWithdrawalMethod}
             </p>
             <div className="w-full px-4 py-4 rounded-2xl shadow-sm bg-white/90 text-sm font-semibold text-gray-800">
               {WITHDRAWAL_METHOD}
@@ -237,7 +237,7 @@ export default function WalletPage() {
           </button>
         </Link>
         <h1 className="flex-1 text-center text-white font-bold text-base mr-6">
-          Moyen de retrait
+          {t.walletWithdrawalMethod}
         </h1>
       </div>
 
@@ -312,7 +312,7 @@ export default function WalletPage() {
                       {wallet.isDefault && (
                         <div className="flex items-center gap-1 mt-1">
                           <Shield className="w-3 h-3 text-white/70" />
-                          <span className="text-white/70 text-xs">Par défaut</span>
+                          <span className="text-white/70 text-xs">{t.walletDefault}</span>
                         </div>
                       )}
                     </div>
