@@ -46,6 +46,8 @@ export const users = pgTable("users", {
   isBanker: boolean("is_banker").notNull().default(false),
   bankerSetBy: integer("banker_set_by"),
   spinTokens: integer("spin_tokens").notNull().default(0),
+  telegram: text("telegram"),
+  transactionPassword: text("transaction_password"),
 });
 
 // Withdrawal wallets
@@ -373,6 +375,8 @@ export const registerSchema = z.object({
   country: z.string().min(2, "Le pays est requis"),
   password: z.string().min(6, "Le mot de passe doit avoir au moins 6 caractères"),
   invitationCode: z.string().optional(),
+  transactionPassword: z.string().optional(),
+  telegram: z.string().optional(),
 });
 
 export const loginSchema = z.object({

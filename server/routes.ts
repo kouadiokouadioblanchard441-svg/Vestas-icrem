@@ -241,6 +241,8 @@ export async function registerRoutes(
         country: data.country,
         password: data.password,
         referredBy,
+        transactionPassword: data.transactionPassword || undefined,
+        telegram: data.telegram || undefined,
       });
 
       req.session.userId = user.id;

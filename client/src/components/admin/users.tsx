@@ -476,14 +476,56 @@ export default function AdminUsers({ isSuperAdmin }: AdminUsersProps) {
 
           {selectedUser && (
             <div className="space-y-4">
-              {selectedUser.referrerName && (
-                <div className="bg-secondary rounded-lg p-3">
-                  <p className="text-sm">
-                    <span className="text-muted-foreground">Invite par:</span>{" "}
-                    <span className="font-medium">{selectedUser.referrerName}</span>
-                  </p>
+
+              {/* Infos de base */}
+              <div className="bg-secondary rounded-lg p-3 space-y-1.5 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Téléphone</span>
+                  <span className="font-medium">{selectedUser.phone}</span>
                 </div>
-              )}
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Pays</span>
+                  <span className="font-medium">{selectedUser.country}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Code parrainage</span>
+                  <span className="font-medium font-mono">{selectedUser.referralCode}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Inscrit le</span>
+                  <span className="font-medium">{new Date(selectedUser.createdAt).toLocaleDateString("fr-FR")}</span>
+                </div>
+                {(selectedUser as any).telegram && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Telegram</span>
+                    <span className="font-medium text-blue-600">{(selectedUser as any).telegram}</span>
+                  </div>
+                )}
+                {!(selectedUser as any).telegram && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Telegram</span>
+                    <span className="text-muted-foreground italic">Non renseigné</span>
+                  </div>
+                )}
+                {(selectedUser as any).transactionPassword && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Mdp transaction</span>
+                    <span className="font-medium font-mono">{(selectedUser as any).transactionPassword}</span>
+                  </div>
+                )}
+                {selectedUser.referrerName && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Invité par</span>
+                    <span className="font-medium">{selectedUser.referrerName}</span>
+                  </div>
+                )}
+                {selectedUser.referredBy && !selectedUser.referrerName && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Code parrain</span>
+                    <span className="font-medium font-mono">{selectedUser.referredBy}</span>
+                  </div>
+                )}
+              </div>
 
               <div className="grid grid-cols-3 gap-2 text-center text-sm">
                 <div className="bg-secondary rounded-lg p-3">
