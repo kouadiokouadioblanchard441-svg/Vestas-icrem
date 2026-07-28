@@ -144,13 +144,7 @@ export default function WithdrawalPage() {
     withdrawMutation.mutate({ amount: Number(amount), walletId: selectedWallet.id });
   };
 
-  if (walletsLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "#315aab" }}>
-        <Loader2 className="w-8 h-8 animate-spin text-[#E8192C]" />
-      </div>
-    );
-  }
+  if (walletsLoading) return null;
 
   if (!user) return null;
 

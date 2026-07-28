@@ -88,11 +88,7 @@ export default function MyProductsPage() {
 
         {/* Product cards */}
         <div className="px-3 mt-3 space-y-3">
-          {isLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#E8192C" }} />
-            </div>
-          ) : allProducts.length === 0 ? (
+          {isLoading ? null : allProducts.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl shadow-sm flex flex-col items-center gap-3">
               <Wind className="w-12 h-12 text-gray-200" />
               <p className="text-gray-500 font-medium">{t.myProductsNone}</p>

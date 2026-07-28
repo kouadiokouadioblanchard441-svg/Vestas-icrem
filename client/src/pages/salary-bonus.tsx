@@ -115,11 +115,7 @@ export default function SalaryBonusPage() {
         </div>
 
         {/* ── Reward cards ── */}
-        {isLoading ? (
-          <div className="flex justify-center py-16">
-            <div className="w-9 h-9 rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin" />
-          </div>
-        ) : (
+        {isLoading ? null : (
           (tasks as any[]).map((task, index) => {
             const current = task.currentInvites || 0;
             const required = task.requiredInvites || 1;

@@ -145,11 +145,7 @@ export default function HistoryPage() {
       {/* ── Content ── */}
       <div className="flex-1 overflow-y-auto px-4 pb-8 space-y-3">
 
-        {isLoading ? (
-          <div className="flex justify-center py-16">
-            <Loader2 className="w-8 h-8 animate-spin text-white" />
-          </div>
-        ) : (activeTab === "deposits" ? deposits : withdrawals).length === 0 ? (
+        {isLoading ? null : (activeTab === "deposits" ? deposits : withdrawals).length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
             <img src={nodataImg} alt="" className="w-28 h-28 object-contain opacity-90" />
             <p className="text-white/70 text-sm">{t.noTransactions}</p>

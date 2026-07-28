@@ -149,7 +149,6 @@ export default function DepositCallbackPage() {
   /* ── Polling / Loading ── */
   return (
     <Screen>
-      <Loader2 className="w-16 h-16 text-[#E8192C] animate-spin mx-auto" />
       <h1 className="text-xl font-bold text-gray-800">{t.depositVerifyingTitle}</h1>
       <p className="text-gray-500 text-sm">{t.depositVerifyingDesc}</p>
       <div className="flex gap-2 justify-center pt-1">
