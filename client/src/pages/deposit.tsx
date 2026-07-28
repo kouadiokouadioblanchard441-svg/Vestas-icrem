@@ -174,15 +174,15 @@ export default function DepositPage() {
           <div className="rounded-3xl border border-white/15 bg-[#234781] p-5 shadow-xl">
             <p className="mb-1 text-sm font-semibold text-white/75">{t.depositAmount}</p>
             <p className="mb-4 text-xs text-white/60">{t.depositMinimum} {minDeposit.toLocaleString()} {currency}</p>
-            <div className="flex overflow-hidden rounded-2xl border border-white/15 bg-white text-[#173667]">
-              <span className="flex items-center border-r border-[#315aab]/20 px-4 font-bold">{currency}</span>
+            <div className="flex items-center overflow-hidden bg-white text-[#173667]" style={{ borderRadius: 999, height: 54, boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}>
+              <span className="flex items-center border-r border-[#315aab]/20 px-5 font-bold text-sm shrink-0 h-full">{currency}</span>
               <input
                 type="number"
                 value={amount}
                 min={minDeposit}
                 onChange={(event) => setAmount(event.target.value ? Number(event.target.value) : "")}
                 placeholder={`${t.depositMinimum} ${minDeposit.toLocaleString()}`}
-                className="min-w-0 flex-1 bg-transparent px-4 py-4 outline-none placeholder:text-[#173667]/45"
+                className="min-w-0 flex-1 bg-transparent px-4 outline-none placeholder:text-[#173667]/45 text-sm"
                 data-testid="input-deposit-amount"
               />
             </div>
@@ -204,7 +204,8 @@ export default function DepositPage() {
             <button
               type="button"
               onClick={continueWithAmount}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-white py-4 font-bold text-[#315aab] shadow-lg transition hover:bg-white/90"
+              className="mt-5 flex w-full items-center justify-center gap-2 font-bold text-[#315aab] transition active:scale-95"
+              style={{ height: 54, borderRadius: 999, background: "#ffffff", boxShadow: "0 4px 16px rgba(0,0,0,0.18)" }}
               data-testid="button-recharge-now"
             >
               {t.depositRechargeNow} <ArrowRight className="h-5 w-5" />

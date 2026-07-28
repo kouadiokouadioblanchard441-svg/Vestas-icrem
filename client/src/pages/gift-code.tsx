@@ -120,17 +120,17 @@ export default function GiftCodePage() {
             <span className="text-gray-800 font-semibold text-sm">{t.giftCodeLabel}</span>
           </div>
 
-          <div className="relative">
+          <div className="flex items-center overflow-hidden bg-white" style={{ height: 54, borderRadius: 999, boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}>
+            <div className="pl-4 pr-3 flex items-center shrink-0">
+              <Tag className="w-4 h-4 text-gray-400" />
+            </div>
             <input
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               placeholder={t.giftCodeInputPlaceholder}
-              className="w-full px-4 py-3 rounded-xl border-2 text-center text-sm font-mono tracking-widest outline-none transition-colors"
-              style={{
-                borderColor: code ? "#E8192C" : "#e5e7eb",
-                color: "#1f2937",
-              }}
+              className="flex-1 h-full bg-transparent text-center text-sm font-mono tracking-widest outline-none pr-4"
+              style={{ color: "#1f2937" }}
               data-testid="input-gift-code"
             />
           </div>
@@ -138,8 +138,9 @@ export default function GiftCodePage() {
           <button
             onClick={handleSubmit}
             disabled={claimMutation.isPending}
-            className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform"
+            className="w-full font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform"
             style={{
+              height: 54, borderRadius: 999,
               background: "linear-gradient(135deg, #ff416c 0%, #ff8c00 40%, #ffd700 70%, #ff8c00 85%, #ff416c 100%)",
               color: "#fff",
               boxShadow: "0 4px 20px rgba(255,140,0,0.5), 0 2px 8px rgba(255,65,108,0.4)",

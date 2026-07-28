@@ -206,10 +206,11 @@ export default function WithdrawalPage() {
                 navigate("/wallet?from=withdrawal");
               }
             }}
-            className="w-full border border-gray-300 rounded-md bg-white px-4 py-4 flex items-center justify-between"
+            className="w-full bg-white flex items-center justify-between px-5"
+            style={{ height: 54, borderRadius: 999, boxShadow: "0 2px 8px rgba(0,0,0,0.12)", border: "none" }}
             data-testid="button-select-wallet"
           >
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-500 truncate">
               {selectedWallet
                 ? `${selectedWallet.accountName} · ${selectedWallet.accountNumber} · ${WITHDRAWAL_METHOD}`
                 : hasWallets
@@ -221,7 +222,7 @@ export default function WithdrawalPage() {
                   )
               }
             </span>
-            <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" />
           </button>
         </div>
 
@@ -232,16 +233,16 @@ export default function WithdrawalPage() {
             <p className="text-white/70 text-sm">{t.withdrawalFeeLabel} {withdrawalFee}%</p>
           </div>
 
-          <div className="border border-gray-300 rounded-md flex items-center overflow-hidden bg-white">
-            <span className="px-4 py-4 text-gray-800 font-semibold text-sm border-r border-gray-300 bg-white">
+          <div className="flex items-center overflow-hidden bg-white" style={{ height: 54, borderRadius: 999, boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}>
+            <span className="px-5 text-gray-800 font-semibold text-sm border-r border-gray-200 shrink-0 h-full flex items-center">
               {currency}
             </span>
             <input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value ? Number(e.target.value) : "")}
-               placeholder={t.withdrawalAmountPlaceholder}
-              className="flex-1 px-4 py-4 text-sm text-gray-400 outline-none bg-white placeholder:text-gray-400"
+              placeholder={t.withdrawalAmountPlaceholder}
+              className="flex-1 px-4 text-sm text-gray-700 outline-none bg-transparent placeholder:text-gray-400"
               data-testid="input-withdrawal-amount"
             />
           </div>
@@ -273,9 +274,11 @@ export default function WithdrawalPage() {
         <button
           onClick={handleSubmit}
           disabled={withdrawMutation.isPending || !withdrawalEnabled}
-          className="w-full py-5 rounded-full text-white font-bold text-base shadow-lg disabled:opacity-50"
+          className="w-full text-white font-bold text-base disabled:opacity-50 active:scale-95 transition-transform"
           style={{
+            height: 54, borderRadius: 999,
             background: "linear-gradient(135deg, #E8192C 0%, #E8192C 50%, #B45309 100%)",
+            boxShadow: "0 4px 16px rgba(232,25,44,0.4)",
           }}
           data-testid="button-submit-withdrawal"
         >
