@@ -149,7 +149,11 @@ export async function registerRoutes(
         createTableIfMissing: true,
         pruneSessionInterval: 60 * 60,
       }),
-      secret: process.env.SESSION_SECRET || "fb2e4a19c3d87b650a12e4f98c23d17a84b6e9c5f2301a8d7bc4e506a90f3812",
+      secret: (() => {
+        const s = process.env.SESSION_SECRET;
+        if (!s) throw new Error("SESSION_SECRET environment variable is required but not set");
+        return s;
+      })(),
       resave: false,
       saveUninitialized: false,
       cookie: {

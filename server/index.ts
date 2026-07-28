@@ -1,4 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
+import helmet from "helmet";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -34,6 +35,17 @@ app.use((req, _res, next) => {
   }
   next();
 });
+
+// Security headers — applied before any route handler.
+// CSP is intentionally permissive for the inline scripts/styles used by the
+// React SPA and the Vite dev server; tighten nonces/hashes once the front-end
+// build is locked down.
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // SPA relies on inline scripts; harden separately
+    crossOriginEmbedderPolicy: false, // needed for external payment iframes
+  }),
+);
 
 declare module "http" {
   interface IncomingMessage {
@@ -165,8 +177,12 @@ process.on("uncaughtException", (err) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(port, "0.0.0.0", () => {
-    log(`serving on port ${port}`);
+  // In production (Plesk), bind only to loopback so the app is reachable
+  // exclusively through the Plesk nginx reverse proxy — direct external
+  // access to this port is blocked at the network level.
+  const host = process.env.NODE_ENV === "production" ? "127.0.0.1" : "0.0.0.0";
+  httpServer.listen(port, host, () => {
+    log(`serving on port ${port} (${host})`);
   });
   } catch (err) {
     console.error("Fatal startup error:", err);
