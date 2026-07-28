@@ -10,8 +10,9 @@ import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
 import { WORLD_COUNTRIES } from "@/lib/world-countries";
 import { CountrySelector } from "@/components/country-selector";
 import { useI18n, LANGUAGES, type Lang } from "@/lib/i18n";
-import { Loader2, Eye, EyeOff, Globe, ChevronRight, Smartphone, Lock, ThumbsUp, Send, KeyRound } from "lucide-react";
+import { Eye, EyeOff, Globe, ChevronRight, Smartphone, Lock, ThumbsUp, Send, KeyRound } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
+import { setAppLoading } from "@/components/navigation-loader";
 
 export default function RegisterPage() {
   const [, navigate] = useLocation();
@@ -83,6 +84,7 @@ export default function RegisterPage() {
 
   async function onSubmit(data: RegisterForm) {
     setIsLoading(true);
+    setAppLoading(true);
     try {
       await register({
         fullName: `User_${data.phone}`,
@@ -97,6 +99,7 @@ export default function RegisterPage() {
       toast({ title: error.message || t.errRegisterFailed, variant: "destructive" });
     } finally {
       setIsLoading(false);
+      setAppLoading(false);
     }
   }
 
@@ -291,12 +294,7 @@ export default function RegisterPage() {
               }}
               data-testid="button-register"
             >
-              {isLoading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  {t.registerLoading}
-                </span>
-              ) : t.registerNow}
+              {t.registerNow}
             </button>
 
             {/* Login link */}

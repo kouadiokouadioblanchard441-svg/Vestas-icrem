@@ -1,28 +1,41 @@
 import { useEffect, useState, useRef } from "react";
 import { useIsFetching, useIsMutating } from "@tanstack/react-query";
 
+// Call this from anywhere to show/hide the loader manually
+export function setAppLoading(active: boolean) {
+  window.dispatchEvent(new CustomEvent("app-loading", { detail: { active } }));
+}
+
 export default function NavigationLoader() {
   const isFetching = useIsFetching();
   const isMutating = useIsMutating();
 
-  // Navigation (hashchange) state
   const [navLoading, setNavLoading] = useState(false);
+  const [appLoading, setAppLoadingState] = useState(false);
   const navTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    // Page navigation
     const handleNav = () => {
       setNavLoading(true);
       if (navTimerRef.current) clearTimeout(navTimerRef.current);
       navTimerRef.current = setTimeout(() => setNavLoading(false), 600);
     };
+    // Manual trigger (login / register buttons)
+    const handleApp = (e: Event) => {
+      setAppLoadingState((e as CustomEvent).detail.active);
+    };
+
     window.addEventListener("hashchange", handleNav);
+    window.addEventListener("app-loading", handleApp);
     return () => {
       window.removeEventListener("hashchange", handleNav);
+      window.removeEventListener("app-loading", handleApp);
       if (navTimerRef.current) clearTimeout(navTimerRef.current);
     };
   }, []);
 
-  const active = navLoading || isFetching > 0 || isMutating > 0;
+  const active = navLoading || appLoading || isFetching > 0 || isMutating > 0;
 
   return (
     <div
@@ -35,11 +48,7 @@ export default function NavigationLoader() {
     >
       <div
         className="flex items-center justify-center rounded-2xl"
-        style={{
-          width: 80,
-          height: 80,
-          background: "rgba(0,0,0,0.82)",
-        }}
+        style={{ width: 80, height: 80, background: "rgba(0,0,0,0.82)" }}
       >
         <svg
           width="42"

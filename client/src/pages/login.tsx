@@ -10,8 +10,9 @@ import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
 import { WORLD_COUNTRIES } from "@/lib/world-countries";
 import { CountrySelector } from "@/components/country-selector";
 import { useI18n, LANGUAGES, type Lang } from "@/lib/i18n";
-import { Loader2, Eye, EyeOff, Globe, ChevronRight, Smartphone, Lock } from "lucide-react";
+import { Eye, EyeOff, Globe, ChevronRight, Smartphone, Lock } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
+import { setAppLoading } from "@/components/navigation-loader";
 
 export default function LoginPage() {
   const [, navigate] = useLocation();
@@ -68,6 +69,7 @@ export default function LoginPage() {
 
   async function onSubmit(data: LoginForm) {
     setIsLoading(true);
+    setAppLoading(true);
     try {
       await login(data.phone, data.country, data.password);
       if (rememberMe) {
@@ -84,6 +86,7 @@ export default function LoginPage() {
       toast({ title: error.message || t.errLoginFailed, variant: "destructive" });
     } finally {
       setIsLoading(false);
+      setAppLoading(false);
     }
   }
 
@@ -228,12 +231,7 @@ export default function LoginPage() {
               }}
               data-testid="button-login"
             >
-              {isLoading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  {t.loginLoading}
-                </span>
-              ) : t.loginImmediately}
+              {t.loginImmediately}
             </button>
 
             {/* Register button */}
