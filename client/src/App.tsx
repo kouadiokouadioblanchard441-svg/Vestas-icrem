@@ -84,6 +84,7 @@ import SpinWheelPage from "@/pages/spin-wheel";
 import NotFound from "@/pages/not-found";
 import { Loader2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import NavigationLoader from "@/components/navigation-loader";
 
 function BannedMessage() {
   const { t } = useI18n();
@@ -409,6 +410,7 @@ function App() {
             <Router hook={useHashPath} searchHook={useHashSearch}>
               <RouterComponent />
             </Router>
+            <NavigationLoader />
             <Toaster />
           </AuthProvider>
         </TooltipProvider>
