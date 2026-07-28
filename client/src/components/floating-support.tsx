@@ -74,7 +74,7 @@ export function FloatingSupport({ bottomOffset = 24 }: FloatingSupportProps) {
   return (
     <button
       ref={btnRef}
-      aria-label="Service client"
+      aria-label="客服"
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -98,7 +98,7 @@ export function FloatingSupport({ bottomOffset = 24 }: FloatingSupportProps) {
     >
       <img
         src="/support-avatar_2.png"
-        alt="Service client"
+        alt="客服"
         draggable={false}
         style={{
           width: "100%",
