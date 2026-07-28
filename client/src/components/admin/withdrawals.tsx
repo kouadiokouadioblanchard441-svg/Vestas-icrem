@@ -44,7 +44,7 @@ export default function AdminWithdrawals() {
       if (!response.ok) throw new Error("Erreur serveur");
       queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
       toast({
-        title: newMode === "manual" ? "✋ Mode Manuel activé" : "⚡ Mode Automatique (NOWPayments) activé",
+        title: newMode === "manual" ? t.adminManualModeActivated : t.adminAutoModeActivated,
       });
     } catch (e: any) {
       toast({ title: e.message || "Erreur", variant: "destructive" });

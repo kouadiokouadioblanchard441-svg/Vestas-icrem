@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Plus, Edit, Trash2, Loader2, Link } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 import type { PaymentChannel } from "@shared/schema";
 
 const channelSchema = z.object({
@@ -31,6 +32,7 @@ interface AdminChannelsProps {
 
 export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
   const { toast } = useToast();
+  const { t } = useI18n();
   const [showForm, setShowForm] = useState(false);
   const [editChannel, setEditChannel] = useState<PaymentChannel | null>(null);
 
@@ -142,7 +144,7 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
     <div className="space-y-4">
       <Button onClick={() => { setShowForm(true); form.reset(); }} className="w-full">
         <Plus className="w-4 h-4 mr-2" />
-        Ajouter un canal
+        {t.adminNewChannel}
       </Button>
 
       {isLoading ? (
@@ -182,14 +184,14 @@ export default function AdminChannels({ isSuperAdmin }: AdminChannelsProps) {
         ))
       ) : (
         <div className="text-center py-8 text-muted-foreground">
-          Aucun canal de paiement
+          {t.adminNoChannel}
         </div>
       )}
 
       <Dialog open={showForm || !!editChannel} onOpenChange={() => { setShowForm(false); setEditChannel(null); }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{editChannel ? "Modifier le canal" : "Nouveau canal"}</DialogTitle>
+            <DialogTitle>{editChannel ? t.adminEditChannel : t.adminNewChannel}</DialogTitle>
           </DialogHeader>
 
           <Form {...form}>

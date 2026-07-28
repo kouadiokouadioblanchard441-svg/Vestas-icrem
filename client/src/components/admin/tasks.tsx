@@ -12,22 +12,24 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { useI18n } from "@/lib/i18n";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Edit, Loader2, Trophy, Plus, Trash2 } from "lucide-react";
 import type { Task } from "@shared/schema";
 
 const taskSchema = z.object({
-  name: z.string().min(2, "Nom requis"),
-  description: z.string().min(2, "Description requise"),
-  requiredInvites: z.string().min(1, "Nombre d'invitations requis"),
-  reward: z.string().min(1, "Récompense requise"),
-  sortOrder: z.string().min(1, "Ordre requis"),
+  name: z.string().min(2),
+  description: z.string().min(2),
+  requiredInvites: z.string().min(1),
+  reward: z.string().min(1),
+  sortOrder: z.string().min(1),
 });
 
 type TaskForm = z.infer<typeof taskSchema>;
 
 export default function AdminTasks() {
   const { toast } = useToast();
+  const { t } = useI18n();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
@@ -60,41 +62,41 @@ export default function AdminTasks() {
         reward: parseInt(data.reward),
         sortOrder: parseInt(data.sortOrder),
       });
-      if (!res.ok) { const r = await res.json(); throw new Error(r.message || "Erreur"); }
+      if (!res.ok) { const r = await res.json(); throw new Error(r.message || t.errorOccurred); }
       return res.json();
     },
-    onSuccess: () => { invalidate(); toast({ title: "Tâche créée !" }); setShowCreateForm(false); createForm.reset(); },
-    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
+    onSuccess: () => { invalidate(); toast({ title: t.adminTaskCreated }); setShowCreateForm(false); createForm.reset(); },
+    onError: (e: any) => toast({ title: e.message || t.errorOccurred, variant: "destructive" }),
   });
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: Partial<Task> }) => {
       const res = await apiRequest("PATCH", `/api/admin/tasks/${id}`, data);
-      if (!res.ok) { const r = await res.json(); throw new Error(r.message || "Erreur"); }
+      if (!res.ok) { const r = await res.json(); throw new Error(r.message || t.errorOccurred); }
       return res.json();
     },
-    onSuccess: () => { invalidate(); toast({ title: "Tâche mise à jour !" }); setSelectedTask(null); },
-    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
+    onSuccess: () => { invalidate(); toast({ title: t.adminTaskUpdated }); setSelectedTask(null); },
+    onError: (e: any) => toast({ title: e.message || t.errorOccurred, variant: "destructive" }),
   });
 
   const toggleMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: number; isActive: boolean }) => {
       const res = await apiRequest("PATCH", `/api/admin/tasks/${id}`, { isActive });
-      if (!res.ok) { const r = await res.json(); throw new Error(r.message || "Erreur"); }
+      if (!res.ok) { const r = await res.json(); throw new Error(r.message || t.errorOccurred); }
       return res.json();
     },
     onSuccess: () => invalidate(),
-    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
+    onError: (e: any) => toast({ title: e.message || t.errorOccurred, variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
       const res = await apiRequest("DELETE", `/api/admin/tasks/${id}`, {});
-      if (!res.ok) { const r = await res.json(); throw new Error(r.message || "Erreur"); }
+      if (!res.ok) { const r = await res.json(); throw new Error(r.message || t.errorOccurred); }
       return res.json();
     },
-    onSuccess: () => { invalidate(); toast({ title: "Tâche supprimée" }); setConfirmDeleteId(null); },
-    onError: (e: any) => toast({ title: e.message || "Une erreur est survenue", variant: "destructive" }),
+    onSuccess: () => { invalidate(); toast({ title: t.adminTaskDeleted }); setConfirmDeleteId(null); },
+    onError: (e: any) => toast({ title: e.message || t.errorOccurred, variant: "destructive" }),
   });
 
   const openEdit = (task: Task) => {
@@ -126,36 +128,36 @@ export default function AdminTasks() {
     <div className="space-y-4">
       <FormField control={form.control} name="name" render={({ field }) => (
         <FormItem>
-          <FormLabel>Nom du palier</FormLabel>
-          <FormControl><Input placeholder="Ex : Parrain Bronze" {...field} /></FormControl>
+          <FormLabel>{t.adminTaskName}</FormLabel>
+          <FormControl><Input placeholder={t.adminTaskNamePlaceholder} {...field} /></FormControl>
           <FormMessage />
         </FormItem>
       )} />
       <FormField control={form.control} name="description" render={({ field }) => (
         <FormItem>
-          <FormLabel>Description</FormLabel>
-          <FormControl><Input placeholder="Ex : Inviter 3 personnes à investir" {...field} /></FormControl>
+          <FormLabel>{t.adminTaskDescriptionLabel}</FormLabel>
+          <FormControl><Input placeholder={t.adminTaskDescriptionPlaceholder} {...field} /></FormControl>
           <FormMessage />
         </FormItem>
       )} />
       <div className="grid grid-cols-3 gap-3">
         <FormField control={form.control} name="requiredInvites" render={({ field }) => (
           <FormItem>
-            <FormLabel>Invitations requises</FormLabel>
+            <FormLabel>{t.adminTaskRequiredInvites}</FormLabel>
             <FormControl><Input type="number" min="1" {...field} /></FormControl>
             <FormMessage />
           </FormItem>
         )} />
         <FormField control={form.control} name="reward" render={({ field }) => (
           <FormItem>
-            <FormLabel>Récompense (USDT)</FormLabel>
+            <FormLabel>{t.adminTaskReward}</FormLabel>
             <FormControl><Input type="number" min="0" {...field} /></FormControl>
             <FormMessage />
           </FormItem>
         )} />
         <FormField control={form.control} name="sortOrder" render={({ field }) => (
           <FormItem>
-            <FormLabel>Ordre d'affichage</FormLabel>
+            <FormLabel>{t.adminTaskSortOrder}</FormLabel>
             <FormControl><Input type="number" min="0" {...field} /></FormControl>
             <FormMessage />
           </FormItem>
@@ -163,7 +165,7 @@ export default function AdminTasks() {
       </div>
       <Button type="submit" className="w-full" disabled={isPending}>
         {isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-        Enregistrer
+        {t.adminSave}
       </Button>
     </div>
   );
@@ -173,11 +175,11 @@ export default function AdminTasks() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold">Centre des tâches</h2>
-          <p className="text-sm text-muted-foreground">Gérez les paliers de parrainage et leurs récompenses</p>
+          <h2 className="text-lg font-bold">{t.adminTaskCenterTitle}</h2>
+          <p className="text-sm text-muted-foreground">{t.adminTaskCenterDesc}</p>
         </div>
         <Button size="sm" onClick={() => setShowCreateForm(true)}>
-          <Plus className="w-4 h-4 mr-1" /> Nouvelle tâche
+          <Plus className="w-4 h-4 mr-1" /> {t.adminTaskNew}
         </Button>
       </div>
 
@@ -185,7 +187,7 @@ export default function AdminTasks() {
       {isLoading ? (
         <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-24" />)}</div>
       ) : !taskList?.length ? (
-        <Card><CardContent className="py-8 text-center text-muted-foreground">Aucune tâche</CardContent></Card>
+        <Card><CardContent className="py-8 text-center text-muted-foreground">{t.adminNoTasks}</CardContent></Card>
       ) : (
         <div className="space-y-3">
           {taskList.map(task => (
@@ -200,14 +202,14 @@ export default function AdminTasks() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-semibold text-sm">{task.name}</span>
                         <Badge variant={task.isActive ? "default" : "secondary"} className="text-xs">
-                          {task.isActive ? "Actif" : "Inactif"}
+                          {task.isActive ? t.adminTaskActive : t.adminTaskInactive}
                         </Badge>
                         <Badge variant="outline" className="text-xs">#{task.sortOrder}</Badge>
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5">{task.description}</p>
                       <div className="flex gap-4 mt-2 text-xs">
                         <span className="text-blue-600 font-medium">
-                          👥 {task.requiredInvites} invitation{task.requiredInvites > 1 ? "s" : ""}
+                          👥 {task.requiredInvites} {t.adminTaskRequiredInvites}
                         </span>
                         <span className="text-green-600 font-medium">
                           🎁 {task.reward.toLocaleString()} USDT
@@ -237,7 +239,7 @@ export default function AdminTasks() {
       {/* Create dialog */}
       <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Nouvelle tâche</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t.adminTaskNew}</DialogTitle></DialogHeader>
           <Form {...createForm}>
             <form onSubmit={createForm.handleSubmit(d => createMutation.mutate(d))}>
               <TaskFormFields form={createForm} isPending={createMutation.isPending} />
@@ -249,7 +251,7 @@ export default function AdminTasks() {
       {/* Edit dialog */}
       <Dialog open={!!selectedTask} onOpenChange={v => { if (!v) setSelectedTask(null); }}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Modifier la tâche</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t.adminTaskEdit}</DialogTitle></DialogHeader>
           <Form {...editForm}>
             <form onSubmit={editForm.handleSubmit(handleUpdate)}>
               <TaskFormFields form={editForm} isPending={updateMutation.isPending} />
@@ -261,12 +263,10 @@ export default function AdminTasks() {
       {/* Delete confirm dialog */}
       <Dialog open={confirmDeleteId !== null} onOpenChange={v => { if (!v) setConfirmDeleteId(null); }}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Confirmer la suppression</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            Cette tâche sera définitivement supprimée. Les utilisateurs qui l'ont déjà réclamée ne seront pas affectés.
-          </p>
+          <DialogHeader><DialogTitle>{t.adminConfirmDelete}</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">{t.adminTaskDeleteWarning}</p>
           <div className="flex gap-3 mt-2">
-            <Button variant="outline" className="flex-1" onClick={() => setConfirmDeleteId(null)}>Annuler</Button>
+            <Button variant="outline" className="flex-1" onClick={() => setConfirmDeleteId(null)}>{t.adminCancel}</Button>
             <Button
               variant="destructive"
               className="flex-1"
@@ -274,7 +274,7 @@ export default function AdminTasks() {
               onClick={() => confirmDeleteId && deleteMutation.mutate(confirmDeleteId)}
             >
               {deleteMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Supprimer
+              {t.adminTaskDelete}
             </Button>
           </div>
         </DialogContent>
