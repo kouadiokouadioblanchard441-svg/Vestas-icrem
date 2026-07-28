@@ -1,64 +1,56 @@
 import { useEffect, useState, useRef } from "react";
+import { useIsFetching, useIsMutating } from "@tanstack/react-query";
 
 export default function NavigationLoader() {
-  const [visible, setVisible] = useState(false);
-  const [animating, setAnimating] = useState(false);
-  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const showTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isFetching = useIsFetching();
+  const isMutating = useIsMutating();
+
+  // Navigation (hashchange) state
+  const [navLoading, setNavLoading] = useState(false);
+  const navTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const handleStart = () => {
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-      if (showTimerRef.current) clearTimeout(showTimerRef.current);
-
-      setVisible(true);
-      showTimerRef.current = setTimeout(() => setAnimating(true), 10);
-
-      hideTimerRef.current = setTimeout(() => {
-        setAnimating(false);
-        setTimeout(() => setVisible(false), 250);
-      }, 500);
+    const handleNav = () => {
+      setNavLoading(true);
+      if (navTimerRef.current) clearTimeout(navTimerRef.current);
+      navTimerRef.current = setTimeout(() => setNavLoading(false), 600);
     };
-
-    window.addEventListener("hashchange", handleStart);
+    window.addEventListener("hashchange", handleNav);
     return () => {
-      window.removeEventListener("hashchange", handleStart);
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-      if (showTimerRef.current) clearTimeout(showTimerRef.current);
+      window.removeEventListener("hashchange", handleNav);
+      if (navTimerRef.current) clearTimeout(navTimerRef.current);
     };
   }, []);
 
-  if (!visible) return null;
+  const active = navLoading || isFetching > 0 || isMutating > 0;
 
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center pointer-events-none"
       style={{
-        opacity: animating ? 1 : 0,
+        opacity: active ? 1 : 0,
         transition: "opacity 0.2s ease",
+        visibility: active ? "visible" : "hidden",
       }}
     >
       <div
-        className="flex items-center justify-center rounded-2xl bg-black/80"
-        style={{ width: 80, height: 80 }}
+        className="flex items-center justify-center rounded-2xl"
+        style={{
+          width: 80,
+          height: 80,
+          background: "rgba(0,0,0,0.82)",
+        }}
       >
-        {/* Spinner */}
         <svg
-          width="40"
-          height="40"
-          viewBox="0 0 40 40"
+          width="42"
+          height="42"
+          viewBox="0 0 42 42"
           fill="none"
-          style={{ animation: "nav-spin 0.75s linear infinite" }}
+          style={{ animation: "nav-spin 0.7s linear infinite" }}
         >
-          <circle
-            cx="20"
-            cy="20"
-            r="16"
-            stroke="rgba(255,255,255,0.2)"
-            strokeWidth="4"
-          />
+          <circle cx="21" cy="21" r="17" stroke="rgba(255,255,255,0.2)" strokeWidth="4" />
           <path
-            d="M20 4 A16 16 0 0 1 36 20"
+            d="M21 4 A17 17 0 0 1 38 21"
             stroke="white"
             strokeWidth="4"
             strokeLinecap="round"
