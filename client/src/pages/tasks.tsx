@@ -10,7 +10,6 @@ import { ChevronLeft, Loader2, Trophy, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import type { Task } from "@shared/schema";
 const poweraddLogo = "/poweradd/poweradd-logo-official.png";
-import trophyImg from "@assets/piedestal-realiste-trophees-gobelets-metal-composition-rubans-_1785098538437.jpg";
 import iconBronze from "@assets/344464_1773318022355.png";
 import iconArgent from "@assets/817729_1773318022328.png";
 import iconOr from "@assets/sac-argent-gros-tas-illustration-icone-argent-comptant-icone-p_1773318022388.jpg";
@@ -91,46 +90,24 @@ export default function TasksPage() {
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#f5f7fb" }}>
 
-      {/* Hero Section */}
-      <div className="relative overflow-hidden" style={{ height: "260px" }}>
-        <img
-          src={trophyImg}
-          alt={t.rewardsTitle}
-          className="w-full h-full object-cover object-center"
-        />
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.85) 100%)" }}
-        />
-
-        {/* Header nav */}
-        <div className="absolute top-0 left-0 right-0 flex items-center px-4 pt-4">
-          <Link href="/">
-            <button
-              className="w-9 h-9 rounded-full bg-white/25 backdrop-blur-sm flex items-center justify-center"
-              data-testid="button-back"
-            >
-              <ChevronLeft className="w-5 h-5 text-white" />
-            </button>
-          </Link>
-          <div className="flex-1 flex justify-center">
-            <img src={poweraddLogo} alt="Power Add" className="h-8 object-contain" />
-          </div>
-          <div className="w-9" />
+      {/* Header nav */}
+      <div className="flex items-center px-4 pt-4 pb-2 bg-white shadow-sm">
+        <Link href="/">
+          <button
+            className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center"
+            data-testid="button-back"
+          >
+            <ChevronLeft className="w-5 h-5 text-gray-600" />
+          </button>
+        </Link>
+        <div className="flex-1 flex justify-center">
+          <img src={poweraddLogo} alt="Power Add" className="h-8 object-contain" />
         </div>
-
-        <div className="absolute left-4 right-4" style={{ bottom: "60px" }}>
-          <h1 className="text-white font-bold text-xl leading-tight" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>
-            {headerTitle}
-          </h1>
-          <p className="text-white text-xs mt-1" style={{ opacity: 0.92, textShadow: "0 1px 3px rgba(0,0,0,0.4)" }}>
-            {headerSubtitle}
-          </p>
-        </div>
+        <div className="w-9" />
       </div>
 
       {/* Stats Row */}
-      <div className="mx-4 -mt-10 z-10 relative">
+      <div className="mx-4 mt-4 z-10 relative">
         <div className="bg-white rounded-2xl shadow-lg p-3 flex items-center justify-between">
           <div className="flex-1 text-center border-r border-gray-100">
             <p className="text-[#E8320A] text-lg font-bold" data-testid="text-total-rewards">
