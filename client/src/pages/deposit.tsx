@@ -37,18 +37,18 @@ type CryptoPayment = {
 };
 
 const CRYPTO_OPTIONS: CryptoOption[] = [
-  { code: "usdtbsc",   label: "BEP20 — USDT",    network: "BNB Smart Chain", logo: tetherLogo   },
-  { code: "usdtmatic", label: "POLYGON — USDT",   network: "Polygon",         logo: tetherLogo   },
-  { code: "usdttrc20", label: "TRC20 — USDT",     network: "TRON",            logo: tetherLogo   },
-  { code: "usdterc20", label: "ETH — USDT",       network: "Ethereum",        logo: tetherLogo   },
-  { code: "usdcbsc",   label: "BEP20 — USDC",     network: "BNB Smart Chain", logo: usdcLogo     },
-  { code: "usdcsol",   label: "SOLANA — USDC",    network: "Solana",          logo: usdcLogo     },
-  { code: "trx",       label: "TRX",              network: "TRON",            logo: tronLogo     },
-  { code: "bnbbsc",    label: "BNB",              network: "BNB Smart Chain", logo: bnbLogo      },
-  { code: "usdcerc20", label: "ETH — USDC",       network: "Ethereum",        logo: usdcLogo     },
-  { code: "eth",       label: "ETH",              network: "Ethereum",        logo: ethereumLogo },
-  { code: "matic",     label: "POLYGON",          network: "Polygon",         logo: polygonLogo  },
-  { code: "pyusd",     label: "ETH — PYUSD",      network: "Ethereum",        logo: pyusdLogo    },
+  { code: "usdtbsc",   label: "BEP20 USDT",    network: "BNB Smart Chain", logo: tetherLogo   },
+  { code: "usdtmatic", label: "POLYGON USDT",   network: "Polygon",         logo: tetherLogo   },
+  { code: "usdttrc20", label: "TRC20 USDT",     network: "TRON",            logo: tetherLogo   },
+  { code: "usdterc20", label: "ETH USDT",       network: "Ethereum",        logo: tetherLogo   },
+  { code: "usdcbsc",   label: "BEP20 USDC",     network: "BNB Smart Chain", logo: usdcLogo     },
+  { code: "usdcsol",   label: "SOLANA USDC",    network: "Solana",          logo: usdcLogo     },
+  { code: "trx",       label: "TRX",            network: "TRON",            logo: tronLogo     },
+  { code: "bnbbsc",    label: "BNB",            network: "BNB Smart Chain", logo: bnbLogo      },
+  { code: "usdcerc20", label: "ETH USDC",       network: "Ethereum",        logo: usdcLogo     },
+  { code: "eth",       label: "ETH",            network: "Ethereum",        logo: ethereumLogo },
+  { code: "matic",     label: "POLYGON",        network: "Polygon",         logo: polygonLogo  },
+  { code: "pyusd",     label: "ETH PYUSD",      network: "Ethereum",        logo: pyusdLogo    },
 ];
 
 function shortenAddress(address: string) {
