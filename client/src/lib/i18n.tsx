@@ -2882,9 +2882,9 @@ interface I18nCtx {
 }
 
 const I18nContext = createContext<I18nCtx>({
-  lang: "en",
+  lang: "zh",
   setLang: () => {},
-  t: T.en,
+  t: T.zh,
 });
 
 // Version the preference key so visitors who used an older default language
@@ -2897,7 +2897,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       const saved = localStorage.getItem(STORAGE_KEY) as Lang | null;
       if (saved && saved in T) return saved;
     } catch {}
-    return "en";
+    return "zh";
   });
 
   const setLang = (l: Lang) => {
