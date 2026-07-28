@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRef, useState, useEffect } from "react";
+import { useI18n } from "@/lib/i18n";
 
 interface SettingsLinks {
   supportLink: string;
@@ -12,6 +13,7 @@ interface FloatingSupportProps {
 }
 
 export function FloatingSupport({ bottomOffset = 24 }: FloatingSupportProps) {
+  const { t } = useI18n();
   const { data } = useQuery<SettingsLinks>({
     queryKey: ["/api/settings/links"],
     staleTime: 5 * 60 * 1000,
@@ -74,7 +76,7 @@ export function FloatingSupport({ bottomOffset = 24 }: FloatingSupportProps) {
   return (
     <button
       ref={btnRef}
-      aria-label="客服"
+      aria-label={t.customerService}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -98,7 +100,7 @@ export function FloatingSupport({ bottomOffset = 24 }: FloatingSupportProps) {
     >
       <img
         src="/support-avatar_2.png"
-        alt="客服"
+        alt={t.customerService}
         draggable={false}
         style={{
           width: "100%",
