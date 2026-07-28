@@ -194,7 +194,7 @@ export default function TasksPage() {
               return (
                 <div
                   key={task.id}
-                  className={`bg-white rounded-xl overflow-hidden shadow-sm border ${
+                  className={`bg-white rounded-lg overflow-hidden shadow-sm border ${
                     task.isCompleted
                       ? "border-red-200"
                       : task.canClaim
@@ -203,32 +203,35 @@ export default function TasksPage() {
                   }`}
                   data-testid={`task-item-${task.id}`}
                 >
-                  <div className={`bg-gradient-to-r ${tier.bg} px-2.5 py-1 flex items-center justify-between`}>
-                    <span className="text-white font-bold text-xs">{label}</span>
-                    {task.isCompleted && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
-                  </div>
-
-                  <div className="p-2 flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-md overflow-hidden flex-shrink-0 bg-gray-50 flex items-center justify-center">
-                      <img src={icon} alt={label} className="w-6 h-6 object-contain" />
+                  {/* Compact single-row layout */}
+                  <div className="flex items-center gap-2 px-2.5 py-2">
+                    {/* Tier icon with colored dot */}
+                    <div className="relative flex-shrink-0">
+                      <div className="w-7 h-7 rounded-md overflow-hidden bg-gray-50 flex items-center justify-center">
+                        <img src={icon} alt={label} className="w-5 h-5 object-contain" />
+                      </div>
+                      <span
+                        className={`absolute -top-1 -right-1 w-2 h-2 rounded-full bg-gradient-to-br ${tier.bg}`}
+                      />
                     </div>
 
+                    {/* Main content */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-gray-700 text-[11px] leading-snug mb-0.5">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-sm text-white bg-gradient-to-r ${tier.bg}`}>
+                          {label}
+                        </span>
+                        <span className="text-[#E8192C] font-bold text-[10px]">
+                          +{task.reward.toLocaleString()} {currency}
+                        </span>
+                        {task.isCompleted && <CheckCircle2 className="w-3 h-3 text-green-500 ml-auto" />}
+                      </div>
+                      <p className="text-gray-500 text-[10px] leading-none mb-1 truncate">
                         {t.taskInviteDesc.replace("{0}", String(task.requiredInvites))}
                       </p>
-                      <p className="text-[#E8192C] font-bold text-xs">
-                        {task.reward.toLocaleString()} {currency}
-                      </p>
-
-                      <div className="mt-1">
-                        <div className="flex justify-between items-center mb-0.5">
-                          <span className="text-gray-400 text-[10px]">
-                            {task.currentInvites} / {task.requiredInvites}
-                          </span>
-                          <span className="text-gray-400 text-[10px]">{Math.round(progress)}%</span>
-                        </div>
-                        <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
+                      {/* Progress bar */}
+                      <div className="flex items-center gap-1.5">
+                        <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all duration-500 ${
                               progressComplete ? "bg-green-500" : "bg-[#E8192C]"
@@ -236,29 +239,31 @@ export default function TasksPage() {
                             style={{ width: `${progress}%` }}
                           />
                         </div>
+                        <span className="text-gray-400 text-[9px] flex-shrink-0">
+                          {task.currentInvites}/{task.requiredInvites}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="flex-shrink-0">
+                    {/* Action button */}
+                    <div className="flex-shrink-0 ml-1">
                       {task.isCompleted ? (
-                        <span className="bg-red-50 text-[#E8192C] text-[10px] font-semibold px-2 py-1 rounded-full block text-center">
+                        <span className="bg-red-50 text-[#E8192C] text-[9px] font-semibold px-2 py-1 rounded-full block text-center whitespace-nowrap">
                           {t.taskDone}
                         </span>
                       ) : task.canClaim ? (
                         <button
                           onClick={() => !claimMutation.isPending && claimMutation.mutate(task.id)}
                           disabled={claimMutation.isPending}
-                          className="bg-[#E8192C] text-white text-[11px] font-semibold px-2.5 py-1 rounded-full active:scale-95 transition-transform shadow-sm"
+                          className="bg-[#E8192C] text-white text-[10px] font-semibold px-2.5 py-1 rounded-full active:scale-95 transition-transform shadow-sm whitespace-nowrap"
                           data-testid={`button-claim-${task.id}`}
                         >
                           {claimMutation.isPending ? (
                             <Loader2 className="w-3 h-3 animate-spin" />
-                          ) : (
-                            t.taskClaim
-                          )}
+                          ) : t.taskClaim}
                         </button>
                       ) : (
-                        <span className="bg-gray-100 text-gray-400 text-[10px] font-semibold px-2 py-1 rounded-full block text-center">
+                        <span className="bg-gray-100 text-gray-400 text-[9px] font-semibold px-2 py-1 rounded-full block text-center whitespace-nowrap">
                           {t.taskWaiting}
                         </span>
                       )}
