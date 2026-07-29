@@ -185,9 +185,9 @@ export async function seed() {
   const existingProducts = await db.select().from(products);
   if (existingProducts.filter(p => !p.isFree).length === 0) {
     const defaultProducts = [
-      { name: "VIP 1", price: 4000, dailyEarnings: 300, cycleDays: 90, totalReturn: 27000, imageUrl: '/solar-panel-1.webp', sortOrder: 1 },
-      { name: "VIP 2", price: 10000, dailyEarnings: 800, cycleDays: 90, totalReturn: 72000, imageUrl: '/solar-panel-2.webp', sortOrder: 2 },
-      { name: "VIP 3", price: 15000, dailyEarnings: 1500, cycleDays: 90, totalReturn: 135000, imageUrl: '/solar-panel-3.jpg', sortOrder: 3 },
+      { name: "VIP 1", price: 4000, dailyEarnings: 300, cycleDays: 90, totalReturn: 27000, imageUrl: '/powerbank-1.jpg', sortOrder: 1 },
+      { name: "VIP 2", price: 10000, dailyEarnings: 800, cycleDays: 90, totalReturn: 72000, imageUrl: '/powerbank-2.jpg', sortOrder: 2 },
+      { name: "VIP 3", price: 15000, dailyEarnings: 1500, cycleDays: 90, totalReturn: 135000, imageUrl: '/powerbank-3.jpg', sortOrder: 3 },
       { name: "VIP 4", price: 25000, dailyEarnings: 2000, cycleDays: 90, totalReturn: 180000, sortOrder: 4 },
       { name: "VIP 5", price: 40000, dailyEarnings: 3500, cycleDays: 90, totalReturn: 315000, sortOrder: 5 },
       { name: "VIP 6", price: 100000, dailyEarnings: 10000, cycleDays: 90, totalReturn: 900000, sortOrder: 6 },
