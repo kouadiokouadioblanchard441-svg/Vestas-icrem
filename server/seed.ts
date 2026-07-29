@@ -185,17 +185,15 @@ export async function seed() {
   const existingProducts = await db.select().from(products);
   if (existingProducts.filter(p => !p.isFree).length === 0) {
     const defaultProducts = [
-      { name: "VIP 1", price: 4000, dailyEarnings: 300, cycleDays: 90, totalReturn: 27000, imageUrl: '/powerbank-1.jpg', sortOrder: 1 },
-      { name: "VIP 2", price: 10000, dailyEarnings: 800, cycleDays: 90, totalReturn: 72000, imageUrl: '/powerbank-2.jpg', sortOrder: 2 },
-      { name: "VIP 3", price: 15000, dailyEarnings: 1500, cycleDays: 90, totalReturn: 135000, imageUrl: '/powerbank-3.jpg', sortOrder: 3 },
-      { name: "VIP 4", price: 25000, dailyEarnings: 2000, cycleDays: 90, totalReturn: 180000, imageUrl: '/powerbank-4.jpg', sortOrder: 4 },
-      { name: "VIP 5", price: 40000, dailyEarnings: 3500, cycleDays: 90, totalReturn: 315000, imageUrl: '/powerbank-5.jpg', sortOrder: 5 },
-      { name: "VIP 6", price: 100000, dailyEarnings: 10000, cycleDays: 90, totalReturn: 900000, imageUrl: '/powerbank-6.jpg', sortOrder: 6 },
-      { name: "VIP 7", price: 250000, dailyEarnings: 30000, cycleDays: 90, totalReturn: 2700000, imageUrl: '/powerbank-7.jpg', sortOrder: 7 },
-      { name: "VIP 4", price: 25000, dailyEarnings: 2000, cycleDays: 90, totalReturn: 180000, sortOrder: 4 },
-      { name: "VIP 5", price: 40000, dailyEarnings: 3500, cycleDays: 90, totalReturn: 315000, sortOrder: 5 },
-      { name: "VIP 6", price: 100000, dailyEarnings: 10000, cycleDays: 90, totalReturn: 900000, sortOrder: 6 },
-      { name: "VIP 7", price: 250000, dailyEarnings: 30000, cycleDays: 90, totalReturn: 2700000, sortOrder: 7 },
+      { name: "VIP 1", price: 4000,   dailyEarnings: 300,   cycleDays: 360, totalReturn: 108000,    imageUrl: '/powerbank-1.jpg', sortOrder: 1 },
+      { name: "VIP 2", price: 10000,  dailyEarnings: 800,   cycleDays: 360, totalReturn: 288000,    imageUrl: '/powerbank-2.jpg', sortOrder: 2 },
+      { name: "VIP 3", price: 15000,  dailyEarnings: 1500,  cycleDays: 360, totalReturn: 540000,    imageUrl: '/powerbank-3.jpg', sortOrder: 3 },
+      { name: "VIP 4", price: 25000,  dailyEarnings: 2000,  cycleDays: 360, totalReturn: 720000,    imageUrl: '/powerbank-4.jpg', sortOrder: 4 },
+      { name: "VIP 5", price: 40000,  dailyEarnings: 3500,  cycleDays: 360, totalReturn: 1260000,   imageUrl: '/powerbank-5.jpg', sortOrder: 5 },
+      { name: "VIP 6", price: 100000, dailyEarnings: 10000, cycleDays: 360, totalReturn: 3600000,   imageUrl: '/powerbank-6.jpg', sortOrder: 6 },
+      { name: "VIP 7", price: 250000, dailyEarnings: 30000, cycleDays: 360, totalReturn: 10800000,  imageUrl: '/powerbank-7.jpg', sortOrder: 7 },
+      { name: "VIP 8", price: 600,    dailyEarnings: 60,    cycleDays: 360, totalReturn: 21600,     imageUrl: '/powerbank-8.jpg', sortOrder: 8 },
+      { name: "VIP 9", price: 1000,   dailyEarnings: 120,   cycleDays: 360, totalReturn: 43200,     imageUrl: '/powerbank-9.jpg', sortOrder: 9 },
     ];
     await db.insert(products).values(defaultProducts);
     console.log("Products seeded (first install)");
