@@ -720,8 +720,11 @@ export async function registerRoutes(
       const orderId = `poweradd-${user.id}-${Date.now()}`;
       const ipnCallbackUrl = getNowPaymentsCallbackUrl();
 
-      // Use pay_amount directly so NowPayments charges exactly the user-selected
-      // amount — no USD→USDT conversion that would produce a different figure.
+      // price_amount + price_currency tell NOWPayments the USD value to receive.
+      // pay_currency selects what the customer pays with.
+      // NOWPayments auto-converts: e.g. $3500 → correct TRX/BNB/ETH amount.
+      // Never set pay_amount here — it would override conversion and charge the
+      // wrong amount for non-USDT currencies (e.g. 3500 TRX instead of ~$3500 in TRX).
       const nowpaymentsBase =
         process.env.NOWPAYMENTS_SANDBOX === "true"
           ? "https://api-sandbox.nowpayments.io/v1"
@@ -735,7 +738,6 @@ export async function registerRoutes(
         },
         body: JSON.stringify({
           price_amount: Number(amount),
-          pay_amount: Number(amount),
           pay_currency: payCurrency.toLowerCase(),
           price_currency: "usd",
           order_id: orderId,
