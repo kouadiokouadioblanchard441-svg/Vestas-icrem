@@ -228,7 +228,7 @@ export default function DepositPage() {
                 type="button"
                 disabled={createPayment.isPending}
                 onClick={() => selectCurrency(option)}
-                className="flex w-full items-center gap-3 py-4 text-left transition hover:bg-white/10 disabled:opacity-60"
+                className={`flex w-full items-center gap-3 py-4 text-left transition hover:bg-white/10 disabled:opacity-60${index < CRYPTO_OPTIONS.length - 1 ? " border-b border-dashed border-white/20" : ""}`}
                 data-testid={`button-currency-${option.code}`}
               >
                 <img src={option.logo} alt="" className="h-10 w-10 rounded-full bg-white object-contain p-1 shadow-md" />
