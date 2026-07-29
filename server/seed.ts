@@ -181,16 +181,8 @@ export async function seed() {
   await db.delete(products).where(eq(products.isFree, true));
   await db.delete(platformSettings).where(eq(platformSettings.key, "signupBonus"));
 
-  // Always sync VIP product images (safe — only touches imageUrl, never prices or earnings)
-  const vipImages = ['/poweradd/poweradd-pps180s.png', '/poweradd/poweradd-pps210s.jpg', '/poweradd/poweradd-pps350.jpg'];
-  const allProducts = await db.select().from(products);
-  const paidProducts = allProducts.filter(p => !p.isFree).sort((a, b) => a.sortOrder - b.sortOrder);
-  for (let i = 0; i < paidProducts.length; i++) {
-    await db.update(products).set({ imageUrl: vipImages[i % 3] }).where(eq(products.id, paidProducts[i].id));
-  }
-
   // Seed products only if table is empty (first install only — never overwrite admin changes)
-  const existingProducts = allProducts;
+  const existingProducts = await db.select().from(products);
   if (existingProducts.filter(p => !p.isFree).length === 0) {
     const defaultProducts = [
       { name: "VIP 1", price: 4000, dailyEarnings: 300, cycleDays: 90, totalReturn: 27000, imageUrl: '/solar-panel-1.webp', sortOrder: 1 },
