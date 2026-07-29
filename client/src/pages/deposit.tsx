@@ -66,6 +66,7 @@ export default function DepositPage() {
   const [selectedCurrency, setSelectedCurrency] = useState<CryptoOption | null>(null);
   const [payment, setPayment] = useState<CryptoPayment | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copiedAmount, setCopiedAmount] = useState(false);
 
   const { data: platformSettings } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
@@ -139,6 +140,18 @@ export default function DepositPage() {
       setCopied(true);
       toast({ title: t.depositCopiedToast, description: t.depositCopiedDesc });
       window.setTimeout(() => setCopied(false), 2200);
+    } catch {
+      toast({ title: t.depositCopyFail, description: t.depositCopyFailDesc });
+    }
+  };
+
+  const copyAmount = async () => {
+    if (!payment) return;
+    try {
+      await navigator.clipboard.writeText(String(payment.payAmount));
+      setCopiedAmount(true);
+      toast({ title: t.depositCopiedToast, description: t.depositCopiedDesc });
+      window.setTimeout(() => setCopiedAmount(false), 2200);
     } catch {
       toast({ title: t.depositCopyFail, description: t.depositCopyFailDesc });
     }
@@ -259,7 +272,18 @@ export default function DepositPage() {
               </div>
             </div>
             <p className="text-sm text-white/70">{t.depositExactAmount}</p>
-            <p className="mt-1 text-2xl font-black">{payment.payAmount} <span className="text-base">{payment.payCurrency.toUpperCase()}</span></p>
+            <div className="mt-1 flex items-center justify-center gap-2">
+              <p className="text-2xl font-black">{payment.payAmount} <span className="text-base">{payment.payCurrency.toUpperCase()}</span></p>
+              <button
+                type="button"
+                onClick={copyAmount}
+                className="flex shrink-0 items-center gap-1 rounded-xl bg-white px-3 py-1.5 text-xs font-bold text-[#315aab] shadow"
+                data-testid="button-copy-deposit-amount"
+              >
+                {copiedAmount ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                {copiedAmount ? t.depositCopied : t.depositCopy}
+              </button>
+            </div>
             <div className="mx-auto my-5 w-fit rounded-2xl bg-white p-3 shadow-lg">
               <img src={payment.qrCode} alt="QR" className="h-56 w-56" data-testid="img-deposit-qr" />
             </div>
