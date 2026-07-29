@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Users, TrendingUp } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import type { User } from "@shared/schema";
+import { getUserAvatar } from "@/lib/avatar";
 
 interface TeamMember {
   id: number;
@@ -64,12 +65,17 @@ export default function AdminTeamPage() {
     <Card className="mb-3">
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-3">
-          <div>
-            <p className="font-medium text-foreground text-lg">{member.fullName}</p>
-            <p className="text-sm text-muted-foreground">{member.phone} - {member.country}</p>
-            <p className="text-xs text-muted-foreground">
-              {t.teamRegisteredOn} {new Date(member.createdAt).toLocaleDateString()}
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-primary/30">
+              <img src={getUserAvatar(member.id)} alt="avatar" className="w-full h-full object-cover" />
+            </div>
+            <div>
+              <p className="font-medium text-foreground text-lg">{member.fullName}</p>
+              <p className="text-sm text-muted-foreground">{member.phone} - {member.country}</p>
+              <p className="text-xs text-muted-foreground">
+                {t.teamRegisteredOn} {new Date(member.createdAt).toLocaleDateString()}
+              </p>
+            </div>
           </div>
           <div className="flex flex-col items-end gap-1">
             {member.hasActiveProduct && (

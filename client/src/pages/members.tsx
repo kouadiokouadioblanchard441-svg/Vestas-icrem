@@ -39,14 +39,6 @@ const BLUE_MID = "#4a72c4";
 
 const VIP_ACTIVE = { bg: "linear-gradient(135deg, #315aab 0%, #254a91 100%)", text: "#fff", label: "VIP" };
 
-function getMemberInitials(fullName: string, phone: string): string {
-  if (fullName && fullName.trim().length > 0) {
-    const parts = fullName.trim().split(/\s+/);
-    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-    return parts[0][0].toUpperCase();
-  }
-  return phone ? phone[0] : "?";
-}
 
 export default function MembersPage() {
   const [activeLevel, setActiveLevel] = useState<1 | 2 | 3>(1);
@@ -162,7 +154,6 @@ export default function MembersPage() {
           </div>
         ) : (
           activeMembers.map((member) => {
-            const initials = getMemberInitials(member.fullName, member.phone);
             return (
               <div
                 key={member.id}
