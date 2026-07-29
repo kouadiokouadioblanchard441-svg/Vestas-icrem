@@ -119,7 +119,8 @@ export default function AdminDeposits() {
           Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-52" />)
         ) : filteredDeposits.length > 0 ? (
           filteredDeposits.map((deposit) => {
-            const isManual = !!(deposit as any).paymentNumberId || !!(deposit as any).channelName;
+            const isNowPayments = deposit.paymentMethod === "NOWPayments";
+            const isManual = !isNowPayments && (!!(deposit as any).paymentNumberId || !!(deposit as any).channelName);
             return (
               <Card key={deposit.id} className={deposit.status === "pending" ? "border-yellow-400/50" : deposit.status === "processing" ? "border-blue-400/50" : ""}>
                 <CardContent className="p-4 space-y-3">
@@ -129,6 +130,11 @@ export default function AdminDeposits() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="font-semibold text-foreground">{deposit.user.fullName}</p>
                         {deposit.user.isPromoter && <Badge className="text-xs">Promoteur</Badge>}
+                        {isNowPayments && (
+                          <Badge className="text-xs bg-blue-600 text-white border-blue-600">
+                            🔗 NOWPayments
+                          </Badge>
+                        )}
                         {isManual && (
                           <Badge className="text-xs bg-red-600 text-white border-red-600">
                             Paiement manuel
@@ -155,9 +161,9 @@ export default function AdminDeposits() {
                       <p className="text-muted-foreground text-xs">{t.operator}</p>
                       <p className="font-medium">{deposit.paymentMethod}</p>
                     </div>
-                    <div>
-                      <p className="text-muted-foreground text-xs">{t.payerNumber}</p>
-                      <p className="font-mono font-medium">{deposit.accountNumber}</p>
+                    <div className={isNowPayments ? "col-span-2" : ""}>
+                      <p className="text-muted-foreground text-xs">{isNowPayments ? "Adresse crypto" : t.payerNumber}</p>
+                      <p className="font-mono font-medium break-all text-xs">{deposit.accountNumber}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-xs">{t.date}</p>
@@ -169,10 +175,16 @@ export default function AdminDeposits() {
                     </div>
 
                     {/* Payment number (channel) used */}
-                    {(deposit as any).channelName && (
+                    {(deposit as any).channelName && !isNowPayments && (
                       <div className="col-span-2">
                         <p className="text-muted-foreground text-xs">{t.recipientNumber}</p>
                         <p className="font-bold text-red-600">{(deposit as any).channelName}</p>
+                      </div>
+                    )}
+                    {(deposit as any).channelName && isNowPayments && (
+                      <div>
+                        <p className="text-muted-foreground text-xs">Réseau</p>
+                        <p className="font-bold text-blue-600">{(deposit as any).channelName}</p>
                       </div>
                     )}
 
