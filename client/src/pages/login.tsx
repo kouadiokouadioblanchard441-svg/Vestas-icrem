@@ -40,7 +40,7 @@ export default function LoginPage() {
     defaultValues: {
       phone: parsedCredentials?.phone || "",
       country: parsedCredentials?.country || "US",
-      password: parsedCredentials?.password ? atob(parsedCredentials.password) : "",
+      password: "",
     },
   });
 
@@ -73,10 +73,10 @@ export default function LoginPage() {
     try {
       await login(data.phone, data.country, data.password);
       if (rememberMe) {
+        // Only store non-sensitive fields — never store passwords in localStorage
         localStorage.setItem("powerade_credentials", JSON.stringify({
           phone: data.phone,
           country: data.country,
-          password: btoa(data.password),
         }));
       } else {
         localStorage.removeItem("powerade_credentials");
