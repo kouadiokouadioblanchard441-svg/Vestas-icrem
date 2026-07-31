@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import { registerSchema, loginSchema } from "@shared/schema";
 import { z } from "zod";
 import ConnectPgSimple from "connect-pg-simple";
-import { db } from "./db";
+import { db, pool } from "./db";
 import QRCode from "qrcode";
 import crypto from "crypto";
 import { verifyWebhookSignature } from "@nowpaymentsio/nowpayments-sdk-nodejs";
@@ -136,6 +136,16 @@ export async function registerRoutes(
   
   // Trust proxy for production HTTPS (Replit deployment)
   app.set("trust proxy", 1);
+
+  // Health check — verifies DB connectivity without exposing sensitive data
+  app.get("/api/health", async (_req, res) => {
+    try {
+      const result = await pool.query("SELECT current_database() AS db, version() AS pg_version");
+      res.json({ status: "ok", db: result.rows[0].db, pg_version: result.rows[0].pg_version });
+    } catch (err: any) {
+      res.status(503).json({ status: "error", message: err.message });
+    }
+  });
 
   const sessionDbUrl = process.env.SUPABASE_DATABASE_URL || process.env.DATABASE_URL;
   app.use(

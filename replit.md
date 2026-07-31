@@ -1,33 +1,33 @@
-# PowerAdd / SolEaPay
+# SoleaPay / PowerAdd
 
-## Overview
-Full-stack fintech/payment platform built with React (Vite) + Express + Drizzle ORM + PostgreSQL (Supabase).
+## Project Overview
+Full-stack investment and payments platform. Express + TypeScript backend, React + Vite frontend, PostgreSQL (Supabase) via Drizzle ORM, Passport.js session auth, NowPayments crypto integration.
 
 ## Stack
-- **Frontend**: React 18, Vite, TailwindCSS, shadcn/ui, Wouter (routing), TanStack Query
-- **Backend**: Express 5, Passport.js (local auth), express-session
-- **Database**: PostgreSQL via Supabase, Drizzle ORM
-- **Payments**: NOWPayments SDK
+- **Backend**: Express 5, TypeScript, Passport.js (local strategy), Drizzle ORM
+- **Frontend**: React 18, Vite, Tailwind CSS, Radix UI, TanStack Query, Wouter
+- **Database**: PostgreSQL via Supabase (pooler connection)
+- **Payments**: NowPayments (crypto)
 
-## How to run
+## Running the app
+```bash
+npm run dev       # development (port 5000)
+npm run build     # production build
+npm start         # serve production build
+npm run db:push   # push schema to database
 ```
-npm run dev
-```
-Server starts on port 5000. Requires `SUPABASE_DATABASE_URL` secret.
 
-## Environment secrets
+## Required Secrets
 - `SUPABASE_DATABASE_URL` — Supabase PostgreSQL pooler connection string
-- `SESSION_SECRET` — Express session secret
+- `SESSION_SECRET` — express-session secret
 
-## Build for production
-```
-npm run build   # outputs to dist/
-npm run start   # runs dist/index.cjs
-```
+## Environment Variables
+- `PORT` — defaults to 5000
+- `APP_URL` — public URL (set in development env)
 
-## Database
-```
-npm run db:push   # push schema changes via Drizzle Kit
-```
+## Notes
+- The seed script runs on every startup and is idempotent (preserves existing data)
+- Production deployment targets Plesk (nginx reverse proxy + Passenger)
+- See `.agents/memory/` for architecture decisions and known quirks
 
-## User preferences
+## User Preferences
