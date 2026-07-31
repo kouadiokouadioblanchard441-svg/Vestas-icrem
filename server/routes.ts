@@ -454,7 +454,7 @@ export async function registerRoutes(
 
           if (cyclesSinceLastEarning >= 1 && daysSincePurchase >= 1) {
             const cyclesToCredit = Math.min(cyclesSinceLastEarning, userProduct.daysRemaining);
-            const earningsPerCycle = product.dailyEarnings;
+            const earningsPerCycle = parseFloat(String(product.dailyEarnings));
             const totalEarningsForProduct = earningsPerCycle * cyclesToCredit;
 
             const newLastEarningDate = new Date(lastEarning.getTime() + (cyclesToCredit * 24 * 60 * 60 * 1000));
@@ -1847,10 +1847,10 @@ export async function registerRoutes(
       const cycleInt = parseInt(cycleDays);
       const product = await storage.createProduct({
         name,
-        price: priceNum,
-        dailyEarnings: dailyNum,
+        price: String(priceNum),
+        dailyEarnings: String(dailyNum),
         cycleDays: cycleInt,
-        totalReturn: parseFloat((dailyNum * cycleInt).toFixed(2)),
+        totalReturn: String((dailyNum * cycleInt).toFixed(2)),
         imageUrl: imageUrl || null,
         isFree: false,
         isActive: true,

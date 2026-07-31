@@ -936,7 +936,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(userProducts.userId, user.id));
       
       const totalInvested = userProductsList
-        .reduce((sum, p) => sum + p.productPrice, 0);
+        .reduce((sum, p) => sum + parseFloat(String(p.productPrice)), 0);
 
       // Bonus earned by current user FROM this specific member
       const bonusResult = await db

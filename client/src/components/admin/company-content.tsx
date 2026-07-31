@@ -248,7 +248,7 @@ export default function AdminCompanyContent() {
                     <div>
                       <p className="font-semibold truncate">{block.title}</p>
                       <p className="text-xs text-muted-foreground">
-                        {t.adminCompanyBlockOrderShort ?? t.adminCompanyBlockOrder} {block.sortOrder} · {block.isActive ? t.adminCompanyBlockVisible : t.adminCompanyBlockHidden}
+                        {t.adminCompanyBlockOrder} {block.sortOrder} · {block.isActive ? t.adminCompanyBlockVisible : t.adminCompanyBlockHidden}
                       </p>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">

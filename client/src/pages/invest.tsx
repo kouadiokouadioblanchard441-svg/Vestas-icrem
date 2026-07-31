@@ -193,11 +193,11 @@ export default function InvestPage() {
             </div>
 
             <div className="mx-6 mb-3">
-              {balance < confirmProduct.price ? (
+              {balance < parseFloat(String(confirmProduct.price)) ? (
                 <div className="flex items-center gap-2 p-2.5 bg-red-500/20 border border-red-400/30 rounded-xl">
                   <AlertTriangle className="w-4 h-4 text-red-300 shrink-0" />
                   <p className="text-xs text-red-200">
-                    {t.investInsufficient.replace("{0}", formatCurrency(confirmProduct.price - balance, user.country))}
+                    {t.investInsufficient.replace("{0}", formatCurrency(parseFloat(String(confirmProduct.price)) - balance, user.country))}
                   </p>
                 </div>
               ) : (
@@ -218,7 +218,7 @@ export default function InvestPage() {
               </button>
               <button
                 onClick={() => purchaseMutation.mutate(confirmProduct.id)}
-                disabled={purchaseMutation.isPending || balance < confirmProduct.price}
+                disabled={purchaseMutation.isPending || balance < parseFloat(String(confirmProduct.price))}
                 className="flex-1 py-3 rounded-full text-white font-bold text-sm flex items-center justify-center gap-1 disabled:opacity-50"
                 style={{ background: "#E8192C" }}
                 data-testid="button-confirm-purchase"
