@@ -96,44 +96,80 @@ export default function RegisterPage() {
   }
 
   const inputStyle: React.CSSProperties = {
-    background: "#ffffff",
+    background: "rgba(8, 20, 50, 0.70)",
     borderRadius: 999,
-    border: "none",
+    border: "1px solid rgba(150, 185, 230, 0.35)",
     height: 54,
     display: "flex",
     alignItems: "center",
     overflow: "hidden",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+    boxShadow: "inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.06)",
+  };
+
+  const goldBtn: React.CSSProperties = {
+    height: 56,
+    borderRadius: 28,
+    background: "linear-gradient(90deg, #b8862a 0%, #f0c84a 45%, #c89a30 100%)",
+    border: "1px solid #d4a840",
+    color: "#1a0e00",
+    fontWeight: 700,
+    fontSize: 16,
+    boxShadow: "0 4px 18px rgba(200,160,40,0.45), inset 0 1px 0 rgba(255,255,255,0.3)",
+  };
+
+  const bronzeBtn: React.CSSProperties = {
+    height: 56,
+    borderRadius: 28,
+    background: "linear-gradient(90deg, #7a5818 0%, #b8892a 45%, #8a6820 100%)",
+    border: "1px solid #a07828",
+    color: "#fff0cc",
+    fontWeight: 700,
+    fontSize: 16,
+    boxShadow: "0 4px 14px rgba(140,100,20,0.40), inset 0 1px 0 rgba(255,255,255,0.15)",
   };
 
   return (
     <div
       className="min-h-screen flex flex-col"
       style={{
-        background: "#0d0d0d",
+        backgroundImage: "url('/asus-bg.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        position: "relative",
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", padding: "24px 20px" }}>
+      {/* Dark overlay for readability */}
+      <div style={{ position: "absolute", inset: 0, background: "rgba(5,15,35,0.45)", zIndex: 0 }} />
+
+      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", padding: "24px 20px" }}>
 
         {/* Logo + Form centrés ensemble */}
-        <div className="w-full max-w-sm mx-auto flex flex-col gap-4">
+        <div className="w-full max-w-sm mx-auto flex flex-col gap-3.5">
 
           {/* Logo centré */}
           <div className="flex items-center justify-center pb-4">
-            <img src="/asus-logo-white.svg" alt="ASUS" style={{ height: 40, objectFit: "contain" }} />
+            <img
+              src="/asus-logo-white.svg"
+              alt="ASUS"
+              style={{
+                height: 52,
+                objectFit: "contain",
+                filter: "drop-shadow(0 0 10px rgba(180,210,255,0.7)) drop-shadow(0 3px 6px rgba(0,0,0,0.9)) brightness(1.15)",
+              }}
+            />
           </div>
             <input type="hidden" {...form.register("country")} />
 
             {/* Phone */}
             <div style={inputStyle}>
               <div className="pl-4 pr-2 flex items-center shrink-0">
-                <Smartphone size={18} className="text-gray-400" />
+                <Smartphone size={18} style={{ color: "rgba(180,210,255,0.8)" }} />
               </div>
               <button
                 type="button"
                 onClick={() => setCountryModalOpen(true)}
                 className="flex items-center gap-1 pr-3 h-full font-bold text-sm shrink-0 border-r"
-                style={{ color: "#333", borderColor: "rgba(0,0,0,0.15)" }}
+                style={{ color: "rgba(200,225,255,0.9)", borderColor: "rgba(150,185,230,0.3)" }}
                 data-testid="button-select-country"
               >
                 +{countryData?.phonePrefix || "1"}
@@ -143,68 +179,72 @@ export default function RegisterPage() {
                 {...form.register("phone")}
                 type="tel"
                 placeholder={t.phonePlaceholder}
-                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none px-3"
+                className="flex-1 h-full bg-transparent text-sm outline-none px-3"
+                style={{ color: "#e8f0ff" }}
                 data-testid="input-phone"
               />
             </div>
             {form.formState.errors.phone && (
-              <p className="text-red-600 text-xs -mt-2 ml-1">{form.formState.errors.phone.message}</p>
+              <p className="text-red-400 text-xs -mt-1 ml-2">{form.formState.errors.phone.message}</p>
             )}
 
             {/* Password */}
             <div style={inputStyle}>
               <div className="pl-4 pr-3 flex items-center shrink-0">
-                <Lock size={18} className="text-gray-400" />
+                <Lock size={18} style={{ color: "rgba(180,210,255,0.8)" }} />
               </div>
               <input
                 {...form.register("password")}
                 type={showPassword ? "text" : "password"}
                 placeholder={t.passwordPlaceholder}
-                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none"
+                className="flex-1 h-full bg-transparent text-sm outline-none"
+                style={{ color: "#e8f0ff" }}
                 data-testid="input-password"
               />
               <button type="button" onClick={() => setShowPassword(v => !v)} className="pr-4 pl-2 flex items-center shrink-0">
-                {showPassword ? <EyeOff size={18} className="text-gray-400" /> : <Eye size={18} className="text-gray-400" />}
+                {showPassword ? <EyeOff size={18} style={{ color: "rgba(180,210,255,0.7)" }} /> : <Eye size={18} style={{ color: "rgba(180,210,255,0.7)" }} />}
               </button>
             </div>
             {form.formState.errors.password && (
-              <p className="text-red-600 text-xs -mt-2 ml-1">{form.formState.errors.password.message}</p>
+              <p className="text-red-400 text-xs -mt-1 ml-2">{form.formState.errors.password.message}</p>
             )}
 
             {/* Confirm password */}
             <div style={inputStyle}>
               <div className="pl-4 pr-3 flex items-center shrink-0">
-                <Lock size={18} className="text-gray-400" />
+                <Lock size={18} style={{ color: "rgba(180,210,255,0.8)" }} />
               </div>
               <input
                 {...form.register("confirmPassword")}
                 type={showConfirm ? "text" : "password"}
                 placeholder={t.confirmPasswordPlaceholder}
-                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none"
+                className="flex-1 h-full bg-transparent text-sm outline-none"
+                style={{ color: "#e8f0ff" }}
                 data-testid="input-confirm-password"
               />
               <button type="button" onClick={() => setShowConfirm(v => !v)} className="pr-4 pl-2 flex items-center shrink-0">
-                {showConfirm ? <EyeOff size={18} className="text-gray-400" /> : <Eye size={18} className="text-gray-400" />}
+                {showConfirm ? <EyeOff size={18} style={{ color: "rgba(180,210,255,0.7)" }} /> : <Eye size={18} style={{ color: "rgba(180,210,255,0.7)" }} />}
               </button>
             </div>
             {form.formState.errors.confirmPassword && (
-              <p className="text-red-600 text-xs -mt-2 ml-1">{form.formState.errors.confirmPassword.message}</p>
+              <p className="text-red-400 text-xs -mt-1 ml-2">{form.formState.errors.confirmPassword.message}</p>
             )}
 
             {/* Invitation code */}
             <div style={inputStyle}>
               <div className="pl-4 pr-3 flex items-center shrink-0">
-                <ThumbsUp size={18} className="text-gray-400" />
+                <ThumbsUp size={18} style={{ color: "rgba(180,210,255,0.8)" }} />
               </div>
               <input
                 {...form.register("invitationCode")}
                 placeholder={t.invitationCodePlaceholder}
-                className="flex-1 h-full bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none pr-4"
+                className="flex-1 h-full bg-transparent text-sm outline-none pr-4"
+                style={{ color: "#e8f0ff" }}
                 data-testid="input-invitation-code"
               />
             </div>
             {form.formState.errors.invitationCode && (
-              <p className="text-red-600 text-xs -mt-2 ml-1">{form.formState.errors.invitationCode.message}</p>
+              <p className="text-red-400 text-xs -mt-1 ml-2">{form.formState.errors.invitationCode.message}</p>
             )}
 
             {/* Register button */}
@@ -212,13 +252,8 @@ export default function RegisterPage() {
               type="button"
               onClick={form.handleSubmit(onSubmit)}
               disabled={isLoading}
-              className="w-full font-bold text-white text-base disabled:opacity-50 transition-all active:scale-95 mt-2"
-              style={{
-                height: 56,
-                borderRadius: 28,
-                background: "#1a56db",
-                boxShadow: "0 4px 16px rgba(26,86,219,0.55)",
-              }}
+              className="w-full disabled:opacity-50 transition-all active:scale-95 mt-1"
+              style={goldBtn}
               data-testid="button-register"
             >
               {t.registerNow}
@@ -228,13 +263,8 @@ export default function RegisterPage() {
             <button
               type="button"
               onClick={() => navigate("/login")}
-              className="w-full font-bold text-white text-base transition-all active:scale-95"
-              style={{
-                height: 56,
-                borderRadius: 28,
-                background: "#1a56db",
-                boxShadow: "0 4px 16px rgba(26,86,219,0.55)",
-              }}
+              className="w-full transition-all active:scale-95"
+              style={bronzeBtn}
               data-testid="link-login"
             >
               {t.alreadyHaveAccountLogin}
