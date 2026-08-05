@@ -33,7 +33,7 @@ export default function RegisterPage() {
     country: z.string().min(2, t.selectCountry),
     password: z.string().min(6, t.errMinPassword),
     confirmPassword: z.string().min(1, t.errConfirmPassword),
-    invitationCode: z.string().min(1, t.errInvitationCodeRequired),
+    invitationCode: z.string().optional(),
   }).refine((data) => data.password === data.confirmPassword, {
     message: t.errPasswordMismatch,
     path: ["confirmPassword"],
