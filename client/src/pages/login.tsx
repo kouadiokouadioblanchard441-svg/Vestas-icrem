@@ -101,7 +101,7 @@ export default function LoginPage() {
     <div
       className="min-h-screen flex flex-col"
       style={{
-        background: "linear-gradient(160deg, #0f2d6b 0%, #1a56db 60%, #3b7ef5 100%)",
+        background: "#0d0d0d",
       }}
     >
       <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
@@ -109,7 +109,7 @@ export default function LoginPage() {
         {/* Top bar */}
         <div className="flex items-center justify-between px-4 pt-4 pb-3">
           {/* Logo */}
-          <img src="/poweradd/poweradd-logo-official.png" alt="PowerAdd" style={{ height: 36, objectFit: "contain" }} />
+          <img src="/asus-logo-white.svg" alt="ASUS" style={{ height: 32, objectFit: "contain" }} />
         </div>
 
         {/* Form area */}
