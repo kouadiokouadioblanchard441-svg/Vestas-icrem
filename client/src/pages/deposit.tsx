@@ -160,7 +160,7 @@ export default function DepositPage() {
   if (!user) return null;
 
   return (
-    <main className="min-h-screen bg-[#315aab] text-white">
+    <main className="min-h-screen bg-[#0d0d0d] text-white">
       <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-white/10 bg-[#234781] px-4 shadow-lg">
         {step === "amount" ? (
           <Link href="/account" className="flex h-10 w-10 items-center justify-center" data-testid="button-back-account">
@@ -188,7 +188,7 @@ export default function DepositPage() {
             <p className="mb-1 text-sm font-semibold text-white/75">{t.depositAmount}</p>
             <p className="mb-4 text-xs text-white/60">{t.depositMinimum} {minDeposit.toLocaleString()} {currency}</p>
             <div className="flex items-center overflow-hidden bg-white text-[#173667]" style={{ borderRadius: 999, height: 54, boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}>
-              <span className="flex items-center border-r border-[#315aab]/20 px-5 font-bold text-sm shrink-0 h-full">{currency}</span>
+              <span className="flex items-center border-r border-[#0d0d0d]/20 px-5 font-bold text-sm shrink-0 h-full">{currency}</span>
               <input
                 type="number"
                 value={amount}
@@ -206,7 +206,7 @@ export default function DepositPage() {
                   type="button"
                   onClick={() => setAmount(preset)}
                   className={`rounded-xl border py-3 text-sm font-bold transition ${
-                    amount === preset ? "border-white bg-white text-[#315aab]" : "border-white/20 bg-white/10 text-white"
+                    amount === preset ? "border-white bg-white text-[#0d0d0d]" : "border-white/20 bg-white/10 text-white"
                   }`}
                   data-testid={`button-preset-amount-${preset}`}
                 >
@@ -217,7 +217,7 @@ export default function DepositPage() {
             <button
               type="button"
               onClick={continueWithAmount}
-              className="mt-5 flex w-full items-center justify-center gap-2 font-bold text-[#315aab] transition active:scale-95"
+              className="mt-5 flex w-full items-center justify-center gap-2 font-bold text-[#0d0d0d] transition active:scale-95"
               style={{ height: 54, borderRadius: 999, background: "#ffffff", boxShadow: "0 4px 16px rgba(0,0,0,0.18)" }}
               data-testid="button-recharge-now"
             >
@@ -277,7 +277,7 @@ export default function DepositPage() {
               <button
                 type="button"
                 onClick={copyAmount}
-                className="flex shrink-0 items-center gap-1 rounded-xl bg-white px-3 py-1.5 text-xs font-bold text-[#315aab] shadow"
+                className="flex shrink-0 items-center gap-1 rounded-xl bg-white px-3 py-1.5 text-xs font-bold text-[#0d0d0d] shadow"
                 data-testid="button-copy-deposit-amount"
               >
                 {copiedAmount ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
@@ -293,7 +293,7 @@ export default function DepositPage() {
               <button
                 type="button"
                 onClick={copyAddress}
-                className="flex shrink-0 items-center gap-1 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#315aab]"
+                className="flex shrink-0 items-center gap-1 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#0d0d0d]"
                 data-testid="button-copy-deposit-address"
               >
                 {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
@@ -303,7 +303,7 @@ export default function DepositPage() {
             <button
               type="button"
               onClick={() => toast({ title: t.depositDone, description: t.depositDoneDesc })}
-              className="mt-5 w-full rounded-full bg-white py-4 font-bold text-[#315aab] shadow-lg"
+              className="mt-5 w-full rounded-full bg-white py-4 font-bold text-[#0d0d0d] shadow-lg"
               data-testid="button-deposit-completed"
             >
               {t.depositDone}

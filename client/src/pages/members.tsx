@@ -33,11 +33,11 @@ function maskPhone(phone: string): string {
   return `${start}*****${end}`;
 }
 
-const BLUE = "#315aab";
-const BLUE_LIGHT = "#e8eef8";
+const BLUE = "#0d0d0d";
+const BLUE_LIGHT = "#1a1a1a";
 const BLUE_MID = "#4a72c4";
 
-const VIP_ACTIVE = { bg: "linear-gradient(135deg, #315aab 0%, #254a91 100%)", text: "#fff", label: "VIP" };
+const VIP_ACTIVE = { bg: "linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)", text: "#fff", label: "VIP" };
 
 
 export default function MembersPage() {
@@ -63,12 +63,12 @@ export default function MembersPage() {
   const totalBonus = activeMembers.reduce((s, m) => s + (m.bonusFromMember || 0), 0);
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#f0f4fa" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
 
       {/* Header */}
       <div
         className="flex items-center px-4 py-4 shadow-md"
-        style={{ background: `linear-gradient(135deg, ${BLUE} 0%, #254a91 100%)` }}
+        style={{ background: `linear-gradient(135deg, ${BLUE} 0%, #1a1a1a 100%)` }}
       >
         <button
           onClick={() => navigate("/team")}
@@ -113,7 +113,7 @@ export default function MembersPage() {
 
       {/* Summary card */}
       <div className="mx-4 mt-4 rounded-2xl overflow-hidden shadow-sm"
-        style={{ background: `linear-gradient(135deg, ${BLUE} 0%, #254a91 100%)` }}
+        style={{ background: `linear-gradient(135deg, ${BLUE} 0%, #1a1a1a 100%)` }}
       >
         <div className="flex divide-x divide-white/20">
           <div className="flex-1 px-5 py-4">

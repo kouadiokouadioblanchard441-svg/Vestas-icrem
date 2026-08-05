@@ -26,7 +26,7 @@ interface TeamStats {
   teamTotalWithdrawals: number;
 }
 
-const BLUE      = "#315aab";
+const BLUE      = "#0d0d0d";
 const BLUE_DARK = "#254a91";
 const RED       = "#E8192C";
 

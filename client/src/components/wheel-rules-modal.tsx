@@ -58,7 +58,7 @@ export default function WheelRulesModal({ open, onClose }: WheelRulesModalProps)
   return (
     <div
       className="fixed inset-0 z-50 flex flex-col overflow-hidden"
-      style={{ background: "#315aab" }}
+      style={{ background: "#0d0d0d" }}
     >
       {/* White header — like About page */}
       <header className="flex items-center px-4 py-3 shrink-0 bg-white shadow-sm">

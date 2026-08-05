@@ -20,7 +20,7 @@ export default function AboutPage() {
   const s4Text = getContent(settings, "content_about_s4Text", "Power Add 自1997年起通过 ISO 9001 认证，并于2006年通过 ISO 14001 认证，持续重视质量、性能和团队合作。");
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
       <header className="flex items-center px-4 py-3 border-b bg-white">
         <Link href="/account">
           <button className="p-1" data-testid="button-back">

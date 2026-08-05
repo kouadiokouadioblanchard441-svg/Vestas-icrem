@@ -48,7 +48,7 @@ export default function DepositHistoryPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
       <header className="flex items-center px-4 py-3 border-b bg-white">
         <Link href="/withdrawal">
           <button className="p-2" data-testid="button-back">

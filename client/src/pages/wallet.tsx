@@ -121,7 +121,7 @@ export default function WalletPage() {
   /* ─── ADD FORM VIEW ─── */
   if (showForm) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
+      <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
 
         {/* Header — même style que la liste */}
         <div className="flex items-center px-4 pt-10 pb-4">
@@ -227,7 +227,7 @@ export default function WalletPage() {
 
   /* ─── LIST VIEW ─── */
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
 
       {/* Header */}
       <div className="flex items-center px-4 pt-10 pb-4">
@@ -261,9 +261,9 @@ export default function WalletPage() {
                 <div
                   className="rounded-2xl p-5 relative overflow-hidden"
                   style={{
-                    background: "linear-gradient(135deg, #0D47A1 0%, #1976D2 55%, #42A5F5 100%)",
+                    background: "linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 55%, #3a3a3a 100%)",
                     minHeight: 170,
-                    boxShadow: "0 10px 40px rgba(13,71,161,0.45)",
+                    boxShadow: "0 10px 40px rgba(0,0,0,0.55)",
                   }}
                 >
                   {/* Shine diagonal */}

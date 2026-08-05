@@ -30,7 +30,7 @@ interface Withdrawal {
   createdAt: string;
 }
 
-const BG = "#315aab";
+const BG = "#0d0d0d";
 
 export default function HistoryPage() {
   const { user } = useAuth();

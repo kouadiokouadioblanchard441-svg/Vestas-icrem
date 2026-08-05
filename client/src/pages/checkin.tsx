@@ -67,7 +67,7 @@ export default function CheckinPage() {
   const rule2 = getContent(settings, "content_checkin_rule2", "");
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
       <div className="flex-1 overflow-y-auto pb-16">
 
         {/* Header */}

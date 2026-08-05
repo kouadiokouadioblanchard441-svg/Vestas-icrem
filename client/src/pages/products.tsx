@@ -75,14 +75,14 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-full" style={{ background: "#315aab" }}>
+    <div className="flex flex-col min-h-full" style={{ background: "#0d0d0d" }}>
 
       {/* Header */}
       <div
         className="flex items-center justify-between px-4 py-3 shadow-sm bg-white"
       >
         <img src={poweraddLogo} alt="Power Add" className="h-8 w-auto object-contain" />
-        <p className="font-bold text-base" style={{ color: "#315aab" }}>{headerTitle}</p>
+        <p className="font-bold text-base" style={{ color: "#0d0d0d" }}>{headerTitle}</p>
         <button
           onClick={() => navigate("/service")}
           className="w-9 h-9 rounded-full flex items-center justify-center"

@@ -163,7 +163,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-full" style={{ background: "#315aab" }}>
+    <div className="flex flex-col min-h-full" style={{ background: "#0d0d0d" }}>
 
       {/* ── POPUP NOTIFICATION ── */}
       {showPopup && (
@@ -174,7 +174,7 @@ export default function HomePage() {
         >
           <div
             className="w-full max-w-[340px] rounded-3xl overflow-hidden shadow-2xl"
-            style={{ background: "#315aab" }}
+            style={{ background: "#0d0d0d" }}
             onClick={e => e.stopPropagation()}
           >
             {/* Bell icon */}

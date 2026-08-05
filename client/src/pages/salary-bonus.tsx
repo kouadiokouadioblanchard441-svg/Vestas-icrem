@@ -58,7 +58,7 @@ export default function SalaryBonusPage() {
     .reduce((sum, tk) => sum + (tk.reward || 0), 0);
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#f0f4ff" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
 
       {/* ── Header ── */}
       <div className="flex items-center gap-3 px-4 pt-6 pb-4 bg-white shadow-sm sticky top-0 z-10">
@@ -110,7 +110,7 @@ export default function SalaryBonusPage() {
         </div>
 
         {/* ── Info note ── */}
-        <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 text-blue-700 text-xs leading-relaxed">
+        <div className="bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-white/70 text-xs leading-relaxed">
           <span className="font-bold">✦ {t.salaryActiveMemberDef}</span>
         </div>
 

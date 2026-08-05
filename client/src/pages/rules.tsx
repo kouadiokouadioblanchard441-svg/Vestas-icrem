@@ -35,7 +35,7 @@ export default function RulesPage() {
   const rS5b3 = getContent(settings, "content_rulespage_s5b3", "官方客服绝不会向您索要密码。");
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
       <header className="flex items-center px-4 py-3 border-b bg-white">
         <Link href="/account">
           <button className="p-1" data-testid="button-back">

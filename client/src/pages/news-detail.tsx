@@ -64,14 +64,14 @@ export default function NewsDetailPage() {
 
   if (!article) {
     return (
-      <div className="flex flex-col min-h-full items-center justify-center" style={{ background: "#315aab" }}>
+      <div className="flex flex-col min-h-full items-center justify-center" style={{ background: "#0d0d0d" }}>
         <p className="text-white/60">{t.articleNotFound}</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#315aab" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
 
       {/* Header */}
       <header className="flex items-center px-4 py-3 border-b bg-white">
