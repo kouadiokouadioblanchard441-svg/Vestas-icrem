@@ -33,8 +33,8 @@ function maskPhone(phone: string): string {
   return `${start}*****${end}`;
 }
 
-const BLUE = "#0d0d0d";
-const BLUE_LIGHT = "#1a1a1a";
+const BLUE = "#00539b";
+const BLUE_LIGHT = "#e8f0fb";
 const BLUE_MID = "#4a72c4";
 
 const VIP_ACTIVE = { bg: "linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)", text: "#fff", label: "VIP" };
@@ -63,7 +63,7 @@ export default function MembersPage() {
   const totalBonus = activeMembers.reduce((s, m) => s + (m.bonusFromMember || 0), 0);
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#f5f5f5" }}>
 
       {/* Header */}
       <div

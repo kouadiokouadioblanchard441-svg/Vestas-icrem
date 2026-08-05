@@ -163,18 +163,18 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-full" style={{ background: "#0d0d0d" }}>
+    <div className="flex flex-col min-h-full" style={{ background: "#f5f5f5" }}>
 
       {/* ── POPUP NOTIFICATION ── */}
       {showPopup && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center p-5"
-          style={{ background: "rgba(0,0,0,0.82)" }}
+          style={{ background: "rgba(0,0,0,0.72)" }}
           onClick={() => setShowPopup(false)}
         >
           <div
             className="w-full max-w-[340px] rounded-3xl overflow-hidden shadow-2xl"
-            style={{ background: "#0d0d0d" }}
+            style={{ background: "#ffffff" }}
             onClick={e => e.stopPropagation()}
           >
             {/* Bell icon */}
@@ -263,7 +263,7 @@ export default function HomePage() {
 
       {/* ── Info Cards ── */}
       <div className="mx-3 mt-3 space-y-3">
-        <p className="text-white font-bold text-sm px-1">{t.informationCenter}</p>
+        <p className="text-gray-800 font-bold text-sm px-1">{t.informationCenter}</p>
         {NEWS_ARTICLES.map((article) => (
           <button
             key={article.id}

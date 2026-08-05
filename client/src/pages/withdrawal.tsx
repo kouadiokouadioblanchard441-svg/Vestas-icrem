@@ -152,7 +152,7 @@ export default function WithdrawalPage() {
   const hasWallets = wallets.length > 0;
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#f5f5f5" }}>
 
       {/* ── Header ── */}
       <header className="flex items-center justify-between px-4 py-4 bg-white border-b border-gray-100">

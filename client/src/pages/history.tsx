@@ -30,7 +30,7 @@ interface Withdrawal {
   createdAt: string;
 }
 
-const BG = "#0d0d0d";
+const BG = "#f5f5f5";
 
 export default function HistoryPage() {
   const { user } = useAuth();
@@ -104,26 +104,26 @@ export default function HistoryPage() {
     <div className="flex flex-col min-h-screen" style={{ background: BG }}>
 
       {/* ── Header ── */}
-      <div className="flex items-center px-4 pt-6 pb-4 gap-3">
+      <div className="flex items-center px-4 pt-6 pb-4 gap-3" style={{ background: "#00539b" }}>
         <Link href="/account">
           <button
-            className="w-9 h-9 rounded-full flex items-center justify-center bg-white/60"
+            className="w-9 h-9 rounded-full flex items-center justify-center bg-white/20"
             data-testid="button-back"
           >
-            <ChevronLeft className="w-5 h-5 text-gray-700" />
+            <ChevronLeft className="w-5 h-5 text-white" />
           </button>
         </Link>
         <p className="flex-1 text-center text-white font-extrabold text-lg pr-9">{t.historyTitle}</p>
       </div>
 
       {/* ── Tabs ── */}
-      <div className="flex items-end px-8 gap-6 mb-4">
+      <div className="flex items-end px-8 gap-6 mb-4 bg-white shadow-sm">
         <button
           onClick={() => setActiveTab("deposits")}
-          className="pb-2 font-semibold text-base transition-all"
+          className="pb-2 pt-3 font-semibold text-base transition-all"
           style={{
-            color: activeTab === "deposits" ? "#ffffff" : "rgba(255,255,255,0.45)",
-            borderBottom: activeTab === "deposits" ? "3px solid #ffffff" : "3px solid transparent",
+            color: activeTab === "deposits" ? "#00539b" : "#9ca3af",
+            borderBottom: activeTab === "deposits" ? "3px solid #00539b" : "3px solid transparent",
           }}
           data-testid="tab-deposits"
         >
@@ -131,10 +131,10 @@ export default function HistoryPage() {
         </button>
         <button
           onClick={() => setActiveTab("withdrawals")}
-          className="pb-2 font-semibold text-base transition-all"
+          className="pb-2 pt-3 font-semibold text-base transition-all"
           style={{
-            color: activeTab === "withdrawals" ? "#ffffff" : "rgba(255,255,255,0.45)",
-            borderBottom: activeTab === "withdrawals" ? "3px solid #ffffff" : "3px solid transparent",
+            color: activeTab === "withdrawals" ? "#00539b" : "#9ca3af",
+            borderBottom: activeTab === "withdrawals" ? "3px solid #00539b" : "3px solid transparent",
           }}
           data-testid="tab-withdrawals"
         >
@@ -148,7 +148,7 @@ export default function HistoryPage() {
         {isLoading ? null : (activeTab === "deposits" ? deposits : withdrawals).length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
             <img src={nodataImg} alt="" className="w-28 h-28 object-contain opacity-90" />
-            <p className="text-white/70 text-sm">{t.noTransactions}</p>
+            <p className="text-gray-400 text-sm">{t.noTransactions}</p>
           </div>
         ) : activeTab === "deposits" ? (
           deposits.map((deposit) => {

@@ -91,11 +91,11 @@ export default function AccountPage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#f5f5f5" }}>
       <div className="flex-1 overflow-y-auto pb-16">
 
         {/* ── Profile top section ── */}
-        <div style={{ background: "#0d0d0d" }}>
+        <div style={{ background: "#00539b" }}>
 
           {/* Profile row */}
           <div className="flex items-center justify-between px-5 pt-6 pb-5">
@@ -115,7 +115,7 @@ export default function AccountPage() {
 
           {/* Two balance cards */}
           <div className="px-4 pb-5 grid grid-cols-2 gap-3">
-            <div className="rounded-2xl px-4 py-3.5" style={{ background: "rgba(0,0,0,0.35)" }}>
+            <div className="rounded-2xl px-4 py-3.5" style={{ background: "rgba(255,255,255,0.18)" }}>
               <div className="flex items-center gap-2 mb-1">
                 <img src={iconWallet} alt="" className="w-7 h-7 object-contain" />
               </div>
@@ -124,7 +124,7 @@ export default function AccountPage() {
               </p>
               <p className="text-white/80 text-xs mt-0.5">{t.accountBalanceLabel}</p>
             </div>
-            <div className="rounded-2xl px-4 py-3.5" style={{ background: "rgba(0,0,0,0.35)" }}>
+            <div className="rounded-2xl px-4 py-3.5" style={{ background: "rgba(255,255,255,0.18)" }}>
               <div className="flex items-center gap-2 mb-1">
                 <img src={iconRevenu} alt="" className="w-7 h-7 object-contain" />
               </div>
