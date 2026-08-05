@@ -199,6 +199,36 @@ export default function AccountPage() {
           </div>
         </div>
 
+        {/* ── Section Service (liste en gras) ── */}
+        <div className="mx-4 mt-4 rounded-2xl overflow-hidden" style={{ background: "rgba(0,0,0,0.45)" }}>
+          {[
+            { icon: iconCS,        label: t.customerService, href: "/service",         white: false },
+            { icon: iconChangePwd, label: t.security,        href: "/change-password", white: false },
+            { icon: iconGift,      label: t.redeem,          href: "/gift-code",       white: false },
+            { icon: iconAbout,     label: t.about,           href: "/about",           white: false },
+            { icon: iconRules,     label: t.companyLabel,    href: "/company",         white: false },
+            { icon: iconWithdraw,  label: t.wallet,          href: "/wallet",          white: false },
+          ].map((item, idx) => (
+            <Link href={item.href} key={idx}>
+              <button
+                className="flex items-center gap-3 w-full px-4 py-4 active:opacity-70 border-b border-white/5 last:border-0"
+                data-testid={`button-service-${idx}`}
+              >
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}>
+                  <img
+                    src={item.icon}
+                    alt={item.label}
+                    className="w-5 h-5 object-contain"
+                    style={item.white ? undefined : { filter: "brightness(0) invert(1)" }}
+                  />
+                </div>
+                <span className="flex-1 text-white font-bold text-sm text-left">{item.label}</span>
+                <ChevronRight className="w-4 h-4 text-white/40 shrink-0" />
+              </button>
+            </Link>
+          ))}
+        </div>
+
         {/* ── Déconnexion ── */}
         <div className="mx-4 mt-3">
           <button
