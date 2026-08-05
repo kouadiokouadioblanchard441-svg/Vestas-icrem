@@ -1,14 +1,9 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-export type Lang = "fr" | "en" | "pt" | "es" | "ar" | "zh";
+export type Lang = "fr";
 
 export const LANGUAGES: { code: Lang; label: string; flag: string; nativeName: string }[] = [
-  { code: "zh", label: "中文",      flag: "🇨🇳", nativeName: "中文" },
-  { code: "en", label: "English",  flag: "🇬🇧", nativeName: "English" },
   { code: "fr", label: "Français", flag: "🇫🇷", nativeName: "Français" },
-  { code: "es", label: "Español",  flag: "🇪🇸", nativeName: "Español" },
-  { code: "pt", label: "Português",flag: "🇵🇹", nativeName: "Português" },
-  { code: "ar", label: "العربية",  flag: "🇸🇦", nativeName: "العربية" },
 ];
 
 export type Translations = {
@@ -4285,22 +4280,16 @@ interface I18nCtx {
 }
 
 const I18nContext = createContext<I18nCtx>({
-  lang: "zh",
+  lang: "fr",
   setLang: () => {},
-  t: T.zh,
+  t: T.fr,
 });
 
-// Version the preference key so visitors who used an older default language
-// are migrated to Chinese once. New selections are still remembered.
-const STORAGE_KEY = "powerade_lang_v3";
+const STORAGE_KEY = "powerade_lang_v4";
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY) as Lang | null;
-      if (saved && saved in T) return saved;
-    } catch {}
-    return "zh";
+    return "fr";
   });
 
   const setLang = (l: Lang) => {

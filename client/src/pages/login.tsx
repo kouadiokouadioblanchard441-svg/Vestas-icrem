@@ -9,8 +9,8 @@ import { useAuth } from "@/lib/auth";
 import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
 import { WORLD_COUNTRIES } from "@/lib/world-countries";
 import { CountrySelector } from "@/components/country-selector";
-import { useI18n, LANGUAGES, type Lang } from "@/lib/i18n";
-import { Eye, EyeOff, Globe, ChevronRight, Smartphone, Lock } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
+import { Eye, EyeOff, ChevronRight, Smartphone, Lock } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
 import { setAppLoading } from "@/components/navigation-loader";
 
@@ -18,11 +18,10 @@ export default function LoginPage() {
   const [, navigate] = useLocation();
   const { login } = useAuth();
   const { toast } = useToast();
-  const { t, lang, setLang } = useI18n();
+  const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
   const [countryModalOpen, setCountryModalOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
 
   const savedCredentials = typeof window !== "undefined" ? localStorage.getItem("powerade_credentials") : null;
   const parsedCredentials = savedCredentials ? JSON.parse(savedCredentials) : null;
@@ -102,33 +101,15 @@ export default function LoginPage() {
     <div
       className="min-h-screen flex flex-col"
       style={{
-        backgroundImage: "url('/poweradd/poweradd-batterie-mini.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        position: "relative",
+        background: "linear-gradient(160deg, #0f2d6b 0%, #1a56db 60%, #3b7ef5 100%)",
       }}
     >
-      {/* Light overlay */}
-      <div style={{ position: "absolute", inset: 0, background: "rgba(80,80,80,0.38)", zIndex: 0 }} />
-
-      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", flex: 1 }}>
+      <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
 
         {/* Top bar */}
         <div className="flex items-center justify-between px-4 pt-4 pb-3">
           {/* Logo */}
           <img src="/poweradd/poweradd-logo-official.png" alt="PowerAdd" style={{ height: 36, objectFit: "contain" }} />
-
-          {/* Language */}
-          <button
-            type="button"
-            onClick={() => setLangOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-            style={{ background: "rgba(255,255,255,0.22)", backdropFilter: "blur(6px)", color: "#fff", fontWeight: 500, fontSize: 13 }}
-          >
-            <Globe size={15} style={{ color: "#fff" }} />
-            <span>{LANGUAGES.find(l => l.code === lang)?.nativeName}</span>
-          </button>
         </div>
 
         {/* Form area */}
@@ -258,48 +239,6 @@ export default function LoginPage() {
           onSelect={(code) => form.setValue("country", code, { shouldValidate: true })}
           selectedCode={selectedCountry}
         />
-
-        {/* Language picker bottom sheet */}
-        {langOpen && (
-          <>
-            <div
-              className="fixed inset-0 z-40"
-              style={{ background: "rgba(0,0,0,0.50)" }}
-              onClick={() => setLangOpen(false)}
-            />
-            <div
-              className="fixed bottom-0 inset-x-0 z-50 bg-white flex flex-col"
-              style={{ borderRadius: "20px 20px 0 0", boxShadow: "0 -4px 24px rgba(0,0,0,0.12)" }}
-            >
-              <div style={{ height: 20 }} />
-              {LANGUAGES.map((lng, index) => {
-                const isSelected = lng.code === lang;
-                return (
-                  <button
-                    key={lng.code}
-                    type="button"
-                    onClick={() => { setLang(lng.code as Lang); setLangOpen(false); }}
-                    className="w-full flex items-center justify-between px-4"
-                    style={{ height: 56, borderBottom: index < LANGUAGES.length - 1 ? "1px dashed #BFDBFE" : "none" }}
-                  >
-                    <span style={{ fontSize: 15, fontWeight: 500, color: isSelected ? "#E8A020" : "#1a1a1a" }}>
-                      {lng.flag}&nbsp;&nbsp;{lng.nativeName}
-                    </span>
-                    {isSelected && (
-                      <span className="flex items-center justify-center shrink-0"
-                        style={{ width: 24, height: 24, borderRadius: "50%", background: "#E8A020" }}>
-                        <svg width="13" height="10" viewBox="0 0 13 10" fill="none">
-                          <path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-              <div style={{ height: 24 }} />
-            </div>
-          </>
-        )}
       </div>
 
       <FloatingSupport bottomOffset={24} />
