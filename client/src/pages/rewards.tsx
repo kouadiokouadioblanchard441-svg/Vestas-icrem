@@ -56,14 +56,14 @@ export default function RewardsPage() {
   const currentInvites = tasks?.[0]?.currentInvites || 0;
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#f5f5f5" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
       <div className="flex-1 overflow-y-auto pb-16">
 
-        <div className="relative px-4 pt-4 pb-6" style={{ background: "#00539b" }}>
+        <div className="relative px-4 pt-4 pb-6" style={{ background: "#111111" }}>
           <button onClick={() => navigate("/account")} className="mb-3" data-testid="button-back">
-            <ArrowLeft className="w-6 h-6 text-white" />
+            <ArrowLeft className="w-6 h-6 text-gray-700" />
           </button>
-          <h1 className="text-xl font-bold text-white mb-4">{t.rewardsTitle}</h1>
+          <h1 className="text-xl font-bold text-gray-900 mb-4">{t.rewardsTitle}</h1>
 
           <div className="relative rounded-2xl overflow-hidden" style={{ backgroundColor: "#1a1a1a" }}>
             <img src={globeImg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />
@@ -84,8 +84,8 @@ export default function RewardsPage() {
 
         <div className="px-4 mt-2">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-1 h-5 rounded-full" style={{ backgroundColor: "#00539b" }} />
-            <h2 className="text-base font-bold text-gray-800">{t.rewardsTaskList}</h2>
+            <div className="w-1 h-5 rounded-full" style={{ backgroundColor: "#ffffff" }} />
+            <h2 className="text-base font-bold text-white">{t.rewardsTaskList}</h2>
           </div>
 
           {isLoading ? (
@@ -100,7 +100,7 @@ export default function RewardsPage() {
                   className="bg-white rounded-lg shadow-sm border border-gray-100 flex items-center px-2.5 py-2 gap-2"
                   data-testid={`task-item-${task.id}`}
                 >
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: "#e8f0fb" }}>
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: "#2a2a2a" }}>
                     <Users className="w-3 h-3" style={{ color: "#2196F3" }} />
                   </div>
                   <div className="flex-1 min-w-0">

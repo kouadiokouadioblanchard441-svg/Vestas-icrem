@@ -121,10 +121,10 @@ export default function WalletPage() {
   /* ─── ADD FORM VIEW ─── */
   if (showForm) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ background: "#f5f5f5" }}>
+      <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
 
-        {/* Header */}
-        <div className="flex items-center px-4 pt-10 pb-4" style={{ background: "#00539b" }}>
+        {/* Header — même style que la liste */}
+        <div className="flex items-center px-4 pt-10 pb-4">
           <button
             onClick={() => { setShowForm(false); form.reset(); }}
             className="p-1"
@@ -138,11 +138,11 @@ export default function WalletPage() {
         </div>
 
         {/* Champs de saisie */}
-        <div className="px-4 space-y-3 mt-4">
+        <div className="px-4 space-y-3">
 
           {/* Moyen unique */}
           <div>
-            <p className="text-gray-600 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
+            <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
               {t.walletWithdrawalMethod}
             </p>
             <div className="w-full px-4 py-4 rounded-2xl shadow-sm bg-white/90 text-sm font-semibold text-gray-800">
@@ -152,7 +152,7 @@ export default function WalletPage() {
 
           {/* Account holder name */}
           <div>
-            <p className="text-gray-600 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
+            <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
               {t.walletHolderName}
             </p>
             <div
@@ -173,7 +173,7 @@ export default function WalletPage() {
 
           {/* BEP20 address */}
           <div>
-            <p className="text-gray-600 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
+            <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
               {t.walletAddressLabel}
             </p>
             <div
@@ -227,10 +227,10 @@ export default function WalletPage() {
 
   /* ─── LIST VIEW ─── */
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#f5f5f5" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
 
       {/* Header */}
-      <div className="flex items-center px-4 pt-10 pb-4" style={{ background: "#00539b" }}>
+      <div className="flex items-center px-4 pt-10 pb-4">
         <Link href={backLink}>
           <button className="p-1" data-testid="button-back">
             <ChevronLeft className="w-6 h-6 text-white" />
@@ -245,7 +245,7 @@ export default function WalletPage() {
       <div className="px-4 pt-2 pb-6">
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+            <Loader2 className="w-6 h-6 animate-spin text-white" />
           </div>
         ) : wallets && wallets.length > 0 ? (
           /* ── Cards view ── */

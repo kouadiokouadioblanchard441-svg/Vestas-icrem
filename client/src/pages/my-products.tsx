@@ -41,13 +41,13 @@ export default function MyProductsPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-full" style={{ background: "#f5f5f5" }}>
+    <div className="flex flex-col min-h-full" style={{ background: "#0d0d0d" }}>
       <div className="flex-1 overflow-y-auto pb-16">
 
         {/* Header */}
-        <div className="flex items-center px-3 pt-4 pb-3" style={{ background: "#00539b" }}>
+        <div className="flex items-center px-3 pt-4 pb-3">
           <Link href="/account">
-            <button className="p-2 bg-white/20 rounded-full" data-testid="button-back">
+            <button className="p-2 bg-white/20 rounded-full backdrop-blur-sm" data-testid="button-back">
               <ChevronLeft className="w-5 h-5 text-white" />
             </button>
           </Link>
