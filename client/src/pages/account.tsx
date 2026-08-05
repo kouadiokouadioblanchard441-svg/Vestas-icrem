@@ -22,6 +22,7 @@ import iconWallet from "@assets/portefeuille-chaud-3d-icon-png-download-9878550_
 import iconRevenu from "@assets/3309927_1783248791847.png";
 import iconRecharger from "@assets/1-1_1783245823715.png";
 import iconRetraits from "@assets/2-1_1783245823825.png";
+import iconRules from "@assets/mine-mod-records-DgHXSKa1_1782689837747.png";
 
 export default function AccountPage() {
   const { user, logout } = useAuth();
@@ -79,6 +80,14 @@ export default function AccountPage() {
   const currency = country?.currency || "USDT";
   const phonePrefix = country?.phonePrefix || "";
 
+  // 3 boutons rapides
+  const quickItems = [
+    { icon: iconRecharger, label: t.deposit, href: "/deposit", white: true },
+    { icon: iconRetraits, label: t.withdraw, href: "/withdrawal", white: true },
+    { icon: iconRecords, label: t.history, href: "/history", white: false },
+  ];
+
+  // 8 options d'origine
   const gridItems = [
     { icon: iconRecharger, label: t.deposit, href: "/deposit", white: true },
     { icon: iconRetraits, label: t.withdraw, href: "/withdrawal", white: true },
@@ -96,8 +105,6 @@ export default function AccountPage() {
 
         {/* ── Profile top section ── */}
         <div style={{ background: "#0d0d0d" }}>
-
-          {/* Profile row */}
           <div className="flex items-center justify-between px-5 pt-6 pb-5">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white/40 shrink-0">
@@ -113,7 +120,7 @@ export default function AccountPage() {
             <img src={iconWallet} alt="" className="w-16 h-16 object-contain" />
           </div>
 
-          {/* Two balance cards */}
+          {/* ── 2 cartes balance d'origine ── */}
           <div className="px-4 pb-5 grid grid-cols-2 gap-3">
             <div className="rounded-2xl px-4 py-3.5" style={{ background: "rgba(0,0,0,0.35)" }}>
               <div className="flex items-center gap-2 mb-1">
@@ -136,8 +143,34 @@ export default function AccountPage() {
           </div>
         </div>
 
-        {/* ── Fonctions communes ── */}
-        <div className="mx-4 mt-4 bg-white rounded-2xl overflow-hidden shadow-sm">
+        {/* ── 3 boutons rapides ── */}
+        <div className="mx-4 mb-5 grid grid-cols-3 gap-3">
+          {quickItems.map((item, idx) => (
+            <Link href={item.href} key={idx}>
+              <button
+                className="flex flex-col items-center gap-2 rounded-2xl py-4 w-full active:opacity-80"
+                style={{ background: "rgba(0,0,0,0.45)" }}
+                data-testid={`button-quick-${idx}`}
+              >
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center shadow"
+                  style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
+                >
+                  <img
+                    src={item.icon}
+                    alt={item.label}
+                    className="w-7 h-7 object-contain"
+                    style={item.white ? undefined : { filter: "brightness(0) invert(1)" }}
+                  />
+                </div>
+                <span className="text-white/90 text-[11px] font-medium text-center leading-tight px-1">{item.label}</span>
+              </button>
+            </Link>
+          ))}
+        </div>
+
+        {/* ── Grille 8 options d'origine ── */}
+        <div className="mx-4 mt-2 bg-white rounded-2xl overflow-hidden shadow-sm">
           <p className="text-gray-500 text-xs font-semibold uppercase tracking-widest px-5 pt-4 pb-3">
             {t.commonFunctions}
           </p>
