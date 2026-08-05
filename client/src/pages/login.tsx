@@ -106,10 +106,9 @@ export default function LoginPage() {
     >
       <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
 
-        {/* Top bar */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-3">
-          {/* Logo */}
-          <img src="/asus-logo-white.svg" alt="ASUS" style={{ height: 32, objectFit: "contain" }} />
+        {/* Logo centré */}
+        <div className="flex items-center justify-center px-4 pt-10 pb-6">
+          <img src="/asus-logo-white.svg" alt="ASUS" style={{ height: 40, objectFit: "contain" }} />
         </div>
 
         {/* Form area */}
