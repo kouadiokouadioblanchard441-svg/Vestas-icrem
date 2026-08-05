@@ -169,35 +169,6 @@ export default function AccountPage() {
           ))}
         </div>
 
-        {/* ── Grille 8 options d'origine ── */}
-        <div className="mx-4 mt-2 bg-white rounded-2xl overflow-hidden shadow-sm">
-          <p className="text-gray-500 text-xs font-semibold uppercase tracking-widest px-5 pt-4 pb-3">
-            {t.commonFunctions}
-          </p>
-          <div className="grid grid-cols-4 gap-0 px-2 pb-4">
-            {gridItems.map((item, idx) => (
-              <Link href={item.href} key={idx}>
-                <button
-                  className="flex flex-col items-center gap-1.5 py-3 w-full active:bg-gray-50 rounded-xl"
-                  data-testid={`button-grid-${idx}`}
-                >
-                  <div
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-md"
-                    style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
-                  >
-                    <img
-                      src={item.icon}
-                      alt={item.label}
-                      className="w-8 h-8 object-contain"
-                      style={item.white ? undefined : { filter: "brightness(0) invert(1)" }}
-                    />
-                  </div>
-                  <span className="text-gray-700 text-[10px] font-medium text-center leading-tight">{item.label}</span>
-                </button>
-              </Link>
-            ))}
-          </div>
-        </div>
 
         {/* ── Section Service (liste en gras) ── */}
         <div className="mx-4 mt-4 rounded-2xl overflow-hidden" style={{ background: "rgba(0,0,0,0.45)" }}>
