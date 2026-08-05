@@ -104,16 +104,15 @@ export default function LoginPage() {
         background: "#0d0d0d",
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", padding: "24px 20px" }}>
 
-        {/* Logo centré */}
-        <div className="flex items-center justify-center px-4 pt-10 pb-6">
-          <img src="/asus-logo-white.svg" alt="ASUS" style={{ height: 40, objectFit: "contain" }} />
-        </div>
+        {/* Logo + Form centrés ensemble */}
+        <div className="w-full max-w-sm flex flex-col gap-4">
 
-        {/* Form area */}
-        <div className="flex-1 flex flex-col justify-center px-5 pb-10">
-          <div className="w-full max-w-sm mx-auto flex flex-col gap-4">
+          {/* Logo centré */}
+          <div className="flex items-center justify-center pb-6">
+            <img src="/asus-logo-white.svg" alt="ASUS" style={{ height: 40, objectFit: "contain" }} />
+          </div>
             <input type="hidden" {...form.register("country")} />
 
             {/* Phone */}
@@ -238,8 +237,6 @@ export default function LoginPage() {
           onSelect={(code) => form.setValue("country", code, { shouldValidate: true })}
           selectedCode={selectedCountry}
         />
-      </div>
-
       <FloatingSupport bottomOffset={24} />
     </div>
   );
