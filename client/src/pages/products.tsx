@@ -189,7 +189,7 @@ export default function ProductsPage() {
                 {/* ── Barre de progression ── */}
                 <div
                   className="mx-3 mb-3 rounded-full overflow-hidden flex items-center justify-center relative"
-                  style={{ background: "rgba(0,0,0,0.25)", height: 28 }}
+                  style={{ background: "white", height: 28 }}
                 >
                   <div
                     className="absolute left-0 top-0 bottom-0 rounded-full"
@@ -199,7 +199,7 @@ export default function ProductsPage() {
                       transition: "width 0.5s ease",
                     }}
                   />
-                  <span className="relative z-10 text-white font-bold text-sm">
+                  <span className="relative z-10 text-black font-bold text-sm">
                     {product.isOwned ? "En cours" : "0.00%"}
                   </span>
                 </div>
