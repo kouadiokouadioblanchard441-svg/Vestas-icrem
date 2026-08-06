@@ -1,36 +1,39 @@
 import { useAuth } from "@/lib/auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { formatCurrency, getCountryByCode } from "@/lib/countries";
-import { Loader2, Settings } from "lucide-react";
-import iconService from "@assets/3-1_1783245823860.png";
-import { useLocation } from "wouter";
-import { getContent } from "@/lib/content";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import type { Product } from "@shared/schema";
 
-const poweraddLogo = "/poweradd/poweradd-logo-official.png";
 import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
+
+/* ── Palette (identique à l'accueil) ─────────── */
+const BG       = "#c8892a";   // fond ambré
+const CARD_BG  = "#d9cfa8";   // carte gris chaud clair
+const TAB_ACTIVE = "#c8892a"; // onglet actif (même que BG mais contrasté)
+const TAB_BG   = "#d4a633";   // onglet inactif doré
+const BUY_BG   = "#7a5215";   // bouton BUY brun foncé
+
+const SERIES_TABS = ["TOUS", "SERIE A", "SERIE B"] as const;
+type SeriesTab = typeof SERIES_TABS[number];
 
 interface ProductWithOwnership extends Product {
   isOwned: boolean;
   ownedCount?: number;
+  series?: string;   // champ optionnel — ajouté par l'admin plus tard
 }
 
 export default function ProductsPage() {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
-  const [, navigate] = useLocation();
   const { t } = useI18n();
+  const [activeTab, setActiveTab] = useState<SeriesTab>("TOUS");
 
   const { data: products, isLoading } = useQuery<ProductWithOwnership[]>({
     queryKey: ["/api/products"],
-  });
-
-  const { data: settings } = useQuery<Record<string, string>>({
-    queryKey: ["/api/settings"],
   });
 
   const purchaseMutation = useMutation({
@@ -46,7 +49,7 @@ export default function ProductsPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user/products"] });
       refreshUser();
-      toast({ title: t.purchaseSuccess, description: t.purchaseSuccessDescription, variant: "default" });
+      toast({ title: t.purchaseSuccess, description: t.purchaseSuccessDescription });
     },
     onError: (error: any) => {
       toast({ title: error.message || t.errorOccurred, variant: "destructive" });
@@ -58,8 +61,12 @@ export default function ProductsPage() {
   const balance = parseFloat(user.balance || "0");
   const country = getCountryByCode(user.country);
   const currency = country?.currency || "USDT";
-  const paidProducts = products?.filter(p => !p.isFree) || [];
-  const headerTitle = getContent(settings, "content_products_headerTitle", t.products);
+
+  const paidProducts = (products || []).filter(p => !p.isFree);
+
+  const filtered = activeTab === "TOUS"
+    ? paidProducts
+    : paidProducts.filter(p => p.series === activeTab);
 
   const handleBuy = (product: ProductWithOwnership) => {
     if (balance < Number(product.price)) {
@@ -75,98 +82,131 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-full" style={{ background: "#0d0d0d" }}>
+    <div className="flex flex-col min-h-full" style={{ background: BG }}>
+      <div className="flex-1 overflow-y-auto pb-20 px-3 pt-4 space-y-4">
 
-      {/* Header */}
-      <div
-        className="flex items-center justify-between px-4 py-3 shadow-sm bg-white"
-      >
-        <img src={poweraddLogo} alt="Power Add" className="h-8 w-auto object-contain" />
-        <p className="font-bold text-base" style={{ color: "#0d0d0d" }}>{headerTitle}</p>
-        <button
-          onClick={() => navigate("/service")}
-          className="w-9 h-9 rounded-full flex items-center justify-center"
-          style={{ background: "#e8eef8" }}
-          data-testid="button-service"
-        >
-          <img src={iconService} alt="Support" className="w-5 h-5 object-contain" style={{ filter: "brightness(0) saturate(100%) invert(27%) sepia(80%) saturate(600%) hue-rotate(195deg) brightness(90%) contrast(95%)" }} />
-        </button>
-      </div>
+        {/* ── Titre ── */}
+        <div className="flex justify-center">
+          <div
+            className="px-10 py-2 rounded-xl"
+            style={{ background: "rgba(255,255,255,0.25)" }}
+          >
+            <p className="text-black font-extrabold text-xl tracking-widest">PRODUCTS</p>
+          </div>
+        </div>
 
-      {/* Products list */}
-      <div className="flex-1 overflow-y-auto pb-16 px-3 pt-3 space-y-3">
+        {/* ── Onglets série ── */}
+        <div className="flex gap-3 flex-wrap">
+          {SERIES_TABS.map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className="px-5 py-2 rounded-full font-extrabold text-sm text-black tracking-wide active:scale-95 transition-transform shadow"
+              style={{
+                background: activeTab === tab
+                  ? "rgba(255,255,255,0.55)"
+                  : TAB_BG,
+                border: activeTab === tab ? "2px solid rgba(0,0,0,0.25)" : "2px solid transparent",
+              }}
+              data-testid={`tab-${tab}`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* ── Liste produits ── */}
         {isLoading ? (
-          <>
-            {Array(5).fill(0).map((_, i) => (
-              <Skeleton key={i} className="h-28 w-full rounded-2xl" />
-            ))}
-          </>
-        ) : paidProducts.length > 0 ? (
-          paidProducts.map((product) => {
+          <div className="flex justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-white" />
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-white/80 font-semibold text-sm">Aucun produit disponible</p>
+          </div>
+        ) : (
+          filtered.map(product => {
             const img = product.imageUrl || productImgFallback;
             const isPending = purchaseMutation.isPending;
+            const roi = Math.round(
+              ((Number(product.totalReturn) - Number(product.price)) / Number(product.price)) * 100
+            );
             return (
               <div
                 key={product.id}
-                className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-row"
+                className="rounded-2xl overflow-hidden shadow-lg"
+                style={{ background: CARD_BG }}
                 data-testid={`product-card-${product.id}`}
               >
-                {/* Image */}
-                <div className="shrink-0 w-28" style={{ minHeight: 120 }}>
-                  <img src={img} alt={product.name} className="w-full h-full object-cover" style={{ minHeight: 120 }} />
+                {/* ── Nom produit ── */}
+                <div className="px-3 pt-3 pb-1">
+                  <p className="font-extrabold italic text-black text-base">{product.name}</p>
                 </div>
 
-                {/* Info */}
-                <div className="flex-1 px-3 py-3 flex flex-col justify-between">
-                  <div>
-                    <p className="font-extrabold text-gray-800 text-sm mb-2">{product.name}</p>
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400 text-xs">{t.price}</span>
-                        <span className="font-bold text-xs text-gray-900">
-                          {currency} {Number(product.price).toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400 text-xs">{t.dailyRevenue}</span>
-                        <span className="font-bold text-xs text-gray-900">
-                          {currency} {Number(product.dailyEarnings).toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400 text-xs">{t.totalRevenue}</span>
-                        <span className="font-bold text-xs text-gray-900">
-                          {currency} {Number(product.totalReturn).toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400 text-xs">{t.duration}</span>
-                        <span className="font-bold text-xs text-gray-900">
-                          {product.cycleDays} {t.myProductsDays}
-                        </span>
-                      </div>
-                    </div>
+                {/* ── Image + Infos ── */}
+                <div className="flex gap-3 px-3 pb-3">
+                  {/* Image */}
+                  <div className="shrink-0 rounded-xl overflow-hidden shadow" style={{ width: 120, height: 130 }}>
+                    <img src={img} alt={product.name} className="w-full h-full object-cover" />
                   </div>
 
-                  {/* Buy button */}
-                  <button
-                    onClick={() => handleBuy(product)}
-                    disabled={isPending}
-                    className="mt-2 px-5 py-1.5 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-1 disabled:opacity-60 self-center mx-auto block"
-                    style={{ background: "#E8192C" }}
-                    data-testid={`button-purchase-${product.id}`}
-                  >
-                    {isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : t.buy}
-                  </button>
+                  {/* Infos + BUY */}
+                  <div className="flex-1 flex flex-col justify-between">
+                    <div className="space-y-0.5">
+                      <p className="text-black font-bold text-[11px] leading-snug">
+                        PRIX : {Number(product.price).toLocaleString()} {currency}
+                      </p>
+                      <p className="text-black font-bold text-[11px] leading-snug">
+                        REVENU JOURNALIER: {Number(product.dailyEarnings).toLocaleString()} {currency}
+                      </p>
+                      <p className="text-black font-bold text-[11px] leading-snug">
+                        TOTAL DE RETOUR : {Number(product.totalReturn).toLocaleString()} {currency}
+                      </p>
+                      <p className="text-black font-bold text-[11px] leading-snug">
+                        RETOUR: {roi}%
+                      </p>
+                      <p className="text-black font-bold text-[11px] leading-snug">
+                        DURÉE: {product.cycleDays} JOURS
+                      </p>
+                    </div>
+
+                    {/* BUY button */}
+                    <button
+                      onClick={() => handleBuy(product)}
+                      disabled={isPending}
+                      className="mt-2 w-full py-2 rounded-full font-extrabold text-white text-sm tracking-widest shadow active:scale-95 transition-transform disabled:opacity-60 flex items-center justify-center gap-1"
+                      style={{ background: BUY_BG }}
+                      data-testid={`button-purchase-${product.id}`}
+                    >
+                      {isPending
+                        ? <Loader2 className="w-4 h-4 animate-spin" />
+                        : "BUY"
+                      }
+                    </button>
+                  </div>
+                </div>
+
+                {/* ── Barre de progression ── */}
+                <div
+                  className="mx-3 mb-3 rounded-full overflow-hidden flex items-center justify-center relative"
+                  style={{ background: "white", height: 28 }}
+                >
+                  {/* Remplissage (0% pour produit non actif) */}
+                  <div
+                    className="absolute left-0 top-0 bottom-0 rounded-full"
+                    style={{
+                      width: product.isOwned ? "1%" : "0%",
+                      background: BUY_BG,
+                      transition: "width 0.5s ease",
+                    }}
+                  />
+                  <span className="relative z-10 text-black font-bold text-sm">
+                    {product.isOwned ? "En cours" : "0.00%"}
+                  </span>
                 </div>
               </div>
             );
           })
-        ) : (
-          <div className="text-center py-16">
-            <Settings className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-400">{t.noProducts}</p>
-          </div>
         )}
       </div>
     </div>
