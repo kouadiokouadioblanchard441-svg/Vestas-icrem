@@ -18,9 +18,9 @@ const HDR_FROM   = "#3d5020";
 const HDR_TO     = "#1e2e0a";
 const COPY_BTN   = "#5a7228";
 
-const LV1 = { bg: "#f0d566", label: "Leve1", icon: iconLv1, rate_label: "Remise Niveau 1" };
-const LV2 = { bg: "#c0cce8", label: "Leve2", icon: iconLv2, rate_label: "Remise Niveau 2" };
-const LV3 = { bg: "#f0b8b0", label: "Leve3", icon: iconLv3, rate_label: "Remise Niveau 3" };
+const LV1 = { bg: "#f0d566", tc: "#6b5000", label: "Leve1", icon: iconLv1, rate_label: "Remise Niveau 1" };
+const LV2 = { bg: "#c0cce8", tc: "#1e3560", label: "Leve2", icon: iconLv2, rate_label: "Remise Niveau 2" };
+const LV3 = { bg: "#f0b8b0", tc: "#7a1e1e", label: "Leve3", icon: iconLv3, rate_label: "Remise Niveau 3" };
 
 interface TeamStats {
   level1Count: number;
@@ -165,22 +165,22 @@ export default function TeamPage() {
               >
                 {/* Titre + médaille */}
                 <div className="flex items-center justify-between px-4 pt-3 pb-1">
-                  <p className="font-extrabold text-white text-base italic">{lvl.label}</p>
+                  <p className="font-extrabold text-base italic" style={{ color: lvl.tc }}>{lvl.label}</p>
                   <img src={lvl.icon} alt={lvl.label} className="w-10 h-10 object-contain" />
                 </div>
 
                 {/* 3 stats */}
                 <div className="grid grid-cols-3 pb-4 pt-1">
                   <div className="flex flex-col items-center px-2">
-                    <p className="font-extrabold text-white text-xl leading-tight">{lvl.rate}</p>
-                    <p className="text-white/80 text-[10px] text-center leading-snug mt-0.5">{lvl.rate_label}</p>
+                    <p className="font-extrabold text-xl leading-tight" style={{ color: lvl.tc }}>{lvl.rate}</p>
+                    <p className="text-[10px] text-center leading-snug mt-0.5" style={{ color: lvl.tc, opacity: 0.75 }}>{lvl.rate_label}</p>
                   </div>
                   <div className="flex flex-col items-center px-2 border-x border-black/10">
-                    <p className="font-extrabold text-white text-xl leading-tight">{lvl.total}</p>
-                    <p className="text-white/80 text-[10px] text-center leading-snug mt-0.5">Total des invités</p>
+                    <p className="font-extrabold text-xl leading-tight" style={{ color: lvl.tc }}>{lvl.total}</p>
+                    <p className="text-[10px] text-center leading-snug mt-0.5" style={{ color: lvl.tc, opacity: 0.75 }}>Total des invités</p>
                   </div>
                   <div className="flex flex-col items-center px-2">
-                    <p className="font-extrabold text-white text-xl leading-tight">{lvl.actif}</p>
+                    <p className="font-extrabold text-xl leading-tight" style={{ color: lvl.tc }}>{lvl.actif}</p>
                     <p className="text-white/80 text-[10px] text-center leading-snug mt-0.5">Actif</p>
                   </div>
                 </div>
