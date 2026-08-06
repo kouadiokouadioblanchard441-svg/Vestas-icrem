@@ -68,7 +68,7 @@ export default function GiftCodePage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#2d3816" }}>
 
       {/* Hero image with red overlay + header */}
       <div className="relative">

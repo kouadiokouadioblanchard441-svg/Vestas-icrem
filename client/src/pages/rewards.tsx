@@ -56,10 +56,10 @@ export default function RewardsPage() {
   const currentInvites = tasks?.[0]?.currentInvites || 0;
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#2d3816" }}>
       <div className="flex-1 overflow-y-auto pb-16">
 
-        <div className="relative px-4 pt-4 pb-6" style={{ background: "#111111" }}>
+        <div className="relative px-4 pt-4 pb-6" style={{ background: "#2d3816" }}>
           <button onClick={() => navigate("/account")} className="mb-3" data-testid="button-back">
             <ArrowLeft className="w-6 h-6 text-gray-700" />
           </button>

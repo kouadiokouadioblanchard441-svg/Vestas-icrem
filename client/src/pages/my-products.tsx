@@ -41,7 +41,7 @@ export default function MyProductsPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-full" style={{ background: "#0d0d0d" }}>
+    <div className="flex flex-col min-h-full" style={{ background: "#2d3816" }}>
       <div className="flex-1 overflow-y-auto pb-16">
 
         {/* Header */}

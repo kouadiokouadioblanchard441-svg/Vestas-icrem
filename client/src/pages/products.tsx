@@ -11,11 +11,11 @@ import type { Product } from "@shared/schema";
 import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
 
 /* ── Palette (identique à l'accueil) ─────────── */
-const BG       = "#c8892a";   // fond ambré
-const CARD_BG  = "#d9cfa8";   // carte gris chaud clair
-const TAB_ACTIVE = "#c8892a"; // onglet actif (même que BG mais contrasté)
-const TAB_BG   = "#d4a633";   // onglet inactif doré
-const BUY_BG   = "#7a5215";   // bouton BUY brun foncé
+const BG       = "#2d3816";   // fond olive (même que dashboard)
+const CARD_BG  = "#4a5e22";   // carte olive moyen
+const TAB_ACTIVE = "#2d3816"; // onglet actif
+const TAB_BG   = "#5a7228";   // onglet inactif olive clair
+const BUY_BG   = "#3d5818";   // bouton BUY olive foncé
 
 const SERIES_TABS = ["TOUS", "SERIE A", "SERIE B"] as const;
 type SeriesTab = typeof SERIES_TABS[number];

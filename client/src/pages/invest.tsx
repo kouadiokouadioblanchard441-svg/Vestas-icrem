@@ -60,7 +60,7 @@ export default function InvestPage() {
   const paidProducts = products?.filter(p => !p.isFree) || [];
 
   return (
-    <div className="flex flex-col min-h-full" style={{ background: "#0d0d0d" }}>
+    <div className="flex flex-col min-h-full" style={{ background: "#2d3816" }}>
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 shadow-sm" style={{ background: "linear-gradient(135deg, #E8192C 0%, #001a40 100%)" }}>

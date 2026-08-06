@@ -27,7 +27,7 @@ export default function CompanyPage() {
   };
 
   return (
-    <div className="min-h-screen pb-6" style={{ background: "#0d0d0d" }}>
+    <div className="min-h-screen pb-6" style={{ background: "#2d3816" }}>
       <header className="flex items-center px-4 py-3 border-b bg-white">
         <Link href="/">
           <button className="p-1" data-testid="button-company-back" aria-label="返回">
@@ -40,7 +40,7 @@ export default function CompanyPage() {
       <main className="p-4 space-y-4">
         <section className="rounded-2xl bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: "#0d0d0d" }}>
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: "#2d3816" }}>
               <Building2 className="w-6 h-6 text-white" />
             </div>
             <h2 className="text-xl font-bold text-gray-900">{pageTitle}</h2>

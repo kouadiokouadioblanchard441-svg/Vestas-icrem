@@ -100,11 +100,11 @@ export default function AccountPage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#2d3816" }}>
       <div className="flex-1 overflow-y-auto pb-16">
 
         {/* ── Profile top section ── */}
-        <div style={{ background: "#0d0d0d" }}>
+        <div style={{ background: "#2d3816" }}>
           <div className="flex items-center justify-between px-5 pt-6 pb-5">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white/40 shrink-0">

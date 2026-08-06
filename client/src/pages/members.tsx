@@ -63,7 +63,7 @@ export default function MembersPage() {
   const totalBonus = activeMembers.reduce((s, m) => s + (m.bonusFromMember || 0), 0);
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#0d0d0d" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#2d3816" }}>
 
       {/* Header */}
       <div
