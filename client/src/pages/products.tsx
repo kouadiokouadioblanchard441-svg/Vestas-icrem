@@ -91,7 +91,7 @@ export default function ProductsPage() {
             className="px-10 py-2 rounded-xl"
             style={{ background: "rgba(255,255,255,0.25)" }}
           >
-            <p className="text-white font-extrabold text-xl tracking-widest">PRODUCTS</p>
+            <p className="text-white font-extrabold text-xl tracking-widest">List of our products</p>
           </div>
         </div>
 
