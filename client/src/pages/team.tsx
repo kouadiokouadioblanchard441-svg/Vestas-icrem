@@ -3,12 +3,24 @@ import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { getCountryByCode } from "@/lib/countries";
 import { useLocation } from "wouter";
-import { Copy, Users, ChevronRight } from "lucide-react";
-import { getContent } from "@/lib/content";
+import { ChevronRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
-import teamIcon from "@assets/1244758_1783246767217.png";
-import profileCardBg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
+import iconLv1    from "@assets/team_1_1786039393584.png";
+import iconLv2    from "@assets/team_2_1786039393656.png";
+import iconLv3    from "@assets/team_3_1786039393719.png";
+import iconLink   from "@assets/link_1786039393680.png";
+import inviteBg   from "@assets/invite_bg_1786039393701.png";
+
+/* ── Palette ─────────────────────────────────── */
+const PAGE_BG    = "#f0f4f8";
+const HDR_FROM   = "#4a7ccf";
+const HDR_TO     = "#2a58b0";
+const COPY_BTN   = "#4a7ccf";
+
+const LV1 = { bg: "#f0d566", label: "Leve1", icon: iconLv1, rate_label: "Remise Niveau 1" };
+const LV2 = { bg: "#c0cce8", label: "Leve2", icon: iconLv2, rate_label: "Remise Niveau 2" };
+const LV3 = { bg: "#f0b8b0", label: "Leve3", icon: iconLv3, rate_label: "Remise Niveau 3" };
 
 interface TeamStats {
   level1Count: number;
@@ -26,285 +38,156 @@ interface TeamStats {
   teamTotalWithdrawals: number;
 }
 
-const BLUE      = "#0d0d0d";
-const BLUE_DARK = "#254a91";
-const RED       = "#E8192C";
-
 export default function TeamPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { t } = useI18n();
   const [, navigate] = useLocation();
 
-  const { data: stats } = useQuery<TeamStats>({
-    queryKey: ["/api/team/stats"],
-  });
-
-  const { data: settings } = useQuery<Record<string, string>>({
-    queryKey: ["/api/settings"],
-  });
+  const { data: stats } = useQuery<TeamStats>({ queryKey: ["/api/team/stats"] });
+  const { data: settings } = useQuery<Record<string, string>>({ queryKey: ["/api/settings"] });
 
   if (!user) return null;
 
   const countryInfo = getCountryByCode(user.country);
-  const currency = countryInfo?.currency || "USDT";
+  const currency    = countryInfo?.currency || "USDT";
   const referralLink = `${window.location.origin}/#/register?invite_code=${user.referralCode}`;
-
-  const copyCode = () => {
-    navigator.clipboard.writeText(user.referralCode);
-    toast({ title: t.teamCodeCopied });
-  };
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
     toast({ title: t.teamLinkCopied });
   };
 
-  const lv1Rate = settings?.level1Commission || "27";
+  const lv1Rate = settings?.level1Commission || "35";
   const lv2Rate = settings?.level2Commission || "2";
   const lv3Rate = settings?.level3Commission || "1";
 
-  const taskCenterButton = getContent(settings, "content_team_taskCenterButton", t.salaryTotalRewards ? t.team : "任务中心");
-
-  const lv1Recharged = (stats?.level1Recharged || 0).toFixed(0);
-  const lv2Recharged =
-    Number(lv2Rate) > 0
-      ? ((stats?.level2Commission || 0) / (Number(lv2Rate) / 100)).toFixed(0)
-      : "0";
-  const lv3Recharged =
-    Number(lv3Rate) > 0
-      ? ((stats?.level3Commission || 0) / (Number(lv3Rate) / 100)).toFixed(0)
-      : "0";
-
   const levels = [
     {
-      label: t.teamLevel1,
-      recharged: lv1Recharged,
-      invested: stats?.level1Invested || 0,
-      total: stats?.level1Count || 0,
-      rate: `${lv1Rate}%`,
+      ...LV1,
+      rate:  `${lv1Rate}%`,
+      total: stats?.level1Count    || 0,
+      actif: stats?.level1Invested || 0,
     },
     {
-      label: t.teamLevel2,
-      recharged: lv2Recharged,
-      invested: stats?.level2Invested || 0,
-      total: stats?.level2Count || 0,
-      rate: `${lv2Rate}%`,
+      ...LV2,
+      rate:  `${lv2Rate}%`,
+      total: stats?.level2Count    || 0,
+      actif: stats?.level2Invested || 0,
     },
     {
-      label: t.teamLevel3,
-      recharged: lv3Recharged,
-      invested: stats?.level3Invested || 0,
-      total: stats?.level3Count || 0,
-      rate: `${lv3Rate}%`,
+      ...LV3,
+      rate:  `${lv3Rate}%`,
+      total: stats?.level3Count    || 0,
+      actif: stats?.level3Invested || 0,
     },
   ];
 
-  const teamDeposits    = (stats?.teamTotalDeposits    || 0).toFixed(0);
-  const teamWithdrawals = (stats?.teamTotalWithdrawals || 0).toFixed(0);
-
   return (
-    <div className="flex flex-col min-h-full pb-20" style={{ background: BLUE }}>
+    <div className="flex flex-col min-h-full pb-20" style={{ background: PAGE_BG }}>
 
-      {/* ── Header ── */}
+      {/* ══ Header ══ */}
       <div
-        className="px-4 pt-5 pb-4 flex items-center justify-between"
-        style={{ background: `linear-gradient(135deg, ${BLUE} 0%, ${BLUE_DARK} 100%)` }}
+        className="relative flex items-center justify-center px-4 pt-5 pb-4"
+        style={{ background: `linear-gradient(135deg, ${HDR_FROM}, ${HDR_TO})` }}
       >
-        <div className="flex items-center gap-2">
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: "rgba(255,255,255,0.18)" }}
-          >
-            <Users size={16} className="text-white" />
-          </div>
-          <p className="text-white font-extrabold text-lg tracking-wide">{t.teamTitle}</p>
-        </div>
         <button
-          onClick={() => navigate("/salary-bonus")}
-          className="px-4 py-1.5 rounded-full text-xs font-bold"
-          style={{ background: "rgba(255,255,255,0.18)", color: "#fff" }}
-          data-testid="button-centre-taches"
+          onClick={() => navigate("/")}
+          className="absolute left-4 w-8 h-8 flex items-center justify-center rounded-full"
+          style={{ background: "rgba(255,255,255,0.18)" }}
+          data-testid="button-back"
         >
-          {getContent(settings, "content_team_taskCenterButton", t.informationCenter)}
+          <ChevronRight className="w-5 h-5 text-white rotate-180" />
         </button>
+        <h1 className="text-white font-bold text-lg tracking-wide">{t.teamTitle || "équipe"}</h1>
       </div>
 
-      <div className="px-3 pt-3 space-y-3">
+      <div className="px-3 pt-4 space-y-4">
 
-        {/* ── Invitation ── */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div
-            className="px-4 py-2.5 flex items-center gap-2"
-            style={{ background: `linear-gradient(135deg, ${BLUE} 0%, ${BLUE_DARK} 100%)` }}
+        {/* ══ Lien d'invitation ══ */}
+        <div className="bg-white rounded-2xl shadow-sm px-4 py-4 flex items-center gap-3">
+          {/* Illustration */}
+          <img src={inviteBg} alt="" className="w-14 h-14 object-contain shrink-0" />
+
+          {/* Texte */}
+          <div className="flex-1 min-w-0">
+            <p className="font-extrabold text-gray-900 text-sm mb-0.5">{t.teamInviteLink || "Lien d'invitation"}</p>
+            <p
+              className="text-xs truncate"
+              style={{ color: HDR_FROM }}
+              data-testid="text-referral-link"
+            >
+              {referralLink}
+            </p>
+          </div>
+
+          {/* Bouton copier */}
+          <button
+            onClick={copyLink}
+            className="shrink-0 px-4 py-1.5 rounded-full text-white text-xs font-bold shadow active:scale-95 transition-transform"
+            style={{ background: COPY_BTN }}
+            data-testid="button-copy-link"
           >
-            <img
-              src={teamIcon}
-              alt=""
-              className="w-4 h-4 object-contain"
-              style={{ filter: "brightness(0) invert(1)" }}
-            />
-            <p className="text-white font-bold text-sm">{t.teamInviteSection}</p>
-          </div>
-
-          <div className="px-4 py-4 space-y-3">
-            {/* Code */}
-            <div>
-              <p className="text-gray-400 text-[11px] mb-1.5 font-medium">{t.teamInviteCode}</p>
-              <div className="flex items-center gap-2">
-                <div
-                  className="flex-1 min-w-0 px-3 py-2.5 rounded-xl"
-                  style={{ background: "#eef2fa", border: `1.5px solid ${BLUE}30` }}
-                >
-                  <p className="font-bold text-sm truncate" style={{ color: "#222" }} data-testid="text-referral-code">
-                    {user.referralCode}
-                  </p>
-                </div>
-                <button
-                  onClick={copyCode}
-                  className="px-4 py-2.5 rounded-xl text-white text-xs font-bold shrink-0 flex items-center gap-1"
-                  style={{ background: RED }}
-                  data-testid="button-copy-code"
-                >
-                  <Copy size={12} /> {t.teamCopy}
-                </button>
-              </div>
-            </div>
-
-            <div className="h-px bg-gray-100" />
-
-            {/* Lien */}
-            <div>
-              <p className="text-gray-400 text-[11px] mb-1.5 font-medium">{t.teamInviteLink}</p>
-              <div className="flex items-center gap-2">
-                <div
-                  className="flex-1 min-w-0 px-3 py-2.5 rounded-xl"
-                  style={{ background: "#eef2fa", border: `1.5px solid ${BLUE}30` }}
-                >
-                  <p className="text-xs truncate" style={{ color: "#333" }} data-testid="text-referral-link">
-                    {referralLink}
-                  </p>
-                </div>
-                <button
-                  onClick={copyLink}
-                  className="px-4 py-2.5 rounded-xl text-white text-xs font-bold shrink-0 flex items-center gap-1"
-                  style={{ background: RED }}
-                  data-testid="button-copy-link"
-                >
-                  <Copy size={12} /> {t.teamCopy}
-                </button>
-              </div>
-            </div>
-          </div>
+            {t.teamCopy || "Copier"}
+          </button>
         </div>
 
-        {/* ── Totaux ── */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* ══ Niveau d'équipe ══ */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
 
-          {/* Recharge */}
-          <div
-            className="relative rounded-2xl overflow-hidden shadow-lg"
-            style={{ minHeight: 110 }}
-          >
-            <img
-              src="/poweradd/poweradd-energycell-banner.jpg"
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.28)" }} />
-            <div className="relative z-10 p-4 flex flex-col justify-between h-full">
-              <p className="text-white/90 text-[11px] font-semibold leading-tight drop-shadow">
-                {t.teamDepositsLabel}
+          {/* En-tête section */}
+          <div className="flex items-center justify-between px-4 pt-4 pb-2">
+            <div>
+              <p className="font-extrabold text-gray-900 text-base">{t.teamLevel1 ? "Niveau d'équipe" : "Niveau d'équipe"}</p>
+              <p className="text-gray-500 text-xs mt-0.5">
+                1 Récompense d'activation :&nbsp;
+                <span className="font-bold text-gray-800">{currency} 0</span>
               </p>
-              <div className="mt-3">
-                <p className="text-white font-extrabold text-xl leading-none drop-shadow">
-                  {Number(teamDeposits).toLocaleString()}
-                </p>
-                <p className="text-white/80 text-xs mt-0.5 drop-shadow">{currency}</p>
-              </div>
             </div>
+            <button
+              onClick={() => navigate("/members")}
+              className="flex items-center gap-0.5 text-xs font-semibold"
+              style={{ color: HDR_FROM }}
+              data-testid="button-team-details"
+            >
+              Détails de l'équipe <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          {/* Retrait */}
-          <div
-            className="relative rounded-2xl overflow-hidden shadow-lg"
-            style={{ minHeight: 110 }}
-          >
-            <img
-              src={profileCardBg}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.28)" }} />
-            <div className="relative z-10 p-4 flex flex-col justify-between h-full">
-              <p className="text-white/90 text-[11px] font-semibold leading-tight drop-shadow">
-                {t.teamWithdrawalsLabel}
-              </p>
-              <div className="mt-3">
-                <p className="text-white font-extrabold text-xl leading-none drop-shadow">
-                  {Number(teamWithdrawals).toLocaleString()}
-                </p>
-                <p className="text-white/80 text-xs mt-0.5 drop-shadow">{currency}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Niveaux ── */}
-        {levels.map((lvl, idx) => (
-          <div key={idx} className="bg-white rounded-2xl shadow-md overflow-hidden">
-            <div className="relative px-4 py-3 text-center">
-              <p className="text-gray-800 font-bold text-sm">{lvl.label}</p>
+          {/* Cards niveau */}
+          <div className="px-3 pb-4 space-y-3">
+            {levels.map((lvl, idx) => (
               <div
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full"
-                style={{ width: 48, height: 2, background: RED }}
-              />
-            </div>
+                key={idx}
+                className="rounded-2xl overflow-hidden shadow-sm"
+                style={{ background: lvl.bg }}
+                data-testid={`level-card-${idx + 1}`}
+              >
+                {/* Titre + médaille */}
+                <div className="flex items-center justify-between px-4 pt-3 pb-1">
+                  <p className="font-extrabold text-gray-900 text-base italic">{lvl.label}</p>
+                  <img src={lvl.icon} alt={lvl.label} className="w-10 h-10 object-contain" />
+                </div>
 
-            <div className="h-px bg-gray-100" />
-
-            <div className="grid grid-cols-3 py-4">
-              <div className="flex flex-col items-center px-2 border-r border-gray-100">
-                <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
-                  {t.teamRechargeAmount}
-                </p>
-                <p className="font-extrabold text-sm" style={{ color: BLUE }}>
-                  {Number(lvl.recharged).toLocaleString()}
-                </p>
-                <p className="text-gray-400 text-[10px] mt-0.5">{currency}</p>
+                {/* 3 stats */}
+                <div className="grid grid-cols-3 pb-4 pt-1">
+                  <div className="flex flex-col items-center px-2">
+                    <p className="font-extrabold text-gray-900 text-xl leading-tight">{lvl.rate}</p>
+                    <p className="text-gray-700 text-[10px] text-center leading-snug mt-0.5">{lvl.rate_label}</p>
+                  </div>
+                  <div className="flex flex-col items-center px-2 border-x border-black/10">
+                    <p className="font-extrabold text-gray-900 text-xl leading-tight">{lvl.total}</p>
+                    <p className="text-gray-700 text-[10px] text-center leading-snug mt-0.5">Total des invités</p>
+                  </div>
+                  <div className="flex flex-col items-center px-2">
+                    <p className="font-extrabold text-gray-900 text-xl leading-tight">{lvl.actif}</p>
+                    <p className="text-gray-700 text-[10px] text-center leading-snug mt-0.5">Actif</p>
+                  </div>
+                </div>
               </div>
-
-              <div className="flex flex-col items-center px-2 border-r border-gray-100">
-                <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
-                  {t.teamTotalCount}
-                </p>
-                <p className="font-extrabold text-sm text-gray-900">
-                  {lvl.invested}/{lvl.total}
-                </p>
-              </div>
-
-              <div className="flex flex-col items-center px-2">
-                <p className="text-gray-400 text-[10px] text-center leading-tight mb-2">
-                  {t.teamCommissionRate}
-                </p>
-                <p className="font-extrabold text-sm" style={{ color: RED }}>
-                  {lvl.rate}
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
-        ))}
-
-        {/* ── CTA ── */}
-        <button
-          onClick={() => navigate("/members")}
-          className="w-full rounded-2xl py-3.5 flex items-center justify-center gap-2 font-bold text-sm shadow-md"
-          style={{ background: RED, color: "#fff" }}
-        >
-          <Users size={16} />
-          {t.teamViewAll}
-          <ChevronRight size={16} />
-        </button>
+        </div>
 
       </div>
     </div>
