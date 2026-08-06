@@ -11,10 +11,10 @@ import { FloatingWheel } from "@/components/floating-wheel";
 import { useI18n } from "@/lib/i18n";
 
 import bellIcon     from "@assets/d7d9f6f6-dddc-4071-8bc2-d6e7e589fbae_(1)_1783248684110.png";
-import iconRecharger from "@assets/1-1_1783245823715.png";
-import iconRetraits  from "@assets/2-1_1783245823825.png";
-import iconService   from "@assets/3-1_1783245823860.png";
-import iconGift      from "@assets/téléchargement_(66)_1782689859239.png";
+import iconRecharger from "@assets/recharge_(1)_1786038805921.png";
+import iconRetraits  from "@assets/withdraw_1786038805887.png";
+import iconService   from "@assets/telegram_(1)_1786038805966.png";
+import iconGift      from "@assets/blog_(1)_1786038805944.png";
 
 /* ─── Palette ─────────────────────────────────── */
 const BG      = "#2d3816";   // fond principal olive foncé
@@ -184,24 +184,15 @@ export default function HomePage() {
               <button
                 key={idx}
                 onClick={() => navigate(item.href)}
-                className="flex flex-col items-center gap-2 active:opacity-70"
+                className="flex flex-col items-center gap-2 active:scale-95 transition-transform"
                 data-testid={`button-action-${idx}`}
               >
-                <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center shadow-md"
-                  style={{ background: CIRCLE }}
-                >
-                  <img
-                    src={item.icon}
-                    alt={item.label}
-                    className="w-7 h-7 object-contain"
-                    style={item.white
-                      ? { filter: "brightness(0) invert(1)" }
-                      : { filter: "brightness(0) invert(1)" }
-                    }
-                  />
-                </div>
-                <span className="text-white text-[11px] font-medium text-center leading-tight max-w-[60px]">
+                <img
+                  src={item.icon}
+                  alt={item.label}
+                  className="w-14 h-14 object-contain rounded-2xl shadow-md"
+                />
+                <span className="text-white text-[11px] font-semibold text-center leading-tight max-w-[64px]">
                   {item.label}
                 </span>
               </button>
