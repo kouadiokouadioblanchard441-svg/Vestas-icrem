@@ -1,137 +1,45 @@
 import { useAuth } from "@/lib/auth";
 import { SiTelegram } from "react-icons/si";
 import { useLocation } from "wouter";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { NEWS_ARTICLES } from "@/pages/news-detail";
 import { getContent } from "@/lib/content";
-import { Building2, ChevronLeft, ChevronRight } from "lucide-react";
+import { getCountryByCode } from "@/lib/countries";
+import { Bell, Gift } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
 import { FloatingWheel } from "@/components/floating-wheel";
-import { LanguagePicker } from "@/components/language-picker";
 import { useI18n } from "@/lib/i18n";
 
-const poweraddLogo = "/poweradd/poweradd-logo-official.png";
-import bellIcon from "@assets/d7d9f6f6-dddc-4071-8bc2-d6e7e589fbae_(1)_1783248684110.png";
+import bellIcon     from "@assets/d7d9f6f6-dddc-4071-8bc2-d6e7e589fbae_(1)_1783248684110.png";
 import iconRecharger from "@assets/1-1_1783245823715.png";
-import iconRetraits from "@assets/2-1_1783245823825.png";
-import iconService from "@assets/3-1_1783245823860.png";
+import iconRetraits  from "@assets/2-1_1783245823825.png";
+import iconService   from "@assets/3-1_1783245823860.png";
+import iconGift      from "@assets/téléchargement_(66)_1782689859239.png";
 
-// Official Power Add Inc. visuals — real company conference & factory photos.
-const BANNER_SLIDES = [
-  { src: "/poweradd/poweradd-news-cmef.jpg", label: "Power Add — 参加CMEF国际医疗展览会官方展台" },
-  { src: "/poweradd/poweradd-factory-opening.jpg", label: "Power Add — 亚洲生产基地盛大开幕" },
-  { src: "/poweradd/poweradd-factory-lines.jpg", label: "Power Add — 高精度自动化生产线" },
-  { src: "/poweradd/poweradd-intl-exhibition.jpg", label: "Power Add — 参加国际工业展览会" },
-  { src: "/poweradd/poweradd-pps180s.png", label: "Power Add — Certified Professional Power Supply Solutions" },
+/* ─── Palette ─────────────────────────────────── */
+const BG      = "#2d3816";   // fond principal olive foncé
+const CARD    = "#4a5e20";   // carte verte
+const CIRCLE  = "#111a06";   // cercle icône
+
+/* ─── Données ticker (simulées) ──────────────── */
+const TICKER_ITEMS = [
+  "100,000  ✦✦✦✦✦✦4772  Recharge  25,000  ✦✦✦✦✦",
+  "✦✦✦✦✦✦1234  Retrait  15,000  ✦✦✦✦✦",
+  "✦✦✦✦✦✦5678  Recharge  50,000  ✦✦✦",
+  "✦✦✦✦✦✦9012  Retrait  10,000  ✦✦✦✦",
 ];
 
-const DARK_ICON = { filter: "brightness(0) saturate(100%)" } as React.CSSProperties;
-
-function HeroBanner() {
-  const { t } = useI18n();
-  const [current, setCurrent] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const total = BANNER_SLIDES.length;
-
-  const next = useCallback(() => setCurrent(c => (c + 1) % total), [total]);
-  const prev = useCallback(() => setCurrent(c => (c - 1 + total) % total), [total]);
-
-  // Touch swipe support
-  const touchStartX = useRef<number | null>(null);
-  const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    if (dx < -40) next();
-    else if (dx > 40) prev();
-    touchStartX.current = null;
-  };
-
-  useEffect(() => {
-    timerRef.current = setInterval(next, 4000);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [next]);
-
-  const resetTimer = (fn: () => void) => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    fn();
-    timerRef.current = setInterval(next, 4000);
-  };
-
-  return (
-    <div
-      className="relative w-full overflow-hidden rounded-2xl shadow-md"
-      style={{ height: 210 }}
-      onTouchStart={onTouchStart}
-      onTouchEnd={onTouchEnd}
-    >
-      {/* Slides — absolute stacking with opacity cross-fade */}
-      {BANNER_SLIDES.map((slide, i) => (
-        <div
-          key={i}
-          className="absolute inset-0 transition-opacity duration-700 ease-in-out"
-          style={{ opacity: i === current ? 1 : 0, zIndex: i === current ? 1 : 0 }}
-        >
-          <img src={slide.src} alt={slide.label} className="w-full h-full object-cover" />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.60) 0%, transparent 55%)" }} />
-          <p className="absolute bottom-8 left-3 right-10 text-white text-xs font-semibold drop-shadow leading-tight">
-            {slide.label}
-          </p>
-        </div>
-      ))}
-
-      {/* Prev / Next arrows */}
-      <button
-        onClick={() => resetTimer(prev)}
-        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full flex items-center justify-center"
-        style={{ background: "rgba(0,0,0,0.35)", width: 28, height: 28 }}
-        aria-label={t.previous}
-      >
-        <ChevronLeft className="w-4 h-4 text-white" />
-      </button>
-      <button
-        onClick={() => resetTimer(next)}
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full flex items-center justify-center"
-        style={{ background: "rgba(0,0,0,0.35)", width: 28, height: 28 }}
-        aria-label={t.next}
-      >
-        <ChevronRight className="w-4 h-4 text-white" />
-      </button>
-
-      {/* Dot indicators */}
-      <div className="absolute bottom-2 right-3 flex gap-1">
-        {BANNER_SLIDES.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => resetTimer(() => setCurrent(i))}
-            className="rounded-full transition-all duration-300"
-            style={{
-              width: i === current ? 18 : 6,
-              height: 6,
-              background: i === current ? "#fff" : "rgba(255,255,255,0.45)",
-            }}
-            aria-label={`Slide ${i + 1}`}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function HomePage() {
-  const { user } = useAuth();
-  const { t } = useI18n();
+  const { user }    = useAuth();
+  const { t }       = useI18n();
   const [, navigate] = useLocation();
   const [showPopup, setShowPopup] = useState(false);
-  const [installPrompt, setInstallPrompt] = useState<any>(null);
-  const [installed, setInstalled] = useState(false);
 
   const { data: settings } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
   });
 
-  // Show popup on mount and every time home tab is clicked
+  /* popup on mount + home-tab-clicked */
   useEffect(() => {
     setShowPopup(true);
     const handler = () => setShowPopup(true);
@@ -139,33 +47,33 @@ export default function HomePage() {
     return () => window.removeEventListener("home-tab-clicked", handler);
   }, []);
 
-  useEffect(() => {
-    const w = window as any;
-    if (w._installPrompt) { setInstallPrompt(w._installPrompt); w._installPrompt = null; }
-    if (w._appInstalled) setInstalled(true);
-    const handler = (e: any) => { e.preventDefault(); setInstallPrompt(e); };
-    window.addEventListener("beforeinstallprompt", handler);
-    window.addEventListener("appinstalled", () => setInstalled(true));
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
-
   if (!user) return null;
 
-  const signupBonus = settings?.signupBonus || "200";
-  const level1Commission = settings?.level1Commission || "25";
+  const balance       = parseFloat(user.balance       || "0");
+  const totalEarnings = parseFloat(user.totalEarnings || "0");
+  const country       = getCountryByCode(user.country);
+  const currency      = country?.currency || "USDT";
+
   const telegramGroupLink = settings?.groupLink || "https://t.me/vestasgroup";
-  const popupTitle = getContent(settings, "content_home_popupTitle", "通知");
-  const popupLines = [
+  const popupTitle  = getContent(settings, "content_home_popupTitle",  "通知");
+  const popupLines  = [
     getContent(settings, "content_home_popupLine1", "Power Add 成立于1996年，是 Tekman 集团旗下的独立部门。"),
     getContent(settings, "content_home_popupLine3", "Power Add 提供适配器、开放式电源、U 型电源、盒式电源和 DC/DC 转换器等解决方案。"),
     getContent(settings, "content_home_popupLine4", "研发和试生产位于台湾，大规模生产位于台湾和中国。"),
     getContent(settings, "content_home_popupLine5", "Power Add 已通过 ISO 9001 和 ISO 14001 认证，并持续提升产品质量。"),
   ];
 
-  return (
-    <div className="flex flex-col min-h-full" style={{ background: "#0d0d0d" }}>
+  const quickActions = [
+    { icon: iconRecharger, label: t.deposit,         href: "/deposit",     white: true  },
+    { icon: iconRetraits,  label: t.withdraw,         href: "/withdrawal",  white: true  },
+    { icon: iconService,   label: t.customerService,  href: "/service",     white: false },
+    { icon: iconGift,      label: t.dailyRewards || "Récompenses\nquotidiennes", href: "/rewards", white: false },
+  ];
 
-      {/* ── POPUP NOTIFICATION ── */}
+  return (
+    <div className="flex flex-col min-h-full" style={{ background: BG }}>
+
+      {/* ══════════════ POPUP ══════════════ */}
       {showPopup && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center p-5"
@@ -177,29 +85,22 @@ export default function HomePage() {
             style={{ background: "#0d0d0d" }}
             onClick={e => e.stopPropagation()}
           >
-            {/* Bell icon */}
             <div className="flex justify-center pt-7 pb-2">
               <img src={bellIcon} alt={t.notification} className="w-24 h-24 object-contain" />
             </div>
-
-            {/* Title */}
-            <p className="text-gray-900 font-extrabold text-xl text-center tracking-widest mb-4">{popupTitle}</p>
-
-            {/* Numbered list */}
+            <p className="text-white font-extrabold text-xl text-center tracking-widest mb-4">{popupTitle}</p>
             <div className="px-6 pb-2 space-y-2">
               {popupLines.map((item, i) => (
                 <div key={i} className="flex items-start gap-2">
-                  <span className="text-gray-700/70 text-xs font-bold mt-0.5 shrink-0">{i + 1}.</span>
-                  <p className="text-gray-800/90 text-xs leading-relaxed">{item}</p>
+                  <span className="text-white/50 text-xs font-bold mt-0.5 shrink-0">{i + 1}.</span>
+                  <p className="text-white/80 text-xs leading-relaxed">{item}</p>
                 </div>
               ))}
             </div>
-
-            {/* Buttons */}
             <div className="px-5 pt-5 pb-6 space-y-3">
               <button
                 onClick={() => setShowPopup(false)}
-                className="w-full py-3.5 bg-white rounded-full font-extrabold text-base text-gray-900"
+                className="w-full py-3.5 rounded-full font-extrabold text-base text-gray-900 bg-white"
                 data-testid="button-popup-agree"
               >
                 {t.popupOk}
@@ -209,7 +110,7 @@ export default function HomePage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full font-bold text-sm text-white"
-                style={{ background: "linear-gradient(90deg, #6d28d9, #7c3aed)" }}
+                style={{ background: "linear-gradient(90deg,#6d28d9,#7c3aed)" }}
                 onClick={() => setShowPopup(false)}
               >
                 <SiTelegram className="w-4 h-4" />
@@ -220,87 +121,108 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* ── Header ── */}
-      <div className="flex items-center justify-between px-4 py-2 bg-white shadow-sm">
-              <img src={poweraddLogo} alt="Power Add" className="h-10 w-auto object-contain" />
-        <LanguagePicker variant="dark" />
-      </div>
-
-      {/* ── Hero Banner (carrousel défilant) ── */}
-      <div className="mx-3 mt-2">
-        <HeroBanner />
-      </div>
-
-      {/* ── Quick Actions ── */}
-      <div className="mx-3 mt-3 bg-white rounded-2xl shadow-sm px-4 py-4">
-        <div className="flex justify-around items-center">
-          <button onClick={() => navigate("/deposit")} className="flex flex-col items-center gap-2" data-testid="button-depot">
-            <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <img src={iconRecharger} alt={t.deposit} className="w-8 h-8 object-contain" style={DARK_ICON} />
-            </div>
-            <span className="text-gray-700 text-xs font-medium">{t.deposit}</span>
-          </button>
-          <button onClick={() => navigate("/withdrawal")} className="flex flex-col items-center gap-2" data-testid="button-retrait">
-            <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <img src={iconRetraits} alt={t.withdraw} className="w-8 h-8 object-contain" style={DARK_ICON} />
-            </div>
-            <span className="text-gray-700 text-xs font-medium">{t.withdraw}</span>
-          </button>
-          <button onClick={() => navigate("/service")} className="flex flex-col items-center gap-2" data-testid="button-aide">
-            <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <img src={iconService} alt={t.customerService} className="w-8 h-8 object-contain" style={DARK_ICON} />
-            </div>
-            <span className="text-gray-700 text-xs font-medium">{t.customerService}</span>
-          </button>
-          <button onClick={() => navigate("/company")} className="flex flex-col items-center gap-2" data-testid="button-company">
-            <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <Building2 className="w-8 h-8 text-black" />
-            </div>
-            <span className="text-gray-700 text-xs font-medium">{t.companyLabel}</span>
-          </button>
+      {/* ══════════════ BANNIÈRE PLEINE LARGEUR ══════════════ */}
+      <div className="relative w-full overflow-hidden" style={{ height: 200 }}>
+        <img
+          src="/banner/banner1.jpg"
+          alt="banner"
+          className="w-full h-full object-cover"
+        />
+        {/* Logo ASUS en overlay */}
+        <div className="absolute top-0 left-0 right-0 bottom-0 flex items-end pb-4 pl-4">
+          <img
+            src="/asus-logo-white.svg"
+            alt="ASUS"
+            className="h-10 object-contain drop-shadow-lg"
+          />
         </div>
       </div>
 
-      {/* ── Info Cards ── */}
-      <div className="mx-3 mt-3 space-y-3">
-        <p className="text-white font-bold text-sm px-1">{t.informationCenter}</p>
-        {NEWS_ARTICLES.map((article) => (
-          <button
-            key={article.id}
-            onClick={() => navigate(`/news/${article.id}`)}
-            className="w-full bg-white rounded-2xl shadow-sm overflow-hidden flex flex-row items-stretch text-left"
-            data-testid={`news-card-${article.id}`}
-          >
-            {/* Thumbnail */}
-            <div className="shrink-0 w-24" style={{ minHeight: 90 }}>
-              <img
-                src={article.image}
-                alt={article.title}
-                className="w-full h-full object-cover"
-                style={{ minHeight: 90 }}
-              />
+      {/* ══════════════ CORPS ══════════════ */}
+      <div className="flex-1 flex flex-col gap-3 px-3 pt-3 pb-20">
+
+        {/* ── Carte solde ── */}
+        <div
+          className="w-full rounded-2xl px-5 py-4 flex justify-between items-center shadow-md"
+          style={{ background: CARD }}
+        >
+          <div>
+            <p className="text-white font-extrabold text-xl leading-tight" data-testid="text-balance">
+              {currency} {balance.toFixed(2)}
+            </p>
+            <p className="text-white/70 text-xs mt-1">{t.accountBalanceLabel}</p>
+          </div>
+          <div className="w-px self-stretch mx-2" style={{ background: "rgba(255,255,255,0.2)" }} />
+          <div className="text-right">
+            <p className="text-white font-extrabold text-xl leading-tight" data-testid="text-earnings">
+              {currency} {totalEarnings.toFixed(2)}
+            </p>
+            <p className="text-white/70 text-xs mt-1">{t.revenueLabel || "Revenu total"}</p>
+          </div>
+        </div>
+
+        {/* ── Ticker notifications ── */}
+        <div
+          className="w-full rounded-xl px-3 py-2 flex items-center gap-2 overflow-hidden shadow"
+          style={{ background: CARD }}
+        >
+          <Bell className="w-4 h-4 text-white shrink-0" />
+          <div className="flex-1 overflow-hidden">
+            <div className="whitespace-nowrap animate-marquee text-white text-xs font-medium">
+              {TICKER_ITEMS.join("    •    ")}
             </div>
-            {/* Text */}
-            <div className="flex-1 px-3 py-3 flex flex-col justify-between">
-              <p className="text-gray-900 font-bold text-xs leading-snug line-clamp-2 mb-1">
-                {article.title}
-              </p>
-              <p className="text-gray-400 text-xs leading-relaxed line-clamp-2">
-                {article.summary}
-              </p>
-              <p className="text-xs font-semibold mt-1" style={{ color: "#E8192C" }}>
-                {article.date}
-              </p>
-            </div>
-          </button>
-        ))}
+          </div>
+        </div>
+
+        {/* ── 4 boutons rapides ── */}
+        <div
+          className="w-full rounded-2xl px-4 py-4 shadow-md"
+          style={{ background: CARD }}
+        >
+          <div className="flex justify-around items-start">
+            {quickActions.map((item, idx) => (
+              <button
+                key={idx}
+                onClick={() => navigate(item.href)}
+                className="flex flex-col items-center gap-2 active:opacity-70"
+                data-testid={`button-action-${idx}`}
+              >
+                <div
+                  className="w-14 h-14 rounded-full flex items-center justify-center shadow-md"
+                  style={{ background: CIRCLE }}
+                >
+                  <img
+                    src={item.icon}
+                    alt={item.label}
+                    className="w-7 h-7 object-contain"
+                    style={item.white
+                      ? { filter: "brightness(0) invert(1)" }
+                      : { filter: "brightness(0) invert(1)" }
+                    }
+                  />
+                </div>
+                <span className="text-white text-[11px] font-medium text-center leading-tight max-w-[60px]">
+                  {item.label}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Grande image ── */}
+        <div className="w-full rounded-2xl overflow-hidden shadow-md" style={{ height: 200 }}>
+          <img
+            src="/banner/banner2.jpg"
+            alt="visual"
+            className="w-full h-full object-cover"
+          />
+        </div>
+
       </div>
 
-      <div className="pb-16" />
-
-      {/* Floating service client button — above bottom nav */}
-      <FloatingWheel bottomOffset={80} />
-      <FloatingSupport bottomOffset={80} />
+      {/* Floating buttons */}
+      <FloatingWheel    bottomOffset={80} />
+      <FloatingSupport  bottomOffset={80} />
     </div>
   );
 }
