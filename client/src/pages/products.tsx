@@ -82,7 +82,7 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-full" style={{ background: BG }}>
+    <div className="flex flex-col min-h-screen" style={{ background: BG }}>
       <div className="flex-1 overflow-y-auto pb-20 px-3 pt-4 space-y-4">
 
         {/* ── Titre ── */}
@@ -91,7 +91,7 @@ export default function ProductsPage() {
             className="px-10 py-2 rounded-xl"
             style={{ background: "rgba(255,255,255,0.25)" }}
           >
-            <p className="text-black font-extrabold text-xl tracking-widest">PRODUCTS</p>
+            <p className="text-white font-extrabold text-xl tracking-widest">PRODUCTS</p>
           </div>
         </div>
 
@@ -101,7 +101,7 @@ export default function ProductsPage() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className="px-5 py-2 rounded-full font-extrabold text-sm text-black tracking-wide active:scale-95 transition-transform shadow"
+              className="px-5 py-2 rounded-full font-extrabold text-sm text-white tracking-wide active:scale-95 transition-transform shadow"
               style={{
                 background: activeTab === tab
                   ? "rgba(255,255,255,0.55)"
@@ -140,7 +140,7 @@ export default function ProductsPage() {
               >
                 {/* ── Nom produit ── */}
                 <div className="px-3 pt-3 pb-1">
-                  <p className="font-extrabold italic text-black text-base">{product.name}</p>
+                  <p className="font-extrabold italic text-white text-base">{product.name}</p>
                 </div>
 
                 {/* ── Image + Infos ── */}
@@ -153,19 +153,19 @@ export default function ProductsPage() {
                   {/* Infos + BUY */}
                   <div className="flex-1 flex flex-col justify-between">
                     <div className="space-y-0.5">
-                      <p className="text-black font-bold text-[11px] leading-snug">
+                      <p className="text-white font-bold text-[11px] leading-snug">
                         PRIX : {Number(product.price).toLocaleString()} {currency}
                       </p>
-                      <p className="text-black font-bold text-[11px] leading-snug">
+                      <p className="text-white font-bold text-[11px] leading-snug">
                         REVENU JOURNALIER: {Number(product.dailyEarnings).toLocaleString()} {currency}
                       </p>
-                      <p className="text-black font-bold text-[11px] leading-snug">
+                      <p className="text-white font-bold text-[11px] leading-snug">
                         TOTAL DE RETOUR : {Number(product.totalReturn).toLocaleString()} {currency}
                       </p>
-                      <p className="text-black font-bold text-[11px] leading-snug">
+                      <p className="text-white font-bold text-[11px] leading-snug">
                         RETOUR: {roi}%
                       </p>
-                      <p className="text-black font-bold text-[11px] leading-snug">
+                      <p className="text-white font-bold text-[11px] leading-snug">
                         DURÉE: {product.cycleDays} JOURS
                       </p>
                     </div>
@@ -189,18 +189,17 @@ export default function ProductsPage() {
                 {/* ── Barre de progression ── */}
                 <div
                   className="mx-3 mb-3 rounded-full overflow-hidden flex items-center justify-center relative"
-                  style={{ background: "white", height: 28 }}
+                  style={{ background: "rgba(0,0,0,0.25)", height: 28 }}
                 >
-                  {/* Remplissage (0% pour produit non actif) */}
                   <div
                     className="absolute left-0 top-0 bottom-0 rounded-full"
                     style={{
                       width: product.isOwned ? "1%" : "0%",
-                      background: BUY_BG,
+                      background: "rgba(255,255,255,0.4)",
                       transition: "width 0.5s ease",
                     }}
                   />
-                  <span className="relative z-10 text-black font-bold text-sm">
+                  <span className="relative z-10 text-white font-bold text-sm">
                     {product.isOwned ? "En cours" : "0.00%"}
                   </span>
                 </div>
