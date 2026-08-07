@@ -1,8 +1,6 @@
-import { useAuth } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { Link } from "wouter";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useI18n } from "@/lib/i18n";
 
 interface Withdrawal {
@@ -15,35 +13,24 @@ interface Withdrawal {
   paymentMethod?: string;
 }
 
-function generateTxId(id: number, createdAt: string) {
-  const d = new Date(createdAt);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const datePart = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
-  const hexPart = (id * 0x9e3779b9 + 0xdeadbeef).toString(16).toUpperCase().padStart(8, "0").slice(0, 8);
-  return `T${datePart}${hexPart}`;
-}
-
 function formatDate(iso: string) {
   const d = new Date(iso);
   const pad = (n: number) => String(n).padStart(2, "0");
-  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
-// Status labels are resolved via i18n inside the component
+const STATUS_MAP: Record<string, { label: string; color: string }> = {
+  approved:    { label: "Arrivé",      color: "#16a34a" },
+  pending:     { label: "En attente",  color: "#d97706" },
+  pending_2fa: { label: "2FA requis",  color: "#d97706" },
+  processing:  { label: "En cours",   color: "#2563eb" },
+  rejected:    { label: "Rejeté",     color: "#dc2626" },
+  failed:      { label: "Échoué",     color: "#dc2626" },
+};
 
 export default function WithdrawalHistoryPage() {
-  const { user } = useAuth();
   const { t } = useI18n();
   const currency = "USDT";
-
-  const STATUS = {
-    approved: { label: t.statusApproved,   color: "#16a34a" },
-    pending:  { label: t.statusPending,    color: "#f59e0b" },
-    pending_2fa: { label: t.status2FA,     color: "#d97706" },
-    processing: { label: t.statusProcessing, color: "#2563eb" },
-    rejected: { label: t.statusRejected,   color: "#dc2626" },
-    failed:   { label: t.statusFailed,     color: "#dc2626" },
-  } as Record<string, { label: string; color: string }>;
 
   const { data: withdrawals = [], isLoading } = useQuery<Withdrawal[]>({
     queryKey: ["/api/withdrawals/history"],
@@ -51,67 +38,89 @@ export default function WithdrawalHistoryPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      {/* Header */}
-      <header className="flex items-center px-4 py-3 bg-white border-b border-gray-200">
+
+      {/* ── Header ── */}
+      <header className="flex items-center px-4 py-4 bg-white">
         <Link href="/account">
-          <button className="p-1 mr-2" data-testid="button-back">
-            <ChevronLeft className="w-5 h-5 text-gray-700" />
+          <button className="p-1" data-testid="button-back">
+            <ChevronLeft className="w-6 h-6 text-gray-800" strokeWidth={2.5} />
           </button>
         </Link>
-        <h1 className="flex-1 text-center text-sm font-bold text-gray-900 pr-8 tracking-wide uppercase">
-          {t.withdrawalHistory}
+        <h1
+          className="flex-1 text-center font-bold text-gray-900 pr-8"
+          style={{ fontSize: 20, fontFamily: "Georgia, 'Times New Roman', serif" }}
+        >
+          Retirer
         </h1>
       </header>
 
+      {/* ── Content ── */}
       <div className="flex-1">
         {isLoading ? (
-          <div className="p-4 space-y-3">
-            {Array(4).fill(0).map((_, i) => (
-              <Skeleton key={i} className="h-20 w-full" />
-            ))}
+          <div className="flex justify-center py-20">
+            <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
           </div>
         ) : withdrawals.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-gray-400 text-sm">{t.noWithdrawals}</p>
           </div>
         ) : (
-          <div className="bg-white">
-            {withdrawals.map((w, idx) => {
-              const st = STATUS[w.status] || { label: w.status.toUpperCase(), color: "#6b7280" };
-              const txId = generateTxId(w.id, w.createdAt);
-              const amountNum = parseFloat(w.amount);
-              const netNum = w.netAmount ? parseFloat(w.netAmount) : null;
+          withdrawals.map((w, idx) => {
+            const st = STATUS_MAP[w.status] || { label: w.status, color: "#6b7280" };
+            const amountNum = parseFloat(w.amount);
+            const feesNum   = w.fees ? parseFloat(w.fees) : null;
 
-              return (
-                <div
-                  key={w.id}
-                  className="px-4 py-4"
-                  style={{ borderBottom: "1px solid #f0f0f0" }}
-                >
-                  {/* Transaction ID */}
-                  <p className="text-gray-400 text-xs mb-1 font-mono">{txId}</p>
+            return (
+              <div
+                key={w.id}
+                className="px-5 py-5"
+                style={{
+                  borderTop: idx === 0 ? "1px solid #e5e7eb" : undefined,
+                  borderBottom: "1px solid #e5e7eb",
+                }}
+              >
+                {/* Row 1 : date + statut */}
+                <div className="flex items-center justify-between mb-4">
+                  <span
+                    className="text-gray-900"
+                    style={{ fontSize: 15, fontFamily: "monospace" }}
+                  >
+                    {formatDate(w.createdAt)}
+                  </span>
 
-                  {/* Row: type+amount | status */}
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <p className="font-bold text-sm" style={{ color: "#dc2626" }}>
-                        {t.withdrawalLabel} {currency} {amountNum.toLocaleString()}
-                      </p>
-                      {netNum !== null && (
-                        <p className="text-gray-500 text-xs mt-0.5">
-                          {currency} {netNum.toLocaleString()}
-                        </p>
-                      )}
-                      <p className="text-gray-400 text-xs mt-0.5">{formatDate(w.createdAt)}</p>
-                    </div>
-                    <span className="font-bold text-sm ml-4 shrink-0" style={{ color: st.color }}>
-                      {st.label}
-                    </span>
-                  </div>
+                  {/* Badge pill */}
+                  <span
+                    className="px-4 py-1 rounded-full text-sm font-semibold"
+                    style={{
+                      border: `1.5px solid ${st.color}`,
+                      color: st.color,
+                      background: "transparent",
+                    }}
+                  >
+                    {st.label}
+                  </span>
                 </div>
-              );
-            })}
-          </div>
+
+                {/* Row 2 : Withdraw amount */}
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-gray-400 text-sm">Withdraw amount :</span>
+                  <span className="font-bold text-gray-900 text-sm">
+                    {currency} {amountNum.toLocaleString()}
+                  </span>
+                </div>
+
+                {/* Row 3 : Frais */}
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400 text-sm">Frais :</span>
+                  <span className="font-bold text-gray-900 text-sm">
+                    {feesNum !== null
+                      ? `${currency} ${feesNum.toLocaleString()}`
+                      : "—"}
+                  </span>
+                </div>
+              </div>
+            );
+          })
         )}
       </div>
     </div>
