@@ -20,12 +20,12 @@ function formatDate(iso: string) {
 }
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
-  approved:    { label: "Arrivé",      color: "#16a34a" },
+  approved:    { label: "Arrivé",      color: "#00cc00" },
   pending:     { label: "En attente",  color: "#d97706" },
   pending_2fa: { label: "2FA requis",  color: "#d97706" },
   processing:  { label: "En cours",   color: "#2563eb" },
-  rejected:    { label: "Rejeté",     color: "#dc2626" },
-  failed:      { label: "Échoué",     color: "#dc2626" },
+  rejected:    { label: "Rejeté",     color: "#ff0000" },
+  failed:      { label: "Échoué",     color: "#ff0000" },
 };
 
 export default function WithdrawalHistoryPage() {
