@@ -226,29 +226,24 @@ export default function WalletPage() {
           </div>
         </div>
 
-        {/* Bottom action bar */}
-        <div className="border-t border-gray-200 bg-white flex items-center px-4 py-3 gap-0">
-          <button
-            onClick={() => { setShowForm(false); setSelectedOperator(""); setHolderName(""); setAccountNumber(""); }}
-            className="text-sm font-medium px-3 py-2"
-            style={{ color: "#4a5e22" }}
-          >
-            Annuler
-          </button>
-          <button
-            onClick={() => setShowBankSheet(true)}
-            className="flex-1 text-sm font-black text-gray-900 text-center py-2 px-2"
-          >
-            Sélectionner une banque
-          </button>
+        {/* Bouton Confirmer centré */}
+        <div className="px-6 py-6 flex justify-center">
           <button
             onClick={handleConfirm}
             disabled={addMutation.isPending}
-            className="text-sm font-medium px-3 py-2 disabled:opacity-50"
-            style={{ color: "#4a5e22" }}
+            className="font-bold text-base text-white disabled:opacity-50 active:scale-95 transition-transform"
+            style={{
+              width: "72%",
+              height: 54,
+              borderRadius: 999,
+              background: "#2d3816",
+              boxShadow: "0 4px 16px rgba(45,56,22,0.35)",
+            }}
             data-testid="button-confirm-wallet"
           >
-            {addMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirmer"}
+            {addMutation.isPending
+              ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-5 h-5 animate-spin" /> Traitement…</span>
+              : "Confirmer"}
           </button>
         </div>
 
