@@ -177,7 +177,7 @@ export default function AccountPage() {
               >
                 ★ {vipCfg.label}
               </span>
-              <span className="text-white/50 text-[10px]">Voir grades</span>
+              <span className="text-white font-black text-[11px] tracking-wide">GRADE</span>
             </button>
           </div>
 
