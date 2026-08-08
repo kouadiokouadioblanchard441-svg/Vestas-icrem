@@ -77,7 +77,7 @@ function LinkRow({
       data-testid={testId}
     >
       <NetworkIcon type={type} />
-      <span className="flex-1 text-left text-sm font-medium text-gray-800">{label}</span>
+      <span className="flex-1 text-left text-sm font-bold text-gray-900 tracking-wide">{label}</span>
       <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
     </button>
   );
