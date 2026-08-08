@@ -175,7 +175,7 @@ export default function AccountPage() {
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-black tracking-wide border"
                 style={{ background: vipStyle.bg, color: vipStyle.text, borderColor: vipStyle.border }}
               >
-                ★ {vipCfg.label}
+                Statut
               </span>
               <span className="text-white font-black text-[11px] tracking-wide">GRADE</span>
             </button>
