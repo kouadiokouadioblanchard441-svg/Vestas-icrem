@@ -10,7 +10,8 @@ import { FloatingSupport } from "@/components/floating-support";
 import { FloatingWheel } from "@/components/floating-wheel";
 import { useI18n } from "@/lib/i18n";
 
-import bellIcon     from "@assets/d7d9f6f6-dddc-4071-8bc2-d6e7e589fbae_(1)_1783248684110.png";
+import popupBanner  from "@assets/popup-banner.jpg";
+import popupMascot  from "@assets/popup-mascot.png";
 import iconRecharger from "@assets/recharge_(1)_1786038805921.png";
 import iconRetraits  from "@assets/withdraw_1786038805887.png";
 import iconService   from "@assets/telegram_(1)_1786038805966.png";
@@ -55,12 +56,24 @@ export default function HomePage() {
   const currency      = "FCFA";
 
   const telegramGroupLink = settings?.groupLink || "https://t.me/vestasgroup";
-  const popupTitle  = getContent(settings, "content_home_popupTitle",  "Notification");
-  const popupLines  = [
-    getContent(settings, "content_home_popupLine1", "Bienvenue sur la plateforme Asus — votre partenaire d'investissement de confiance."),
-    getContent(settings, "content_home_popupLine3", "Achetez un produit VIP et commencez à générer des revenus journaliers dès le lendemain."),
-    getContent(settings, "content_home_popupLine4", "Vos gains sont versés automatiquement chaque 24h après achat."),
-    getContent(settings, "content_home_popupLine5", "Pour toute question, contactez notre support disponible 7j/7."),
+
+  const minDeposit    = settings?.minDeposit    || "3000";
+  const minWithdrawal = settings?.minWithdrawal || "1000";
+  const fees          = settings?.withdrawalFees || "10";
+  const lvl1          = settings?.level1Commission || "25";
+  const lvl2          = settings?.level2Commission || "1";
+  const lvl3          = settings?.level3Commission || "1";
+
+  const popupLines: { emoji: string; text: string }[] = [
+    { emoji: "✨✨", text: `Lancement officiel de la plateforme ASUS (4 août 2026)✨✨` },
+    { emoji: "🔻",  text: `Invitez vos amis à investir et gagnez jusqu'à ${lvl1}% de commissions sur les investissements. Les revenus passifs ne sont plus un simple rêve.` },
+    { emoji: "🎁",  text: `Bonus de connexion quotidienne disponible chaque jour` },
+    { emoji: "🤝",  text: `Dépôt minimum : ${parseInt(minDeposit).toLocaleString()} FCFA` },
+    { emoji: "💚",  text: `Retrait minimum : ${parseInt(minWithdrawal).toLocaleString()} FCFA` },
+    { emoji: "⚙️",  text: `Frais de retrait : ${fees}%` },
+    { emoji: "🍀",  text: `Retraits disponibles du Lundi au Vendredi de 10h à 16h ; maximum 1 retrait par jour.` },
+    { emoji: "👥",  text: `Commissions de parrainage : ${lvl1}% – ${lvl2}% – ${lvl3}%` },
+    { emoji: "📌",  text: `Remarque : Les gains issus des investissements sont automatiquement crédités sur votre compte chaque jour.` },
   ];
 
   const quickActions = [
@@ -76,47 +89,95 @@ export default function HomePage() {
       {/* ══════════════ POPUP ══════════════ */}
       {showPopup && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-5"
-          style={{ background: "rgba(0,0,0,0.82)" }}
+          className="fixed inset-0 z-[100] flex items-end justify-center"
+          style={{ background: "rgba(0,0,0,0.72)" }}
           onClick={() => setShowPopup(false)}
         >
           <div
-            className="w-full max-w-[340px] rounded-3xl overflow-hidden shadow-2xl"
-            style={{ background: "#0d0d0d" }}
+            className="w-full max-w-[420px] rounded-t-3xl overflow-hidden shadow-2xl flex flex-col"
+            style={{ background: "#fff", maxHeight: "88vh" }}
             onClick={e => e.stopPropagation()}
           >
-            <div className="flex justify-center pt-7 pb-2">
-              <img src={bellIcon} alt={t.notification} className="w-24 h-24 object-contain" />
+
+            {/* ── Banner header ── */}
+            <div className="relative shrink-0" style={{ height: 170 }}>
+              <img
+                src={popupBanner}
+                alt="ASUS"
+                className="w-full h-full object-cover"
+              />
+              {/* Mascot overlapping */}
+              <div
+                className="absolute left-1/2 bottom-0"
+                style={{ transform: "translate(-50%, 50%)", zIndex: 10 }}
+              >
+                <img
+                  src={popupMascot}
+                  alt="mascot"
+                  style={{ width: 70, height: 70, objectFit: "contain", filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.35))" }}
+                />
+              </div>
             </div>
-            <p className="text-white font-extrabold text-xl text-center tracking-widest mb-4">{popupTitle}</p>
-            <div className="px-6 pb-2 space-y-2">
+
+            {/* ── Scrollable content ── */}
+            <div
+              className="flex-1 overflow-y-auto px-5 pb-3"
+              style={{ paddingTop: 46 }}
+            >
               {popupLines.map((item, i) => (
-                <div key={i} className="flex items-start gap-2">
-                  <span className="text-white/50 text-xs font-bold mt-0.5 shrink-0">{i + 1}.</span>
-                  <p className="text-white/80 text-xs leading-relaxed">{item}</p>
-                </div>
+                <p
+                  key={i}
+                  className="text-gray-800 leading-relaxed mb-2"
+                  style={{ fontSize: 13.5 }}
+                >
+                  <span style={{ marginRight: 4 }}>{item.emoji}</span>
+                  {item.text}
+                </p>
               ))}
             </div>
-            <div className="px-5 pt-5 pb-6 space-y-3">
-              <button
-                onClick={() => setShowPopup(false)}
-                className="w-full py-3.5 rounded-full font-extrabold text-base text-gray-900 bg-white"
-                data-testid="button-popup-agree"
-              >
-                {t.popupOk}
-              </button>
+
+            {/* ── Bottom button row (fixed) ── */}
+            <div
+              className="shrink-0 flex items-center px-4 py-3 gap-3"
+              style={{ borderTop: "1px solid #f3f4f6" }}
+            >
+              {/* Telegram button */}
               <a
                 href={telegramGroupLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full font-bold text-sm text-white"
-                style={{ background: "linear-gradient(90deg,#6d28d9,#7c3aed)" }}
                 onClick={() => setShowPopup(false)}
+                className="flex items-center justify-center gap-2 font-bold text-white rounded-xl"
+                style={{
+                  flex: "0 0 48%",
+                  height: 46,
+                  background: "#0088cc",
+                  fontSize: 14,
+                  boxShadow: "0 2px 8px rgba(0,136,204,0.35)",
+                }}
+                data-testid="button-popup-telegram"
               >
-                <SiTelegram className="w-4 h-4" />
-                {t.popupJoinGroup}
+                <SiTelegram style={{ width: 18, height: 18 }} />
+                Telegram &gt;
               </a>
+
+              {/* D'accord button */}
+              <button
+                onClick={() => setShowPopup(false)}
+                className="flex items-center justify-center font-extrabold rounded-xl"
+                style={{
+                  flex: "0 0 48%",
+                  height: 46,
+                  background: "transparent",
+                  color: "#22c55e",
+                  fontSize: 17,
+                }}
+                data-testid="button-popup-agree"
+              >
+                D'accord
+              </button>
             </div>
+
           </div>
         </div>
       )}
