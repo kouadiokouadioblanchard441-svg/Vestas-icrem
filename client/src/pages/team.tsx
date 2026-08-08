@@ -58,9 +58,13 @@ export default function TeamPage() {
     toast({ title: t.teamLinkCopied });
   };
 
-  const lv1Rate = settings?.level1Commission || "35";
+  const lv1Rate = settings?.level1Commission || "10";
   const lv2Rate = settings?.level2Commission || "2";
   const lv3Rate = settings?.level3Commission || "1";
+
+  const task1Rate = settings?.taskLevel1Commission || "3";
+  const task2Rate = settings?.taskLevel2Commission || "2";
+  const task3Rate = settings?.taskLevel3Commission || "1";
 
   const levels = [
     {
@@ -187,6 +191,79 @@ export default function TeamPage() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* ══ Section explicative ══ */}
+        <div className="rounded-2xl px-5 py-5 space-y-5" style={{ background: "#3a4f1a" }}>
+
+          {/* Titre */}
+          <div className="flex items-center gap-2 border-b border-white/20 pb-3">
+            <span className="text-2xl">👥</span>
+            <h2 className="text-white font-extrabold text-base tracking-wide">
+              Comment fonctionne le parrainage ?
+            </h2>
+          </div>
+
+          {/* Explication générale */}
+          <div className="space-y-2">
+            <p className="text-white font-bold text-sm">🔗 Principe du parrainage</p>
+            <p className="text-white/85 text-sm leading-relaxed">
+              Chaque membre possède un lien d'invitation unique. Lorsqu'une personne s'inscrit via votre lien, elle devient votre filleul de <span className="text-yellow-300 font-bold">Niveau 1</span>. Si ce filleul invite à son tour d'autres personnes, elles rejoignent votre équipe en <span className="text-blue-300 font-bold">Niveau 2</span>, et ainsi de suite jusqu'au <span className="text-red-300 font-bold">Niveau 3</span>.
+            </p>
+          </div>
+
+          {/* Commissions sur investissements */}
+          <div className="space-y-2">
+            <p className="text-white font-bold text-sm">💰 Commissions sur les investissements</p>
+            <p className="text-white/85 text-sm leading-relaxed">
+              Lorsqu'un filleul achète un produit d'investissement, vous recevez automatiquement une commission sur le montant investi :
+            </p>
+            <div className="space-y-2 mt-1">
+              {[
+                { label: "Niveau 1", rate: lv1Rate, color: "#f0d566", tc: "#6b5000" },
+                { label: "Niveau 2", rate: lv2Rate, color: "#c0cce8", tc: "#1e3560" },
+                { label: "Niveau 3", rate: lv3Rate, color: "#f0b8b0", tc: "#7a1e1e" },
+              ].map((lvl) => (
+                <div key={lvl.label} className="flex items-center justify-between rounded-xl px-4 py-2.5" style={{ background: lvl.color }}>
+                  <span className="font-bold text-sm" style={{ color: lvl.tc }}>{lvl.label}</span>
+                  <span className="font-extrabold text-lg" style={{ color: lvl.tc }}>{lvl.rate}%</span>
+                  <span className="text-xs font-medium" style={{ color: lvl.tc, opacity: 0.8 }}>sur l'investissement</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Commissions sur tâches */}
+          <div className="space-y-2">
+            <p className="text-white font-bold text-sm">✅ Gains sur les tâches quotidiennes</p>
+            <p className="text-white/85 text-sm leading-relaxed">
+              Chaque jour, quand un filleul accomplit ses tâches et reçoit sa récompense, vous touchez automatiquement un pourcentage de ses gains sur vos <span className="text-white font-bold">revenus</span> :
+            </p>
+            <div className="space-y-2 mt-1">
+              {[
+                { label: "Niveau 1", rate: task1Rate, desc: "Parrain direct", color: "#f0d566", tc: "#6b5000" },
+                { label: "Niveau 2", rate: task2Rate, desc: "Parrain du parrain", color: "#c0cce8", tc: "#1e3560" },
+                { label: "Niveau 3", rate: task3Rate, desc: "3ème niveau", color: "#f0b8b0", tc: "#7a1e1e" },
+              ].map((lvl) => (
+                <div key={lvl.label} className="flex items-center justify-between rounded-xl px-4 py-2.5" style={{ background: lvl.color }}>
+                  <div>
+                    <p className="font-bold text-sm leading-tight" style={{ color: lvl.tc }}>{lvl.label}</p>
+                    <p className="text-xs" style={{ color: lvl.tc, opacity: 0.7 }}>{lvl.desc}</p>
+                  </div>
+                  <span className="font-extrabold text-lg" style={{ color: lvl.tc }}>{lvl.rate}%</span>
+                  <span className="text-xs font-medium" style={{ color: lvl.tc, opacity: 0.8 }}>sur les tâches</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Remarque */}
+          <div className="rounded-xl px-4 py-3 border border-white/20" style={{ background: "rgba(255,255,255,0.08)" }}>
+            <p className="text-white/90 text-xs leading-relaxed">
+              📌 <span className="font-bold text-white">Remarque :</span> Les commissions sont créditées instantanément sur votre solde des revenus dès que votre filleul effectue une action éligible. Plus votre équipe est active, plus vos gains augmentent chaque jour !
+            </p>
+          </div>
+
         </div>
 
       </div>
