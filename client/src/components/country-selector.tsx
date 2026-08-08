@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Search } from "lucide-react";
-import { WORLD_COUNTRIES, getFlagEmoji } from "@/lib/world-countries";
+import { getFlagEmoji } from "@/lib/world-countries";
+import { FALLBACK_COUNTRIES } from "@/lib/countries";
 import { useI18n } from "@/lib/i18n";
 
 interface CountrySelectorProps {
@@ -8,9 +9,11 @@ interface CountrySelectorProps {
   onClose: () => void;
   onSelect: (countryCode: string) => void;
   selectedCode?: string;
+  /** Pass API countries when available; falls back to the 4 hardcoded African countries */
+  apiCountries?: { code: string; name: string; phonePrefix: string; isActive: boolean }[];
 }
 
-export function CountrySelector({ open, onClose, onSelect, selectedCode }: CountrySelectorProps) {
+export function CountrySelector({ open, onClose, onSelect, selectedCode, apiCountries }: CountrySelectorProps) {
   const { t } = useI18n();
   const [search, setSearch] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -22,7 +25,12 @@ export function CountrySelector({ open, onClose, onSelect, selectedCode }: Count
     }
   }, [open]);
 
-  const filtered = WORLD_COUNTRIES.filter((c) => {
+  // Use API countries if loaded, otherwise fall back to the 4 hardcoded countries only
+  const sourceList = (apiCountries && apiCountries.length > 0)
+    ? apiCountries.filter(c => c.isActive).map(c => ({ code: c.code, name: c.name, phonePrefix: c.phonePrefix }))
+    : FALLBACK_COUNTRIES.map(c => ({ code: c.code, name: c.name, phonePrefix: c.phonePrefix }));
+
+  const filtered = sourceList.filter((c) => {
     const q = search.toLowerCase().replace(/^\+/, "");
     return (
       c.name.toLowerCase().includes(q) ||

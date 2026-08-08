@@ -7,7 +7,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth";
 import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
-import { WORLD_COUNTRIES } from "@/lib/world-countries";
 import { CountrySelector } from "@/components/country-selector";
 import { useI18n } from "@/lib/i18n";
 import { Eye, EyeOff, ChevronRight, Smartphone, Lock, ThumbsUp } from "lucide-react";
@@ -69,9 +68,7 @@ export default function RegisterPage() {
       if (c) return { phonePrefix: c.phonePrefix, name: c.name };
     }
     const f = FALLBACK_COUNTRIES.find(fc => fc.code === selectedCountry);
-    if (f) return { phonePrefix: f.phonePrefix, name: f.name };
-    const w = WORLD_COUNTRIES.find(wc => wc.code === selectedCountry);
-    return w ? { phonePrefix: w.phonePrefix, name: w.name } : null;
+    return f ? { phonePrefix: f.phonePrefix, name: f.name } : null;
   })();
 
   async function onSubmit(data: RegisterForm) {
@@ -235,6 +232,7 @@ export default function RegisterPage() {
           onClose={() => setCountryModalOpen(false)}
           onSelect={(code) => form.setValue("country", code, { shouldValidate: true })}
           selectedCode={selectedCountry}
+          apiCountries={apiCountries}
         />
       <FloatingSupport bottomOffset={24} />
     </div>

@@ -1,10 +1,16 @@
 // Fallback country data (used if API not available)
 export const COUNTRIES = [
-  { code: "CF", name: "Centrafrique", flag: "CF", currency: "USDT", paymentMethods: ["Telecel Centrafrique", "Orange Centrafrique"] },
+  { code: "CI", name: "Côte d'Ivoire", flag: "CI", currency: "FCFA", paymentMethods: ["Orange CI", "MTN CI", "Wave CI", "Moov Africa CI"] },
+  { code: "BF", name: "Burkina Faso",  flag: "BF", currency: "FCFA", paymentMethods: ["Orange Burkina", "Moov Africa Burkina", "Telecel Burkina"] },
+  { code: "ML", name: "Mali",          flag: "ML", currency: "FCFA", paymentMethods: ["Orange Mali", "Moov Africa Mali", "Telecel Mali"] },
+  { code: "BJ", name: "Bénin",         flag: "BJ", currency: "FCFA", paymentMethods: ["MTN Bénin", "Moov Africa Bénin"] },
 ];
 
 export const FALLBACK_COUNTRIES = [
-  { code: "CF", name: "Centrafrique", currency: "USDT", phonePrefix: "236", operators: ["Telecel Centrafrique", "Orange Centrafrique"] },
+  { code: "CI", name: "Côte d'Ivoire", currency: "FCFA", phonePrefix: "225", operators: ["Orange CI", "MTN CI", "Wave CI", "Moov Africa CI"] },
+  { code: "BF", name: "Burkina Faso",  currency: "FCFA", phonePrefix: "226", operators: ["Orange Burkina", "Moov Africa Burkina", "Telecel Burkina"] },
+  { code: "ML", name: "Mali",          currency: "FCFA", phonePrefix: "223", operators: ["Orange Mali", "Moov Africa Mali", "Telecel Mali"] },
+  { code: "BJ", name: "Bénin",         currency: "FCFA", phonePrefix: "229", operators: ["MTN Bénin", "Moov Africa Bénin"] },
 ];
 
 // Legacy compatibility - kept for places still using ELIGIBLE_COUNTRIES directly
