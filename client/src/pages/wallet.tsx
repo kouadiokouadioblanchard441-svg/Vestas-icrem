@@ -211,15 +211,6 @@ export default function WalletPage() {
           </button>
         </div>
 
-        {/* Paysage en bas — même que la liste */}
-        <div className="mt-auto">
-          <img
-            src={landscapeImg}
-            alt="Powerade"
-            className="w-full object-cover object-top"
-            style={{ maxHeight: 300 }}
-          />
-        </div>
 
       </div>
     );
@@ -366,15 +357,6 @@ export default function WalletPage() {
         )}
       </div>
 
-      {/* Landscape illustration — pushed to bottom */}
-      <div className="mt-auto">
-        <img
-          src={landscapeImg}
-          alt="Powerade"
-          className="w-full object-cover object-top"
-          style={{ maxHeight: 300 }}
-        />
-      </div>
     </div>
   );
 }

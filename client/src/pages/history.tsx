@@ -221,7 +221,6 @@ export default function HistoryPage() {
           })
         )}
       </div>
-      <img src={landscapeImg} alt="Powerade" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
     </div>
   );
 }
