@@ -89,24 +89,20 @@ export default function HomePage() {
       {/* ══════════════ POPUP ══════════════ */}
       {showPopup && (
         <div
-          className="fixed inset-0 z-[100] flex items-end justify-center"
-          style={{ background: "rgba(0,0,0,0.72)" }}
+          className="fixed inset-0 z-[100] flex items-center justify-center px-5"
+          style={{ background: "rgba(0,0,0,0.75)" }}
           onClick={() => setShowPopup(false)}
         >
           <div
-            className="w-full max-w-[420px] rounded-t-3xl overflow-hidden shadow-2xl flex flex-col"
-            style={{ background: "#fff", maxHeight: "88vh" }}
+            className="w-full rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+            style={{ background: "#fff", maxWidth: 340, maxHeight: "80vh" }}
             onClick={e => e.stopPropagation()}
           >
 
             {/* ── Banner header ── */}
-            <div className="relative shrink-0" style={{ height: 170 }}>
-              <img
-                src={popupBanner}
-                alt="ASUS"
-                className="w-full h-full object-cover"
-              />
-              {/* Mascot overlapping */}
+            <div className="relative shrink-0" style={{ height: 150 }}>
+              <img src={popupBanner} alt="ASUS" className="w-full h-full object-cover" />
+              {/* Mascote centrée à cheval */}
               <div
                 className="absolute left-1/2 bottom-0"
                 style={{ transform: "translate(-50%, 50%)", zIndex: 10 }}
@@ -114,64 +110,38 @@ export default function HomePage() {
                 <img
                   src={popupMascot}
                   alt="mascot"
-                  style={{ width: 70, height: 70, objectFit: "contain", filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.35))" }}
+                  style={{ width: 62, height: 62, objectFit: "contain", filter: "drop-shadow(0 3px 8px rgba(0,0,0,0.4))" }}
                 />
               </div>
             </div>
 
-            {/* ── Scrollable content ── */}
-            <div
-              className="flex-1 overflow-y-auto px-5 pb-3"
-              style={{ paddingTop: 46 }}
-            >
+            {/* ── Contenu scrollable ── */}
+            <div className="flex-1 overflow-y-auto px-4 pb-3" style={{ paddingTop: 42 }}>
               {popupLines.map((item, i) => (
-                <p
-                  key={i}
-                  className="text-gray-800 leading-relaxed mb-2"
-                  style={{ fontSize: 13.5 }}
-                >
-                  <span style={{ marginRight: 4 }}>{item.emoji}</span>
-                  {item.text}
+                <p key={i} className="text-gray-800 leading-relaxed mb-2" style={{ fontSize: 13 }}>
+                  <span style={{ marginRight: 3 }}>{item.emoji}</span>{item.text}
                 </p>
               ))}
             </div>
 
-            {/* ── Bottom button row (fixed) ── */}
-            <div
-              className="shrink-0 flex items-center px-4 py-3 gap-3"
-              style={{ borderTop: "1px solid #f3f4f6" }}
-            >
-              {/* Telegram button */}
+            {/* ── Boutons bas (fixes) ── */}
+            <div className="shrink-0 flex items-center px-4 py-3 gap-2" style={{ borderTop: "1px solid #f3f4f6" }}>
               <a
                 href={telegramGroupLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setShowPopup(false)}
-                className="flex items-center justify-center gap-2 font-bold text-white rounded-xl"
-                style={{
-                  flex: "0 0 48%",
-                  height: 46,
-                  background: "#0088cc",
-                  fontSize: 14,
-                  boxShadow: "0 2px 8px rgba(0,136,204,0.35)",
-                }}
+                className="flex items-center justify-center gap-1.5 font-bold text-white rounded-xl"
+                style={{ flex: "1 1 0", height: 44, background: "#0088cc", fontSize: 13.5, boxShadow: "0 2px 6px rgba(0,136,204,0.3)" }}
                 data-testid="button-popup-telegram"
               >
-                <SiTelegram style={{ width: 18, height: 18 }} />
+                <SiTelegram style={{ width: 16, height: 16 }} />
                 Telegram &gt;
               </a>
-
-              {/* D'accord button */}
               <button
                 onClick={() => setShowPopup(false)}
-                className="flex items-center justify-center font-extrabold rounded-xl"
-                style={{
-                  flex: "0 0 48%",
-                  height: 46,
-                  background: "transparent",
-                  color: "#22c55e",
-                  fontSize: 17,
-                }}
+                className="flex items-center justify-center font-extrabold"
+                style={{ flex: "1 1 0", height: 44, background: "transparent", color: "#22c55e", fontSize: 16 }}
                 data-testid="button-popup-agree"
               >
                 D'accord
