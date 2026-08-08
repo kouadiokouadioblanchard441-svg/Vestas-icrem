@@ -110,7 +110,7 @@ export default function WheelRulesModal({ open, onClose }: WheelRulesModalProps)
           />
           <div>
             <p className="font-extrabold text-xl text-white leading-tight tracking-wide">
-              LOTERIE PowerAdd
+              LOTERIE Asus
             </p>
             <p className="text-sm mt-1 font-medium" style={{ color: "rgba(255,215,0,0.9)" }}>
               🎡 Tournez la roue et remportez des USDT

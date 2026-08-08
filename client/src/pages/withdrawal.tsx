@@ -35,7 +35,7 @@ export default function WithdrawalPage() {
   const [selectedWallet, setSelectedWallet] = useState<WalletData | null>(null);
   const [, navigate] = useLocation();
 
-  const currency = "USDT";
+  const currency = "FCFA";
 
   const { data: withdrawalSettings } = useQuery<{
     withdrawalFees: number;
@@ -134,7 +134,7 @@ export default function WithdrawalPage() {
       return;
     }
     if (!amount || amount < minWithdrawal) {
-      toast({ title: t.invalidAmount, description: `${t.minAmountPrefix} ${minWithdrawal} USDT`, variant: "destructive" });
+      toast({ title: t.invalidAmount, description: `${t.minAmountPrefix} ${minWithdrawal} FCFA`, variant: "destructive" });
       return;
     }
     if (!selectedWallet) {

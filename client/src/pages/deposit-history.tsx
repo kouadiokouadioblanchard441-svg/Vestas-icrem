@@ -19,7 +19,7 @@ export default function DepositHistoryPage() {
   const { user } = useAuth();
   const { t } = useI18n();
   const countryInfo = user ? getCountryByCode(user.country) : null;
-  const currency = countryInfo?.currency || "USDT";
+  const currency = "FCFA";
 
   const { data: withdrawals = [], isLoading } = useQuery<Withdrawal[]>({
     queryKey: ["/api/withdrawals/history"],

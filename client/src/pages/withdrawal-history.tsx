@@ -30,7 +30,7 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
 
 export default function WithdrawalHistoryPage() {
   const { t } = useI18n();
-  const currency = "USDT";
+  const currency = "FCFA";
 
   const { data: withdrawals = [], isLoading } = useQuery<Withdrawal[]>({
     queryKey: ["/api/withdrawals/history"],

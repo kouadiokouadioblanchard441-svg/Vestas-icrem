@@ -51,7 +51,7 @@ export default function MembersPage() {
   });
 
   const country = getCountryByCode(user?.country || "");
-  const currency = country?.currency || "USDT";
+  const currency = "FCFA";
 
   const levels = [
     { num: 1 as const, label: `${t.membersLevel} 1`, members: team?.level1 || [] },

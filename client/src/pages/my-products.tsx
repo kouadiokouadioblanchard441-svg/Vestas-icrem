@@ -21,7 +21,7 @@ export default function MyProductsPage() {
   if (!user) return null;
 
   const country = getCountryByCode(user.country);
-  const currency = country?.currency || "USDT";
+  const currency = "FCFA";
 
   const allProducts = userProducts || [];
 

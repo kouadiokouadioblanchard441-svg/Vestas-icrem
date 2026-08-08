@@ -77,7 +77,7 @@ export default function AccountPage() {
   const balance = parseFloat(user.balance || "0");
   const totalEarnings = parseFloat(user.totalEarnings || "0");
   const country = getCountryByCode(user.country);
-  const currency = country?.currency || "USDT";
+  const currency = "FCFA";
   const phonePrefix = country?.phonePrefix || "";
 
   // 3 boutons rapides
@@ -117,7 +117,6 @@ export default function AccountPage() {
                 <p className="text-white/80 text-xs mt-0.5 drop-shadow">ID : {user.referralCode}</p>
               </div>
             </div>
-            <img src={iconWallet} alt="" className="w-16 h-16 object-contain" />
           </div>
 
           {/* ── 2 cartes balance d'origine ── */}

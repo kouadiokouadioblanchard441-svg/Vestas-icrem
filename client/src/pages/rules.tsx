@@ -58,8 +58,8 @@ export default function RulesPage() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-[#E8192C] border-l-4 border-[#E8192C] pl-3">{rS2Title}</h2>
           <ul className="list-disc pl-5 space-y-2 text-white/90 text-sm">
-            <li>最低充值金额为 {parseInt(minDeposit).toLocaleString()} USDT。</li>
-            <li>最低提现金额为 {parseInt(minWithdrawal).toLocaleString()} USDT。</li>
+            <li>最低充值金额为 {parseInt(minDeposit).toLocaleString()} FCFA。</li>
+            <li>最低提现金额为 {parseInt(minWithdrawal).toLocaleString()} FCFA。</li>
             <li>提现手续费为 {withdrawalFees}%，用于支付交易和维护费用。</li>
             <li>提现时间为工作日 {withdrawalStartHour}:00 至 {withdrawalEndHour}:00。</li>
             <li>每位用户每天最多提现 {maxWithdrawalsPerDay} 次。</li>
@@ -79,7 +79,7 @@ export default function RulesPage() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-[#E8192C] border-l-4 border-[#E8192C] pl-3">{rS4Title}</h2>
           <ul className="list-disc pl-5 space-y-2 text-white/90 text-sm">
-            <li>每位新会员注册后可获得 {parseInt(signupBonus).toLocaleString()} USDT 奖励。</li>
+            <li>每位新会员注册后可获得 {parseInt(signupBonus).toLocaleString()} FCFA 奖励。</li>
           </ul>
         </section>
 

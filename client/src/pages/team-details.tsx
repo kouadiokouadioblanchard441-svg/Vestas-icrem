@@ -58,7 +58,7 @@ export default function TeamDetailsPage() {
   });
 
   const country = getCountryByCode(user?.country || "");
-  const currency = country?.currency || "USDT";
+  const currency = "FCFA";
 
   const levels = [
     {

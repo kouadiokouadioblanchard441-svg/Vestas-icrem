@@ -204,7 +204,7 @@ function drawWheel(
     ctx.textBaseline = "middle";
     ctx.shadowColor = "rgba(0,0,0,0.95)";
     ctx.shadowBlur = 6;
-    const amountText = `${seg.amount} USDT`;
+    const amountText = `${seg.amount} FCFA`;
     const amountFontSize = fitFontSize(amountText, "900", 16, 10);
     ctx.font = `900 ${amountFontSize}px sans-serif`;
     ctx.fillText(amountText, 0, -8);
@@ -519,7 +519,7 @@ export default function SpinWheelPage() {
         <p className="text-xs mb-1" style={{ color: "#a78bfa" }}>{t.wheelTotalRewardsLabel}</p>
         <div className="flex items-center justify-between">
           <p className="font-extrabold text-2xl" style={{ color: "#ffd700", textShadow: "0 0 12px #ffd70088" }}>
-            {totalWon.toLocaleString(undefined, { maximumFractionDigits: 2 })} USDT
+            {totalWon.toLocaleString(undefined, { maximumFractionDigits: 2 })} FCFA
           </p>
         </div>
 

@@ -38,8 +38,8 @@ export default function HistoryPage() {
   const [activeTab, setActiveTab] = useState<"deposits" | "withdrawals">("deposits");
 
   const country = getCountryByCode(user?.country || "");
-  const depositCurrency = country?.currency || "USDT";
-  const withdrawalCurrency = "USDT";
+  const depositCurrency = "FCFA";
+  const withdrawalCurrency = "FCFA";
 
   const { data: deposits = [], isLoading: depositsLoading } = useQuery<Deposit[]>({
     queryKey: ["/api/deposits/history"],

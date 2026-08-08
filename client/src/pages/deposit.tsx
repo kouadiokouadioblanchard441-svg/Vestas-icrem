@@ -78,7 +78,7 @@ export default function DepositPage() {
   const countryInfo = apiCountries.length > 0
     ? apiCountries.find((country) => country.code === user?.country && country.isActive)
     : COUNTRIES.find((country) => country.code === user?.country);
-  const currency = countryInfo?.currency || "USDT";
+  const currency = "FCFA";
   const minDeposit = parseInt(platformSettings?.minDeposit || "3500", 10);
   const presetAmounts = useMemo(
     () => (platformSettings?.depositPresetAmounts || "3500,5000,7000,10000,15000,20000,50000,70000")

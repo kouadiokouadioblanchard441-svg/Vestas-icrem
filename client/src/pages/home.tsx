@@ -52,7 +52,7 @@ export default function HomePage() {
   const balance       = parseFloat(user.balance       || "0");
   const totalEarnings = parseFloat(user.totalEarnings || "0");
   const country       = getCountryByCode(user.country);
-  const currency      = country?.currency || "USDT";
+  const currency      = "FCFA";
 
   const telegramGroupLink = settings?.groupLink || "https://t.me/vestasgroup";
   const popupTitle  = getContent(settings, "content_home_popupTitle",  "通知");
