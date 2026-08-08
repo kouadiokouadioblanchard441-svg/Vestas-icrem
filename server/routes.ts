@@ -999,6 +999,53 @@ export async function registerRoutes(
     }
   });
 
+  // Unified history: deposits + withdrawals + all transactions merged & sorted
+  app.get("/api/history/all", requireAuth, async (req, res) => {
+    try {
+      const uid = req.session.userId!;
+      const [deposits, withdrawals, txs] = await Promise.all([
+        storage.getUserDeposits(uid),
+        storage.getUserWithdrawals(uid),
+        storage.getUserTransactions(uid),
+      ]);
+
+      const items: any[] = [
+        ...deposits.map((d: any) => ({
+          id: `dep-${d.id}`,
+          category: "deposit",
+          amount: d.amount,
+          status: d.status,
+          description: d.paymentMethod || "Dépôt",
+          createdAt: d.createdAt,
+          extra: { fees: null, netAmount: null, paymentMethod: d.paymentMethod },
+        })),
+        ...withdrawals.map((w: any) => ({
+          id: `wd-${w.id}`,
+          category: "withdrawal",
+          amount: w.amount,
+          status: w.status,
+          description: w.paymentMethod || "Retrait",
+          createdAt: w.createdAt,
+          extra: { fees: w.fees, netAmount: w.netAmount, paymentMethod: w.paymentMethod },
+        })),
+        ...txs.map((t: any) => ({
+          id: `tx-${t.id}`,
+          category: t.type,
+          amount: t.amount,
+          status: "completed",
+          description: t.description,
+          createdAt: t.createdAt,
+          extra: {},
+        })),
+      ];
+
+      items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      res.json(items);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
 
   // Withdrawals
   app.post("/api/withdrawals", requireAuth, async (req, res) => {
