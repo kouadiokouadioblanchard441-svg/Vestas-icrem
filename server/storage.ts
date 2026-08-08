@@ -494,7 +494,9 @@ export class DatabaseStorage implements IStorage {
           const earningsPerCycle = parseFloat(product.dailyEarnings as string);
           const totalEarningsForProduct = parseFloat((earningsPerCycle * cyclesToCredit).toFixed(2));
 
-          const newLastEarningDate = new Date(lastEarning.getTime() + (cyclesToCredit * 24 * 60 * 60 * 1000));
+          // La nouvelle référence = moment exact du traitement (secondes comprises)
+          // Si collecte en retard, c'est cette heure qui devient le prochain point de départ
+          const newLastEarningDate = new Date(now);
 
           const currentTotal = userEarnings.get(user.id) || 0;
           userEarnings.set(user.id, currentTotal + totalEarningsForProduct);

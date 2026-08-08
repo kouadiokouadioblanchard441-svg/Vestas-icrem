@@ -457,7 +457,9 @@ export async function registerRoutes(
             const earningsPerCycle = parseFloat(String(product.dailyEarnings));
             const totalEarningsForProduct = earningsPerCycle * cyclesToCredit;
 
-            const newLastEarningDate = new Date(lastEarning.getTime() + (cyclesToCredit * 24 * 60 * 60 * 1000));
+            // La nouvelle référence = moment exact de la collecte (secondes comprises)
+            // Si collecte en retard, c'est cette heure qui devient le prochain point de départ
+            const newLastEarningDate = new Date(now);
 
             totalCollected += totalEarningsForProduct;
             productsCollected++;
