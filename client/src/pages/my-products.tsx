@@ -57,11 +57,7 @@ export default function MyProductsPage() {
         {/* Stats cards */}
         <div
           className="mx-3 mt-3 rounded-2xl shadow-md overflow-hidden relative"
-          style={{
-            background: `linear-gradient(135deg, rgba(0,0,0,0.60), rgba(0,0,0,0.40)), url(${heroBanner})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
+          style={{ background: "#4a5e22" }}
         >
           <div className="grid grid-cols-2 divide-x divide-white/20">
             <div className="px-4 py-4 flex items-center gap-3">
