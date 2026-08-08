@@ -114,7 +114,27 @@ export default function AccountPage() {
                 <p className="text-white font-bold text-base leading-tight drop-shadow" data-testid="text-phone">
                   {phonePrefix}{user.phone}
                 </p>
-                <p className="text-white/80 text-xs mt-0.5 drop-shadow">ID : {user.referralCode}</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <p className="text-white/80 text-xs drop-shadow">ID : {user.referralCode}</p>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(user.referralCode || "");
+                      const el = document.getElementById("copy-id-feedback");
+                      if (el) { el.style.opacity = "1"; setTimeout(() => { el.style.opacity = "0"; }, 1200); }
+                    }}
+                    className="px-1.5 py-0.5 rounded text-[10px] font-bold leading-none active:scale-95 transition-transform"
+                    style={{ background: "rgba(255,255,255,0.25)", color: "white" }}
+                  >
+                    Copier
+                  </button>
+                  <span
+                    id="copy-id-feedback"
+                    className="text-[10px] font-bold transition-opacity duration-300"
+                    style={{ color: "#86efac", opacity: 0 }}
+                  >
+                    ✓
+                  </span>
+                </div>
               </div>
             </div>
           </div>
