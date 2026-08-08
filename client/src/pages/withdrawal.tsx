@@ -239,9 +239,9 @@ export default function WithdrawalPage() {
           </div>
         )}
         {!hasActiveProduct && (
-          <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-xs font-medium text-red-600">
+          <p className="text-center text-sm font-semibold" style={{ color: "#ff0000" }}>
             {withdrawalWarningNoProduct}
-          </div>
+          </p>
         )}
 
         {/* CTA Button — olive pill */}
