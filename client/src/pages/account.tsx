@@ -78,6 +78,16 @@ export default function AccountPage() {
   const totalEarnings = parseFloat(user.totalEarnings || "0");
   const country = getCountryByCode(user.country);
   const currency = "FCFA";
+
+  // Niveau VIP calculé selon les produits achetés
+  const productCount = products?.length ?? 0;
+  const vipLevel = productCount >= 1 ? 1 : 0;
+
+  const VIP_STYLES: Record<number, { label: string; bg: string; text: string; border: string }> = {
+    0: { label: "VIP 0", bg: "rgba(255,255,255,0.15)", text: "#ffffff", border: "rgba(255,255,255,0.3)" },
+    1: { label: "VIP 1", bg: "linear-gradient(90deg,#f5a800,#ff6b00)", text: "#fff", border: "transparent" },
+  };
+  const vipStyle = VIP_STYLES[vipLevel] ?? VIP_STYLES[0];
   const phonePrefix = country?.phonePrefix || "";
 
   // 3 boutons rapides
@@ -133,6 +143,20 @@ export default function AccountPage() {
                     style={{ color: "#86efac", opacity: 0 }}
                   >
                     ✓
+                  </span>
+                </div>
+
+                {/* Badge VIP */}
+                <div className="mt-1.5">
+                  <span
+                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black tracking-wider border"
+                    style={{
+                      background: vipStyle.bg,
+                      color: vipStyle.text,
+                      borderColor: vipStyle.border,
+                    }}
+                  >
+                    ★ {vipStyle.label}
                   </span>
                 </div>
               </div>
