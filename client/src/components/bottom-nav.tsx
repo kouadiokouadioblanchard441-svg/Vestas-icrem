@@ -9,16 +9,18 @@ import iconCompte from "@assets/téléchargement_(12)_1770815897017.png";
 
 const activeStyle  = { opacity: 1 };
 const inactiveStyle = { opacity: 0.4 };
+// Filtre pour rendre les icônes colorées en gris, comme l'icône "Moi"
+const grayFilter = "grayscale(100%)";
 
 export default function BottomNav() {
   const [location, navigate] = useLocation();
   const { t } = useI18n();
   const navItems = [
-    { path: "/", label: t.home, testId: "home", icon: iconHome },
-    { path: "/invest", label: t.products, testId: "products", icon: iconProduit },
-    { path: "/my-products", label: t.earnings, testId: "earnings", icon: iconGains },
-    { path: "/team", label: t.team, testId: "team", icon: iconEquipe },
-    { path: "/account", label: t.me, testId: "me", icon: iconCompte },
+    { path: "/", label: t.home, testId: "home", icon: iconHome, gray: false },
+    { path: "/invest", label: t.products, testId: "products", icon: iconProduit, gray: true },
+    { path: "/my-products", label: t.earnings, testId: "earnings", icon: iconGains, gray: true },
+    { path: "/team", label: t.team, testId: "team", icon: iconEquipe, gray: true },
+    { path: "/account", label: t.me, testId: "me", icon: iconCompte, gray: false },
   ];
 
   return (
@@ -43,7 +45,10 @@ export default function BottomNav() {
                 src={item.icon}
                 alt={item.label}
                 className="w-8 h-8 mb-0.5"
-                style={isActive ? activeStyle : inactiveStyle}
+                style={{
+                  ...(isActive ? activeStyle : inactiveStyle),
+                  ...(item.gray ? { filter: grayFilter } : {}),
+                }}
               />
               <span
                 className="text-[10px] font-medium"
