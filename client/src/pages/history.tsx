@@ -53,6 +53,8 @@ function getCategoryMeta(category: string) {
 export default function HistoryPage() {
   const { data: items = [], isLoading } = useQuery<HistoryItem[]>({
     queryKey: ["/api/history/all"],
+    staleTime: 0,          // toujours refetch à chaque visite
+    refetchOnMount: true,
   });
 
   return (
