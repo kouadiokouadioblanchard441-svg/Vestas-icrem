@@ -51,7 +51,15 @@ export default function MyProductsPage() {
               <ChevronLeft className="w-5 h-5 text-white" />
             </button>
           </Link>
-          <p className="text-white text-xl font-black tracking-tight ml-3">{t.myProductsTitle}</p>
+          <p className="text-white text-xl font-black tracking-tight ml-3 flex-1">{t.myProductsTitle}</p>
+          <Link href="/expired-products">
+            <button
+              className="px-3 py-1.5 rounded-full text-xs font-bold"
+              style={{ background: "rgba(220,38,38,0.85)", color: "white" }}
+            >
+              Expirés
+            </button>
+          </Link>
         </div>
 
         {/* Stats cards */}

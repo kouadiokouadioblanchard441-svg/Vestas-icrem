@@ -76,6 +76,7 @@ import MyProductsPage from "@/pages/my-products";
 import CheckinPage from "@/pages/checkin";
 import RewardsPage from "@/pages/rewards";
 import WithdrawalHistoryPage from "@/pages/withdrawal-history";
+import ExpiredProductsPage from "@/pages/expired-products";
 import DepositOrdersPage from "@/pages/deposit-orders";
 import DepositCallbackPage from "@/pages/deposit-callback";
 import SalaryBonusPage from "@/pages/salary-bonus";
@@ -298,6 +299,11 @@ function RouterComponent() {
       <Route path="/withdrawal-history">
         <ProtectedRoute>
           <WithdrawalHistoryPage />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/expired-products">
+        <ProtectedRoute>
+          <ExpiredProductsPage />
         </ProtectedRoute>
       </Route>
       <Route path="/deposit-orders">
