@@ -38,7 +38,7 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
     defaultValues: {
       phone: parsedCredentials?.phone || "",
-      country: parsedCredentials?.country || "US",
+      country: parsedCredentials?.country || "CI",
       password: "",
     },
   });
@@ -100,7 +100,7 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen flex flex-col"
-      style={{ background: "#0d0d0d" }}
+      style={{ background: "#2d3816" }}
     >
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", padding: "24px 20px" }}>
 
@@ -200,7 +200,7 @@ export default function LoginPage() {
               onClick={form.handleSubmit(onSubmit)}
               disabled={isLoading}
               className="w-full font-bold text-white text-base disabled:opacity-50 transition-all active:scale-95"
-              style={{ height: 56, borderRadius: 28, background: "#1a56db", boxShadow: "0 4px 16px rgba(26,86,219,0.55)" }}
+              style={{ height: 56, borderRadius: 28, background: "#4a5e22", boxShadow: "0 4px 16px rgba(45,56,22,0.55)" }}
               data-testid="button-login"
             >
               {t.loginImmediately}
@@ -211,7 +211,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => navigate("/register")}
               className="w-full font-bold text-white text-base transition-all active:scale-95"
-              style={{ height: 56, borderRadius: 28, background: "#1a56db", boxShadow: "0 4px 16px rgba(26,86,219,0.55)" }}
+              style={{ height: 56, borderRadius: 28, background: "#4a5e22", boxShadow: "0 4px 16px rgba(45,56,22,0.55)" }}
               data-testid="link-register"
             >
               {t.noAccountRegister}

@@ -44,7 +44,7 @@ export default function RegisterPage() {
     resolver: zodResolver(registerSchema),
     defaultValues: {
       phone: "",
-      country: "US",
+      country: "CI",
       password: "",
       confirmPassword: "",
       invitationCode: refCode,
@@ -109,7 +109,7 @@ export default function RegisterPage() {
   return (
     <div
       className="min-h-screen flex flex-col"
-      style={{ background: "#0d0d0d" }}
+      style={{ background: "#2d3816" }}
     >
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", padding: "24px 20px" }}>
 
@@ -211,7 +211,7 @@ export default function RegisterPage() {
               onClick={form.handleSubmit(onSubmit)}
               disabled={isLoading}
               className="w-full font-bold text-white text-base disabled:opacity-50 transition-all active:scale-95 mt-2"
-              style={{ height: 56, borderRadius: 28, background: "#1a56db", boxShadow: "0 4px 16px rgba(26,86,219,0.55)" }}
+              style={{ height: 56, borderRadius: 28, background: "#4a5e22", boxShadow: "0 4px 16px rgba(45,56,22,0.55)" }}
               data-testid="button-register"
             >
               {t.registerNow}
@@ -222,7 +222,7 @@ export default function RegisterPage() {
               type="button"
               onClick={() => navigate("/login")}
               className="w-full font-bold text-white text-base transition-all active:scale-95"
-              style={{ height: 56, borderRadius: 28, background: "#1a56db", boxShadow: "0 4px 16px rgba(26,86,219,0.55)" }}
+              style={{ height: 56, borderRadius: 28, background: "#4a5e22", boxShadow: "0 4px 16px rgba(45,56,22,0.55)" }}
               data-testid="link-login"
             >
               {t.alreadyHaveAccountLogin}
