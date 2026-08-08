@@ -35,14 +35,14 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
 };
 
 const CATEGORY_META: Record<string, { label: string; color: string; sign: "+" | "-" }> = {
-  deposit:     { label: "Dépôt",              color: "#2563eb", sign: "+" },
+  deposit:     { label: "Dépôt",              color: "#111827", sign: "+" },
   withdrawal:  { label: "Retrait",            color: "#dc2626", sign: "-" },
   earning:     { label: "Gain produit",       color: "#16a34a", sign: "+" },
-  commission:  { label: "Bonus parrainage",   color: "#7c3aed", sign: "+" },
-  bonus:       { label: "Bonus",              color: "#d97706", sign: "+" },
-  gift_code:   { label: "Code cadeau",        color: "#db2777", sign: "+" },
-  task_reward: { label: "Récompense tâche",   color: "#0891b2", sign: "+" },
-  spin_reward: { label: "Récompense spin",    color: "#ea580c", sign: "+" },
+  commission:  { label: "Bonus parrainage",   color: "#16a34a", sign: "+" },
+  bonus:       { label: "Bonus",              color: "#16a34a", sign: "+" },
+  gift_code:   { label: "Code cadeau",        color: "#16a34a", sign: "+" },
+  task_reward: { label: "Récompense tâche",   color: "#16a34a", sign: "+" },
+  spin_reward: { label: "Récompense spin",    color: "#16a34a", sign: "+" },
 };
 
 function getCategoryMeta(category: string) {
