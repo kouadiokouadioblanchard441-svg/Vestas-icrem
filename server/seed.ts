@@ -252,8 +252,8 @@ export async function seed() {
     { key: "withdrawalStartHour", value: "9" },
     { key: "withdrawalEndHour", value: "17" },
     { key: "maxWithdrawalsPerDay", value: "1" },
-    { key: "level1Commission", value: "25" },
-    { key: "level2Commission", value: "1" },
+    { key: "level1Commission", value: "10" },
+    { key: "level2Commission", value: "2" },
     { key: "level3Commission", value: "1" },
     { key: "soleaspayEnabled", value: "false" },
     { key: "soleaspayCountries", value: "" },
@@ -266,6 +266,7 @@ export async function seed() {
   // Keys whose values must always be overwritten (e.g. Chinese → French migration)
   const FORCE_UPDATE_KEYS = new Set([
     "supportLabel", "support2Label", "channelLabel", "groupLabel", "popupButtonLabel",
+    "level1Commission", "level2Commission", "level3Commission",
   ]);
 
   for (const settingData of requiredSettings) {
