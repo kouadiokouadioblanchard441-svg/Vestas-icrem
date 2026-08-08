@@ -74,7 +74,7 @@ export default function GiftCodePage() {
       <div className="relative">
         <img
           src="/powerade-logo.webp"
-          alt="Powerade"
+          alt="ASUS"
           className="w-full h-36 object-contain bg-white"
           data-testid="img-gift-banner"
         />

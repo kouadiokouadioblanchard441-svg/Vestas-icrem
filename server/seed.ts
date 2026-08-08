@@ -228,17 +228,17 @@ export async function seed() {
   const requiredSettings = [
     { key: "supportLink", value: "https://t.me/vestasgroup" },
     { key: "supportType", value: "telegram" },
-    { key: "supportLabel", value: "客服" },
+    { key: "supportLabel", value: "Support client" },
     { key: "support2Link", value: "https://t.me/vestasgroup" },
     { key: "support2Type", value: "telegram" },
-    { key: "support2Label", value: "客服2" },
+    { key: "support2Label", value: "Support client 2" },
     { key: "channelLink", value: "https://t.me/vestasgroup" },
     { key: "channelType", value: "telegram" },
-    { key: "channelLabel", value: "官方频道" },
+    { key: "channelLabel", value: "Chaîne officielle" },
     { key: "groupLink", value: "https://t.me/vestasgroup" },
     { key: "groupType", value: "telegram" },
-    { key: "groupLabel", value: "讨论群" },
-    { key: "popupButtonLabel", value: "点击加入Telegram群组" },
+    { key: "groupLabel", value: "Groupe de discussion" },
+    { key: "popupButtonLabel", value: "Rejoindre le groupe Telegram" },
     { key: "supportEnabled", value: "true" },
     { key: "support2Enabled", value: "true" },
     { key: "channelEnabled", value: "true" },
@@ -263,16 +263,22 @@ export async function seed() {
     { key: "omnipayCallbackKey", value: "" },
   ];
 
+  // Keys whose values must always be overwritten (e.g. Chinese → French migration)
+  const FORCE_UPDATE_KEYS = new Set([
+    "supportLabel", "support2Label", "channelLabel", "groupLabel", "popupButtonLabel",
+  ]);
+
   for (const settingData of requiredSettings) {
     const existing = existingSettings.find(s => s.key === settingData.key);
     if (!existing) {
       await db.insert(platformSettings).values(settingData);
-      // Never print configuration values: some settings contain webhook
-      // secrets or callback keys.
       console.log(`Setting added: ${settingData.key}`);
+    } else if (FORCE_UPDATE_KEYS.has(settingData.key)) {
+      await db.update(platformSettings)
+        .set({ value: settingData.value })
+        .where(eq(platformSettings.key, settingData.key));
+      console.log(`Setting updated: ${settingData.key}`);
     } else {
-      // Never print configuration values: some settings contain webhook
-      // secrets or callback keys.
       console.log(`Setting preserved: ${settingData.key}`);
     }
   }
