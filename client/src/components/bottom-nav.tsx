@@ -7,8 +7,8 @@ import iconGains from "@assets/nav-gains-new.png";
 import iconEquipe from "@assets/nav-equipe-new.png";
 import iconCompte from "@assets/téléchargement_(12)_1770815897017.png";
 
-const greenFilter = "brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(2000%) hue-rotate(340deg) brightness(95%) contrast(110%)";
-const grayFilter = "brightness(0) saturate(0%) opacity(40%)";
+const activeStyle  = { opacity: 1 };
+const inactiveStyle = { opacity: 0.4 };
 
 export default function BottomNav() {
   const [location, navigate] = useLocation();
@@ -43,7 +43,7 @@ export default function BottomNav() {
                 src={item.icon}
                 alt={item.label}
                 className="w-8 h-8 mb-0.5"
-                style={{ filter: isActive ? greenFilter : grayFilter }}
+                style={isActive ? activeStyle : inactiveStyle}
               />
               <span
                 className="text-[10px] font-medium"
