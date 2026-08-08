@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { ChevronLeft, Star, Users, TrendingUp } from "lucide-react";
+import { ChevronLeft, Star, Users, TrendingUp, Gift } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import {
   computeVipLevel,
@@ -227,6 +227,25 @@ export default function VipPage() {
                         🎁 {cfg.advantages}
                       </p>
                     </div>
+
+                    {/* Récompense de passage */}
+                    {cfg.reward > 0 && (
+                      <div
+                        className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between gap-2"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <Gift className={`w-3.5 h-3.5 ${isActive || isDone ? "text-yellow-300" : "text-white/30"}`} />
+                          <span className={`text-[11px] font-bold ${isActive || isDone ? "text-yellow-300" : "text-white/30"}`}>
+                            Récompense : {cfg.reward.toLocaleString()} FCFA
+                          </span>
+                        </div>
+                        {isDone && (
+                          <span className="text-[10px] bg-yellow-400/20 text-yellow-300 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">
+                            Contacter le responsable
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               );

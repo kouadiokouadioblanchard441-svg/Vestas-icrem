@@ -16,6 +16,8 @@ export interface VipLevelConfig {
   minLevelB: number | null;
   minTotalTeam: number | null;
   requiresInvestment: boolean;
+  /** Récompense en FCFA débloquée en atteignant ce niveau (0 = aucune) */
+  reward: number;
 }
 
 /** Conditions par défaut — peuvent être remplacées par les valeurs admin */
@@ -27,6 +29,7 @@ export const DEFAULT_VIP_CONFIGS: VipLevelConfig[] = [
     advantages: "Accès à la plateforme. Possibilité de déposer et d'investir.",
     minDirectA: null, minLevelB: null, minTotalTeam: null,
     requiresInvestment: false,
+    reward: 0,
   },
   {
     level: 1,
@@ -35,6 +38,7 @@ export const DEFAULT_VIP_CONFIGS: VipLevelConfig[] = [
     advantages: "Accès complet à la plateforme. Gains quotidiens. Commissions de parrainage actives.",
     minDirectA: null, minLevelB: null, minTotalTeam: null,
     requiresInvestment: true,
+    reward: 0,
   },
   {
     level: 2,
@@ -43,6 +47,7 @@ export const DEFAULT_VIP_CONFIGS: VipLevelConfig[] = [
     advantages: "Statut VIP 2. Reconnaissance de votre activité de recrutement.",
     minDirectA: 3, minLevelB: null, minTotalTeam: null,
     requiresInvestment: true,
+    reward: 500,
   },
   {
     level: 3,
@@ -51,6 +56,7 @@ export const DEFAULT_VIP_CONFIGS: VipLevelConfig[] = [
     advantages: "Statut VIP 3. Équipe structurée sur 2 niveaux.",
     minDirectA: 3, minLevelB: 1, minTotalTeam: null,
     requiresInvestment: true,
+    reward: 1000,
   },
   {
     level: 4,
@@ -59,6 +65,7 @@ export const DEFAULT_VIP_CONFIGS: VipLevelConfig[] = [
     advantages: "Statut VIP 4. Leader d'équipe confirmé.",
     minDirectA: null, minLevelB: null, minTotalTeam: 100,
     requiresInvestment: true,
+    reward: 2000,
   },
   {
     level: 5,
@@ -67,6 +74,7 @@ export const DEFAULT_VIP_CONFIGS: VipLevelConfig[] = [
     advantages: "Statut VIP 5. Ambassadeur de la plateforme.",
     minDirectA: null, minLevelB: null, minTotalTeam: 300,
     requiresInvestment: true,
+    reward: 3500,
   },
   {
     level: 6,
@@ -75,6 +83,7 @@ export const DEFAULT_VIP_CONFIGS: VipLevelConfig[] = [
     advantages: "Statut VIP 6. Partenaire élite.",
     minDirectA: null, minLevelB: null, minTotalTeam: 600,
     requiresInvestment: true,
+    reward: 5000,
   },
   {
     level: 7,
@@ -83,6 +92,7 @@ export const DEFAULT_VIP_CONFIGS: VipLevelConfig[] = [
     advantages: "Statut VIP 7. Rang suprême. Reconnaissance maximale.",
     minDirectA: null, minLevelB: null, minTotalTeam: 1000,
     requiresInvestment: true,
+    reward: 7500,
   },
 ];
 
