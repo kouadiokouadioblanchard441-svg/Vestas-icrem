@@ -49,6 +49,7 @@ const settingsSchema = z.object({
   withdrawalFees: z.string().min(1, "Frais requis"),
   maxWithdrawalsPerDay: z.string().min(1, "Requis"),
   withdrawalInstructions: z.string().optional(),
+  withdrawalDays: z.string().min(1, "Jours requis"),
   withdrawalStartHour: z.string().min(1, "Heure requise"),
   withdrawalEndHour: z.string().min(1, "Heure requise"),
   level1Commission: z.string().min(1, "Commission requise"),
@@ -192,6 +193,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
       withdrawalFees: "10",
       maxWithdrawalsPerDay: "1",
       withdrawalInstructions: "",
+      withdrawalDays: "1,2,3,4,5",
       withdrawalStartHour: "9",
       withdrawalEndHour: "17",
       level1Commission: "25",
@@ -228,6 +230,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         withdrawalFees: settings.withdrawalFees || "10",
         maxWithdrawalsPerDay: settings.maxWithdrawalsPerDay || "1",
         withdrawalInstructions: settings.withdrawalInstructions || "",
+        withdrawalDays: settings.withdrawalDays || "1,2,3,4,5",
         withdrawalStartHour: settings.withdrawalStartHour || "9",
         withdrawalEndHour: settings.withdrawalEndHour || "17",
         level1Commission: settings.level1Commission || "25",
@@ -647,17 +650,60 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
               </FormItem>
             )} />
 
+            {/* Jours autorisés */}
+            <FormField control={form.control} name="withdrawalDays" render={({ field }) => {
+              const DAYS = [
+                { value: "1", label: "Lun" },
+                { value: "2", label: "Mar" },
+                { value: "3", label: "Mer" },
+                { value: "4", label: "Jeu" },
+                { value: "5", label: "Ven" },
+                { value: "6", label: "Sam" },
+                { value: "0", label: "Dim" },
+              ];
+              const selected = new Set((field.value || "").split(",").map(s => s.trim()).filter(Boolean));
+              const toggle = (v: string) => {
+                const next = new Set(selected);
+                next.has(v) ? next.delete(v) : next.add(v);
+                field.onChange([...next].join(","));
+              };
+              return (
+                <FormItem>
+                  <FormLabel>Jours autorisés pour les retraits</FormLabel>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {DAYS.map(d => (
+                      <button
+                        key={d.value}
+                        type="button"
+                        onClick={() => toggle(d.value)}
+                        className="px-3 py-1.5 rounded-full text-sm font-medium border transition-colors"
+                        style={{
+                          background: selected.has(d.value) ? "hsl(var(--primary))" : "transparent",
+                          color: selected.has(d.value) ? "white" : "hsl(var(--foreground))",
+                          borderColor: selected.has(d.value) ? "hsl(var(--primary))" : "hsl(var(--border))",
+                        }}
+                      >
+                        {d.label}
+                      </button>
+                    ))}
+                  </div>
+                  <FormDescription>Cliquez pour activer / désactiver un jour.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              );
+            }} />
+
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="withdrawalStartHour" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Heure de début des retraits</FormLabel>
+                  <FormLabel>Heure de début (0–23)</FormLabel>
                   <FormControl><Input {...field} type="number" min="0" max="23" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="withdrawalEndHour" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Heure de fin des retraits</FormLabel>
+                  <FormLabel>Heure de fin (0–23)</FormLabel>
                   <FormControl><Input {...field} type="number" min="0" max="23" /></FormControl>
                   <FormMessage />
                 </FormItem>

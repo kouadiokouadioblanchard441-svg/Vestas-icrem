@@ -39,6 +39,7 @@ export default function WithdrawalPage() {
     withdrawalEnabled: boolean;
     withdrawalStartHour: number;
     withdrawalEndHour: number;
+    withdrawalDays: string;
     maxWithdrawalsPerDay: number;
     minWithdrawal: number;
   }>({
@@ -55,8 +56,20 @@ export default function WithdrawalPage() {
   const maxWithdrawal = parseInt(allSettings?.maxWithdrawal || "1000000");
   const withdrawalEnabled = withdrawalSettings?.withdrawalEnabled ?? true;
   const withdrawalFee = withdrawalSettings?.withdrawalFees ?? 10;
-  const withdrawalStartHour = withdrawalSettings?.withdrawalStartHour ?? 0;
-  const withdrawalEndHour = withdrawalSettings?.withdrawalEndHour ?? 24;
+  const withdrawalStartHour = withdrawalSettings?.withdrawalStartHour ?? 10;
+  const withdrawalEndHour = withdrawalSettings?.withdrawalEndHour ?? 16;
+  const withdrawalDaysRaw = withdrawalSettings?.withdrawalDays ?? "1,2,3,4,5";
+
+  // Convertit "1,2,3,4,5" → "Lundi au Vendredi" ou liste des jours
+  const DAY_NAMES: Record<number, string> = {
+    0: "Dimanche", 1: "Lundi", 2: "Mardi", 3: "Mercredi",
+    4: "Jeudi", 5: "Vendredi", 6: "Samedi",
+  };
+  const allowedDayNums = withdrawalDaysRaw.split(",").map(d => parseInt(d.trim())).filter(n => !isNaN(n));
+  const isConsecutiveWeekdays = JSON.stringify(allowedDayNums.sort()) === JSON.stringify([1,2,3,4,5]);
+  const daysLabel = isConsecutiveWeekdays
+    ? "du Lundi au Vendredi"
+    : allowedDayNums.map(d => DAY_NAMES[d] ?? d).join(", ");
 
   const withdrawalWarningNoProduct = getContent(allSettings, "content_withdrawal_warningNoProduct", "Vous devez posséder un produit actif pour effectuer un retrait.");
 
@@ -145,14 +158,16 @@ export default function WithdrawalPage() {
 
   // Instructions : depuis l'admin si définies, sinon générées automatiquement
   const customInstructions = allSettings?.withdrawalInstructions?.trim();
+  const maxPerDay = withdrawalSettings?.maxWithdrawalsPerDay ?? 1;
   const instructions: string[] = customInstructions
     ? customInstructions.split("\n").map((l: string) => l.trim()).filter(Boolean)
     : [
         `1. Le montant minimum de retrait est de ${minWithdrawal.toLocaleString()} ${currency}`,
         `2. Le montant maximum de retrait est de ${maxWithdrawal.toLocaleString()} ${currency}`,
         `3. Les deux derniers chiffres du montant du retrait doivent être 0 (exemple : 1000 ${currency}, 9900 ${currency}, 99900 ${currency})`,
-        `4. Des frais bancaires de ${withdrawalFee}% seront facturés pour chaque retrait. (Par exemple, retrait 1000 ${currency} → montant réel reçu : ${Math.floor(1000 * (1 - withdrawalFee / 100))} ${currency})`,
-        `5. Vous pouvez effectuer au maximum ${withdrawalSettings?.maxWithdrawalsPerDay ?? 1} retrait${(withdrawalSettings?.maxWithdrawalsPerDay ?? 1) > 1 ? "s" : ""} par jour`,
+        `4. Des frais bancaires de ${withdrawalFee}% seront facturés pour chaque retrait. (Par exemple, retrait 1000 ${currency} — montant réel reçu : ${Math.floor(1000 * (1 - withdrawalFee / 100))} ${currency})`,
+        `5. Les retraits sont disponibles ${daysLabel}, de ${withdrawalStartHour}h à ${withdrawalEndHour}h`,
+        `6. Vous pouvez effectuer au maximum ${maxPerDay} retrait${maxPerDay > 1 ? "s" : ""} par jour`,
       ];
 
   return (

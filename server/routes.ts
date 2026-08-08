@@ -1022,6 +1022,29 @@ export async function registerRoutes(
       if (settingsForWithdrawal.withdrawalEnabled === "false") {
         return res.status(400).json({ message: "Les retraits sont temporairement désactivés par l'administration" });
       }
+
+      // ── Vérification jour + heure (fuseau Côte d'Ivoire = UTC+0) ──
+      {
+        const nowCI = new Date(new Date().toLocaleString("en-US", { timeZone: "Africa/Abidjan" }));
+        const currentDay = nowCI.getDay();   // 0=Dim, 1=Lun … 6=Sam
+        const currentHour = nowCI.getHours();
+        const allowedDays = (settingsForWithdrawal.withdrawalDays || "1,2,3,4,5")
+          .split(",").map((d: string) => parseInt(d.trim())).filter((n: number) => !isNaN(n));
+        const startHour = parseInt(settingsForWithdrawal.withdrawalStartHour || "10");
+        const endHour   = parseInt(settingsForWithdrawal.withdrawalEndHour   || "16");
+
+        const DAY_NAMES: Record<number, string> = {
+          0: "Dimanche", 1: "Lundi", 2: "Mardi", 3: "Mercredi",
+          4: "Jeudi", 5: "Vendredi", 6: "Samedi",
+        };
+        if (!allowedDays.includes(currentDay)) {
+          const dayLabels = allowedDays.map((d: number) => DAY_NAMES[d] || d).join(", ");
+          return res.status(400).json({ message: `Les retraits sont disponibles uniquement : ${dayLabels}` });
+        }
+        if (currentHour < startHour || currentHour >= endHour) {
+          return res.status(400).json({ message: `Les retraits sont disponibles de ${startHour}h à ${endHour}h` });
+        }
+      }
       const minWithdrawal = parseInt(settingsForWithdrawal.minWithdrawal || "1000");
       if (amount < minWithdrawal) {
         return res.status(400).json({ message: `Montant minimum : ${minWithdrawal.toLocaleString()} FCFA` });
@@ -1426,11 +1449,11 @@ export async function registerRoutes(
     try {
       const settings = await storage.getSettings();
       res.json({
-        withdrawalMethod: "USDT BEP20",
         withdrawalEnabled: settings.withdrawalEnabled !== "false",
-        withdrawalFees: parseFloat(settings.withdrawalFees || "18"),
-        withdrawalStartHour: parseInt(settings.withdrawalStartHour || "9"),
-        withdrawalEndHour: parseInt(settings.withdrawalEndHour || "17"),
+        withdrawalFees: parseFloat(settings.withdrawalFees || "10"),
+        withdrawalStartHour: parseInt(settings.withdrawalStartHour || "10"),
+        withdrawalEndHour: parseInt(settings.withdrawalEndHour || "16"),
+        withdrawalDays: settings.withdrawalDays || "1,2,3,4,5",
         maxWithdrawalsPerDay: parseInt(settings.maxWithdrawalsPerDay || "1"),
         minWithdrawal: parseInt(settings.minWithdrawal || "1000"),
       });
