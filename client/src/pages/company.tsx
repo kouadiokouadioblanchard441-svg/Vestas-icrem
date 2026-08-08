@@ -28,13 +28,13 @@ export default function CompanyPage() {
 
   return (
     <div className="min-h-screen pb-6" style={{ background: "#2d3816" }}>
-      <header className="flex items-center px-4 py-3 border-b bg-white">
+      <header className="flex items-center px-4 py-3" style={{ background: "#1e2e0a" }}>
         <Link href="/">
           <button className="p-1" data-testid="button-company-back" aria-label="Retour">
-            <ChevronLeft className="w-6 h-6 text-gray-600" />
+            <ChevronLeft className="w-6 h-6 text-white" />
           </button>
         </Link>
-        <h1 className="flex-1 text-center text-lg font-semibold text-gray-800 pr-8">{pageTitle}</h1>
+        <h1 className="flex-1 text-center text-lg font-semibold text-white pr-8">{pageTitle}</h1>
       </header>
 
       <main className="p-4 space-y-4">

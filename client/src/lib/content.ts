@@ -1,5 +1,5 @@
-// Helper to read admin-editable text content (see shared/content-fields.ts)
-// from the /api/settings key-value map, falling back to the field's default.
+// Helper to read admin-editable text content from the /api/settings key-value map,
+// falling back to the field's default when the setting is absent or empty.
 
 export function getContent(
   settings: Record<string, string> | undefined,
@@ -7,9 +7,5 @@ export function getContent(
   fallback: string
 ): string {
   const value = settings?.[key];
-  // The product is currently Chinese-only. Keep administrator-entered Chinese
-  // content, but hide legacy French/English values from older database seeds.
-  return value !== undefined && value !== "" && /[\u3400-\u9fff]/.test(value)
-    ? value
-    : fallback;
+  return value !== undefined && value.trim() !== "" ? value : fallback;
 }

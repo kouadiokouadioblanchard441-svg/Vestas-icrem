@@ -55,6 +55,17 @@ const settingsSchema = z.object({
   level1Commission: z.string().min(1, "Commission requise"),
   level2Commission: z.string().min(1, "Commission requise"),
   level3Commission: z.string().min(1, "Commission requise"),
+  // Popup d'accueil
+  popupMascotUrl: z.string().optional(),
+  popupLine1: z.string().optional(),
+  popupLine2: z.string().optional(),
+  popupLine3: z.string().optional(),
+  popupLine4: z.string().optional(),
+  popupLine5: z.string().optional(),
+  popupLine6: z.string().optional(),
+  popupLine7: z.string().optional(),
+  popupLine8: z.string().optional(),
+  popupLine9: z.string().optional(),
 });
 
 type SettingsForm = z.infer<typeof settingsSchema>;
@@ -236,6 +247,16 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         level1Commission: settings.level1Commission || "25",
         level2Commission: settings.level2Commission || "1",
         level3Commission: settings.level3Commission || "1",
+        popupMascotUrl: settings.popupMascotUrl || "",
+        popupLine1: settings.popupLine1 || "",
+        popupLine2: settings.popupLine2 || "",
+        popupLine3: settings.popupLine3 || "",
+        popupLine4: settings.popupLine4 || "",
+        popupLine5: settings.popupLine5 || "",
+        popupLine6: settings.popupLine6 || "",
+        popupLine7: settings.popupLine7 || "",
+        popupLine8: settings.popupLine8 || "",
+        popupLine9: settings.popupLine9 || "",
       });
     }
   }, [settings, form]);
@@ -744,6 +765,53 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
                 </FormItem>
               )} />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* ── Popup d'accueil ── */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              🔔 Popup d'accueil
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-xs text-gray-400">
+              Personnalisez le contenu du popup qui s'affiche à l'ouverture de l'application. Laissez un champ vide pour utiliser la valeur par défaut.
+            </p>
+            <FormField control={form.control} name="popupMascotUrl" render={({ field }) => (
+              <FormItem>
+                <FormLabel>URL de la mascotte (image)</FormLabel>
+                <FormControl><Input {...field} placeholder="https://... ou laisser vide pour la mascotte par défaut" /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            {([
+              { name: "popupLine1" as const, label: "Ligne 1 — Lancement officiel", placeholder: "✨✨ Lancement officiel de la plateforme ASUS (4 août 2026)✨✨" },
+              { name: "popupLine2" as const, label: "Ligne 2 — Invitation parrainage", placeholder: "🔻 Invitez vos amis à investir et gagnez jusqu'à 25% de commissions..." },
+              { name: "popupLine3" as const, label: "Ligne 3 — Bonus connexion", placeholder: "🎁 Bonus de connexion quotidienne disponible chaque jour" },
+              { name: "popupLine4" as const, label: "Ligne 4 — Dépôt minimum", placeholder: "🤝 Dépôt minimum : 3 000 FCFA" },
+              { name: "popupLine5" as const, label: "Ligne 5 — Retrait minimum", placeholder: "💚 Retrait minimum : 1 000 FCFA" },
+              { name: "popupLine6" as const, label: "Ligne 6 — Frais de retrait", placeholder: "⚙️ Frais de retrait : 10%" },
+              { name: "popupLine7" as const, label: "Ligne 7 — Horaires retraits", placeholder: "🍀 Retraits disponibles du Lundi au Vendredi de 10h à 16h" },
+              { name: "popupLine8" as const, label: "Ligne 8 — Commissions", placeholder: "👥 Commissions de parrainage : 25% – 1% – 1%" },
+              { name: "popupLine9" as const, label: "Ligne 9 — Remarque", placeholder: "📌 Remarque : Les gains sont automatiquement crédités chaque jour." },
+            ]).map(({ name, label, placeholder }) => (
+              <FormField key={name} control={form.control} name={name} render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{label}</FormLabel>
+                  <FormControl>
+                    <textarea
+                      {...field}
+                      rows={2}
+                      placeholder={placeholder}
+                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            ))}
           </CardContent>
         </Card>
 

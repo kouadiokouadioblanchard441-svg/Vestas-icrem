@@ -64,23 +64,25 @@ export default function HomePage() {
   const lvl2          = settings?.level2Commission || "1";
   const lvl3          = settings?.level3Commission || "1";
 
-  const popupLines: { emoji: string; text: string }[] = [
-    { emoji: "✨✨", text: `Lancement officiel de la plateforme ASUS (4 août 2026)✨✨` },
-    { emoji: "🔻",  text: `Invitez vos amis à investir et gagnez jusqu'à ${lvl1}% de commissions sur les investissements. Les revenus passifs ne sont plus un simple rêve.` },
-    { emoji: "🎁",  text: `Bonus de connexion quotidienne disponible chaque jour` },
-    { emoji: "🤝",  text: `Dépôt minimum : ${parseInt(minDeposit).toLocaleString()} FCFA` },
-    { emoji: "💚",  text: `Retrait minimum : ${parseInt(minWithdrawal).toLocaleString()} FCFA` },
-    { emoji: "⚙️",  text: `Frais de retrait : ${fees}%` },
-    { emoji: "🍀",  text: `Retraits disponibles du Lundi au Vendredi de 10h à 16h ; maximum 1 retrait par jour.` },
-    { emoji: "👥",  text: `Commissions de parrainage : ${lvl1}% – ${lvl2}% – ${lvl3}%` },
-    { emoji: "📌",  text: `Remarque : Les gains issus des investissements sont automatiquement crédités sur votre compte chaque jour.` },
+  const popupMascotUrl = settings?.popupMascotUrl?.trim() || "";
+
+  const popupLines: string[] = [
+    getContent(settings, "popupLine1", `✨✨ Lancement officiel de la plateforme ASUS (4 août 2026) ✨✨`),
+    getContent(settings, "popupLine2", `🔻 Invitez vos amis à investir et gagnez jusqu'à ${lvl1}% de commissions sur les investissements. Les revenus passifs ne sont plus un simple rêve.`),
+    getContent(settings, "popupLine3", `🎁 Bonus de connexion quotidienne disponible chaque jour`),
+    getContent(settings, "popupLine4", `🤝 Dépôt minimum : ${parseInt(minDeposit).toLocaleString()} FCFA`),
+    getContent(settings, "popupLine5", `💚 Retrait minimum : ${parseInt(minWithdrawal).toLocaleString()} FCFA`),
+    getContent(settings, "popupLine6", `⚙️ Frais de retrait : ${fees}%`),
+    getContent(settings, "popupLine7", `🍀 Retraits disponibles du Lundi au Vendredi de 10h à 16h ; maximum 1 retrait par jour.`),
+    getContent(settings, "popupLine8", `👥 Commissions de parrainage : ${lvl1}% – ${lvl2}% – ${lvl3}%`),
+    getContent(settings, "popupLine9", `📌 Remarque : Les gains issus des investissements sont automatiquement crédités sur votre compte chaque jour.`),
   ];
 
   const quickActions = [
     { icon: iconRecharger, label: t.deposit,         href: "/deposit",     white: true  },
     { icon: iconRetraits,  label: t.withdraw,         href: "/withdrawal",  white: true  },
     { icon: iconService,   label: t.customerService,  href: "/service",     white: false },
-    { icon: iconGift,      label: "Récompenses\nquotidiennes", href: "/rewards", white: false },
+    { icon: iconGift,      label: "Informations", href: "/company", white: false },
   ];
 
   return (
@@ -102,7 +104,7 @@ export default function HomePage() {
             {/* ── Mascote centrée en haut ── */}
             <div className="flex justify-center pt-5 pb-1">
               <img
-                src={popupMascot}
+                src={popupMascotUrl || popupMascot}
                 alt="mascot"
                 style={{ width: 64, height: 64, objectFit: "contain", filter: "drop-shadow(0 3px 8px rgba(0,0,0,0.25))" }}
               />
@@ -110,9 +112,9 @@ export default function HomePage() {
 
             {/* ── Contenu scrollable ── */}
             <div className="flex-1 overflow-y-auto px-4 pb-3 pt-2">
-              {popupLines.map((item, i) => (
+              {popupLines.map((line, i) => (
                 <p key={i} className="text-gray-800 leading-relaxed mb-2" style={{ fontSize: 13 }}>
-                  <span style={{ marginRight: 3 }}>{item.emoji}</span>{item.text}
+                  {line}
                 </p>
               ))}
             </div>
