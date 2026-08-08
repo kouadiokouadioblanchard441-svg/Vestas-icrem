@@ -1233,16 +1233,32 @@ export async function registerRoutes(
 
   app.post("/api/wallets", requireAuth, async (req, res) => {
     try {
-      const { accountName, accountNumber } = req.body;
-      if (!accountName || !/^0x[a-fA-F0-9]{40}$/.test(accountNumber || "")) {
-        return res.status(400).json({ message: "Saisissez une adresse USDT BEP20 valide (0x + 40 caractères)" });
+      const { accountName, accountNumber, paymentMethod, country } = req.body;
+
+      if (!accountName || !accountName.trim()) {
+        return res.status(400).json({ message: "Le nom du titulaire est requis" });
       }
+      const digits = (accountNumber || "").replace(/\D/g, "");
+      if (!digits) {
+        return res.status(400).json({ message: "Le numéro Mobile Money est requis" });
+      }
+
+      // Longueurs valides par pays
+      const PHONE_LENGTHS: Record<string, number> = { CI: 10, BF: 8, ML: 8, BJ: 9 };
+      const userCountry = country || req.body.country || "CI";
+      const expectedLength = PHONE_LENGTHS[userCountry] ?? 8;
+      if (digits.length !== expectedLength) {
+        return res.status(400).json({
+          message: `Numéro invalide — ${expectedLength} chiffres requis pour ce pays`,
+        });
+      }
+
       const wallet = await storage.createWallet({
         userId: req.session.userId!,
-        accountName,
-        accountNumber,
-        paymentMethod: "USDT BEP20",
-        country: "USDT",
+        accountName: accountName.trim(),
+        accountNumber: digits,
+        paymentMethod: paymentMethod || "Mobile Money",
+        country: userCountry,
       });
       res.json(wallet);
     } catch (error: any) {
