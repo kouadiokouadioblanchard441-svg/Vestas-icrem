@@ -302,6 +302,26 @@ export async function seed() {
     { key: "vip6Advantages", value: "Statut VIP 6. Partenaire élite." },
     { key: "vip7Description", value: "Minimum 1 000 membres dans l'équipe totale." },
     { key: "vip7Advantages", value: "Statut VIP 7. Rang suprême. Reconnaissance maximale." },
+    // VIP labels (insert only)
+    { key: "vip0Label", value: "VIP 0" }, { key: "vip1Label", value: "VIP 1" },
+    { key: "vip2Label", value: "VIP 2" }, { key: "vip3Label", value: "VIP 3" },
+    { key: "vip4Label", value: "VIP 4" }, { key: "vip5Label", value: "VIP 5" },
+    { key: "vip6Label", value: "VIP 6" }, { key: "vip7Label", value: "VIP 7" },
+    // VIP conditions (insert only — admin can override)
+    { key: "vip2MinDirectA",   value: "3"    },
+    { key: "vip3MinDirectA",   value: "3"    },
+    { key: "vip3MinLevelB",    value: "1"    },
+    { key: "vip4MinTotalTeam", value: "100"  },
+    { key: "vip5MinTotalTeam", value: "300"  },
+    { key: "vip6MinTotalTeam", value: "600"  },
+    { key: "vip7MinTotalTeam", value: "1000" },
+    // VIP rewards (insert only — admin can override)
+    { key: "vip2Reward", value: "500"  },
+    { key: "vip3Reward", value: "1000" },
+    { key: "vip4Reward", value: "2000" },
+    { key: "vip5Reward", value: "3500" },
+    { key: "vip6Reward", value: "5000" },
+    { key: "vip7Reward", value: "7500" },
   ];
 
   // Keys whose values must always be overwritten (e.g. Chinese → French migration)

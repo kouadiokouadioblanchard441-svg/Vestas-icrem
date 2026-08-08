@@ -10,7 +10,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/lib/i18n";
-import { computeVipLevel, VIP_BADGE_STYLE, DEFAULT_VIP_CONFIGS } from "@/lib/vip";
+import { computeVipLevel, VIP_BADGE_STYLE, DEFAULT_VIP_CONFIGS, mergeAdminVipConfig } from "@/lib/vip";
 
 import { getUserAvatar } from "@/lib/avatar";
 import iconRecords from "@assets/mine-mod-records-DgHXSKa1_1782689837747.png";
@@ -84,11 +84,12 @@ export default function AccountPage() {
   const country = getCountryByCode(user.country);
   const currency = "FCFA";
 
-  // Niveau VIP calculé automatiquement
+  // Niveau VIP calculé automatiquement (conditions issues de l'admin)
   const productCount = products?.length ?? 0;
   const stats = teamStats ?? { level1Count: 0, level2Count: 0, level3Count: 0 };
-  const vipLevel = computeVipLevel(productCount, stats);
-  const vipCfg = DEFAULT_VIP_CONFIGS[vipLevel];
+  const vipConfigs = mergeAdminVipConfig(DEFAULT_VIP_CONFIGS, settings ?? {});
+  const vipLevel = computeVipLevel(productCount, stats, vipConfigs);
+  const vipCfg = vipConfigs[vipLevel];
   const vipStyle = VIP_BADGE_STYLE[vipLevel];
   const phonePrefix = country?.phonePrefix || "";
 

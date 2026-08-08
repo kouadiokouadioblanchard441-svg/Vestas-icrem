@@ -27,8 +27,8 @@ export default function VipPage() {
   const teamStats = stats ?? { level1Count: 0, level2Count: 0, level3Count: 0 };
   const totalTeam = teamStats.level1Count + teamStats.level2Count + teamStats.level3Count;
 
-  const vipLevel = computeVipLevel(productCount, teamStats);
   const configs = mergeAdminVipConfig(DEFAULT_VIP_CONFIGS, settings);
+  const vipLevel = computeVipLevel(productCount, teamStats, configs);
   const currentCfg = configs[vipLevel];
   const nextCfg = vipLevel < 7 ? configs[vipLevel + 1] : null;
   const badgeStyle = VIP_BADGE_STYLE[vipLevel];
