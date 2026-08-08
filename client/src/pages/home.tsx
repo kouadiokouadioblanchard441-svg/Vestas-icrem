@@ -99,24 +99,17 @@ export default function HomePage() {
             onClick={e => e.stopPropagation()}
           >
 
-            {/* ── Banner header ── */}
-            <div className="relative shrink-0" style={{ height: 150 }}>
-              <img src={popupBanner} alt="ASUS" className="w-full h-full object-cover" />
-              {/* Mascote centrée à cheval */}
-              <div
-                className="absolute left-1/2 bottom-0"
-                style={{ transform: "translate(-50%, 50%)", zIndex: 10 }}
-              >
-                <img
-                  src={popupMascot}
-                  alt="mascot"
-                  style={{ width: 62, height: 62, objectFit: "contain", filter: "drop-shadow(0 3px 8px rgba(0,0,0,0.4))" }}
-                />
-              </div>
+            {/* ── Mascote centrée en haut ── */}
+            <div className="flex justify-center pt-5 pb-1">
+              <img
+                src={popupMascot}
+                alt="mascot"
+                style={{ width: 64, height: 64, objectFit: "contain", filter: "drop-shadow(0 3px 8px rgba(0,0,0,0.25))" }}
+              />
             </div>
 
             {/* ── Contenu scrollable ── */}
-            <div className="flex-1 overflow-y-auto px-4 pb-3" style={{ paddingTop: 42 }}>
+            <div className="flex-1 overflow-y-auto px-4 pb-3 pt-2">
               {popupLines.map((item, i) => (
                 <p key={i} className="text-gray-800 leading-relaxed mb-2" style={{ fontSize: 13 }}>
                   <span style={{ marginRight: 3 }}>{item.emoji}</span>{item.text}
