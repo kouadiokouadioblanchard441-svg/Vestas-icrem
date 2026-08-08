@@ -1223,8 +1223,7 @@ export async function registerRoutes(
   // Wallets
   app.get("/api/wallets", requireAuth, async (req, res) => {
     try {
-      const wallets = (await storage.getWallets(req.session.userId!))
-        .filter(wallet => wallet.paymentMethod === "USDT BEP20" && /^0x[a-fA-F0-9]{40}$/.test(wallet.accountNumber));
+      const wallets = await storage.getWallets(req.session.userId!);
       res.json(wallets);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
