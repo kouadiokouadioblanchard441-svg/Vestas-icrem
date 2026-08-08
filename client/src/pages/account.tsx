@@ -10,6 +10,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/lib/i18n";
+import { computeVipLevel, VIP_BADGE_STYLE, DEFAULT_VIP_CONFIGS } from "@/lib/vip";
 
 import { getUserAvatar } from "@/lib/avatar";
 import iconRecords from "@assets/mine-mod-records-DgHXSKa1_1782689837747.png";
@@ -38,6 +39,10 @@ export default function AccountPage() {
 
   const { data: settings } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
+  });
+
+  const { data: teamStats } = useQuery<{ level1Count: number; level2Count: number; level3Count: number }>({
+    queryKey: ["/api/team/stats"],
   });
 
   const verifyPinMutation = useMutation({
@@ -79,15 +84,12 @@ export default function AccountPage() {
   const country = getCountryByCode(user.country);
   const currency = "FCFA";
 
-  // Niveau VIP calculé selon les produits achetés
+  // Niveau VIP calculé automatiquement
   const productCount = products?.length ?? 0;
-  const vipLevel = productCount >= 1 ? 1 : 0;
-
-  const VIP_STYLES: Record<number, { label: string; bg: string; text: string; border: string }> = {
-    0: { label: "VIP 0", bg: "rgba(255,255,255,0.15)", text: "#ffffff", border: "rgba(255,255,255,0.3)" },
-    1: { label: "VIP 1", bg: "linear-gradient(90deg,#f5a800,#ff6b00)", text: "#fff", border: "transparent" },
-  };
-  const vipStyle = VIP_STYLES[vipLevel] ?? VIP_STYLES[0];
+  const stats = teamStats ?? { level1Count: 0, level2Count: 0, level3Count: 0 };
+  const vipLevel = computeVipLevel(productCount, stats);
+  const vipCfg = DEFAULT_VIP_CONFIGS[vipLevel];
+  const vipStyle = VIP_BADGE_STYLE[vipLevel];
   const phonePrefix = country?.phonePrefix || "";
 
   // 3 boutons rapides
@@ -116,6 +118,7 @@ export default function AccountPage() {
         {/* ── Profile top section ── */}
         <div style={{ background: "#2d3816" }}>
           <div className="flex items-center justify-between px-5 pt-6 pb-5">
+            {/* Bouton VIP — haut à droite */}
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white/40 shrink-0">
                 <img src={getUserAvatar(user.id)} alt="avatar" className="w-full h-full object-cover" />
@@ -131,7 +134,7 @@ export default function AccountPage() {
                       borderColor: vipStyle.border,
                     }}
                   >
-                    ★ {vipStyle.label}
+                    ★ {vipCfg.label}
                   </span>
                 </div>
 
@@ -162,6 +165,20 @@ export default function AccountPage() {
 
               </div>
             </div>
+
+            {/* Bouton VIP haut à droite */}
+            <button
+              onClick={() => navigate("/vip")}
+              className="flex flex-col items-center gap-0.5 active:opacity-70 transition-opacity"
+            >
+              <span
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-black tracking-wide border"
+                style={{ background: vipStyle.bg, color: vipStyle.text, borderColor: vipStyle.border }}
+              >
+                ★ {vipCfg.label}
+              </span>
+              <span className="text-white/50 text-[10px]">Voir grades</span>
+            </button>
           </div>
 
           {/* ── 2 cartes balance d'origine ── */}

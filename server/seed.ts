@@ -285,6 +285,23 @@ export async function seed() {
     { key: "omnipayEnabled", value: "false" },
     { key: "omnipayChannelName", value: "OmniPay" },
     { key: "omnipayCallbackKey", value: "" },
+    // VIP descriptions & advantages (insert only — never force-update)
+    { key: "vip0Description", value: "Membre inscrit n'ayant pas encore investi." },
+    { key: "vip0Advantages", value: "Accès à la plateforme. Possibilité de déposer et d'investir." },
+    { key: "vip1Description", value: "Nouveau membre ayant réalisé son premier investissement." },
+    { key: "vip1Advantages", value: "Accès complet à la plateforme. Gains quotidiens. Commissions de parrainage actives." },
+    { key: "vip2Description", value: "Membre actif avec 3 filleuls directs (niveau A)." },
+    { key: "vip2Advantages", value: "Statut VIP 2. Reconnaissance de votre activité de recrutement." },
+    { key: "vip3Description", value: "Minimum 3 membres directs (A) ayant commencé à construire leur propre réseau (niveau B)." },
+    { key: "vip3Advantages", value: "Statut VIP 3. Équipe structurée sur 2 niveaux." },
+    { key: "vip4Description", value: "Minimum 100 membres dans l'équipe totale (niveaux A + B + C)." },
+    { key: "vip4Advantages", value: "Statut VIP 4. Leader d'équipe confirmé." },
+    { key: "vip5Description", value: "Minimum 300 membres dans l'équipe totale." },
+    { key: "vip5Advantages", value: "Statut VIP 5. Ambassadeur de la plateforme." },
+    { key: "vip6Description", value: "Minimum 600 membres dans l'équipe totale." },
+    { key: "vip6Advantages", value: "Statut VIP 6. Partenaire élite." },
+    { key: "vip7Description", value: "Minimum 1 000 membres dans l'équipe totale." },
+    { key: "vip7Advantages", value: "Statut VIP 7. Rang suprême. Reconnaissance maximale." },
   ];
 
   // Keys whose values must always be overwritten (e.g. Chinese → French migration)

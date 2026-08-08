@@ -18,6 +18,7 @@ import AdminContent from "@/components/admin/content";
 import AdminCompanyContent from "@/components/admin/company-content";
 import AdminTasks from "@/components/admin/tasks";
 import AdminWheel from "@/components/admin/wheel";
+import AdminVipSettings from "@/components/admin/vip-settings";
 
 export default function AdminPage() {
   const { user } = useAuth();
@@ -53,6 +54,7 @@ export default function AdminPage() {
               <TabsTrigger value="wheel" data-testid="tab-wheel">{t.adminTabWheel}</TabsTrigger>
               <TabsTrigger value="content" data-testid="tab-content">{t.adminTabContent}</TabsTrigger>
               <TabsTrigger value="company" data-testid="tab-company">{t.adminTabCompany}</TabsTrigger>
+              <TabsTrigger value="vip" data-testid="tab-vip">⭐ VIP</TabsTrigger>
             </TabsList>
           </div>
 
@@ -106,6 +108,10 @@ export default function AdminPage() {
 
           <TabsContent value="company" className="mt-4">
             <AdminCompanyContent />
+          </TabsContent>
+
+          <TabsContent value="vip" className="mt-4">
+            <AdminVipSettings />
           </TabsContent>
         </Tabs>
       </div>
