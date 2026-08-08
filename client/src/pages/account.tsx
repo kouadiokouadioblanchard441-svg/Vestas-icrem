@@ -212,7 +212,7 @@ export default function AccountPage() {
               >
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center shadow"
-                  style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}
+                  style={{ background: "linear-gradient(135deg, #4a5e22, #2d3816)" }}
                 >
                   <img
                     src={item.icon}
@@ -243,7 +243,7 @@ export default function AccountPage() {
                 className="flex items-center gap-3 w-full px-4 py-4 active:opacity-70 border-b border-white/5 last:border-0"
                 data-testid={`button-service-${idx}`}
               >
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "linear-gradient(135deg, #374151, #1F2937)" }}>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "linear-gradient(135deg, #4a5e22, #2d3816)" }}>
                   <img
                     src={item.icon}
                     alt={item.label}
