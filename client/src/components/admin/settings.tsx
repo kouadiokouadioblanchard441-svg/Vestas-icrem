@@ -37,6 +37,7 @@ const settingsSchema = z.object({
   groupType: z.string().min(1, "Réseau social requis"),
   groupLabel: z.string().min(1, "Label requis"),
   popupButtonLabel: z.string().min(1, "Label requis"),
+  floatingSupportTarget: z.string().min(1, "Requis"),
   supportEnabled: z.boolean(),
   support2Enabled: z.boolean(),
   channelEnabled: z.boolean(),
@@ -197,6 +198,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
       groupType: "telegram",
       groupLabel: "Groupe de discussion",
       popupButtonLabel: "Cliquez ici pour rejoindre le groupe Telegram",
+      floatingSupportTarget: "support1",
       supportEnabled: true,
       support2Enabled: true,
       channelEnabled: true,
@@ -239,6 +241,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         groupType: settings.groupType || "telegram",
         groupLabel: settings.groupLabel || "Groupe de discussion",
         popupButtonLabel: settings.popupButtonLabel || "Cliquez ici pour rejoindre le groupe Telegram",
+        floatingSupportTarget: settings.floatingSupportTarget || "support1",
         supportEnabled: settings.supportEnabled !== "false",
         support2Enabled: settings.support2Enabled !== "false",
         channelEnabled: settings.channelEnabled !== "false",
@@ -554,6 +557,37 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
                 <FormItem>
                   <FormLabel>URL du lien</FormLabel>
                   <FormControl><Input {...field} placeholder="https://t.me/..." /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+
+            {/* Bouton flottant service client */}
+            <div className="border border-blue-400 rounded-lg p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">💬</span>
+                <p className="text-sm font-semibold text-blue-600">Bouton flottant service client</p>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Le bouton rond avec l'avatar qui flotte sur l'écran. Choisissez vers quel lien il redirige l'utilisateur.
+              </p>
+              <FormField control={form.control} name="floatingSupportTarget" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Lien du bouton flottant</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choisir un service client" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="support1">Service client 1</SelectItem>
+                        <SelectItem value="support2">Service client 2</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormDescription>
+                    "Service client 1" ou "Service client 2" selon le lien configuré ci-dessus.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )} />

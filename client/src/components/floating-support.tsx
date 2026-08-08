@@ -1,31 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRef, useState, useEffect } from "react";
 import { useI18n } from "@/lib/i18n";
-import {
-  SiTelegram,
-  SiWhatsapp,
-  SiFacebook,
-  SiInstagram,
-  SiTiktok,
-  SiYoutube,
-} from "react-icons/si";
 
 interface SettingsLinks {
   supportLink: string;
   supportType: string;
   supportLabel: string;
+  support2Link: string;
+  support2Type: string;
+  support2Label: string;
+  floatingSupportTarget?: string;
 }
-
-type NetworkType = "telegram" | "whatsapp" | "facebook" | "instagram" | "tiktok" | "youtube";
-
-const NETWORK_CONFIG: Record<NetworkType, { Icon: React.ElementType; bg: string }> = {
-  telegram:  { Icon: SiTelegram,  bg: "#229ED9" },
-  whatsapp:  { Icon: SiWhatsapp,  bg: "#25D366" },
-  facebook:  { Icon: SiFacebook,  bg: "#1877F2" },
-  instagram: { Icon: SiInstagram, bg: "#E1306C" },
-  tiktok:    { Icon: SiTiktok,    bg: "#010101" },
-  youtube:   { Icon: SiYoutube,   bg: "#FF0000" },
-};
 
 interface FloatingSupportProps {
   bottomOffset?: number;
@@ -38,10 +23,11 @@ export function FloatingSupport({ bottomOffset = 24 }: FloatingSupportProps) {
     staleTime: 5 * 60 * 1000,
   });
 
-  const link = data?.supportLink || "#";
-  const networkType = (data?.supportType || "telegram") as NetworkType;
-  const cfg = NETWORK_CONFIG[networkType] || NETWORK_CONFIG.telegram;
-  const { Icon, bg } = cfg;
+  // Choisit le lien selon le paramètre admin (support1 par défaut)
+  const target = data?.floatingSupportTarget || "support1";
+  const link = target === "support2"
+    ? (data?.support2Link || "#")
+    : (data?.supportLink || "#");
 
   // Drag state
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -110,20 +96,29 @@ export function FloatingSupport({ bottomOffset = 24 }: FloatingSupportProps) {
         width: 64,
         height: 64,
         borderRadius: "50%",
-        border: "3px solid rgba(255,255,255,0.9)",
+        border: "none",
         padding: 0,
         cursor: "grab",
-        background: bg,
-        boxShadow: "0 4px 16px rgba(0,0,0,0.30), 0 0 12px rgba(0,0,0,0.15)",
+        background: "#fff",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.25), 0 0 10px rgba(22,163,74,0.3)",
         overflow: "hidden",
         touchAction: "none",
         userSelect: "none",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
       }}
     >
-      <Icon style={{ color: "#ffffff", width: 32, height: 32, pointerEvents: "none" }} />
+      <img
+        src="/support-avatar_2.png"
+        alt={t.customerService}
+        draggable={false}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          objectPosition: "center top",
+          display: "block",
+          pointerEvents: "none",
+        }}
+      />
     </button>
   );
 }

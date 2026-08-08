@@ -239,6 +239,7 @@ export async function seed() {
     { key: "groupType", value: "telegram" },
     { key: "groupLabel", value: "Groupe de discussion" },
     { key: "popupButtonLabel", value: "Rejoindre le groupe Telegram" },
+    { key: "floatingSupportTarget", value: "support1" },
     { key: "supportEnabled", value: "true" },
     { key: "support2Enabled", value: "true" },
     { key: "channelEnabled", value: "true" },

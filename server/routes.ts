@@ -1463,6 +1463,7 @@ export async function registerRoutes(
         groupEnabled: settings.groupEnabled ?? "true",
         withdrawalStartHour: settings.withdrawalStartHour || "9",
         withdrawalEndHour: settings.withdrawalEndHour || "17",
+        floatingSupportTarget: settings.floatingSupportTarget || "support1",
       });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
