@@ -1013,13 +1013,22 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Montant de retrait invalide" });
       }
 
+      // Les deux derniers chiffres doivent être 0 (multiple de 100)
+      if (amount % 100 !== 0) {
+        return res.status(400).json({ message: "Le montant doit se terminer par 00 (ex : 1000, 5500, 12000)" });
+      }
+
       const settingsForWithdrawal = await storage.getSettings();
       if (settingsForWithdrawal.withdrawalEnabled === "false") {
         return res.status(400).json({ message: "Les retraits sont temporairement désactivés par l'administration" });
       }
       const minWithdrawal = parseInt(settingsForWithdrawal.minWithdrawal || "1000");
       if (amount < minWithdrawal) {
-        return res.status(400).json({ message: `Montant minimum: ${minWithdrawal} USDT` });
+        return res.status(400).json({ message: `Montant minimum : ${minWithdrawal.toLocaleString()} FCFA` });
+      }
+      const maxWithdrawal = parseInt(settingsForWithdrawal.maxWithdrawal || "1000000");
+      if (amount > maxWithdrawal) {
+        return res.status(400).json({ message: `Montant maximum : ${maxWithdrawal.toLocaleString()} FCFA` });
       }
 
       if (user.isWithdrawalBlocked) {
@@ -1038,23 +1047,28 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Solde insuffisant" });
       }
 
-      const wallet = await storage.getDefaultWallet(user.id);
-      if (!wallet) {
-        return res.status(400).json({ message: "Enregistrez une adresse USDT BEP20" });
+      // Récupérer le wallet via walletId (Mobile Money)
+      const walletId = Number(req.body.walletId);
+      let wallet: any = null;
+      if (walletId) {
+        const wallets = await storage.getWallets(user.id);
+        wallet = wallets.find((w: any) => w.id === walletId) || null;
       }
-      if (wallet.paymentMethod !== "USDT BEP20" || !/^0x[a-fA-F0-9]{40}$/.test(wallet.accountNumber)) {
-        return res.status(400).json({ message: "L'adresse de retrait doit être une adresse USDT BEP20 valide" });
+      if (!wallet) {
+        wallet = await storage.getDefaultWallet(user.id);
+      }
+      if (!wallet) {
+        return res.status(400).json({ message: "Veuillez lier un compte Mobile Money avant de retirer" });
       }
 
       const todayCount = await storage.getUserWithdrawalCountToday(user.id);
-      const settingsForMax = await storage.getSettings();
-      const maxPerDay = parseInt(settingsForMax.maxWithdrawalsPerDay || "1");
+      const maxPerDay = parseInt(settingsForWithdrawal.maxWithdrawalsPerDay || "1");
       if (todayCount >= maxPerDay) {
         return res.status(400).json({ message: `Maximum ${maxPerDay} retrait${maxPerDay > 1 ? 's' : ''} par jour` });
       }
 
       const settings = await storage.getSettings();
-      const fees = parseFloat(settings.withdrawalFees || "18");
+      const fees = parseFloat(settings.withdrawalFees || "10");
       const feeAmount = Math.round(amount * fees / 100);
       const netAmount = amount - feeAmount;
 
@@ -1075,7 +1089,7 @@ export async function registerRoutes(
           accountName: wallet.accountName,
           accountNumber: wallet.accountNumber,
           country: user.country,
-          paymentMethod: "USDT BEP20",
+          paymentMethod: wallet.paymentMethod || "Mobile Money",
           status: "pending",
         });
         return res.json({ ...withdrawal, payoutRequiresVerification: false });

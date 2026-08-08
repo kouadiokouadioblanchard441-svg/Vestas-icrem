@@ -51,9 +51,10 @@ export default function WithdrawalPage() {
     queryKey: ["/api/settings"],
   });
 
-  const minWithdrawal = withdrawalSettings?.minWithdrawal ?? 2000;
+  const minWithdrawal = withdrawalSettings?.minWithdrawal ?? 1000;
+  const maxWithdrawal = parseInt(allSettings?.maxWithdrawal || "1000000");
   const withdrawalEnabled = withdrawalSettings?.withdrawalEnabled ?? true;
-  const withdrawalFee = withdrawalSettings?.withdrawalFees ?? 18;
+  const withdrawalFee = withdrawalSettings?.withdrawalFees ?? 10;
   const withdrawalStartHour = withdrawalSettings?.withdrawalStartHour ?? 0;
   const withdrawalEndHour = withdrawalSettings?.withdrawalEndHour ?? 24;
 
@@ -122,6 +123,14 @@ export default function WithdrawalPage() {
       toast({ title: t.invalidAmount, description: `${t.minAmountPrefix} ${minWithdrawal.toLocaleString()} ${currency}`, variant: "destructive" });
       return;
     }
+    if (amount > maxWithdrawal) {
+      toast({ title: "Montant trop élevé", description: `Le montant maximum est ${maxWithdrawal.toLocaleString()} ${currency}`, variant: "destructive" });
+      return;
+    }
+    if (Number(amount) % 100 !== 0) {
+      toast({ title: "Montant invalide", description: "Les deux derniers chiffres du montant doivent être 00 (ex : 1000, 5500, 12000)", variant: "destructive" });
+      return;
+    }
     if (!selectedWallet) {
       toast({ title: "Sélectionnez un compte", description: "Veuillez lier un compte de retrait.", variant: "destructive" });
       return;
@@ -134,13 +143,17 @@ export default function WithdrawalPage() {
 
   const balance = parseFloat(user?.balance || "0");
 
-  const instructions = [
-    `1. Le montant minimum de retrait est de ${minWithdrawal.toLocaleString()} ${currency}.`,
-    `2. Les frais de retrait s'élèvent à ${withdrawalFee}\u00a0% du montant retiré.`,
-    `3. Il n'y a pas de restriction horaire pour les retraits\u00a0; vous pouvez effectuer jusqu'à ${withdrawalSettings?.maxWithdrawalsPerDay ?? 1} retrait${(withdrawalSettings?.maxWithdrawalsPerDay ?? 1) > 1 ? "s" : ""} par jour.`,
-    "4. Les retraits sont généralement crédités dans un délai de 4 heures, et au plus tard dans les 24 heures.",
-    "5. Vous devez disposer d'au moins un appareil pour activer la fonction de retrait.",
-  ];
+  // Instructions : depuis l'admin si définies, sinon générées automatiquement
+  const customInstructions = allSettings?.withdrawalInstructions?.trim();
+  const instructions: string[] = customInstructions
+    ? customInstructions.split("\n").map((l: string) => l.trim()).filter(Boolean)
+    : [
+        `1. Le montant minimum de retrait est de ${minWithdrawal.toLocaleString()} ${currency}`,
+        `2. Le montant maximum de retrait est de ${maxWithdrawal.toLocaleString()} ${currency}`,
+        `3. Les deux derniers chiffres du montant du retrait doivent être 0 (exemple : 1000 ${currency}, 9900 ${currency}, 99900 ${currency})`,
+        `4. Des frais bancaires de ${withdrawalFee}% seront facturés pour chaque retrait. (Par exemple, retrait 1000 ${currency} → montant réel reçu : ${Math.floor(1000 * (1 - withdrawalFee / 100))} ${currency})`,
+        `5. Vous pouvez effectuer au maximum ${withdrawalSettings?.maxWithdrawalsPerDay ?? 1} retrait${(withdrawalSettings?.maxWithdrawalsPerDay ?? 1) > 1 ? "s" : ""} par jour`,
+      ];
 
   return (
     <div className="flex flex-col min-h-screen bg-white">

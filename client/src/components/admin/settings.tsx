@@ -44,9 +44,11 @@ const settingsSchema = z.object({
   minDeposit: z.string().min(1, "Montant requis"),
   depositPresetAmounts: z.string().min(1, "Montants requis"),
   minWithdrawal: z.string().min(1, "Montant requis"),
+  maxWithdrawal: z.string().min(1, "Montant requis"),
   withdrawalEnabled: z.boolean(),
   withdrawalFees: z.string().min(1, "Frais requis"),
   maxWithdrawalsPerDay: z.string().min(1, "Requis"),
+  withdrawalInstructions: z.string().optional(),
   withdrawalStartHour: z.string().min(1, "Heure requise"),
   withdrawalEndHour: z.string().min(1, "Heure requise"),
   level1Commission: z.string().min(1, "Commission requise"),
@@ -184,10 +186,12 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
       groupEnabled: true,
       minDeposit: "4000",
       depositPresetAmounts: "3500,5000,7000,10000,15000,20000,50000,70000",
-      minWithdrawal: "1500",
+      minWithdrawal: "1000",
+      maxWithdrawal: "1000000",
       withdrawalEnabled: true,
-      withdrawalFees: "18",
+      withdrawalFees: "10",
       maxWithdrawalsPerDay: "1",
+      withdrawalInstructions: "",
       withdrawalStartHour: "9",
       withdrawalEndHour: "17",
       level1Commission: "25",
@@ -218,10 +222,12 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         groupEnabled: settings.groupEnabled !== "false",
         minDeposit: settings.minDeposit || "4000",
         depositPresetAmounts: settings.depositPresetAmounts || "3500,5000,7000,10000,15000,20000,50000,70000",
-        minWithdrawal: settings.minWithdrawal || "1500",
+        minWithdrawal: settings.minWithdrawal || "1000",
+        maxWithdrawal: settings.maxWithdrawal || "1000000",
         withdrawalEnabled: settings.withdrawalEnabled !== "false",
-        withdrawalFees: settings.withdrawalFees || "18",
+        withdrawalFees: settings.withdrawalFees || "10",
         maxWithdrawalsPerDay: settings.maxWithdrawalsPerDay || "1",
+        withdrawalInstructions: settings.withdrawalInstructions || "",
         withdrawalStartHour: settings.withdrawalStartHour || "9",
         withdrawalEndHour: settings.withdrawalEndHour || "17",
         level1Commission: settings.level1Commission || "25",
@@ -597,6 +603,13 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
                   <FormMessage />
                 </FormItem>
               )} />
+              <FormField control={form.control} name="maxWithdrawal" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Retrait maximum (FCFA)</FormLabel>
+                  <FormControl><Input {...field} type="number" min="0" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -615,6 +628,24 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
                 </FormItem>
               )} />
             </div>
+
+            <FormField control={form.control} name="withdrawalInstructions" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Instructions de retrait (affichées sur la page de retrait)</FormLabel>
+                <FormControl>
+                  <textarea
+                    {...field}
+                    rows={6}
+                    placeholder={"1. Le montant minimum de retrait est de 1000 FCFA\n2. Les deux derniers chiffres du montant doivent être 0\n3. Des frais de 10% seront déduits\n4. Maximum 1 retrait par jour"}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y"
+                  />
+                </FormControl>
+                <FormDescription>
+                  Laissez vide pour utiliser les instructions générées automatiquement. Chaque ligne sera affichée séparément.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )} />
 
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="withdrawalStartHour" render={({ field }) => (
