@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
+import { FALLBACK_COUNTRIES, getPhoneLength } from "@/lib/countries";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -116,6 +117,11 @@ export default function WalletPage() {
     }
   };
 
+  const userCountry = user?.country || "CI";
+  const countryInfo = FALLBACK_COUNTRIES.find(c => c.code === userCountry);
+  const phonePrefix = countryInfo?.phonePrefix || "225";
+  const requiredPhoneLength = getPhoneLength(userCountry);
+
   const handleConfirm = () => {
     if (!selectedOperator) {
       toast({ title: "Sélectionnez une banque", variant: "destructive" }); return;
@@ -123,8 +129,12 @@ export default function WalletPage() {
     if (!holderName.trim()) {
       toast({ title: "Saisissez le nom du titulaire", variant: "destructive" }); return;
     }
-    if (!accountNumber.trim()) {
+    const digits = accountNumber.replace(/\D/g, "");
+    if (!digits) {
       toast({ title: "Saisissez le numéro de compte", variant: "destructive" }); return;
+    }
+    if (digits.length !== requiredPhoneLength) {
+      toast({ title: `Numéro invalide`, description: `Le numéro doit contenir exactement ${requiredPhoneLength} chiffres`, variant: "destructive" }); return;
     }
     addMutation.mutate();
   };
@@ -192,16 +202,27 @@ export default function WalletPage() {
           {/* Row 3 — Compte bancaire */}
           <div className="flex flex-col px-4 pt-5 pb-4 border-b border-gray-200">
             <p className="text-sm font-bold text-gray-900 mb-1">
-              <span className="text-red-500 mr-1">*</span>Compte bancaire
+              <span className="text-red-500 mr-1">*</span>Numéro Mobile Money
             </p>
-            <input
-              type="tel"
-              value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value)}
-              placeholder="Veuillez saisir le numéro de compte bancaire"
-              className="w-full text-sm text-gray-700 outline-none placeholder:text-gray-400 bg-transparent"
-              data-testid="input-wallet-number"
-            />
+            <div className="flex items-center gap-2">
+              {/* Indicatif pays (non modifiable, basé sur le pays d'inscription) */}
+              <span
+                className="text-sm font-bold shrink-0 px-2 py-1 rounded"
+                style={{ background: "#f3f4f6", color: "#374151" }}
+              >
+                +{phonePrefix}
+              </span>
+              <input
+                type="tel"
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ""))}
+                placeholder={`${requiredPhoneLength} chiffres`}
+                maxLength={requiredPhoneLength}
+                className="flex-1 text-sm text-gray-700 outline-none placeholder:text-gray-400 bg-transparent"
+                data-testid="input-wallet-number"
+              />
+            </div>
+            <p className="text-gray-400 text-xs mt-1">{requiredPhoneLength} chiffres requis</p>
           </div>
         </div>
 

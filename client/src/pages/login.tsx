@@ -6,7 +6,7 @@ import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth";
-import { FALLBACK_COUNTRIES, type ApiCountry } from "@/lib/countries";
+import { FALLBACK_COUNTRIES, getPhoneLength, type ApiCountry } from "@/lib/countries";
 import { CountrySelector } from "@/components/country-selector";
 import { useI18n } from "@/lib/i18n";
 import { Eye, EyeOff, ChevronRight, Smartphone, Lock } from "lucide-react";
@@ -63,7 +63,15 @@ export default function LoginPage() {
     return f ? { phonePrefix: f.phonePrefix, name: f.name } : null;
   })();
 
+  const requiredPhoneLength = getPhoneLength(selectedCountry);
+
   async function onSubmit(data: LoginForm) {
+    // Validate phone length for selected country
+    const digits = data.phone.replace(/\D/g, "");
+    if (digits.length !== requiredPhoneLength) {
+      form.setError("phone", { message: `Le numéro doit contenir exactement ${requiredPhoneLength} chiffres` });
+      return;
+    }
     setIsLoading(true);
     setAppLoading(true);
     try {
@@ -133,8 +141,10 @@ export default function LoginPage() {
                 data-testid="input-phone"
               />
             </div>
-            {form.formState.errors.phone && (
-              <p className="text-red-600 text-xs -mt-2 ml-1">{form.formState.errors.phone.message}</p>
+            {form.formState.errors.phone ? (
+              <p className="text-red-400 text-xs -mt-2 ml-1">{form.formState.errors.phone.message}</p>
+            ) : (
+              <p className="text-white/50 text-xs -mt-2 ml-1">{requiredPhoneLength} chiffres requis</p>
             )}
 
             {/* Password */}
