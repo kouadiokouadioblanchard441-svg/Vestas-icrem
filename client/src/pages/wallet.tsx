@@ -13,6 +13,23 @@ import { useI18n } from "@/lib/i18n";
 
 
 
+// Thème de carte selon l'opérateur
+function cardTheme(paymentMethod: string): { bg: string; shine: string; logo: string } {
+  const m = (paymentMethod || "").toLowerCase();
+  if (m.includes("wave"))
+    return { bg: "linear-gradient(135deg, #0061a8 0%, #003f7a 100%)", shine: "rgba(255,255,255,0.18)", logo: "🌊" };
+  if (m.includes("mtn"))
+    return { bg: "linear-gradient(135deg, #f5a800 0%, #c97f00 100%)", shine: "rgba(255,255,255,0.22)", logo: "🟡" };
+  if (m.includes("orange"))
+    return { bg: "linear-gradient(135deg, #f55a00 0%, #b03d00 100%)", shine: "rgba(255,255,255,0.18)", logo: "🟠" };
+  if (m.includes("moov"))
+    return { bg: "linear-gradient(135deg, #0099cc 0%, #006699 100%)", shine: "rgba(255,255,255,0.18)", logo: "🔵" };
+  if (m.includes("telecel"))
+    return { bg: "linear-gradient(135deg, #8b2fc9 0%, #5b1a8a 100%)", shine: "rgba(255,255,255,0.16)", logo: "🟣" };
+  // défaut olive
+  return { bg: "linear-gradient(135deg, #4a5e22 0%, #2d3816 100%)", shine: "rgba(255,255,255,0.12)", logo: "💳" };
+}
+
 export default function WalletPage() {
   const { user } = useAuth();
   const { t } = useI18n();
@@ -308,13 +325,15 @@ export default function WalletPage() {
           </div>
         ) : wallets && wallets.length > 0 ? (
           <div className="space-y-3">
-            {wallets.map((wallet) => (
+            {wallets.map((wallet) => {
+              const theme = cardTheme(wallet.paymentMethod || "");
+              return (
               <div
                 key={wallet.id}
                 onClick={() => selectMode && handleSelectWallet(wallet)}
                 className={`rounded-2xl overflow-hidden ${selectMode ? "cursor-pointer active:opacity-90" : ""}`}
                 style={{
-                  background: "linear-gradient(135deg, #4a5e22 0%, #2d3816 100%)",
+                  background: theme.bg,
                   boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
                 }}
                 data-testid={`wallet-card-${wallet.id}`}
@@ -323,7 +342,7 @@ export default function WalletPage() {
                   {/* Shine */}
                   <div
                     className="absolute inset-0 pointer-events-none"
-                    style={{ background: "linear-gradient(120deg, rgba(255,255,255,0.12) 0%, transparent 60%)" }}
+                    style={{ background: `linear-gradient(120deg, ${theme.shine} 0%, transparent 60%)` }}
                   />
 
                   {/* Top row */}
@@ -369,7 +388,8 @@ export default function WalletPage() {
                   )}
                 </div>
               </div>
-            ))}
+              );
+            })}
 
             {!selectMode && (
               <button
