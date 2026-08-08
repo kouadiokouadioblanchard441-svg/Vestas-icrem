@@ -83,9 +83,9 @@ export default function TasksPage() {
   const completedCount = tasks?.filter(tk => tk.isCompleted).length || 0;
   const claimableCount = tasks?.filter(tk => tk.canClaim && !tk.isCompleted).length || 0;
 
-  const headerTitle = getContent(settings, "content_tasks_headerTitle", t.taskTierBronze ? t.team : "推荐计划");
-  const headerSubtitle = getContent(settings, "content_tasks_headerSubtitle", t.taskTierBronze ? t.salaryInviteDesc.replace("{0}", "") : "邀请好友并获得奖励");
-  const tiersTitle = getContent(settings, "content_tasks_tiersTitle", t.taskTierBronze ? t.taskTierBronze.split(" ")[0] : "推荐等级");
+  const headerTitle = getContent(settings, "content_tasks_headerTitle", t.taskTierBronze ? t.team : "Programme de parrainage");
+  const headerSubtitle = getContent(settings, "content_tasks_headerSubtitle", t.taskTierBronze ? t.salaryInviteDesc.replace("{0}", "") : "Invitez des amis et gagnez des récompenses");
+  const tiersTitle = getContent(settings, "content_tasks_tiersTitle", t.taskTierBronze ? t.taskTierBronze.split(" ")[0] : "Niveaux de parrainage");
   const claimAllButton = getContent(settings, "content_tasks_claimAllButton", t.taskClaim);
 
   return (

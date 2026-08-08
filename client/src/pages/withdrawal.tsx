@@ -60,16 +60,16 @@ export default function WithdrawalPage() {
   const withdrawalStartHour = withdrawalSettings?.withdrawalStartHour ?? 9;
   const withdrawalEndHour = withdrawalSettings?.withdrawalEndHour ?? 17;
 
-  const withdrawalCtaButton = getContent(allSettings, "content_withdrawal_ctaButton", "立即提现");
-  const withdrawalInstructionsTitle = getContent(allSettings, "content_withdrawal_instructionsTitle", "提现说明");
-  const withdrawalInstruction1 = getContent(allSettings, "content_withdrawal_instruction1", `1. 最低提现金额为 ${minWithdrawal.toLocaleString()} ${currency}。`);
-  const withdrawalInstruction2 = getContent(allSettings, "content_withdrawal_instruction2", "2. 每天最多可提现三次，没有时间限制。");
-  const withdrawalInstruction3 = getContent(allSettings, "content_withdrawal_instruction3", `3. 每笔提现将收取 ${withdrawalFee}% 的处理费。`);
-  const withdrawalInstruction4 = getContent(allSettings, "content_withdrawal_instruction4", "4. 提现通常在2小时内到账，特殊情况下可能需要24小时。");
-  const withdrawalInstruction5 = getContent(allSettings, "content_withdrawal_instruction5", "5. 如果提现失败，请确认 USDT BEP20 地址正确后重新提交。");
-  const withdrawalInstruction6 = getContent(allSettings, "content_withdrawal_instruction6", "6. 提交前请查看平台显示的提现条件。");
-  const withdrawalWarningNoHours = getContent(allSettings, "content_withdrawal_warningNoHours", `提现时间：${withdrawalStartHour}:00 – ${withdrawalEndHour}:00（当前已关闭）`);
-  const withdrawalWarningNoProduct = getContent(allSettings, "content_withdrawal_warningNoProduct", "您需要拥有有效产品才能提现。");
+  const withdrawalCtaButton = getContent(allSettings, "content_withdrawal_ctaButton", "Retirer maintenant");
+  const withdrawalInstructionsTitle = getContent(allSettings, "content_withdrawal_instructionsTitle", "Instructions de retrait");
+  const withdrawalInstruction1 = getContent(allSettings, "content_withdrawal_instruction1", `1. Montant minimum de retrait : ${minWithdrawal.toLocaleString()} ${currency}.`);
+  const withdrawalInstruction2 = getContent(allSettings, "content_withdrawal_instruction2", "2. Maximum 1 retrait par jour.");
+  const withdrawalInstruction3 = getContent(allSettings, "content_withdrawal_instruction3", `3. Des frais de traitement de ${withdrawalFee}% sont prélevés sur chaque retrait.`);
+  const withdrawalInstruction4 = getContent(allSettings, "content_withdrawal_instruction4", "4. Le virement est effectué sous 2h en général, 24h dans les cas exceptionnels.");
+  const withdrawalInstruction5 = getContent(allSettings, "content_withdrawal_instruction5", "5. Vérifiez que votre numéro Mobile Money est correct avant de soumettre.");
+  const withdrawalInstruction6 = getContent(allSettings, "content_withdrawal_instruction6", "6. Consultez les conditions affichées sur la plateforme avant de soumettre.");
+  const withdrawalWarningNoHours = getContent(allSettings, "content_withdrawal_warningNoHours", `Horaires de retrait : ${withdrawalStartHour}h00 – ${withdrawalEndHour}h00 (actuellement fermé)`);
+  const withdrawalWarningNoProduct = getContent(allSettings, "content_withdrawal_warningNoProduct", "Vous devez posséder un produit actif pour effectuer un retrait.");
 
   const amountAfterFees = amount ? Math.floor(Number(amount) * (1 - withdrawalFee / 100)) : 0;
   const currentHour = new Date().getHours();

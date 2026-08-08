@@ -55,12 +55,12 @@ export default function HomePage() {
   const currency      = "FCFA";
 
   const telegramGroupLink = settings?.groupLink || "https://t.me/vestasgroup";
-  const popupTitle  = getContent(settings, "content_home_popupTitle",  "通知");
+  const popupTitle  = getContent(settings, "content_home_popupTitle",  "Notification");
   const popupLines  = [
-    getContent(settings, "content_home_popupLine1", "Power Add 成立于1996年，是 Tekman 集团旗下的独立部门。"),
-    getContent(settings, "content_home_popupLine3", "Power Add 提供适配器、开放式电源、U 型电源、盒式电源和 DC/DC 转换器等解决方案。"),
-    getContent(settings, "content_home_popupLine4", "研发和试生产位于台湾，大规模生产位于台湾和中国。"),
-    getContent(settings, "content_home_popupLine5", "Power Add 已通过 ISO 9001 和 ISO 14001 认证，并持续提升产品质量。"),
+    getContent(settings, "content_home_popupLine1", "Bienvenue sur la plateforme Asus — votre partenaire d'investissement de confiance."),
+    getContent(settings, "content_home_popupLine3", "Achetez un produit VIP et commencez à générer des revenus journaliers dès le lendemain."),
+    getContent(settings, "content_home_popupLine4", "Vos gains sont versés automatiquement chaque 24h après achat."),
+    getContent(settings, "content_home_popupLine5", "Pour toute question, contactez notre support disponible 7j/7."),
   ];
 
   const quickActions = [

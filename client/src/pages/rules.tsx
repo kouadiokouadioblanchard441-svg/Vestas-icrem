@@ -20,19 +20,19 @@ export default function RulesPage() {
   const lv2 = settings?.level2Commission || "2";
   const lv3 = settings?.level3Commission || "1";
 
-  const rPageTitle = getContent(settings, "content_rulespage_pageTitle", "平台规则");
-  const rS1Title = getContent(settings, "content_rulespage_s1Title", "1. 投资");
-  const rS1b1 = getContent(settings, "content_rulespage_s1b1", "每位用户可以同时拥有多个投资产品。");
-  const rS1b2 = getContent(settings, "content_rulespage_s1b2", "收益每日产生，并每24小时自动计入账户余额。");
-  const rS1b3 = getContent(settings, "content_rulespage_s1b3", "标准投资周期为80天，特殊产品另有说明。");
-  const rS2Title = getContent(settings, "content_rulespage_s2Title", "2. 充值与提现");
-  const rS3Title = getContent(settings, "content_rulespage_s3Title", "3. 推荐系统");
-  const rS3b4 = getContent(settings, "content_rulespage_s3b4", "欺诈活动或通过创建多个账户操纵系统将导致账户被暂停。");
-  const rS4Title = getContent(settings, "content_rulespage_s4Title", "4. 注册奖励");
-  const rS5Title = getContent(settings, "content_rulespage_s5Title", "5. 安全");
-  const rS5b1 = getContent(settings, "content_rulespage_s5b1", "您有责任保护好自己的密码。");
-  const rS5b2 = getContent(settings, "content_rulespage_s5b2", "请勿与他人分享您的登录信息。");
-  const rS5b3 = getContent(settings, "content_rulespage_s5b3", "官方客服绝不会向您索要密码。");
+  const rPageTitle = getContent(settings, "content_rulespage_pageTitle", "Règles de la plateforme");
+  const rS1Title = getContent(settings, "content_rulespage_s1Title", "1. Investissement");
+  const rS1b1 = getContent(settings, "content_rulespage_s1b1", "Chaque utilisateur peut posséder plusieurs produits d'investissement simultanément.");
+  const rS1b2 = getContent(settings, "content_rulespage_s1b2", "Les revenus sont générés quotidiennement et crédités toutes les 24h après l'heure d'achat.");
+  const rS1b3 = getContent(settings, "content_rulespage_s1b3", "La durée standard d'investissement est de 360 jours, sauf mention contraire sur le produit.");
+  const rS2Title = getContent(settings, "content_rulespage_s2Title", "2. Recharge & Retrait");
+  const rS3Title = getContent(settings, "content_rulespage_s3Title", "3. Système de parrainage");
+  const rS3b4 = getContent(settings, "content_rulespage_s3b4", "Toute activité frauduleuse ou manipulation via plusieurs comptes entraînera la suspension du compte.");
+  const rS4Title = getContent(settings, "content_rulespage_s4Title", "4. Bonus d'inscription");
+  const rS5Title = getContent(settings, "content_rulespage_s5Title", "5. Sécurité");
+  const rS5b1 = getContent(settings, "content_rulespage_s5b1", "Vous êtes responsable de la sécurité de votre mot de passe.");
+  const rS5b2 = getContent(settings, "content_rulespage_s5b2", "Ne partagez jamais vos informations de connexion avec quiconque.");
+  const rS5b3 = getContent(settings, "content_rulespage_s5b3", "Le support officiel ne vous demandera jamais votre mot de passe.");
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#2d3816" }}>
@@ -58,20 +58,20 @@ export default function RulesPage() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-[#E8192C] border-l-4 border-[#E8192C] pl-3">{rS2Title}</h2>
           <ul className="list-disc pl-5 space-y-2 text-white/90 text-sm">
-            <li>最低充值金额为 {parseInt(minDeposit).toLocaleString()} FCFA。</li>
-            <li>最低提现金额为 {parseInt(minWithdrawal).toLocaleString()} FCFA。</li>
-            <li>提现手续费为 {withdrawalFees}%，用于支付交易和维护费用。</li>
-            <li>提现时间为工作日 {withdrawalStartHour}:00 至 {withdrawalEndHour}:00。</li>
-            <li>每位用户每天最多提现 {maxWithdrawalsPerDay} 次。</li>
+            <li>Montant minimum de recharge : {parseInt(minDeposit).toLocaleString()} FCFA.</li>
+            <li>Montant minimum de retrait : {parseInt(minWithdrawal).toLocaleString()} FCFA.</li>
+            <li>Frais de retrait : {withdrawalFees}%, couvrant les frais de traitement et de maintenance.</li>
+            <li>Horaires de retrait : {withdrawalStartHour}h00 – {withdrawalEndHour}h00.</li>
+            <li>Maximum {maxWithdrawalsPerDay} retrait(s) par jour et par utilisateur.</li>
           </ul>
         </section>
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-[#E8192C] border-l-4 border-[#E8192C] pl-3">{rS3Title}</h2>
           <ul className="list-disc pl-5 space-y-2 text-white/90 text-sm">
-            <li>一级推荐佣金：下级首次投资的 {lv1}%。</li>
-            <li>二级推荐佣金：下级首次投资的 {lv2}%。</li>
-            <li>三级推荐佣金：下级首次投资的 {lv3}%。</li>
+            <li>Commission niveau 1 : {lv1}% sur le premier investissement du filleul direct.</li>
+            <li>Commission niveau 2 : {lv2}% sur le premier investissement du filleul indirect.</li>
+            <li>Commission niveau 3 : {lv3}% sur le premier investissement du filleul de niveau 3.</li>
             <li>{rS3b4}</li>
           </ul>
         </section>
@@ -79,7 +79,7 @@ export default function RulesPage() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-[#E8192C] border-l-4 border-[#E8192C] pl-3">{rS4Title}</h2>
           <ul className="list-disc pl-5 space-y-2 text-white/90 text-sm">
-            <li>每位新会员注册后可获得 {parseInt(signupBonus).toLocaleString()} FCFA 奖励。</li>
+            <li>Chaque nouveau membre reçoit un bonus de {parseInt(signupBonus).toLocaleString()} FCFA à l'inscription.</li>
           </ul>
         </section>
 

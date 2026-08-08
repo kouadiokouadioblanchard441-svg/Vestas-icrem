@@ -14,23 +14,23 @@ export default function CompanyPage() {
     queryKey: ["/api/company-content"],
   });
 
-  const pageTitle = getContent(settings, "content_company_pageTitle", "公司");
+  const pageTitle = getContent(settings, "content_company_pageTitle", "Entreprise");
   const intro = getContent(
     settings,
     "content_company_intro",
-    "了解我们的公司、投资计划以及平台的重要信息。",
+    "Découvrez notre entreprise, nos plans d'investissement et les informations importantes sur la plateforme.",
   );
   const legacyBlocks: Record<string, { title: string; body: string }> = {
-    "Qui sommes-nous ?": { title: "我们是谁？", body: "了解我们的公司、愿景以及为客户提供的解决方案。" },
-    "Nos plans d'investissement": { title: "投资计划", body: "这里提供投资计划、相关条件以及平台机会的详细信息。" },
-    "Notre engagement": { title: "我们的承诺", body: "我们重视透明度、服务质量，并为每一位会员提供支持。" },
+    "Qui sommes-nous ?": { title: "Qui sommes-nous ?", body: "Découvrez notre entreprise, notre vision et les solutions que nous proposons à nos membres." },
+    "Nos plans d'investissement": { title: "Nos plans d'investissement", body: "Retrouvez ici les détails sur nos plans d'investissement, les conditions associées et les opportunités offertes par la plateforme." },
+    "Notre engagement": { title: "Notre engagement", body: "Nous valorisons la transparence, la qualité de service et apportons un soutien à chaque membre." },
   };
 
   return (
     <div className="min-h-screen pb-6" style={{ background: "#2d3816" }}>
       <header className="flex items-center px-4 py-3 border-b bg-white">
         <Link href="/">
-          <button className="p-1" data-testid="button-company-back" aria-label="返回">
+          <button className="p-1" data-testid="button-company-back" aria-label="Retour">
             <ChevronLeft className="w-6 h-6 text-gray-600" />
           </button>
         </Link>
@@ -53,8 +53,8 @@ export default function CompanyPage() {
         ) : blocks && blocks.length > 0 ? (
             blocks.map((block) => {
               const translated = legacyBlocks[block.title];
-              const title = translated?.title || (/[\u3400-\u9fff]/.test(block.title) ? block.title : "平台信息");
-              const body = translated?.body || (/[\u3400-\u9fff]/.test(block.body) ? block.body : "更多平台信息即将发布。");
+              const title = translated?.title || block.title || "Information";
+              const body = translated?.body || block.body || "Plus d'informations bientôt disponibles.";
               return (
             <article key={block.id} className="overflow-hidden rounded-2xl bg-white shadow-sm">
               {block.imageUrl && (
