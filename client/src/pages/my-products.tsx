@@ -60,25 +60,16 @@ export default function MyProductsPage() {
           style={{ background: "#4a5e22" }}
         >
           <div className="grid grid-cols-2 divide-x divide-white/20">
-            <div className="px-4 py-4 flex items-center gap-3">
-              <img src={iconWallet} alt="" className="w-10 h-10 object-contain shrink-0" />
-              <div>
-                <p className="text-white/80 text-xs mb-1">{t.myProductsDevice}</p>
-                <p className="text-white font-black text-2xl">{allProducts.length}</p>
-              </div>
+            <div className="px-4 py-4">
+              <p className="text-white/80 text-xs mb-1">{t.myProductsDevice}</p>
+              <p className="text-white font-black text-2xl">{allProducts.length}</p>
             </div>
-            <div className="px-4 py-4 flex items-center gap-3">
-              <img src={iconRevenu} alt="" className="w-10 h-10 object-contain shrink-0" />
-              <div>
-                <p className="text-white/80 text-xs mb-1">{t.myProductsEarnings}</p>
-                <p className="text-white font-black text-lg leading-tight">
-                  {currency} {totalEarned.toLocaleString()}
-                </p>
-              </div>
+            <div className="px-4 py-4">
+              <p className="text-white/80 text-xs mb-1">{t.myProductsEarnings}</p>
+              <p className="text-white font-black text-lg leading-tight">
+                {currency} {totalEarned.toLocaleString()}
+              </p>
             </div>
-          </div>
-          <div className="border-t border-white/20 px-4 py-2.5 text-center">
-            <p className="text-white/90 text-xs">{t.myProductsSettledEvery24h}</p>
           </div>
         </div>
 
