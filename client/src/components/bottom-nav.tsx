@@ -3,8 +3,8 @@ import { useI18n } from "@/lib/i18n";
 
 import iconHome from "@assets/20260312_091332_1773307680527.png";
 import iconProduit from "@assets/nav-produits-new.png";
-import iconGains from "@assets/nav-gains-new.png";
-import iconEquipe from "@assets/nav-equipe-new.png";
+import iconGains   from "@assets/nav-gains-new.png";
+import iconEquipe  from "@assets/nav-equipe-new.png";
 import iconCompte from "@assets/téléchargement_(12)_1770815897017.png";
 
 const activeStyle  = { opacity: 1 };
