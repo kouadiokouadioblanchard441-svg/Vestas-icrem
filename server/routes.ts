@@ -2309,6 +2309,21 @@ export async function registerRoutes(
     }
   });
 
+  // Retourne les opérateurs Mobile Money disponibles pour un pays donné
+  app.get("/api/countries/:code/operators", requireAuth, async (req, res) => {
+    try {
+      const code = req.params.code.toUpperCase();
+      const allCountries = await storage.getActiveCountries();
+      const country = allCountries.find((c: any) => c.code === code);
+      if (!country) return res.json([]);
+      let ops: string[] = [];
+      try { ops = JSON.parse(country.operators || "[]"); } catch {}
+      res.json(ops);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Admin country routes
   app.get("/api/admin/countries", requireAdmin, async (req, res) => {
     try {

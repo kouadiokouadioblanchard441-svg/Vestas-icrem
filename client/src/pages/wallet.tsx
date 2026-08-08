@@ -11,13 +11,16 @@ import { Link, useLocation, useSearch } from "wouter";
 import type { WithdrawalWallet } from "@shared/schema";
 import { useI18n } from "@/lib/i18n";
 
-interface PaymentNumber {
-  id: number;
-  ownerName: string;
-  phone: string;
-  operatorName: string;
-  country: string;
-  isActive: boolean;
+
+// Emoji selon le nom de l'opérateur
+function opEmoji(name: string): string {
+  const n = name.toLowerCase();
+  if (n.includes("wave"))   return "🌊";
+  if (n.includes("mtn"))    return "🟡";
+  if (n.includes("orange")) return "🟠";
+  if (n.includes("moov"))   return "🔵";
+  if (n.includes("telecel")) return "🟣";
+  return "📱";
 }
 
 export default function WalletPage() {
@@ -42,11 +45,12 @@ export default function WalletPage() {
     queryKey: ["/api/wallets"],
   });
 
-  const { data: paymentNumbers = [] } = useQuery<PaymentNumber[]>({
-    queryKey: ["/api/payment-numbers"],
+  // Opérateurs Mobile Money selon le pays de l'utilisateur
+  const userCountryCode = user?.country || "CI";
+  const { data: countryOperators = [] } = useQuery<string[]>({
+    queryKey: [`/api/countries/${userCountryCode}/operators`],
+    enabled: !!user,
   });
-
-  const operators = paymentNumbers.filter(n => n.isActive);
 
   const addMutation = useMutation({
     mutationFn: async () => {
@@ -117,10 +121,9 @@ export default function WalletPage() {
     }
   };
 
-  const userCountry = user?.country || "CI";
-  const countryInfo = FALLBACK_COUNTRIES.find(c => c.code === userCountry);
+  const countryInfo = FALLBACK_COUNTRIES.find(c => c.code === userCountryCode);
   const phonePrefix = countryInfo?.phonePrefix || "225";
-  const requiredPhoneLength = getPhoneLength(userCountry);
+  const requiredPhoneLength = getPhoneLength(userCountryCode);
 
   const handleConfirm = () => {
     if (!selectedOperator) {
@@ -262,23 +265,24 @@ export default function WalletPage() {
             >
               <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mt-3 mb-2" />
               <div className="overflow-y-auto" style={{ maxHeight: "calc(60vh - 32px)" }}>
-                {operators.length === 0 ? (
+                {countryOperators.length === 0 ? (
                   <div className="text-center py-12">
                     <p className="text-gray-400 text-sm">Aucun opérateur disponible</p>
                   </div>
                 ) : (
-                  operators.map((op, idx) => (
+                  countryOperators.map((op, idx) => (
                     <button
-                      key={op.id}
+                      key={op}
                       onClick={() => {
-                        setSelectedOperator(op.operatorName);
+                        setSelectedOperator(op);
                         setShowBankSheet(false);
                       }}
-                      className="w-full text-center py-4 text-sm text-gray-800 active:bg-gray-50 transition"
-                      style={{ borderBottom: idx < operators.length - 1 ? "1px solid #f3f4f6" : undefined }}
-                      data-testid={`button-operator-${op.id}`}
+                      className="w-full flex items-center gap-3 px-5 py-4 text-sm text-gray-800 active:bg-gray-50 transition"
+                      style={{ borderBottom: idx < countryOperators.length - 1 ? "1px solid #f3f4f6" : undefined }}
+                      data-testid={`button-operator-${idx}`}
                     >
-                      {op.operatorName}
+                      <span className="text-2xl">{opEmoji(op)}</span>
+                      <span className="font-semibold">{op}</span>
                     </button>
                   ))
                 )}
