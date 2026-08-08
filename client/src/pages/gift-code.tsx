@@ -73,9 +73,10 @@ export default function GiftCodePage() {
       {/* Hero image with red overlay + header */}
       <div className="relative">
         <img
-          src="/powerade-logo.webp"
+          src="/gift-banner.png"
           alt="ASUS"
-          className="w-full h-36 object-contain bg-white"
+          className="w-full h-36 object-contain"
+          style={{ background: "linear-gradient(135deg, #4a5e22, #2d3816)" }}
           data-testid="img-gift-banner"
         />
         {/* Red gradient overlay */}
