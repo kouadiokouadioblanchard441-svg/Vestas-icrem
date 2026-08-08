@@ -2,9 +2,9 @@ import { useLocation } from "wouter";
 import { useI18n } from "@/lib/i18n";
 
 import iconHome from "@assets/20260312_091332_1773307680527.png";
-import iconProduit from "@assets/20251231_093102_1771507041600-D0EaRzg7_1783245289157.png";
-import iconGains from "@assets/3309927_1783248791847.png";
-import iconEquipe from "@assets/1244758_1783246767217.png";
+import iconProduit from "@assets/nav-produits-new.png";
+import iconGains from "@assets/nav-gains-new.png";
+import iconEquipe from "@assets/nav-equipe-new.png";
 import iconCompte from "@assets/téléchargement_(12)_1770815897017.png";
 
 const greenFilter = "brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(2000%) hue-rotate(340deg) brightness(95%) contrast(110%)";
