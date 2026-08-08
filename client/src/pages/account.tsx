@@ -124,7 +124,7 @@ export default function AccountPage() {
                 {/* Badge VIP — au-dessus du numéro */}
                 <div className="mb-1">
                   <span
-                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black tracking-wider border"
+                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[13px] font-black tracking-wider border"
                     style={{
                       background: vipStyle.bg,
                       color: vipStyle.text,
