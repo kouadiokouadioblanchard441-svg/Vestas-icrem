@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { users, products, tasks, paymentChannels, platformSettings, companyContent, countries, stakingProducts } from "@shared/schema";
+import { users, products, tasks, paymentChannels, paymentNumbers, platformSettings, companyContent, countries, stakingProducts } from "@shared/schema";
 import bcrypt from "bcryptjs";
 import { eq, sql } from "drizzle-orm";
 
@@ -211,6 +211,24 @@ export async function seed() {
     console.log("Reward tasks seeded (new 4-reward structure)");
   } else {
     console.log(`Tasks skipped — ${existingTasks.length} existing tasks preserved`);
+  }
+
+  // Seed payment numbers CI (Wave + MTN) — insert if operator not yet present for CI
+  const existingNums = await db.select().from(paymentNumbers);
+  const ciOperators = existingNums.filter(n => n.country === "CI").map(n => n.operatorName);
+
+  const defaultCiNumbers = [
+    { ownerName: "Admin Wave CI",  phone: "0700000001", operatorName: "Wave",      country: "CI", logoUrl: null, isActive: true, createdBy: 1 },
+    { ownerName: "Admin MTN CI",   phone: "0700000002", operatorName: "MTN Money", country: "CI", logoUrl: null, isActive: true, createdBy: 1 },
+  ];
+
+  for (const entry of defaultCiNumbers) {
+    if (!ciOperators.includes(entry.operatorName)) {
+      await db.insert(paymentNumbers).values(entry);
+      console.log(`Payment number seeded: ${entry.operatorName} (CI)`);
+    } else {
+      console.log(`Payment number skipped — ${entry.operatorName} (CI) already exists`);
+    }
   }
 
   // Check if payment channels exist
