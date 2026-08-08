@@ -12,16 +12,6 @@ import type { WithdrawalWallet } from "@shared/schema";
 import { useI18n } from "@/lib/i18n";
 
 
-// Emoji selon le nom de l'opérateur
-function opEmoji(name: string): string {
-  const n = name.toLowerCase();
-  if (n.includes("wave"))   return "🌊";
-  if (n.includes("mtn"))    return "🟡";
-  if (n.includes("orange")) return "🟠";
-  if (n.includes("moov"))   return "🔵";
-  if (n.includes("telecel")) return "🟣";
-  return "📱";
-}
 
 export default function WalletPage() {
   const { user } = useAuth();
@@ -277,12 +267,11 @@ export default function WalletPage() {
                         setSelectedOperator(op);
                         setShowBankSheet(false);
                       }}
-                      className="w-full flex items-center gap-3 px-5 py-4 text-sm text-gray-800 active:bg-gray-50 transition"
+                      className="w-full text-center py-4 text-sm text-gray-800 active:bg-gray-50 transition"
                       style={{ borderBottom: idx < countryOperators.length - 1 ? "1px solid #f3f4f6" : undefined }}
                       data-testid={`button-operator-${idx}`}
                     >
-                      <span className="text-2xl">{opEmoji(op)}</span>
-                      <span className="font-semibold">{op}</span>
+                      {op}
                     </button>
                   ))
                 )}
