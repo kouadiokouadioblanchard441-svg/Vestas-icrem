@@ -258,6 +258,8 @@ export async function seed() {
     { key: "taskLevel1Commission", value: "3" },
     { key: "taskLevel2Commission", value: "2" },
     { key: "taskLevel3Commission", value: "1" },
+    { key: "dailyBonusEnabled", value: "true" },
+    { key: "dailyBonusAmount", value: "50" },
     { key: "soleaspayEnabled", value: "false" },
     { key: "soleaspayCountries", value: "" },
     { key: "soleaspayChannelName", value: "Soleaspay" },
@@ -271,6 +273,7 @@ export async function seed() {
     "supportLabel", "support2Label", "channelLabel", "groupLabel", "popupButtonLabel",
     "level1Commission", "level2Commission", "level3Commission",
     "taskLevel1Commission", "taskLevel2Commission", "taskLevel3Commission",
+    "dailyBonusEnabled", "dailyBonusAmount",
   ]);
 
   for (const settingData of requiredSettings) {

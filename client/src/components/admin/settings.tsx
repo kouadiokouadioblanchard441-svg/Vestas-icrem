@@ -55,6 +55,11 @@ const settingsSchema = z.object({
   level1Commission: z.string().min(1, "Commission requise"),
   level2Commission: z.string().min(1, "Commission requise"),
   level3Commission: z.string().min(1, "Commission requise"),
+  taskLevel1Commission: z.string().min(1, "Commission requise"),
+  taskLevel2Commission: z.string().min(1, "Commission requise"),
+  taskLevel3Commission: z.string().min(1, "Commission requise"),
+  dailyBonusEnabled: z.boolean(),
+  dailyBonusAmount: z.string().min(1, "Montant requis"),
   // Popup d'accueil
   popupMascotUrl: z.string().optional(),
   popupLine1: z.string().optional(),
@@ -207,9 +212,14 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
       withdrawalDays: "1,2,3,4,5",
       withdrawalStartHour: "9",
       withdrawalEndHour: "17",
-      level1Commission: "25",
-      level2Commission: "1",
+      level1Commission: "10",
+      level2Commission: "2",
       level3Commission: "1",
+      taskLevel1Commission: "3",
+      taskLevel2Commission: "2",
+      taskLevel3Commission: "1",
+      dailyBonusEnabled: true,
+      dailyBonusAmount: "50",
     },
   });
 
@@ -244,9 +254,14 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         withdrawalDays: settings.withdrawalDays || "1,2,3,4,5",
         withdrawalStartHour: settings.withdrawalStartHour || "9",
         withdrawalEndHour: settings.withdrawalEndHour || "17",
-        level1Commission: settings.level1Commission || "25",
-        level2Commission: settings.level2Commission || "1",
+        level1Commission: settings.level1Commission || "10",
+        level2Commission: settings.level2Commission || "2",
         level3Commission: settings.level3Commission || "1",
+        taskLevel1Commission: settings.taskLevel1Commission || "3",
+        taskLevel2Commission: settings.taskLevel2Commission || "2",
+        taskLevel3Commission: settings.taskLevel3Commission || "1",
+        dailyBonusEnabled: settings.dailyBonusEnabled !== "false",
+        dailyBonusAmount: settings.dailyBonusAmount || "50",
         popupMascotUrl: settings.popupMascotUrl || "",
         popupLine1: settings.popupLine1 || "",
         popupLine2: settings.popupLine2 || "",
@@ -270,6 +285,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
         channelEnabled: String(data.channelEnabled),
         groupEnabled: String(data.groupEnabled),
         withdrawalEnabled: String(data.withdrawalEnabled),
+        dailyBonusEnabled: String(data.dailyBonusEnabled),
       };
       const response = await apiRequest("POST", "/api/admin/settings", serialized);
       if (!response.ok) {
@@ -733,38 +749,104 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
           </CardContent>
         </Card>
 
-        {/* ── Commissions ── */}
+        {/* ── Commissions sur investissements ── */}
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <Users className="w-5 h-5 text-primary" />
-              Commissions de parrainage
+              Commissions de parrainage — Investissements
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-2">
+            <p className="text-xs text-muted-foreground">Pourcentage reversé aux parrains lorsqu'un filleul achète un produit.</p>
             <div className="grid grid-cols-3 gap-4">
               <FormField control={form.control} name="level1Commission" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Niveau 1 (%)</FormLabel>
-                  <FormControl><Input {...field} type="number" /></FormControl>
+                  <FormControl><Input {...field} type="number" min="0" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="level2Commission" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Niveau 2 (%)</FormLabel>
-                  <FormControl><Input {...field} type="number" /></FormControl>
+                  <FormControl><Input {...field} type="number" min="0" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="level3Commission" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Niveau 3 (%)</FormLabel>
-                  <FormControl><Input {...field} type="number" /></FormControl>
+                  <FormControl><Input {...field} type="number" min="0" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* ── Commissions sur tâches ── */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Users className="w-5 h-5 text-green-500" />
+              Commissions de parrainage — Tâches quotidiennes
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <p className="text-xs text-muted-foreground">Pourcentage reversé aux parrains sur les gains de tâches de leurs filleuls.</p>
+            <div className="grid grid-cols-3 gap-4">
+              <FormField control={form.control} name="taskLevel1Commission" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Niveau 1 (%)</FormLabel>
+                  <FormControl><Input {...field} type="number" min="0" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="taskLevel2Commission" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Niveau 2 (%)</FormLabel>
+                  <FormControl><Input {...field} type="number" min="0" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="taskLevel3Commission" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Niveau 3 (%)</FormLabel>
+                  <FormControl><Input {...field} type="number" min="0" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* ── Bonus quotidien ── */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              🎁 Bonus quotidien
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <FormField control={form.control} name="dailyBonusEnabled" render={({ field }) => (
+              <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                <div>
+                  <FormLabel className="text-sm font-medium">Activer le bonus quotidien</FormLabel>
+                  <FormDescription className="text-xs">Les utilisateurs peuvent réclamer un bonus chaque 24h</FormDescription>
+                </div>
+                <FormControl>
+                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="dailyBonusAmount" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Montant du bonus (FCFA)</FormLabel>
+                <FormControl><Input {...field} type="number" min="0" /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
           </CardContent>
         </Card>
 

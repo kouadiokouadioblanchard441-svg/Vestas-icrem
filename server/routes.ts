@@ -1325,6 +1325,13 @@ export async function registerRoutes(
   // Daily bonus claim
   app.post("/api/claim-daily-bonus", requireAuth, async (req, res) => {
     try {
+      const settings = await storage.getSettings();
+
+      // Vérifier si le bonus quotidien est activé
+      if (settings.dailyBonusEnabled === "false") {
+        return res.status(400).json({ message: "Le bonus quotidien est désactivé" });
+      }
+
       const user = await storage.getUser(req.session.userId!);
       if (!user) {
         return res.status(404).json({ message: "Utilisateur non trouve" });
@@ -1345,8 +1352,9 @@ export async function registerRoutes(
         }
       }
 
-      // Add 0.05 USDT to totalEarnings (solde des revenus)
-      const newTotalEarnings = parseFloat(user.totalEarnings || "0") + 50;
+      // Montant configurable depuis l'admin
+      const bonusAmount = parseFloat(settings.dailyBonusAmount || "50");
+      const newTotalEarnings = parseFloat(user.totalEarnings || "0") + bonusAmount;
       await storage.updateUser(user.id, { 
         totalEarnings: newTotalEarnings.toFixed(2),
         lastDailyBonusClaim: now
@@ -1356,7 +1364,7 @@ export async function registerRoutes(
       await storage.createTransaction({
         userId: user.id,
         type: "bonus",
-        amount: "50",
+        amount: bonusAmount.toFixed(2),
         description: "Bonus quotidien"
       });
 
