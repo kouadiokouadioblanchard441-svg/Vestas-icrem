@@ -1299,7 +1299,23 @@ export async function registerRoutes(
 
   app.post("/api/tasks/:id/claim", requireAuth, async (req, res) => {
     try {
-      await storage.claimTask(req.session.userId!, parseInt(req.params.id as string));
+      const taskId = parseInt(req.params.id as string);
+      const userId = req.session.userId!;
+
+      // Récupérer la récompense avant le claim pour les commissions
+      const tasksStatus = await storage.getTasksWithStatus(userId);
+      const taskStatus = tasksStatus.find((t: any) => t.id === taskId);
+      const taskReward = taskStatus?.reward ?? 0;
+
+      await storage.claimTask(userId, taskId);
+
+      // Distribuer les commissions de parrainage sur les gains de tâche
+      if (taskReward > 0) {
+        storage.processTaskReferralCommissions(userId, taskReward).catch((err: any) =>
+          console.error("Erreur commission tâche:", err)
+        );
+      }
+
       res.json({ success: true });
     } catch (error: any) {
       res.status(400).json({ message: error.message });

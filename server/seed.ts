@@ -255,6 +255,9 @@ export async function seed() {
     { key: "level1Commission", value: "10" },
     { key: "level2Commission", value: "2" },
     { key: "level3Commission", value: "1" },
+    { key: "taskLevel1Commission", value: "3" },
+    { key: "taskLevel2Commission", value: "2" },
+    { key: "taskLevel3Commission", value: "1" },
     { key: "soleaspayEnabled", value: "false" },
     { key: "soleaspayCountries", value: "" },
     { key: "soleaspayChannelName", value: "Soleaspay" },
@@ -267,6 +270,7 @@ export async function seed() {
   const FORCE_UPDATE_KEYS = new Set([
     "supportLabel", "support2Label", "channelLabel", "groupLabel", "popupButtonLabel",
     "level1Commission", "level2Commission", "level3Commission",
+    "taskLevel1Commission", "taskLevel2Commission", "taskLevel3Commission",
   ]);
 
   for (const settingData of requiredSettings) {

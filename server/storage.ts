@@ -462,6 +462,65 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async processTaskReferralCommissions(userId: number, taskReward: number): Promise<void> {
+    const user = await this.getUser(userId);
+    if (!user || !user.referredBy) return;
+
+    const settings = await this.getSettings();
+    const level1Rate = parseFloat(settings.taskLevel1Commission || "3") / 100;
+    const level2Rate = parseFloat(settings.taskLevel2Commission || "2") / 100;
+    const level3Rate = parseFloat(settings.taskLevel3Commission || "1") / 100;
+
+    // Niveau 1 — parrain direct
+    const level1User = await this.getUserByReferralCode(user.referredBy);
+    if (level1User) {
+      const commission1 = taskReward * level1Rate;
+      await this.updateUser(level1User.id, {
+        totalEarnings: (parseFloat(level1User.totalEarnings || "0") + commission1).toFixed(2),
+      });
+      await this.createTransaction({
+        userId: level1User.id,
+        type: "commission",
+        amount: commission1.toFixed(2),
+        description: `Commission tâche niv.1 de ${user.fullName}`,
+      });
+
+      // Niveau 2
+      if (level1User.referredBy) {
+        const level2User = await this.getUserByReferralCode(level1User.referredBy);
+        if (level2User) {
+          const commission2 = taskReward * level2Rate;
+          await this.updateUser(level2User.id, {
+            totalEarnings: (parseFloat(level2User.totalEarnings || "0") + commission2).toFixed(2),
+          });
+          await this.createTransaction({
+            userId: level2User.id,
+            type: "commission",
+            amount: commission2.toFixed(2),
+            description: `Commission tâche niv.2 de ${user.fullName}`,
+          });
+
+          // Niveau 3
+          if (level2User.referredBy) {
+            const level3User = await this.getUserByReferralCode(level2User.referredBy);
+            if (level3User) {
+              const commission3 = taskReward * level3Rate;
+              await this.updateUser(level3User.id, {
+                totalEarnings: (parseFloat(level3User.totalEarnings || "0") + commission3).toFixed(2),
+              });
+              await this.createTransaction({
+                userId: level3User.id,
+                type: "commission",
+                amount: commission3.toFixed(2),
+                description: `Commission tâche niv.3 de ${user.fullName}`,
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+
   async processEarnings(): Promise<void> {
     const activeProducts = await db.select({
       userProduct: userProducts,
