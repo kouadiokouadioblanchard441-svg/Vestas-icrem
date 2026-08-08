@@ -1,24 +1,23 @@
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Loader2, Plus, Trash2, CreditCard, ChevronLeft, ChevronRight, Shield, Check } from "lucide-react";
+import {
+  ChevronLeft, ChevronRight, Trash2, CreditCard, Check, Shield, Loader2
+} from "lucide-react";
 import { Link, useLocation, useSearch } from "wouter";
 import type { WithdrawalWallet } from "@shared/schema";
-import landscapeImg from "@assets/71vdMjQS9sL._AC_UF1000,1000_QL80__1784966822182.jpg";
 import { useI18n } from "@/lib/i18n";
 
-function maskAccountNumber(num: string): string {
-  if (num.length <= 6) return num;
-  return num.slice(0, 2) + "****" + num.slice(6);
+interface PaymentNumber {
+  id: number;
+  ownerName: string;
+  phone: string;
+  operatorName: string;
+  country: string;
+  isActive: boolean;
 }
-
-type WalletForm = { accountName: string; accountNumber: string };
-const WITHDRAWAL_METHOD = "USDT BEP20";
 
 export default function WalletPage() {
   const { user } = useAuth();
@@ -28,40 +27,47 @@ export default function WalletPage() {
   const searchString = useSearch();
   const params = new URLSearchParams(searchString);
   const selectMode = params.get("from") === "withdrawal";
+
+  // List vs Add form mode
   const [showForm, setShowForm] = useState(false);
 
-  const walletSchema = z.object({
-    accountName: z.string().min(2, t.walletHolderRequired),
-    accountNumber: z.string().regex(/^0x[a-fA-F0-9]{40}$/, t.walletAddressInvalid),
-  });
+  // Add form state
+  const [selectedOperator, setSelectedOperator] = useState<string>("");
+  const [holderName, setHolderName] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [showBankSheet, setShowBankSheet] = useState(false);
 
-  const { data: wallets, isLoading } = useQuery<WithdrawalWallet[]>({
+  const { data: wallets = [], isLoading } = useQuery<WithdrawalWallet[]>({
     queryKey: ["/api/wallets"],
   });
 
-  const form = useForm<WalletForm>({
-    resolver: zodResolver(walletSchema),
-    defaultValues: { accountName: "", accountNumber: "" },
+  const { data: paymentNumbers = [] } = useQuery<PaymentNumber[]>({
+    queryKey: ["/api/payment-numbers"],
   });
 
+  const operators = paymentNumbers.filter(n => n.isActive);
+
   const addMutation = useMutation({
-    mutationFn: async (data: WalletForm) => {
+    mutationFn: async () => {
       const response = await apiRequest("POST", "/api/wallets", {
-        ...data,
-        paymentMethod: WITHDRAWAL_METHOD,
+        accountName: holderName,
+        accountNumber: accountNumber,
+        paymentMethod: selectedOperator,
         country: user!.country,
       });
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.message || "Error");
+        throw new Error(result.message || "Erreur");
       }
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/wallets"] });
-      toast({ title: t.walletAdded });
-      form.reset();
+      toast({ title: "Compte lié avec succès" });
       setShowForm(false);
+      setSelectedOperator("");
+      setHolderName("");
+      setAccountNumber("");
     },
     onError: (error: any) => {
       toast({ title: error.message || t.errorOccurred, variant: "destructive" });
@@ -73,7 +79,7 @@ export default function WalletPage() {
       const response = await apiRequest("DELETE", `/api/wallets/${walletId}`, {});
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.message || "Error");
+        throw new Error(result.message || "Erreur");
       }
       return response.json();
     },
@@ -91,7 +97,7 @@ export default function WalletPage() {
       const response = await apiRequest("PATCH", `/api/wallets/${walletId}/default`, {});
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.message || "Error");
+        throw new Error(result.message || "Erreur");
       }
       return response.json();
     },
@@ -110,253 +116,281 @@ export default function WalletPage() {
     }
   };
 
-  const handleSubmit = () => {
-    form.handleSubmit((data) => addMutation.mutate(data))();
+  const handleConfirm = () => {
+    if (!selectedOperator) {
+      toast({ title: "Sélectionnez une banque", variant: "destructive" }); return;
+    }
+    if (!holderName.trim()) {
+      toast({ title: "Saisissez le nom du titulaire", variant: "destructive" }); return;
+    }
+    if (!accountNumber.trim()) {
+      toast({ title: "Saisissez le numéro de compte", variant: "destructive" }); return;
+    }
+    addMutation.mutate();
   };
 
   if (!user) return null;
 
   const backLink = selectMode ? "/withdrawal" : "/account";
 
-  /* ─── ADD FORM VIEW ─── */
+  /* ══════════════════════════════════════════
+     ADD FORM VIEW — "Lier un compte bancaire"
+  ══════════════════════════════════════════ */
   if (showForm) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ background: "#2d3816" }}>
+      <div className="flex flex-col min-h-screen bg-white relative">
 
-        {/* Header — même style que la liste */}
-        <div className="flex items-center px-4 pt-10 pb-4">
+        {/* Header */}
+        <header className="flex items-center px-4 py-4" style={{ background: "#2d3816" }}>
           <button
-            onClick={() => { setShowForm(false); form.reset(); }}
+            onClick={() => { setShowForm(false); setSelectedOperator(""); setHolderName(""); setAccountNumber(""); }}
             className="p-1"
             data-testid="button-back-form"
           >
-            <ChevronLeft className="w-6 h-6 text-white" />
+            <ChevronLeft className="w-6 h-6 text-white" strokeWidth={2.5} />
           </button>
-          <h1 className="flex-1 text-center text-white font-bold text-base mr-6">
-            {t.walletAddMethod}
+          <h1 className="flex-1 text-center text-white font-bold text-base pr-8">
+            Lier un compte bancaire
           </h1>
+        </header>
+
+        {/* Form rows */}
+        <div className="flex-1 bg-white">
+
+          {/* Row 1 — Sélectionner une banque */}
+          <button
+            onClick={() => setShowBankSheet(true)}
+            className="w-full flex flex-col px-4 pt-5 pb-4 border-b border-gray-200 active:bg-gray-50 text-left"
+            data-testid="button-select-bank"
+          >
+            <p className="text-sm font-bold text-gray-900 mb-1">
+              <span className="text-red-500 mr-1">*</span>Sélectionner une banque
+            </p>
+            <div className="flex items-center justify-between w-full">
+              <span className={`text-sm ${selectedOperator ? "text-gray-900 font-semibold" : "text-gray-400"}`}>
+                {selectedOperator || "Veuillez sélectionner"}
+              </span>
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+            </div>
+          </button>
+
+          {/* Row 2 — Nom du titulaire */}
+          <div className="flex flex-col px-4 pt-5 pb-4 border-b border-gray-200">
+            <p className="text-sm font-bold text-gray-900 mb-1">
+              <span className="text-red-500 mr-1">*</span>Nom du titulaire du compte
+            </p>
+            <input
+              type="text"
+              value={holderName}
+              onChange={(e) => setHolderName(e.target.value)}
+              placeholder="Veuillez saisir le nom du titulaire"
+              className="w-full text-sm text-gray-700 outline-none placeholder:text-gray-400 bg-transparent"
+              data-testid="input-wallet-name"
+            />
+          </div>
+
+          {/* Row 3 — Compte bancaire */}
+          <div className="flex flex-col px-4 pt-5 pb-4 border-b border-gray-200">
+            <p className="text-sm font-bold text-gray-900 mb-1">
+              <span className="text-red-500 mr-1">*</span>Compte bancaire
+            </p>
+            <input
+              type="tel"
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value)}
+              placeholder="Veuillez saisir le numéro de compte bancaire"
+              className="w-full text-sm text-gray-700 outline-none placeholder:text-gray-400 bg-transparent"
+              data-testid="input-wallet-number"
+            />
+          </div>
         </div>
 
-        {/* Champs de saisie */}
-        <div className="px-4 space-y-3">
-
-          {/* Moyen unique */}
-          <div>
-            <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
-              {t.walletWithdrawalMethod}
-            </p>
-            <div className="w-full px-4 py-4 rounded-2xl shadow-sm bg-white/90 text-sm font-semibold text-gray-800">
-              {WITHDRAWAL_METHOD}
-            </div>
-          </div>
-
-          {/* Account holder name */}
-          <div>
-            <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
-              {t.walletHolderName}
-            </p>
-            <div
-              className="w-full flex items-center px-4 py-4 rounded-2xl shadow-sm"
-              style={{ background: "rgba(255,255,255,0.90)" }}
-            >
-              <input
-                {...form.register("accountName")}
-                placeholder={t.walletHolderNamePlaceholder}
-                className="flex-1 bg-transparent text-sm text-gray-800 placeholder:text-gray-400 outline-none"
-                data-testid="input-wallet-name"
-              />
-            </div>
-            {form.formState.errors.accountName && (
-              <p className="text-red-600 text-xs mt-1 ml-1">{form.formState.errors.accountName.message}</p>
-            )}
-          </div>
-
-          {/* BEP20 address */}
-          <div>
-            <p className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1.5 ml-1">
-              {t.walletAddressLabel}
-            </p>
-            <div
-              className="w-full flex items-center px-4 py-4 rounded-2xl shadow-sm"
-              style={{ background: "rgba(255,255,255,0.90)" }}
-            >
-              <input
-                {...form.register("accountNumber")}
-                type="text"
-                inputMode="text"
-                placeholder="0x..."
-                className="flex-1 bg-transparent text-sm text-gray-800 placeholder:text-gray-400 outline-none"
-                data-testid="input-wallet-number"
-              />
-            </div>
-            {form.formState.errors.accountNumber && (
-              <p className="text-red-600 text-xs mt-1 ml-1">{form.formState.errors.accountNumber.message}</p>
-            )}
-          </div>
-
-          {/* Bouton confirmer */}
+        {/* Bottom action bar */}
+        <div className="border-t border-gray-200 bg-white flex items-center px-4 py-3 gap-0">
           <button
-            onClick={handleSubmit}
+            onClick={() => { setShowForm(false); setSelectedOperator(""); setHolderName(""); setAccountNumber(""); }}
+            className="text-sm font-medium px-3 py-2"
+            style={{ color: "#4a5e22" }}
+          >
+            Annuler
+          </button>
+          <button
+            onClick={() => setShowBankSheet(true)}
+            className="flex-1 text-sm font-black text-gray-900 text-center py-2 px-2"
+          >
+            Sélectionner une banque
+          </button>
+          <button
+            onClick={handleConfirm}
             disabled={addMutation.isPending}
-            className="w-full py-4 rounded-full text-white font-bold text-base shadow-md mt-2 disabled:opacity-40"
-            style={{ background: "linear-gradient(135deg, #E8192C, #E8192C)" }}
+            className="text-sm font-medium px-3 py-2 disabled:opacity-50"
+            style={{ color: "#4a5e22" }}
             data-testid="button-confirm-wallet"
           >
-            {addMutation.isPending ? (
-              <span className="flex items-center justify-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                {t.saving}
-              </span>
-            ) : t.confirm}
+            {addMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirmer"}
           </button>
         </div>
 
-
+        {/* Bank bottom sheet */}
+        {showBankSheet && (
+          <>
+            {/* Overlay */}
+            <div
+              className="fixed inset-0 bg-black/40 z-40"
+              onClick={() => setShowBankSheet(false)}
+            />
+            {/* Sheet */}
+            <div
+              className="fixed bottom-0 left-0 right-0 bg-white z-50 rounded-t-2xl overflow-hidden"
+              style={{ maxHeight: "60vh" }}
+            >
+              <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mt-3 mb-2" />
+              <div className="overflow-y-auto" style={{ maxHeight: "calc(60vh - 32px)" }}>
+                {operators.length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-gray-400 text-sm">Aucun opérateur disponible</p>
+                  </div>
+                ) : (
+                  operators.map((op, idx) => (
+                    <button
+                      key={op.id}
+                      onClick={() => {
+                        setSelectedOperator(op.operatorName);
+                        setShowBankSheet(false);
+                      }}
+                      className="w-full text-center py-4 text-sm text-gray-800 active:bg-gray-50 transition"
+                      style={{ borderBottom: idx < operators.length - 1 ? "1px solid #f3f4f6" : undefined }}
+                      data-testid={`button-operator-${op.id}`}
+                    >
+                      {op.operatorName}
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     );
   }
 
-  /* ─── LIST VIEW ─── */
+  /* ══════════════════════════════════════════
+     LIST VIEW
+  ══════════════════════════════════════════ */
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#2d3816" }}>
 
       {/* Header */}
-      <div className="flex items-center px-4 pt-10 pb-4">
+      <header className="flex items-center px-4 py-4" style={{ background: "#1e2e0a" }}>
         <Link href={backLink}>
           <button className="p-1" data-testid="button-back">
-            <ChevronLeft className="w-6 h-6 text-white" />
+            <ChevronLeft className="w-6 h-6 text-white" strokeWidth={2.5} />
           </button>
         </Link>
-        <h1 className="flex-1 text-center text-white font-bold text-base mr-6">
-          {t.walletWithdrawalMethod}
+        <h1 className="flex-1 text-center text-white font-bold text-base pr-8">
+          {selectMode ? "Sélectionner un compte" : "Mes comptes de retrait"}
         </h1>
-      </div>
+      </header>
 
-      {/* Content */}
-      <div className="px-4 pt-2 pb-6">
+      <div className="px-4 pt-4 pb-10">
         {isLoading ? (
-          <div className="flex justify-center py-12">
+          <div className="flex justify-center py-16">
             <Loader2 className="w-6 h-6 animate-spin text-white" />
           </div>
         ) : wallets && wallets.length > 0 ? (
-          /* ── Cards view ── */
-          <div className="space-y-4">
+          <div className="space-y-3">
             {wallets.map((wallet) => (
               <div
                 key={wallet.id}
                 onClick={() => selectMode && handleSelectWallet(wallet)}
-                className={selectMode ? "cursor-pointer active:opacity-90" : ""}
+                className={`rounded-2xl overflow-hidden ${selectMode ? "cursor-pointer active:opacity-90" : ""}`}
+                style={{
+                  background: "linear-gradient(135deg, #4a5e22 0%, #2d3816 100%)",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+                }}
                 data-testid={`wallet-card-${wallet.id}`}
               >
-                {/* Bank card */}
-                <div
-                  className="rounded-2xl p-5 relative overflow-hidden"
-                  style={{
-                    background: "linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 55%, #3a3a3a 100%)",
-                    minHeight: 170,
-                    boxShadow: "0 10px 40px rgba(0,0,0,0.55)",
-                  }}
-                >
-                  {/* Shine diagonal */}
+                <div className="p-5 relative">
+                  {/* Shine */}
                   <div
                     className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background:
-                        "linear-gradient(120deg, rgba(255,255,255,0.18) 0%, transparent 50%, rgba(255,255,255,0.06) 100%)",
-                    }}
+                    style={{ background: "linear-gradient(120deg, rgba(255,255,255,0.12) 0%, transparent 60%)" }}
                   />
 
-                  {/* Delete / set-default actions */}
-                  {!selectMode && (
-                    <div className="absolute top-3 right-3 flex gap-1">
-                      {!wallet.isDefault && (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setDefaultMutation.mutate(wallet.id); }}
-                          disabled={setDefaultMutation.isPending}
-                          className="p-1.5 rounded-full bg-white/20"
-                          data-testid={`button-set-default-${wallet.id}`}
-                        >
-                          <Check className="w-3.5 h-3.5 text-white" />
-                        </button>
-                      )}
-                      <button
-                        onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(wallet.id); }}
-                        disabled={deleteMutation.isPending}
-                        className="p-1.5 rounded-full bg-white/20"
-                        data-testid={`button-delete-wallet-${wallet.id}`}
-                      >
-                        <Trash2 className="w-3.5 h-3.5 text-white" />
-                      </button>
+                  {/* Top row */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <p className="text-white/60 text-xs mb-0.5">{wallet.paymentMethod}</p>
+                      <p className="text-white font-bold text-sm">{wallet.accountName}</p>
                     </div>
-                  )}
+                    {!selectMode && (
+                      <div className="flex items-center gap-2">
+                        {!wallet.isDefault && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setDefaultMutation.mutate(wallet.id); }}
+                            disabled={setDefaultMutation.isPending}
+                            className="p-1.5 rounded-full bg-white/20"
+                            data-testid={`button-set-default-${wallet.id}`}
+                          >
+                            <Check className="w-3.5 h-3.5 text-white" />
+                          </button>
+                        )}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(wallet.id); }}
+                          disabled={deleteMutation.isPending}
+                          className="p-1.5 rounded-full bg-white/20"
+                          data-testid={`button-delete-wallet-${wallet.id}`}
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-white" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Account number */}
-                  <p className="text-white font-mono text-sm leading-relaxed tracking-wider mt-6 mb-4 break-all">
-                    {maskAccountNumber(wallet.accountNumber)}
+                  <p className="text-white font-mono text-base tracking-widest mb-2">
+                    {wallet.accountNumber}
                   </p>
 
-                  {/* Bottom row: name + chip */}
-                  <div className="flex items-end justify-between mt-3">
-                    <div>
-                      <p className="text-white/60 text-xs mb-0.5">USDT BEP20</p>
-                      <p className="text-white font-semibold text-sm">{wallet.accountName}</p>
-                      {wallet.isDefault && (
-                        <div className="flex items-center gap-1 mt-1">
-                          <Shield className="w-3 h-3 text-white/70" />
-                          <span className="text-white/70 text-xs">{t.walletDefault}</span>
-                        </div>
-                      )}
+                  {wallet.isDefault && (
+                    <div className="flex items-center gap-1">
+                      <Shield className="w-3 h-3 text-white/60" />
+                      <span className="text-white/60 text-xs">{t.walletDefault}</span>
                     </div>
-
-                    {/* Chip */}
-                    <div
-                      className="rounded-md flex flex-col justify-between overflow-hidden"
-                      style={{
-                        width: 44,
-                        height: 34,
-                        background: "linear-gradient(135deg, #bdbdbd, #f5f5f5, #9e9e9e)",
-                        boxShadow: "inset 0 1px 3px rgba(0,0,0,0.25)",
-                      }}
-                    >
-                      {/* Chip lines */}
-                      {[0, 1, 2].map((i) => (
-                        <div
-                          key={i}
-                          className="w-full"
-                          style={{ height: 1, background: "rgba(0,0,0,0.15)", margin: `${i === 1 ? "auto" : ""} 0` }}
-                        />
-                      ))}
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             ))}
 
-            {/* Add more */}
             {!selectMode && (
               <button
                 onClick={() => setShowForm(true)}
-                className="w-full py-3.5 rounded-full text-white font-bold text-sm shadow-md mt-2"
-                style={{ background: "linear-gradient(135deg, #E8192C, #E8192C)" }}
+                className="w-full py-4 rounded-2xl text-white font-bold text-sm border border-white/30 active:opacity-80 transition mt-2"
+                style={{ background: "rgba(255,255,255,0.1)" }}
                 data-testid="button-add-wallet"
               >
-                + {t.walletAddCard}
+                + Lier un nouveau compte
               </button>
             )}
           </div>
         ) : (
-          /* ── Empty state ── */
-          <button
-            onClick={() => setShowForm(true)}
-            className="w-full py-4 rounded-full text-white font-bold text-base shadow-md"
-            style={{ background: "linear-gradient(135deg, #E8192C, #E8192C)" }}
-            data-testid="button-add-wallet"
-          >
-            {t.walletAddMethod}
-          </button>
+          /* Empty state */
+          <div className="flex flex-col items-center justify-center py-16 gap-4">
+            <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center">
+              <CreditCard className="w-8 h-8 text-white/60" />
+            </div>
+            <p className="text-white/60 text-sm text-center">Aucun compte de retrait lié</p>
+            <button
+              onClick={() => setShowForm(true)}
+              className="mt-2 px-8 py-3 rounded-full text-white font-bold text-sm active:scale-95 transition"
+              style={{ background: "#4a5e22" }}
+              data-testid="button-add-wallet"
+            >
+              Lier un compte bancaire
+            </button>
+          </div>
         )}
       </div>
-
     </div>
   );
 }

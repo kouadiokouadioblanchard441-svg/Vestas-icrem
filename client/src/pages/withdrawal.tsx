@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
-import landscapeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { ChevronLeft, ChevronRight, Loader2, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, CreditCard, ClipboardList, Loader2 } from "lucide-react";
 import { getContent } from "@/lib/content";
 import { Link, useLocation } from "wouter";
 import { useI18n } from "@/lib/i18n";
@@ -23,8 +22,6 @@ interface UserProduct {
   id: number;
   status: string;
 }
-
-const WITHDRAWAL_METHOD = "USDT BEP20";
 
 export default function WithdrawalPage() {
   const { user, refreshUser } = useAuth();
@@ -54,26 +51,15 @@ export default function WithdrawalPage() {
     queryKey: ["/api/settings"],
   });
 
-  const minWithdrawal = withdrawalSettings?.minWithdrawal ?? 1500;
+  const minWithdrawal = withdrawalSettings?.minWithdrawal ?? 2000;
   const withdrawalEnabled = withdrawalSettings?.withdrawalEnabled ?? true;
   const withdrawalFee = withdrawalSettings?.withdrawalFees ?? 18;
-  const withdrawalStartHour = withdrawalSettings?.withdrawalStartHour ?? 9;
-  const withdrawalEndHour = withdrawalSettings?.withdrawalEndHour ?? 17;
+  const withdrawalStartHour = withdrawalSettings?.withdrawalStartHour ?? 0;
+  const withdrawalEndHour = withdrawalSettings?.withdrawalEndHour ?? 24;
 
-  const withdrawalCtaButton = getContent(allSettings, "content_withdrawal_ctaButton", "Retirer maintenant");
-  const withdrawalInstructionsTitle = getContent(allSettings, "content_withdrawal_instructionsTitle", "Instructions de retrait");
-  const withdrawalInstruction1 = getContent(allSettings, "content_withdrawal_instruction1", `1. Montant minimum de retrait : ${minWithdrawal.toLocaleString()} ${currency}.`);
-  const withdrawalInstruction2 = getContent(allSettings, "content_withdrawal_instruction2", "2. Maximum 1 retrait par jour.");
-  const withdrawalInstruction3 = getContent(allSettings, "content_withdrawal_instruction3", `3. Des frais de traitement de ${withdrawalFee}% sont prélevés sur chaque retrait.`);
-  const withdrawalInstruction4 = getContent(allSettings, "content_withdrawal_instruction4", "4. Le virement est effectué sous 2h en général, 24h dans les cas exceptionnels.");
-  const withdrawalInstruction5 = getContent(allSettings, "content_withdrawal_instruction5", "5. Vérifiez que votre numéro Mobile Money est correct avant de soumettre.");
-  const withdrawalInstruction6 = getContent(allSettings, "content_withdrawal_instruction6", "6. Consultez les conditions affichées sur la plateforme avant de soumettre.");
-  const withdrawalWarningNoHours = getContent(allSettings, "content_withdrawal_warningNoHours", `Horaires de retrait : ${withdrawalStartHour}h00 – ${withdrawalEndHour}h00 (actuellement fermé)`);
   const withdrawalWarningNoProduct = getContent(allSettings, "content_withdrawal_warningNoProduct", "Vous devez posséder un produit actif pour effectuer un retrait.");
 
   const amountAfterFees = amount ? Math.floor(Number(amount) * (1 - withdrawalFee / 100)) : 0;
-  const currentHour = new Date().getHours();
-  const isWithinWithdrawalHours = currentHour >= withdrawalStartHour && currentHour < withdrawalEndHour;
 
   const { data: wallets = [], isLoading: walletsLoading } = useQuery<WalletData[]>({
     queryKey: ["/api/wallets"],
@@ -128,175 +114,165 @@ export default function WithdrawalPage() {
       toast({ title: t.errorOccurred, variant: "destructive" });
       return;
     }
-
     if (!hasActiveProduct) {
       toast({ title: t.errorOccurred, variant: "destructive" });
       return;
     }
     if (!amount || amount < minWithdrawal) {
-      toast({ title: t.invalidAmount, description: `${t.minAmountPrefix} ${minWithdrawal} FCFA`, variant: "destructive" });
+      toast({ title: t.invalidAmount, description: `${t.minAmountPrefix} ${minWithdrawal.toLocaleString()} ${currency}`, variant: "destructive" });
       return;
     }
     if (!selectedWallet) {
-      toast({ title: t.addressRequired, description: t.selectUsdtWallet, variant: "destructive" });
+      toast({ title: "Sélectionnez un compte", description: "Veuillez lier un compte de retrait.", variant: "destructive" });
       return;
     }
     withdrawMutation.mutate({ amount: Number(amount), walletId: selectedWallet.id });
   };
 
   if (walletsLoading) return null;
-
   if (!user) return null;
 
-  const balance = parseFloat(user?.totalEarnings || "0");
-  const hasWallets = wallets.length > 0;
+  const balance = parseFloat(user?.balance || "0");
+
+  const instructions = [
+    `1. Le montant minimum de retrait est de ${minWithdrawal.toLocaleString()} ${currency}.`,
+    `2. Les frais de retrait s'élèvent à ${withdrawalFee}\u00a0% du montant retiré.`,
+    `3. Il n'y a pas de restriction horaire pour les retraits\u00a0; vous pouvez effectuer jusqu'à ${withdrawalSettings?.maxWithdrawalsPerDay ?? 1} retrait${(withdrawalSettings?.maxWithdrawalsPerDay ?? 1) > 1 ? "s" : ""} par jour.`,
+    "4. Les retraits sont généralement crédités dans un délai de 4 heures, et au plus tard dans les 24 heures.",
+    "5. Vous devez disposer d'au moins un appareil pour activer la fonction de retrait.",
+  ];
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#2d3816" }}>
+    <div className="flex flex-col min-h-screen bg-white">
 
       {/* ── Header ── */}
-      <header className="flex items-center justify-between px-4 py-4 bg-white border-b border-gray-100">
+      <header
+        className="flex items-center justify-between px-4 py-4"
+        style={{ background: "#2d3816" }}
+      >
         <Link href="/account">
-          <button className="flex items-center gap-1 text-gray-800" data-testid="button-back">
-            <ChevronLeft className="w-5 h-5" />
-            <span className="font-semibold text-base">{t.withdrawTitle}</span>
+          <button className="p-1" data-testid="button-back">
+            <ChevronLeft className="w-6 h-6 text-white" strokeWidth={2.5} />
           </button>
         </Link>
-        <div className="w-9 h-9" />
+        <h1 className="text-white font-bold text-lg">Retrait</h1>
+        <Link href="/withdrawal-history">
+          <button className="p-1">
+            <ClipboardList className="w-6 h-6 text-white" />
+          </button>
+        </Link>
       </header>
 
-      {/* ── Banner with balance ── */}
-      <div className="relative w-full" style={{ height: "180px" }}>
-        <img
-          src="/poweradd/poweradd-energycell-banner.jpg"
-          alt=""
-          className="w-full h-full object-cover"
-        />
-        {/* Dark overlay */}
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(to right, rgba(0,0,0,0.65) 40%, rgba(0,0,0,0.1))" }}
-        />
-        {/* Balance text */}
-        <div className="absolute bottom-4 left-4">
-          <p className="text-white font-bold text-2xl" data-testid="text-balance">
-            <span className="text-sm font-semibold mr-1">{currency}</span>
-            {balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-          </p>
-          <p className="text-white/80 text-xs mt-0.5">{t.withdrawalEarningsBalance}</p>
-        </div>
+      {/* ── Balance card ── */}
+      <div className="mx-4 mt-4 rounded-2xl p-5" style={{ background: "#2d3816" }}>
+        <p className="text-white/70 text-sm mb-1">Mon solde</p>
+        <p className="text-white font-black text-4xl tracking-tight" data-testid="text-balance">
+          {currency} {balance.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+        </p>
       </div>
 
-      <div className="px-4 pt-5 pb-10 space-y-5">
+      {/* ── White content area ── */}
+      <div className="flex-1 px-4 pt-5 pb-10 space-y-5">
 
-        {/* ── Wallet selector ── */}
+        {/* Wallet selector section */}
         <div>
-            <p className="text-white font-semibold text-sm mb-2">{t.withdrawalAddressLabel}</p>
+          <p className="text-gray-800 font-semibold text-sm mb-2">
+            Veuillez selectionner votre carte bancaire
+          </p>
           <button
-            onClick={() => {
-              if (!hasWallets) {
-                navigate("/wallet");
-              } else {
-                navigate("/wallet?from=withdrawal");
-              }
+            onClick={() => navigate(wallets.length > 0 ? "/wallet?from=withdrawal" : "/wallet?from=withdrawal")}
+            className="w-full flex items-center gap-3 px-4 bg-white"
+            style={{
+              height: 54,
+              border: "1px solid #e5e7eb",
+              borderRadius: 8,
             }}
-            className="w-full bg-white flex items-center justify-between px-5"
-            style={{ height: 54, borderRadius: 999, boxShadow: "0 2px 8px rgba(0,0,0,0.12)", border: "none" }}
             data-testid="button-select-wallet"
           >
-            <span className="text-sm text-gray-500 truncate">
+            <CreditCard className="w-5 h-5 text-gray-400 shrink-0" />
+            <span className="flex-1 text-sm text-left truncate" style={{ color: selectedWallet ? "#111" : "#9ca3af" }}>
               {selectedWallet
-                ? `${selectedWallet.accountName} · ${selectedWallet.accountNumber} · ${WITHDRAWAL_METHOD}`
-                : hasWallets
-                    ? t.withdrawalSelectBep20
-                  : (
-                    <span className="flex items-center gap-2 text-[#E8192C]">
-                      <Plus className="w-4 h-4" /> {t.withdrawalAddWallet}
-                    </span>
-                  )
-              }
+                ? `${selectedWallet.paymentMethod} - ${selectedWallet.accountNumber}`
+                : "-------  -  ---------------"}
             </span>
-            <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" />
+            <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
           </button>
         </div>
 
-        {/* ── Amount section ── */}
+        {/* Amount section */}
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-white font-semibold text-sm">{t.withdrawAmountLabel}</p>
-            <p className="text-white/70 text-sm">{t.withdrawalFeeLabel} {withdrawalFee}%</p>
-          </div>
-
-          <div className="flex items-center overflow-hidden bg-white" style={{ height: 54, borderRadius: 999, boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}>
-            <span className="px-5 text-gray-800 font-semibold text-sm border-r border-gray-200 shrink-0 h-full flex items-center">
+          <p className="text-gray-800 font-semibold text-sm mb-2">
+            Entrez le montant du retrait
+          </p>
+          <div
+            className="w-full flex items-center bg-white overflow-hidden"
+            style={{ border: "1px solid #e5e7eb", borderRadius: 8, height: 54 }}
+          >
+            <span className="px-4 text-gray-400 font-semibold text-sm border-r border-gray-200 h-full flex items-center shrink-0">
               {currency}
             </span>
             <input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value ? Number(e.target.value) : "")}
-              placeholder={t.withdrawalAmountPlaceholder}
-              className="flex-1 px-4 text-sm text-gray-700 outline-none bg-transparent placeholder:text-gray-400"
+              placeholder="Veuillez saisir le montant du retrait"
+              className="flex-1 px-3 text-sm text-gray-700 outline-none bg-transparent placeholder:text-gray-400"
               data-testid="input-withdrawal-amount"
             />
           </div>
 
+          {/* Fee info row */}
           <div className="flex items-center justify-between mt-2 px-1">
-            <p className="text-white/80 text-xs">
-              {t.withdrawalNetAmountLabel}{" "}
-              <span className="font-semibold">{currency} {amountAfterFees.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+            <p className="text-gray-500 text-xs">
+              Montant recu : {currency} {amountAfterFees.toLocaleString()}
+            </p>
+            <p className="text-gray-500 text-xs">
+              Taux de frais : {withdrawalFee}%
             </p>
           </div>
-          <p className="text-right text-xs mt-1 px-1" style={{ color: "#ff0000" }}>
-            {t.withdrawalMinimumNote.replace("{0}", minWithdrawal.toLocaleString()).replace("{1}", currency)}
-          </p>
         </div>
 
-        {/* ── Warnings ── */}
+        {/* Warnings */}
         {!withdrawalEnabled && (
-          <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-xs font-medium" style={{ color: "#ff0000" }}>
-            {t.withdrawAdminDisabled}
+          <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-xs font-medium text-red-600">
+            Les retraits sont actuellement désactivés.
           </div>
         )}
         {!hasActiveProduct && (
-          <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-xs font-medium" style={{ color: "#ff0000" }}>
+          <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-xs font-medium text-red-600">
             {withdrawalWarningNoProduct}
           </div>
         )}
 
-        {/* ── CTA Button ── */}
+        {/* CTA Button — olive pill */}
         <button
           onClick={handleSubmit}
           disabled={withdrawMutation.isPending || !withdrawalEnabled}
-          className="w-full text-white font-bold text-base disabled:opacity-50 active:scale-95 transition-transform"
+          className="font-bold text-lg text-white disabled:opacity-50 active:scale-95 transition-transform"
           style={{
-            height: 54, borderRadius: 999,
-            background: "linear-gradient(135deg, #E8192C 0%, #E8192C 50%, #B45309 100%)",
-            boxShadow: "0 4px 16px rgba(232,25,44,0.4)",
+            display: "block",
+            width: "72%",
+            margin: "0 auto",
+            height: 56,
+            borderRadius: 999,
+            background: "#2d3816",
+            boxShadow: "0 4px 16px rgba(45,56,22,0.35)",
           }}
           data-testid="button-submit-withdrawal"
         >
           {withdrawMutation.isPending ? (
             <span className="flex items-center justify-center gap-2">
               <Loader2 className="w-5 h-5 animate-spin" />
-              {t.withdrawalSubmitting}
+              Traitement…
             </span>
-          ) : (
-            withdrawalCtaButton
-          )}
+          ) : "Confirmer"}
         </button>
 
-        {/* ── Instructions (texte existant conservé) ── */}
-        <div className="pt-2 pb-6">
-          <p className="font-bold text-[#E8192C] text-sm mb-3">{withdrawalInstructionsTitle}</p>
-          <div className="space-y-2.5 text-sm text-black leading-relaxed">
-            <p>{withdrawalInstruction1}</p>
-            <p>{withdrawalInstruction2}</p>
-            <p>{withdrawalInstruction3}</p>
-            <p>{withdrawalInstruction4}</p>
-            <p>{withdrawalInstruction5}</p>
-            <p>{withdrawalInstruction6}</p>
-          </div>
+        {/* Instructions */}
+        <div className="pt-1 pb-4 space-y-2">
+          {instructions.map((line, i) => (
+            <p key={i} className="text-gray-600 text-xs leading-relaxed">{line}</p>
+          ))}
         </div>
       </div>
     </div>

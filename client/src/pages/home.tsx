@@ -67,7 +67,7 @@ export default function HomePage() {
     { icon: iconRecharger, label: t.deposit,         href: "/deposit",     white: true  },
     { icon: iconRetraits,  label: t.withdraw,         href: "/withdrawal",  white: true  },
     { icon: iconService,   label: t.customerService,  href: "/service",     white: false },
-    { icon: iconGift,      label: t.dailyRewards || "Récompenses\nquotidiennes", href: "/rewards", white: false },
+    { icon: iconGift,      label: "Récompenses\nquotidiennes", href: "/rewards", white: false },
   ];
 
   return (
