@@ -121,23 +121,19 @@ export default function AccountPage() {
 
           {/* ── 2 cartes balance d'origine ── */}
           <div className="px-4 pb-5 grid grid-cols-2 gap-3">
-            <div className="rounded-2xl px-4 py-3.5" style={{ background: "rgba(0,0,0,0.35)" }}>
-              <div className="flex items-center gap-2 mb-1">
-                <img src={iconWallet} alt="" className="w-7 h-7 object-contain" />
-              </div>
-              <p className="text-white font-extrabold text-base leading-tight" data-testid="text-balance">
+            <div className="rounded-2xl px-4 py-4" style={{ background: "#4a5e22" }}>
+              <p className="text-white/70 text-xs font-semibold mb-2 uppercase tracking-wide">{t.accountBalanceLabel}</p>
+              <p className="text-white font-black text-2xl leading-tight" data-testid="text-balance">
                 {balance.toFixed(2)}
               </p>
-              <p className="text-white/80 text-xs mt-0.5">{t.accountBalanceLabel}</p>
+              <p className="text-white/60 text-[11px] mt-1">{currency}</p>
             </div>
-            <div className="rounded-2xl px-4 py-3.5" style={{ background: "rgba(0,0,0,0.35)" }}>
-              <div className="flex items-center gap-2 mb-1">
-                <img src={iconRevenu} alt="" className="w-7 h-7 object-contain" />
-              </div>
-              <p className="text-white font-extrabold text-base leading-tight" data-testid="text-earnings">
+            <div className="rounded-2xl px-4 py-4" style={{ background: "#4a5e22" }}>
+              <p className="text-white/70 text-xs font-semibold mb-2 uppercase tracking-wide">{t.revenueLabel}</p>
+              <p className="text-white font-black text-2xl leading-tight" data-testid="text-earnings">
                 {totalEarnings.toFixed(2)}
               </p>
-              <p className="text-white/80 text-xs mt-0.5">{t.revenueLabel}({currency})</p>
+              <p className="text-white/60 text-[11px] mt-1">{currency}</p>
             </div>
           </div>
         </div>
