@@ -121,6 +121,20 @@ export default function AccountPage() {
                 <img src={getUserAvatar(user.id)} alt="avatar" className="w-full h-full object-cover" />
               </div>
               <div>
+                {/* Badge VIP — au-dessus du numéro */}
+                <div className="mb-1">
+                  <span
+                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black tracking-wider border"
+                    style={{
+                      background: vipStyle.bg,
+                      color: vipStyle.text,
+                      borderColor: vipStyle.border,
+                    }}
+                  >
+                    ★ {vipStyle.label}
+                  </span>
+                </div>
+
                 <p className="text-white font-bold text-base leading-tight drop-shadow" data-testid="text-phone">
                   {phonePrefix}{user.phone}
                 </p>
@@ -146,19 +160,6 @@ export default function AccountPage() {
                   </span>
                 </div>
 
-                {/* Badge VIP */}
-                <div className="mt-1.5">
-                  <span
-                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black tracking-wider border"
-                    style={{
-                      background: vipStyle.bg,
-                      color: vipStyle.text,
-                      borderColor: vipStyle.border,
-                    }}
-                  >
-                    ★ {vipStyle.label}
-                  </span>
-                </div>
               </div>
             </div>
           </div>
