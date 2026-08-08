@@ -158,7 +158,7 @@ export default function WalletPage() {
         </header>
 
         {/* Form rows */}
-        <div className="flex-1 bg-white">
+        <div className="bg-white">
 
           {/* Row 1 — Sélectionner une banque */}
           <button
