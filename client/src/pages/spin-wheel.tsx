@@ -13,6 +13,93 @@ import {
   type SpinWheelSegment,
 } from "@shared/spin-wheel";
 
+/* ── Fake winners ticker ────────────────────────────────────── */
+const FAKE_WINNERS = [
+  { phone: "0546******846", amount: "200F" },
+  { phone: "0707******231", amount: "500F" },
+  { phone: "0102******978", amount: "1 000F" },
+  { phone: "0503******412", amount: "200F" },
+  { phone: "0749******065", amount: "2 000F" },
+  { phone: "0101******339", amount: "500F" },
+  { phone: "0564******187", amount: "200F" },
+  { phone: "0767******824", amount: "1 000F" },
+  { phone: "0505******553", amount: "200F" },
+  { phone: "0103******710", amount: "5 000F" },
+  { phone: "0748******293", amount: "500F" },
+  { phone: "0546******001", amount: "200F" },
+  { phone: "0707******668", amount: "1 000F" },
+  { phone: "0101******452", amount: "200F" },
+  { phone: "0505******317", amount: "2 000F" },
+];
+
+function WinnersTicker() {
+  // duplicate list so seamless loop works
+  const items = [...FAKE_WINNERS, ...FAKE_WINNERS];
+  return (
+    <div
+      className="mx-4 mb-4 rounded-2xl overflow-hidden"
+      style={{
+        background: "rgba(255,255,255,0.10)",
+        border: "1px solid rgba(255,255,255,0.15)",
+      }}
+    >
+      {/* Title row */}
+      <div
+        className="flex items-center gap-2 px-4 py-2 border-b"
+        style={{ borderColor: "rgba(255,255,255,0.12)" }}
+      >
+        <span className="text-xs font-semibold text-yellow-300 uppercase tracking-wide">
+          🏆 Derniers gagnants
+        </span>
+      </div>
+
+      {/* Scrolling ticker */}
+      <div className="relative h-[220px] overflow-hidden">
+        <style>{`
+          @keyframes tickerScroll {
+            0%   { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+          }
+          .ticker-track {
+            animation: tickerScroll ${FAKE_WINNERS.length * 1.8}s linear infinite;
+          }
+          .ticker-track:hover { animation-play-state: paused; }
+        `}</style>
+        <div className="ticker-track">
+          {items.map((w, idx) => (
+            <div
+              key={idx}
+              className="flex items-center justify-between px-4 py-3"
+              style={{
+                borderBottom: "1px solid rgba(255,255,255,0.08)",
+                height: "44px",
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <span
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                  style={{ background: "rgba(255,215,0,0.18)", color: "#FFD700" }}
+                >
+                  🎉
+                </span>
+                <span className="text-sm text-white/90 font-medium tracking-wide font-mono">
+                  {w.phone}
+                </span>
+              </div>
+              <span
+                className="text-sm font-extrabold"
+                style={{ color: "#FFD700", textShadow: "0 0 6px rgba(255,215,0,0.4)" }}
+              >
+                + {w.amount}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── Palette ────────────────────────────────────────────────── */
 const BG_TOP    = "#3d4e1a";
 const BG_MID    = "#2d3816";
@@ -537,46 +624,8 @@ export default function SpinWheelPage() {
           </div>
         </div>
 
-        {/* ── Recent activity list ── */}
-        <div className="mx-4">
-          <div
-            className="rounded-2xl overflow-hidden"
-            style={{
-              background: "rgba(255,255,255,0.97)",
-              boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
-            }}
-          >
-            {historyRows.length === 0 ? (
-              <div className="py-8 text-center text-sm text-gray-400">
-                Aucune activité récente
-              </div>
-            ) : (
-              historyRows.slice(0, 10).map((row, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between px-4 py-3"
-                  style={{
-                    borderBottom: idx < Math.min(historyRows.length, 10) - 1
-                      ? "1px solid #f3f4f6"
-                      : "none",
-                  }}
-                >
-                  <span className="text-sm text-gray-700 font-medium">
-                    {row.phone}
-                  </span>
-                  <span
-                    className="text-sm font-bold"
-                    style={{ color: parseFloat(row.amount) > 0 ? "#3d8a40" : "#888" }}
-                  >
-                    {parseFloat(row.amount) > 0
-                      ? `+ ${parseFloat(row.amount).toLocaleString()}`
-                      : `+ ${row.description}`}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+        {/* ── Winners ticker ── */}
+        <WinnersTicker />
       </div>
 
       {/* ── Modals ── */}
