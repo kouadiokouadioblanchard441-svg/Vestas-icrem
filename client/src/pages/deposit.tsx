@@ -315,7 +315,7 @@ export default function DepositPage() {
                   minimumFractionDigits: 2,
                 })}
               </p>
-              <Link href="/deposit-history">
+              <Link href="/deposits-history">
                 <button className="flex items-center gap-1.5 text-white/55 text-xs hover:text-white/75 transition">
                   <ClipboardList className="w-3.5 h-3.5" />
                   enregistrer

@@ -21,6 +21,7 @@ import AdminWheel from "@/components/admin/wheel";
 import AdminVipSettings from "@/components/admin/vip-settings";
 import AdminDepositChannels from "@/components/admin/deposit-channels";
 import AdminSpinWheelConfig from "@/components/admin/spin-wheel-config";
+import AdminBannerConfig from "@/components/admin/banner-config";
 
 export default function AdminPage() {
   const { user } = useAuth();
@@ -58,6 +59,7 @@ export default function AdminPage() {
               <TabsTrigger value="wheel" data-testid="tab-wheel">{t.adminTabWheel}</TabsTrigger>
               <TabsTrigger value="content" data-testid="tab-content">{t.adminTabContent}</TabsTrigger>
               <TabsTrigger value="company" data-testid="tab-company">{t.adminTabCompany}</TabsTrigger>
+              <TabsTrigger value="banners" data-testid="tab-banners">🖼 Bannières</TabsTrigger>
               <TabsTrigger value="vip" data-testid="tab-vip">⭐ VIP</TabsTrigger>
             </TabsList>
           </div>
@@ -120,6 +122,10 @@ export default function AdminPage() {
 
           <TabsContent value="company" className="mt-4">
             <AdminCompanyContent />
+          </TabsContent>
+
+          <TabsContent value="banners" className="mt-4">
+            <AdminBannerConfig />
           </TabsContent>
 
           <TabsContent value="vip" className="mt-4">

@@ -8,6 +8,7 @@ import { getCountryByCode } from "@/lib/countries";
 import { Bell, Gift } from "lucide-react";
 import { FloatingSupport } from "@/components/floating-support";
 import { FloatingWheel } from "@/components/floating-wheel";
+import BannerCarousel from "@/components/banner-carousel";
 import { useI18n } from "@/lib/i18n";
 
 import popupBanner  from "@assets/popup-banner.jpg";
@@ -65,6 +66,16 @@ export default function HomePage() {
   const lvl3          = settings?.level3Commission || "1";
 
   const popupMascotUrl = settings?.popupMascotUrl?.trim() || "";
+
+  /* ── Bannières configurables ── */
+  const banner1Images: string[] = (() => {
+    try { const p = JSON.parse(settings?.banner1Images || "[]"); return Array.isArray(p) && p.length ? p : ["/banner/banner1.jpg"]; }
+    catch { return ["/banner/banner1.jpg"]; }
+  })();
+  const banner2Images: string[] = (() => {
+    try { const p = JSON.parse(settings?.banner2Images || "[]"); return Array.isArray(p) && p.length ? p : ["/banner/banner2.jpg"]; }
+    catch { return ["/banner/banner2.jpg"]; }
+  })();
 
   const popupLines: string[] = [
     getContent(settings, "popupLine1", `✨✨ Lancement officiel de la plateforme ASUS (4 août 2026) ✨✨`),
@@ -148,21 +159,19 @@ export default function HomePage() {
       )}
 
       {/* ══════════════ BANNIÈRE PLEINE LARGEUR ══════════════ */}
-      <div className="relative w-full overflow-hidden" style={{ height: 200 }}>
-        <img
-          src="/banner/banner1.jpg"
-          alt="banner"
-          className="w-full h-full object-cover"
-        />
-        {/* Logo ASUS en overlay */}
-        <div className="absolute top-0 left-0 right-0 bottom-0 flex items-end pb-4 pl-4">
-          <img
-            src="/asus-logo-white.svg"
-            alt="ASUS"
-            className="h-10 object-contain drop-shadow-lg"
-          />
-        </div>
-      </div>
+      <BannerCarousel
+        images={banner1Images}
+        height={200}
+        overlay={
+          <div className="flex items-end pb-4 pl-4 h-full">
+            <img
+              src="/asus-logo-white.svg"
+              alt="ASUS"
+              className="h-10 object-contain drop-shadow-lg"
+            />
+          </div>
+        }
+      />
 
       {/* ══════════════ CORPS ══════════════ */}
       <div className="flex-1 flex flex-col gap-3 px-3 pt-3 pb-20">
@@ -226,14 +235,12 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ── Grande image ── */}
-        <div className="w-full rounded-2xl overflow-hidden shadow-md" style={{ height: 200 }}>
-          <img
-            src="/banner/banner2.jpg"
-            alt="visual"
-            className="w-full h-full object-cover"
-          />
-        </div>
+        {/* ── Grande image (carousel) ── */}
+        <BannerCarousel
+          images={banner2Images}
+          height={200}
+          rounded
+        />
 
       </div>
 

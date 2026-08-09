@@ -370,6 +370,8 @@ export async function seed() {
     { key: "spinWheelInviteHighlight", value: "50" },
     { key: "spinWheelRulesText", value: "Achetez un produit pour obtenir des tours gratuits. Chaque tour vous donne une chance de remporter un gain en FCFA crédité directement sur votre solde." },
     { key: "spinWheelRulesHighlight", value: "" },
+    { key: "banner1Images", value: JSON.stringify(["/banner/banner1.jpg", "/banner/banner3.jpg", "/banner/banner5.jpg"]) },
+    { key: "banner2Images", value: JSON.stringify(["/banner/banner2.jpg", "/banner/banner4.jpg", "/banner/banner6.jpg"]) },
   ];
 
   // Keys whose values must always be overwritten (e.g. Chinese → French migration)

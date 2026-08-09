@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,8 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Edit, Loader2, TrendingUp, Plus, Trash2, ImagePlus, X } from "lucide-react";
+import { Edit, Loader2, TrendingUp, Plus, Trash2 } from "lucide-react";
 import type { Product } from "@shared/schema";
+import ImageUploader from "@/components/admin/image-uploader";
 
 const productSchema = z.object({
   name: z.string().min(2, "Nom requis"),
@@ -39,89 +40,31 @@ interface ProductUpdatePayload {
 }
 
 // ─── ImageUploadField ────────────────────────────────────────────────────────
-// Defined OUTSIDE AdminProducts so React never sees it as a new component type
-// on re-renders, which would cause unmount/remount and reset the imageUrl value.
+// Defined OUTSIDE AdminProducts so React never sees it as a new component type.
 
 interface ImageUploadFieldProps {
   form: any;
-  onToast: (opts: { title: string; description?: string; variant?: "destructive" }) => void;
 }
 
-function ImageUploadField({ form, onToast }: ImageUploadFieldProps) {
-  const fileRef = useRef<HTMLInputElement>(null);
+function ImageUploadField({ form }: ImageUploadFieldProps) {
   const currentValue: string = form.watch("imageUrl") || "";
-
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      onToast({ title: "Image trop lourde", description: "Maximum 2 Mo", variant: "destructive" });
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      form.setValue("imageUrl", reader.result as string, { shouldValidate: true, shouldDirty: true });
-    };
-    reader.readAsDataURL(file);
-    e.target.value = "";
-  };
-
   return (
     <FormField
       control={form.control}
       name="imageUrl"
-      render={({ field }) => (
+      render={() => (
         <FormItem>
           <FormLabel>
             Image <span className="text-muted-foreground font-normal">(optionnel)</span>
           </FormLabel>
-          <div className="space-y-2">
-            {/* Preview */}
-            {currentValue && (
-              <div className="relative w-full h-28 rounded-xl border border-border overflow-hidden bg-secondary/30">
-                <img src={currentValue} alt="Aperçu" className="w-full h-full object-contain" />
-                <button
-                  type="button"
-                  onClick={() => form.setValue("imageUrl", "", { shouldValidate: true, shouldDirty: true })}
-                  className="absolute top-1 right-1 bg-destructive text-white rounded-full p-0.5"
-                  data-testid="button-clear-image"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            )}
-            {/* Hidden file input */}
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleFile}
-              data-testid="input-file-image"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={() => fileRef.current?.click()}
-            >
-              <ImagePlus className="w-4 h-4 mr-2" />
-              {currentValue ? "Changer l'image" : "Choisir depuis la galerie"}
-            </Button>
-            {/* URL fallback — only shown / editable when not a data URL */}
-            <FormControl>
-              <Input
-                placeholder="Ou coller une URL https://..."
-                value={currentValue.startsWith("data:") ? "" : currentValue}
-                onChange={(e) =>
-                  form.setValue("imageUrl", e.target.value, { shouldValidate: true, shouldDirty: true })
-                }
-                onBlur={field.onBlur}
-                name={field.name}
-                ref={field.ref}
-              />
-            </FormControl>
-          </div>
+          <ImageUploader
+            value={currentValue}
+            onChange={(url) =>
+              form.setValue("imageUrl", url, { shouldValidate: true, shouldDirty: true })
+            }
+            label=""
+            previewHeight={112}
+          />
           <FormMessage />
         </FormItem>
       )}
@@ -137,10 +80,9 @@ interface ProductFormFieldsProps {
   isPending: boolean;
   submitLabel: string;
   onSubmit: (data: ProductForm) => void;
-  onToast: (opts: { title: string; description?: string; variant?: "destructive" }) => void;
 }
 
-function ProductFormFields({ form, isPending, submitLabel, onSubmit, onToast }: ProductFormFieldsProps) {
+function ProductFormFields({ form, isPending, submitLabel, onSubmit }: ProductFormFieldsProps) {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <FormField
@@ -197,7 +139,7 @@ function ProductFormFields({ form, isPending, submitLabel, onSubmit, onToast }: 
           </FormItem>
         )}
       />
-      <ImageUploadField form={form} onToast={onToast} />
+      <ImageUploadField form={form} />
       {form.watch("price") && form.watch("dailyEarnings") && form.watch("cycleDays") && (
         <div className="bg-primary/10 rounded-lg p-3 text-sm">
           <p className="text-muted-foreground">Retour total estimé :</p>
@@ -466,7 +408,6 @@ export default function AdminProducts() {
               isPending={createMutation.isPending}
               submitLabel="Créer"
               onSubmit={handleCreate}
-              onToast={toast}
             />
           </Form>
         </DialogContent>
@@ -484,7 +425,6 @@ export default function AdminProducts() {
               isPending={updateMutation.isPending}
               submitLabel="Enregistrer"
               onSubmit={handleUpdate}
-              onToast={toast}
             />
           </Form>
         </DialogContent>

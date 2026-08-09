@@ -8,6 +8,9 @@ import { z } from "zod";
 import ConnectPgSimple from "connect-pg-simple";
 import { db, pool } from "./db";
 import QRCode from "qrcode";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 import crypto from "crypto";
 import { verifyWebhookSignature } from "@nowpaymentsio/nowpayments-sdk-nodejs";
 import { getSDK, getNowPaymentsCallbackUrl, createPayout, verifyPayout } from "./nowpayments";
@@ -2548,6 +2551,36 @@ export async function registerRoutes(
       res.json({ success: true });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
+    }
+  });
+
+  // ==================== FILE UPLOAD ====================
+  const uploadsDir = path.join(process.cwd(), "client", "public", "uploads");
+  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+  const upload = multer({
+    storage: multer.diskStorage({
+      destination: (_req, _file, cb) => cb(null, uploadsDir),
+      filename: (_req, file, cb) => {
+        const ext  = path.extname(file.originalname).toLowerCase() || ".jpg";
+        const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
+        cb(null, name);
+      },
+    }),
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10 Mo
+    fileFilter: (_req, file, cb) => {
+      if (file.mimetype.startsWith("image/")) cb(null, true);
+      else cb(new Error("Seules les images sont acceptées"));
+    },
+  });
+
+  app.post("/api/admin/upload", requireAdmin, upload.single("file"), (req: Request, res: Response) => {
+    try {
+      if (!req.file) return res.status(400).json({ message: "Aucun fichier reçu" });
+      const url = `/uploads/${req.file.filename}`;
+      res.json({ url });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
     }
   });
 

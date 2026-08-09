@@ -41,7 +41,7 @@ export default function WithdrawalHistoryPage() {
 
       {/* ── Header ── */}
       <header className="flex items-center px-4 py-4 bg-white">
-        <Link href="/account">
+        <Link href="/withdrawal">
           <button className="p-1" data-testid="button-back">
             <ChevronLeft className="w-6 h-6 text-gray-800" strokeWidth={2.5} />
           </button>
