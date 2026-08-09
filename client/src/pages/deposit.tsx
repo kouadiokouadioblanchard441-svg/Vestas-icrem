@@ -252,10 +252,12 @@ export default function DepositPage() {
                   minimumFractionDigits: 2,
                 })}
               </p>
-              <button className="flex items-center gap-1.5 text-white/55 text-xs hover:text-white/75 transition">
-                <ClipboardList className="w-3.5 h-3.5" />
-                enregistrer
-              </button>
+              <Link href="/deposit-history">
+                <button className="flex items-center gap-1.5 text-white/55 text-xs hover:text-white/75 transition">
+                  <ClipboardList className="w-3.5 h-3.5" />
+                  enregistrer
+                </button>
+              </Link>
             </div>
 
             {/* Amount label + input */}
