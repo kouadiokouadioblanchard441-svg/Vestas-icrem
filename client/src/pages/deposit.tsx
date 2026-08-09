@@ -496,13 +496,6 @@ export default function DepositPage() {
                 <div>
                   <p className="text-gray-500 text-sm font-semibold">Compte:</p>
                   <div className="flex items-center gap-2 mt-0.5">
-                    {/* green phone icon */}
-                    <span
-                      className="text-xs px-1.5 py-0.5 rounded font-bold"
-                      style={{ background: "#22C55E", color: "white" }}
-                    >
-                      📞
-                    </span>
                     <span className="text-gray-900 text-base font-bold">
                       {selectedChannel.phone}
                     </span>
