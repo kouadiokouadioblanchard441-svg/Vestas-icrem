@@ -17,21 +17,21 @@ import {
 
 /* ── Fake winners ticker ────────────────────────────────────── */
 const FAKE_WINNERS = [
-  { phone: "0546******846", amount: "200F" },
-  { phone: "0707******231", amount: "500F" },
-  { phone: "0102******978", amount: "1 000F" },
-  { phone: "0503******412", amount: "200F" },
-  { phone: "0749******065", amount: "2 000F" },
-  { phone: "0101******339", amount: "500F" },
-  { phone: "0564******187", amount: "200F" },
-  { phone: "0767******824", amount: "1 000F" },
-  { phone: "0505******553", amount: "200F" },
-  { phone: "0103******710", amount: "5 000F" },
-  { phone: "0748******293", amount: "500F" },
-  { phone: "0546******001", amount: "200F" },
-  { phone: "0707******668", amount: "1 000F" },
-  { phone: "0101******452", amount: "200F" },
-  { phone: "0505******317", amount: "2 000F" },
+  { phone: "0546******846", amount: "200F",   avatar: "/avatars/winner-1.jpg" },
+  { phone: "0707******231", amount: "500F",   avatar: "/avatars/winner-2.jpg" },
+  { phone: "0102******978", amount: "1 000F", avatar: "/avatars/winner-3.jpg" },
+  { phone: "0503******412", amount: "200F",   avatar: "/avatars/winner-4.jpg" },
+  { phone: "0749******065", amount: "2 000F", avatar: "/avatars/winner-5.jpg" },
+  { phone: "0101******339", amount: "500F",   avatar: "/avatars/winner-6.jpg" },
+  { phone: "0564******187", amount: "200F",   avatar: "/avatars/winner-7.jpg" },
+  { phone: "0767******824", amount: "1 000F", avatar: "/avatars/winner-8.jpg" },
+  { phone: "0505******553", amount: "200F",   avatar: "/avatars/winner-1.jpg" },
+  { phone: "0103******710", amount: "5 000F", avatar: "/avatars/winner-2.jpg" },
+  { phone: "0748******293", amount: "500F",   avatar: "/avatars/winner-3.jpg" },
+  { phone: "0546******001", amount: "200F",   avatar: "/avatars/winner-4.jpg" },
+  { phone: "0707******668", amount: "1 000F", avatar: "/avatars/winner-5.jpg" },
+  { phone: "0101******452", amount: "200F",   avatar: "/avatars/winner-6.jpg" },
+  { phone: "0505******317", amount: "2 000F", avatar: "/avatars/winner-7.jpg" },
 ];
 
 function WinnersTicker() {
@@ -78,12 +78,12 @@ function WinnersTicker() {
               }}
             >
               <div className="flex items-center gap-2">
-                <span
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                  style={{ background: "rgba(255,215,0,0.18)", color: "#FFD700" }}
-                >
-                  🎉
-                </span>
+                <img
+                  src={w.avatar}
+                  alt=""
+                  className="w-8 h-8 rounded-full object-cover shrink-0"
+                  style={{ border: "2px solid rgba(255,215,0,0.45)" }}
+                />
                 <span className="text-sm text-white/90 font-medium tracking-wide font-mono">
                   {w.phone}
                 </span>
