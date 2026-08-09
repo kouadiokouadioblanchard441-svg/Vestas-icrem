@@ -1608,6 +1608,30 @@ export async function registerRoutes(
     }
   });
 
+  // Recent global spin activity (all users, masked phones) – for social-proof list on the wheel page
+  app.get("/api/spin-wheel/recent", requireAuth, async (_req, res) => {
+    try {
+      const rows = await pool.query<{ phone: string; amount: string; description: string; created_at: string }>(
+        `SELECT u.phone, t.amount, t.description, t.created_at
+           FROM transactions t
+           JOIN users u ON u.id = t.user_id
+          WHERE t.type = 'spin_reward'
+          ORDER BY t.created_at DESC
+          LIMIT 30`,
+      );
+      const result = rows.rows.map((r) => {
+        const p = r.phone ?? "";
+        const masked = p.length >= 6
+          ? `+${p.slice(0, 2)}****${p.slice(-6)}`
+          : `+${p}`;
+        return { phone: masked, amount: r.amount, description: r.description };
+      });
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Admin routes
   app.get("/api/admin/stats", requireAdmin, async (req, res) => {
     try {

@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { useLocation } from "wouter";
-import { ChevronLeft, Volume2 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
@@ -13,377 +11,283 @@ import {
   type SpinWheelSegment,
 } from "@shared/spin-wheel";
 
+/* ── Palette ────────────────────────────────────────────────── */
+const BG_TOP    = "#3d4e1a";
+const BG_MID    = "#2d3816";
+const BG_BOT    = "#1a2208";
+
 /* ── Segments ──────────────────────────────────────────────── */
-const N = DEFAULT_SPIN_WHEEL_SEGMENTS.length;
+const N   = DEFAULT_SPIN_WHEEL_SEGMENTS.length;
 const ARC = (2 * Math.PI) / N;
+
+/* ── Coin stack helper (draws 3 stacked coin circles) ─────── */
+function drawCoinStack(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  r: number,
+) {
+  for (let i = 2; i >= 0; i--) {
+    const oy = -i * r * 0.55;
+    // Edge shadow
+    ctx.beginPath();
+    ctx.ellipse(x, y - oy + r * 0.28, r, r * 0.28, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#A07200";
+    ctx.fill();
+    // Coin face gradient
+    const g = ctx.createRadialGradient(x - r * 0.3, y - oy - r * 0.3, 0, x, y - oy, r);
+    g.addColorStop(0, "#FFF9A0");
+    g.addColorStop(0.45, "#FFD700");
+    g.addColorStop(1, "#C89A05");
+    ctx.beginPath();
+    ctx.arc(x, y - oy, r, 0, Math.PI * 2);
+    ctx.fillStyle = g;
+    ctx.fill();
+    ctx.strokeStyle = "#A07200";
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+  }
+}
 
 /* ── Draw wheel ─────────────────────────────────────────────── */
 function drawWheel(
   canvas: HTMLCanvasElement,
   rotation: number,
   segments: SpinWheelSegment[],
-  lightPhase = 0,
-  unavailableText = "unavailable",
 ) {
   const ctx = canvas.getContext("2d")!;
-  const W = canvas.width;
-  const cx = W / 2;
-  const cy = W / 2;
-  const outerR = cx - 7;
-  const rimR    = outerR - 25;
-  const segR    = outerR - 37;
-  const innerR  = segR * 0.30;
-  const lightAngle = -Math.PI / 2 + Math.sin(lightPhase) * 0.35;
-  const lightX = cx + Math.cos(lightAngle) * outerR;
-  const lightY = cy + Math.sin(lightAngle) * outerR;
+  const W   = canvas.width;
+  const cx  = W / 2;
+  const cy  = W / 2;
+
+  const outerR  = cx - 5;          // outer gold ring edge
+  const segR    = outerR - 26;     // segment outer radius
+  const sepR    = segR * 0.30;     // inner separator ring radius
+  const centerR = sepR * 0.82;     // GO button radius
 
   ctx.clearRect(0, 0, W, W);
 
-  /* Soft cast shadow under the wheel. */
+  /* ── Drop shadow ── */
   ctx.save();
   ctx.beginPath();
-  ctx.arc(cx, cy + 7, outerR - 1, 0, 2 * Math.PI);
-  ctx.fillStyle = "rgba(20, 0, 0, 0.55)";
-  ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-  ctx.shadowBlur = 22;
+  ctx.arc(cx, cy + 10, outerR - 2, 0, 2 * Math.PI);
+  ctx.fillStyle = "rgba(0,0,0,0.30)";
+  ctx.shadowColor = "rgba(0,0,0,0.45)";
+  ctx.shadowBlur = 18;
   ctx.shadowOffsetY = 10;
   ctx.fill();
   ctx.restore();
 
-  /* Brushed gold outer ring with a moving studio-light highlight. */
-  const goldGrad = ctx.createLinearGradient(
-    cx - Math.cos(lightAngle) * outerR,
-    cy - Math.sin(lightAngle) * outerR,
-    lightX,
-    lightY,
-  );
-  goldGrad.addColorStop(0, "#6f4305");
-  goldGrad.addColorStop(0.12, "#b8790b");
-  goldGrad.addColorStop(0.28, "#fff1a1");
-  goldGrad.addColorStop(0.42, "#ffd22e");
-  goldGrad.addColorStop(0.58, "#fff8bd");
-  goldGrad.addColorStop(0.76, "#c98a12");
-  goldGrad.addColorStop(0.92, "#7a4b05");
-  goldGrad.addColorStop(1, "#e6ad24");
+  /* ── Outer gold ring ── */
+  const ringGrad = ctx.createLinearGradient(cx - outerR, cy - outerR, cx + outerR, cy + outerR);
+  ringGrad.addColorStop(0,    "#C89A05");
+  ringGrad.addColorStop(0.25, "#FFD700");
+  ringGrad.addColorStop(0.50, "#FFF8A0");
+  ringGrad.addColorStop(0.75, "#FFD700");
+  ringGrad.addColorStop(1,    "#C89A05");
   ctx.beginPath();
   ctx.arc(cx, cy, outerR, 0, 2 * Math.PI);
-  ctx.fillStyle = goldGrad;
+  ctx.fillStyle = ringGrad;
   ctx.fill();
-  ctx.strokeStyle = "#4b2a03";
-  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#A07200";
+  ctx.lineWidth = 2;
   ctx.stroke();
 
-  /* Raised inner lip of the gold ring. */
-  ctx.beginPath();
-  ctx.arc(cx, cy, rimR + 4, 0, 2 * Math.PI);
-  ctx.strokeStyle = "rgba(255, 247, 178, 0.95)";
-  ctx.lineWidth = 3;
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(cx, cy, rimR - 2, 0, 2 * Math.PI);
-  ctx.strokeStyle = "rgba(92, 49, 2, 0.9)";
-  ctx.lineWidth = 4;
-  ctx.stroke();
+  /* ── Segment colors: alternating dark-gold / cream ── */
+  const SEG = [
+    { fill: "#F5C518", text: "#5C3D00" },   // dark gold (even index)
+    { fill: "#FFFDE7", text: "#7C5200" },   // cream (odd index)
+  ];
 
-  /* Small embossed studs around the metallic ring. */
-  const dotCount = 20;
-  for (let i = 0; i < dotCount; i++) {
-    const a = rotation + (i / dotCount) * 2 * Math.PI;
-    const dr = (outerR + rimR) / 2;
-    const dx = cx + Math.cos(a) * dr;
-    const dy = cy + Math.sin(a) * dr;
-    ctx.beginPath();
-    ctx.arc(dx, dy, 7.5, 0, 2 * Math.PI);
-    const cg = ctx.createRadialGradient(dx - 3, dy - 3, 0, dx, dy, 8);
-    cg.addColorStop(0, "#ffffff");
-    cg.addColorStop(0.18, "#fffbd0");
-    cg.addColorStop(0.52, "#f5c52b");
-    cg.addColorStop(1, "#6b3e03");
-    ctx.fillStyle = cg;
-    ctx.fill();
-    ctx.strokeStyle = "#3b2101";
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-  }
-
-  /* segments */
+  /* ── Draw 8 segments ── */
   for (let i = 0; i < N; i++) {
-    const seg = segments[i];
+    const seg   = segments[i];
     const start = rotation + i * ARC - Math.PI / 2;
     const end   = start + ARC;
+    const midA  = start + ARC / 2;
+    const col   = SEG[i % 2];
 
-    /* segment fill */
+    /* Segment fill */
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.arc(cx, cy, segR, start, end);
     ctx.closePath();
-
-    const segmentLight = ctx.createLinearGradient(
-      cx - Math.cos(lightAngle) * segR,
-      cy - Math.sin(lightAngle) * segR,
-      lightX,
-      lightY,
-    );
-    segmentLight.addColorStop(0, "#09030d");
-    segmentLight.addColorStop(0.18, seg.dark);
-    segmentLight.addColorStop(0.48, seg.color);
-    segmentLight.addColorStop(0.72, seg.color);
-    segmentLight.addColorStop(0.92, seg.dark);
-    segmentLight.addColorStop(1, "#08020b");
-    const sg = ctx.createRadialGradient(cx, cy, innerR * 0.4, cx, cy, segR);
-    sg.addColorStop(0, "rgba(255,255,255,0.10)");
-    sg.addColorStop(0.34, "rgba(255,255,255,0)");
-    sg.addColorStop(0.84, "rgba(0,0,0,0.12)");
-    sg.addColorStop(1, "rgba(0,0,0,0.35)");
-    ctx.fillStyle = segmentLight;
+    ctx.fillStyle = col.fill;
     ctx.fill();
-    ctx.globalCompositeOperation = "overlay";
-    ctx.fillStyle = sg;
-    ctx.fill();
-    ctx.globalCompositeOperation = "source-over";
-    ctx.strokeStyle = "#FFD70099";
+    ctx.strokeStyle = "#D4A800";
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    /* Fine bevel on both sides of every slice makes the wheel feel solid. */
-    ctx.beginPath();
-    ctx.arc(cx, cy, segR - 2, start + 0.012, end - 0.012);
-    ctx.strokeStyle = "rgba(255,255,255,0.25)";
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, segR - 2, start + 0.012, start + 0.055);
-    ctx.strokeStyle = "rgba(0,0,0,0.5)";
-    ctx.lineWidth = 3;
-    ctx.stroke();
+    /* Coin stack — placed at ~62% of segR from center */
+    const coinDist = segR * 0.62;
+    const coinR    = segR * 0.095;
+    const coinCx   = cx + Math.cos(midA) * coinDist;
+    const coinCy   = cy + Math.sin(midA) * coinDist;
+    drawCoinStack(ctx, coinCx, coinCy, coinR);
 
-    /*
-     * Keep every amount and label inside its own section. Text is measured
-     * against the available arc width before it is drawn, so long admin
-     * labels shrink/wrap instead of crossing into another section.
-     */
-    const midA = start + ARC / 2;
-    const textRadius = segR * 0.60;
-    const maxTextWidth = segR * 0.42;
-    const fitFontSize = (text: string, weight: string, preferred: number, minimum: number) => {
-      let size = preferred;
-      while (size > minimum) {
-        ctx.font = `${weight} ${size}px sans-serif`;
-        if (ctx.measureText(text).width <= maxTextWidth) return size;
-        size -= 0.5;
-      }
-      return minimum;
-    };
-    const wrapLabel = (text: string, fontSize: number) => {
-      ctx.font = `bold ${fontSize}px sans-serif`;
-      const lines: string[] = [];
-      let line = "";
-      for (const word of text.split(/\s+/)) {
-        const candidate = line ? `${line} ${word}` : word;
-        if (line && ctx.measureText(candidate).width > maxTextWidth) {
-          lines.push(line);
-          line = word;
-        } else {
-          line = candidate;
-        }
-      }
-      if (line) lines.push(line);
-      return lines.slice(0, 2);
-    };
-
+    /* Amount/label text — at ~36% from center */
+    const textDist = segR * 0.36;
     ctx.save();
-    ctx.translate(cx + Math.cos(midA) * textRadius, cy + Math.sin(midA) * textRadius);
-    let textRotation = midA + Math.PI / 2;
-    if (textRotation > Math.PI / 2 && textRotation < Math.PI * 1.5) {
-      textRotation += Math.PI;
-    }
-    ctx.rotate(textRotation);
-    ctx.fillStyle = "#fffde7";
-    ctx.textAlign = "center";
+    ctx.translate(
+      cx + Math.cos(midA) * textDist,
+      cy + Math.sin(midA) * textDist,
+    );
+    let tRot = midA + Math.PI / 2;
+    if (tRot > Math.PI / 2 && tRot < Math.PI * 1.5) tRot += Math.PI;
+    ctx.rotate(tRot);
+    ctx.textAlign    = "center";
     ctx.textBaseline = "middle";
-    ctx.shadowColor = "rgba(0,0,0,0.95)";
-    ctx.shadowBlur = 6;
-    const amountText = `${seg.amount} FCFA`;
-    const amountFontSize = fitFontSize(amountText, "900", 16, 10);
-    ctx.font = `900 ${amountFontSize}px sans-serif`;
-    ctx.fillText(amountText, 0, -8);
+    ctx.fillStyle    = col.text;
+    ctx.shadowColor  = "rgba(255,255,255,0.7)";
+    ctx.shadowBlur   = 3;
 
-    const label = seg.canWin ? seg.label : `${seg.label} · ${unavailableText}`;
-    const labelFontSize = fitFontSize(label, "bold", 9, 7);
-    const labelLines = wrapLabel(label, labelFontSize);
-    ctx.font = `bold ${labelFontSize}px sans-serif`;
-    labelLines.forEach((line, li) => ctx.fillText(line, 0, 7 + li * (labelFontSize + 2)));
+    const displayText = seg.canWin
+      ? seg.amount > 0 ? String(seg.amount) : seg.label
+      : "😊";
+    const fontSize = Math.max(9, Math.min(13, segR * 0.108));
+    ctx.font = `bold ${fontSize}px sans-serif`;
+    ctx.fillText(displayText, 0, 0);
     ctx.shadowBlur = 0;
     ctx.restore();
   }
 
-  /* Deep inner bevel separates the segments from the center mechanism. */
-  const rimGrad = ctx.createRadialGradient(cx, cy, innerR, cx, cy, segR * 0.34);
-  rimGrad.addColorStop(0, "#3f2202");
-  rimGrad.addColorStop(0.35, "#d69b18");
-  rimGrad.addColorStop(0.56, "#fff09a");
-  rimGrad.addColorStop(0.78, "#b36d06");
-  rimGrad.addColorStop(1, "#4a2702");
+  /* ── Inner separator gold ring ── */
+  const sepGrad = ctx.createRadialGradient(cx, cy, centerR, cx, cy, sepR);
+  sepGrad.addColorStop(0,    "#FFF8A0");
+  sepGrad.addColorStop(0.45, "#FFD700");
+  sepGrad.addColorStop(1,    "#C89A05");
   ctx.beginPath();
-  ctx.arc(cx, cy, segR * 0.34, 0, 2 * Math.PI);
-  ctx.fillStyle = rimGrad;
+  ctx.arc(cx, cy, sepR, 0, 2 * Math.PI);
+  ctx.fillStyle = sepGrad;
   ctx.fill();
-  ctx.strokeStyle = "#2b1600";
-  ctx.lineWidth = 3;
-  ctx.stroke();
-
-  /* Glossy 3D center button. */
-  const sphGrad = ctx.createRadialGradient(
-    cx - innerR * 0.38,
-    cy - innerR * 0.44,
-    innerR * 0.04,
-    cx + innerR * 0.22,
-    cy + innerR * 0.25,
-    innerR * 1.15,
-  );
-  sphGrad.addColorStop(0, "#fff5ff");
-  sphGrad.addColorStop(0.12, "#f0abfc");
-  sphGrad.addColorStop(0.34, "#d946ef");
-  sphGrad.addColorStop(0.68, "#7c3aed");
-  sphGrad.addColorStop(0.9, "#4c1d95");
-  sphGrad.addColorStop(1, "#1d0b4a");
-  ctx.beginPath();
-  ctx.arc(cx, cy, innerR, 0, 2 * Math.PI);
-  ctx.fillStyle = sphGrad;
-  ctx.fill();
-  ctx.strokeStyle = "rgba(255,255,255,0.65)";
+  ctx.strokeStyle = "#A07200";
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  ctx.save();
+  /* ── Flame / teardrop pointer (fixed at 12-o'clock) ── */
+  const flameBase = cy - sepR + 2;
+  const flameTop  = flameBase - sepR * 0.70;
+  const flameW    = sepR * 0.38;
+  const flameG    = ctx.createLinearGradient(cx, flameTop, cx, flameBase);
+  flameG.addColorStop(0,   "#FF9820");
+  flameG.addColorStop(0.6, "#E63946");
+  flameG.addColorStop(1,   "#C0392B");
   ctx.beginPath();
-  ctx.ellipse(cx - innerR * 0.28, cy - innerR * 0.36, innerR * 0.32, innerR * 0.13, -0.45, 0, 2 * Math.PI);
-  ctx.fillStyle = "rgba(255,255,255,0.38)";
-  ctx.shadowColor = "rgba(255,255,255,0.7)";
-  ctx.shadowBlur = 9;
+  ctx.moveTo(cx, flameTop);
+  ctx.bezierCurveTo(
+    cx + flameW * 1.1, flameTop + (flameBase - flameTop) * 0.45,
+    cx + flameW * 0.9, flameBase,
+    cx, flameBase,
+  );
+  ctx.bezierCurveTo(
+    cx - flameW * 0.9, flameBase,
+    cx - flameW * 1.1, flameTop + (flameBase - flameTop) * 0.45,
+    cx, flameTop,
+  );
+  ctx.fillStyle = flameG;
   ctx.fill();
-  ctx.restore();
+  ctx.strokeStyle = "rgba(255,255,255,0.5)";
+  ctx.lineWidth   = 1;
+  ctx.stroke();
+
+  /* ── Center GO button ── */
+  const btnG = ctx.createRadialGradient(
+    cx - centerR * 0.3, cy - centerR * 0.3, 0,
+    cx, cy, centerR,
+  );
+  btnG.addColorStop(0,   "#FF9820");
+  btnG.addColorStop(0.4, "#E63946");
+  btnG.addColorStop(1,   "#A01E28");
+  ctx.beginPath();
+  ctx.arc(cx, cy, centerR, 0, 2 * Math.PI);
+  ctx.fillStyle = btnG;
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,0.85)";
+  ctx.lineWidth   = 2.5;
+  ctx.stroke();
 
   /* GO text */
-  ctx.fillStyle = "#ffffff";
-  ctx.font = `bold ${Math.round(innerR * 0.6)}px sans-serif`;
-  ctx.textAlign = "center";
+  ctx.fillStyle    = "#FFF";
+  ctx.font         = `bold ${Math.round(centerR * 0.62)}px sans-serif`;
+  ctx.textAlign    = "center";
   ctx.textBaseline = "middle";
-  ctx.shadowColor = "rgba(0,0,0,0.5)";
-  ctx.shadowBlur = 4;
+  ctx.shadowColor  = "rgba(0,0,0,0.6)";
+  ctx.shadowBlur   = 5;
   ctx.fillText("GO", cx, cy);
   ctx.shadowBlur = 0;
 }
 
-/* ── Ticker messages ── built dynamically from i18n (see useTickerMsgs below) */
+/* ── Recent spin entry type ──────────────────────────────── */
+interface RecentSpin {
+  phone: string;
+  amount: string;
+  description: string;
+}
 
 /* ── Page ───────────────────────────────────────────────────── */
 export default function SpinWheelPage() {
-  const [, navigate] = useLocation();
   const { user, refreshUser } = useAuth();
   const { t } = useI18n();
   const { toast } = useToast();
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rotRef    = useRef(0);
-  const animRef   = useRef<number | null>(null);
-  const lightAnimRef = useRef<number | null>(null);
-  const spinning  = useRef(false);
+  const canvasRef  = useRef<HTMLCanvasElement>(null);
+  const rotRef     = useRef(0);
+  const animRef    = useRef<number | null>(null);
+  const rafRef     = useRef<number | null>(null);
+  const spinning   = useRef(false);
 
-  const [rotation, setRotation]     = useState(0);
-  const [spinning2, setSpinning2]   = useState(false);
+  const [rotation,   setRotation]   = useState(0);
+  const [spinning2,  setSpinning2]  = useState(false);
   const [spinTokens, setSpinTokens] = useState(() => user?.spinTokens ?? 0);
-  const [totalWon, setTotalWon]     = useState(0);
-  const [showRules, setShowRules]   = useState(false);
+  const [showRules,  setShowRules]  = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const [tickerIdx, setTickerIdx]   = useState(0);
 
-  const TICKER_MSGS = useMemo(() => [
-    t.wheelTickerWon.replace("{0}", "050****414").replace("{1}", "2"),
-    t.wheelTickerWon.replace("{0}", "067****821").replace("{1}", "5"),
-    t.wheelTickerWonSpecialBonus.replace("{0}", "055****113"),
-    t.wheelTickerWon.replace("{0}", "078****990").replace("{1}", "10"),
-    t.wheelTickerWonGrandPrize.replace("{0}", "091****357"),
-    t.wheelTickerWon.replace("{0}", "066****442").replace("{1}", "20"),
-  ], [t]);
-  const [timeLeft, setTimeLeft]   = useState(86389); // ~24h
   const [segments, setSegments] = useState<SpinWheelSegment[]>(DEFAULT_SPIN_WHEEL_SEGMENTS);
-  const rotationDrawRef = useRef(rotation);
-  const segmentsDrawRef = useRef(segments);
-  const unavailableTextRef = useRef(t.wheelSegmentUnavailable);
+  const rotDrawRef  = useRef(rotation);
+  const segDrawRef  = useRef(segments);
 
-  useEffect(() => {
-    unavailableTextRef.current = t.wheelSegmentUnavailable;
-  }, [t.wheelSegmentUnavailable]);
+  /* Sync spinTokens when user refreshes */
+  useEffect(() => { setSpinTokens(user?.spinTokens ?? 0); }, [user?.spinTokens]);
 
-  // Keep local spinTokens in sync when user data refreshes
-  useEffect(() => {
-    setSpinTokens(user?.spinTokens ?? 0);
-  }, [user?.spinTokens]);
-
+  /* Load admin-configured segments */
   const { data: configuredSegments } = useQuery<SpinWheelSegment[]>({
     queryKey: ["/api/spin-wheel/config"],
   });
-
   useEffect(() => {
     if (configuredSegments?.length === N) setSegments(configuredSegments);
   }, [configuredSegments]);
 
-  useEffect(() => {
-    rotationDrawRef.current = rotation;
-    segmentsDrawRef.current = segments;
-  }, [rotation, segments]);
-
-  const spinMutation = useMutation({
-    mutationFn: async () => {
-      const response = await apiRequest("POST", "/api/spin-wheel/spin", {});
-      return response.json() as Promise<{
-        segmentId: number;
-        amount: number;
-        label: string;
-      }>;
-    },
+  /* Recent global spins */
+  const { data: recentSpins } = useQuery<RecentSpin[]>({
+    queryKey: ["/api/spin-wheel/recent"],
+    refetchInterval: 15000,
   });
 
-  /* ticker */
+  /* Keep draw refs in sync */
   useEffect(() => {
-    const t = setInterval(() => setTickerIdx(i => (i + 1) % TICKER_MSGS.length), 3500);
-    return () => clearInterval(t);
-  }, []);
+    rotDrawRef.current = rotation;
+    segDrawRef.current = segments;
+  }, [rotation, segments]);
 
-  /* countdown */
-  useEffect(() => {
-    const t = setInterval(() => setTimeLeft(s => Math.max(0, s - 1)), 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  const fmtTime = (s: number) => {
-    const h = String(Math.floor(s / 3600)).padStart(2, "0");
-    const m = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
-    const sec = String(s % 60).padStart(2, "0");
-    return `${h}:${m}:${sec}`;
-  };
-
-  /* Keep the canvas alive with a subtle moving studio-light reflection. */
+  /* Animate wheel on canvas every frame */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const animateLight = (time: number) => {
-      drawWheel(
-        canvas,
-        rotationDrawRef.current,
-        segmentsDrawRef.current,
-        time / 1800,
-        unavailableTextRef.current,
-      );
-      lightAnimRef.current = requestAnimationFrame(animateLight);
+    const loop = () => {
+      drawWheel(canvas, rotDrawRef.current, segDrawRef.current);
+      rafRef.current = requestAnimationFrame(loop);
     };
-    lightAnimRef.current = requestAnimationFrame(animateLight);
-    return () => {
-      if (lightAnimRef.current) cancelAnimationFrame(lightAnimRef.current);
-    };
+    rafRef.current = requestAnimationFrame(loop);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
   }, []);
+
+  /* Spin mutation */
+  const spinMutation = useMutation({
+    mutationFn: async () => {
+      const r = await apiRequest("POST", "/api/spin-wheel/spin", {});
+      return r.json() as Promise<{ segmentId: number; amount: number; label: string }>;
+    },
+  });
 
   const handleSpin = useCallback(() => {
     if (spinning.current || spinTokens <= 0 || spinMutation.isPending) return;
@@ -392,37 +296,34 @@ export default function SpinWheelPage() {
 
     spinMutation.mutate(undefined, {
       onSuccess: (result) => {
-        const winIdx = Math.max(0, segments.findIndex((segment) => segment.id === result.segmentId));
-        const extra     = Math.PI * 2 * (6 + Math.random() * 4); // 6-10 full turns
+        const winIdx   = Math.max(0, segments.findIndex((s) => s.id === result.segmentId));
+        const extra    = Math.PI * 2 * (6 + Math.random() * 4);
         const targetRot = rotRef.current + extra + (Math.PI * 2 - winIdx * ARC);
-
-        const duration = 3500;
+        const duration  = 3500;
         const startTime = performance.now();
         const startRot  = rotRef.current;
 
         function ease(p: number) {
           return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
         }
-
         function tick(now: number) {
-          const elapsed  = now - startTime;
-          const progress = Math.min(elapsed / duration, 1);
-          const current  = startRot + (targetRot - startRot) * ease(progress);
-          rotRef.current = current;
-          setRotation(current);
-
-          if (progress < 1) {
+          const p = Math.min((now - startTime) / duration, 1);
+          const c = startRot + (targetRot - startRot) * ease(p);
+          rotRef.current = c;
+          setRotation(c);
+          if (p < 1) {
             animRef.current = requestAnimationFrame(tick);
           } else {
             spinning.current = false;
             setSpinning2(false);
-            setSpinTokens(prev => Math.max(0, prev - 1));
-            setTotalWon(prev => prev + result.amount);
+            setSpinTokens((prev) => Math.max(0, prev - 1));
             refreshUser();
-            toast({ title: t.wheelCongrats, description: t.wheelWonDesc.replace("{0}", String(result.amount)) });
+            toast({
+              title: t.wheelCongrats,
+              description: t.wheelWonDesc.replace("{0}", String(result.amount)),
+            });
           }
         }
-
         animRef.current = requestAnimationFrame(tick);
       },
       onError: (error: Error) => {
@@ -433,183 +334,177 @@ export default function SpinWheelPage() {
     });
   }, [spinTokens, segments, spinMutation, toast, t, refreshUser]);
 
+  /* Cleanup */
   useEffect(() => () => {
     if (animRef.current) cancelAnimationFrame(animRef.current);
-    if (lightAnimRef.current) cancelAnimationFrame(lightAnimRef.current);
+    if (rafRef.current)  cancelAnimationFrame(rafRef.current);
   }, []);
 
-  const phone = user?.phone ? user.phone : "0000000000";
-  const maskedPhone = phone.length > 4 ? phone.slice(0, 4) + "****" + phone.slice(-3) : phone;
+  const balance = parseFloat(user?.balance ?? "0");
+
+  /* Masked display list — prefer API data, fall back to demo rows */
+  const historyRows: RecentSpin[] = useMemo(() => {
+    if (recentSpins && recentSpins.length > 0) return recentSpins;
+    return [];
+  }, [recentSpins]);
 
   return (
     <>
-    <div
-      className="min-h-screen flex flex-col overflow-x-hidden"
-      style={{
-        background: "radial-gradient(ellipse at 50% 0%, #cc1010 0%, #8b0000 40%, #5c0000 100%)",
-        backgroundImage: [
-          "radial-gradient(ellipse at 50% 0%, #cc1010 0%, #8b0000 40%, #5c0000 100%)",
-          "repeating-linear-gradient(90deg, transparent 0px, transparent 28px, rgba(0,0,0,0.12) 28px, rgba(0,0,0,0.12) 30px, transparent 30px, transparent 58px, rgba(255,255,255,0.04) 58px, rgba(255,255,255,0.04) 60px)",
-        ].join(", "),
-      }}
-    >
-      {/* ── Gold rope ── */}
       <div
+        className="min-h-screen flex flex-col overflow-x-hidden pb-20"
         style={{
-          height: 28,
-          background: "repeating-linear-gradient(90deg, #b8860b 0px, #ffd700 6px, #ffec6e 10px, #ffd700 14px, #b8860b 20px)",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
-          flexShrink: 0,
-        }}
-      />
-
-      {/* ── Header ── */}
-      <div className="flex items-center px-4 py-3">
-        <button
-          onClick={() => navigate("/")}
-          className="p-1.5 rounded-full mr-2"
-          style={{ background: "rgba(255,255,255,0.15)" }}
-        >
-          <ChevronLeft className="w-5 h-5 text-white" />
-        </button>
-        <h1 className="text-white font-extrabold text-lg flex-1 text-center tracking-wide drop-shadow">
-          {t.wheelTitle}
-        </h1>
-        <div className="w-9" />
-      </div>
-
-      {/* ── Scrolling ticker ── */}
-      <div
-        className="mx-4 mb-3 rounded-xl px-3 py-2 flex items-center gap-2 overflow-hidden"
-        style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,215,0,0.3)" }}
-      >
-        <Volume2 className="w-4 h-4 shrink-0" style={{ color: "#ffd700" }} />
-        <p
-          className="text-sm truncate font-medium transition-all duration-500"
-          style={{ color: "#fff" }}
-        >
-          {TICKER_MSGS[tickerIdx]}
-        </p>
-      </div>
-
-      {/* ── User card ── */}
-      <div
-        className="mx-4 mb-3 rounded-2xl p-4 relative overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg, #1a0a6b 0%, #2d0f9a 40%, #1a0a6b 100%)",
-          border: "2px solid #ffd70066",
-          boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+          background: `linear-gradient(180deg, ${BG_TOP} 0%, ${BG_MID} 45%, ${BG_BOT} 100%)`,
         }}
       >
-        {/* Mon Compte badge */}
-        <div
-          className="absolute top-0 right-0 px-3 py-1 text-xs font-bold"
-          style={{ background: "#222", color: "#fff", borderBottomLeftRadius: 12 }}
-        >
-          {t.wheelMyAccount}
-        </div>
-
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-base"
-            style={{ background: "linear-gradient(135deg, #ffd700, #b8860b)" }}>
-            🪙
-          </div>
-          <p className="text-white font-bold text-base">{maskedPhone}</p>
-        </div>
-        <p className="text-xs mb-1" style={{ color: "#a78bfa" }}>{t.wheelTotalRewardsLabel}</p>
-        <div className="flex items-center justify-between">
-          <p className="font-extrabold text-2xl" style={{ color: "#ffd700", textShadow: "0 0 12px #ffd70088" }}>
-            {totalWon.toLocaleString(undefined, { maximumFractionDigits: 2 })} FCFA
-          </p>
-        </div>
-
-        {/* Spin tokens counter */}
-        <div className="mt-3 flex items-center gap-2">
-          <span className="text-xl">🎡</span>
-          <span
-            className="text-sm font-bold"
-            style={{ color: spinTokens > 0 ? "#ffd700" : "#a78bfa" }}
-          >
-            {spinTokens > 0
-              ? t.wheelSpinsLeft.replace("{0}", String(spinTokens))
-              : t.wheelNoSpins}
-          </span>
-        </div>
-
-      </div>
-
-
-      {/* ── Wheel ── */}
-      <div className="flex flex-col items-center px-2 mb-4">
-        {/* Pointer */}
-        <div className="relative mb-[-12px] z-10 flex flex-col items-center">
+        {/* ── Wheel ── */}
+        <div className="flex flex-col items-center pt-6 px-4 mb-5">
           <div
             style={{
-              width: 0, height: 0,
-              borderLeft: "14px solid transparent",
-              borderRight: "14px solid transparent",
-              borderTop: "28px solid #ffd700",
-              filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))",
+              borderRadius: "50%",
+              boxShadow: "0 0 32px rgba(255,215,0,0.25), 0 10px 36px rgba(0,0,0,0.5)",
+              cursor: spinning2 ? "not-allowed" : "pointer",
             }}
-          />
+            onClick={handleSpin}
+          >
+            <canvas
+              ref={canvasRef}
+              width={340}
+              height={340}
+              style={{
+                display: "block",
+                width:  "min(88vw, 340px)",
+                height: "min(88vw, 340px)",
+                borderRadius: "50%",
+              }}
+            />
+          </div>
+
+          {/* Spin tokens indicator */}
+          {spinTokens > 0 && (
+            <div
+              className="mt-3 px-4 py-1.5 rounded-full text-sm font-bold"
+              style={{ background: "rgba(255,255,255,0.15)", color: "#FFD700" }}
+            >
+              🎡 {t.wheelSpinsLeft?.replace("{0}", String(spinTokens)) ?? `${spinTokens} tour(s) restant(s)`}
+            </div>
+          )}
+          {spinTokens === 0 && (
+            <div
+              className="mt-3 px-4 py-1.5 rounded-full text-sm font-medium"
+              style={{ background: "rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.55)" }}
+            >
+              {t.wheelNoSpins ?? "Aucun tour disponible"}
+            </div>
+          )}
         </div>
 
-        {/* Canvas wheel */}
-        <div
-          style={{
-            borderRadius: "50%",
-            boxShadow: "0 0 40px rgba(255,215,0,0.4), 0 12px 40px rgba(0,0,0,0.6)",
-            cursor: spinning2 ? "not-allowed" : "pointer",
-          }}
-          onClick={handleSpin}
-        >
-          <canvas
-            ref={canvasRef}
-             width={360}
-             height={360}
-             style={{
-               display: "block",
-               width: "min(92vw, 360px)",
-               height: "min(92vw, 360px)",
-               borderRadius: "50%",
-             }}
-          />
+        {/* ── Rules bar ── */}
+        <div className="mx-4 mb-3">
+          <div
+            className="flex items-center justify-between rounded-2xl px-4 py-3"
+            style={{
+              background: "rgba(255,255,255,0.97)",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
+            }}
+          >
+            <span className="text-sm text-gray-600">
+              Consultez les règles du jeu
+            </span>
+            <button
+              onClick={() => setShowRules(true)}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-base font-bold shrink-0 active:scale-90 transition-transform"
+              style={{ background: "#E63946" }}
+            >
+              ?
+            </button>
+          </div>
         </div>
 
+        {/* ── Balance / Gratuit row ── */}
+        <div className="mx-4 mb-3">
+          <div
+            className="flex items-center justify-between rounded-2xl px-4 py-3"
+            style={{
+              background: "rgba(255,255,255,0.97)",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
+            }}
+          >
+            {/* Balance */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-700 font-medium">Balance</span>
+              <span
+                className="px-3 py-0.5 rounded-full text-sm font-bold text-white"
+                style={{ background: "#3d8a40" }}
+              >
+                {balance.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+              </span>
+            </div>
+
+            {/* Gratuit */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-700 font-medium">Gratuit</span>
+              <span
+                className="px-3 py-0.5 rounded-full text-sm font-bold text-white"
+                style={{ background: "#3d8a40" }}
+              >
+                {spinTokens}
+              </span>
+              <button
+                onClick={() => setShowHistory(true)}
+                className="w-7 h-7 rounded-full flex items-center justify-center text-white text-base font-bold shrink-0 active:scale-90 transition-transform"
+                style={{ background: "#E63946" }}
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Recent activity list ── */}
+        <div className="mx-4">
+          <div
+            className="rounded-2xl overflow-hidden"
+            style={{
+              background: "rgba(255,255,255,0.97)",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
+            }}
+          >
+            {historyRows.length === 0 ? (
+              <div className="py-8 text-center text-sm text-gray-400">
+                Aucune activité récente
+              </div>
+            ) : (
+              historyRows.slice(0, 10).map((row, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between px-4 py-3"
+                  style={{
+                    borderBottom: idx < Math.min(historyRows.length, 10) - 1
+                      ? "1px solid #f3f4f6"
+                      : "none",
+                  }}
+                >
+                  <span className="text-sm text-gray-700 font-medium">
+                    {row.phone}
+                  </span>
+                  <span
+                    className="text-sm font-bold"
+                    style={{ color: parseFloat(row.amount) > 0 ? "#3d8a40" : "#888" }}
+                  >
+                    {parseFloat(row.amount) > 0
+                      ? `+ ${parseFloat(row.amount).toLocaleString()}`
+                      : `+ ${row.description}`}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* ── Bottom buttons ── */}
-      <div className="mx-4 mb-8 grid grid-cols-2 gap-3">
-        <button
-          onClick={() => setShowRules(true)}
-          className="py-3 rounded-2xl font-bold text-sm active:scale-95 transition-transform"
-          style={{
-            background: "linear-gradient(135deg, #b8860b 0%, #ffd700 40%, #ffec6e 60%, #ffd700 80%, #b8860b 100%)",
-            color: "#1a0a00",
-            boxShadow: "0 4px 12px rgba(255,215,0,0.4)",
-            border: "1px solid #b8860b",
-          }}
-        >
-          {t.wheelRulesBtn}
-        </button>
-        <button
-          onClick={() => setShowHistory(true)}
-          className="py-3 rounded-2xl font-bold text-sm active:scale-95 transition-transform"
-          style={{
-            background: "linear-gradient(135deg, #b8860b 0%, #ffd700 40%, #ffec6e 60%, #ffd700 80%, #b8860b 100%)",
-            color: "#1a0a00",
-            boxShadow: "0 4px 12px rgba(255,215,0,0.4)",
-            border: "1px solid #b8860b",
-          }}
-        >
-          {t.wheelSaveBtn}
-        </button>
-      </div>
-    </div>
-
-    {/* ── Modals ── */}
-    <WheelRulesModal open={showRules} onClose={() => setShowRules(false)} />
-    <WheelHistoryModal open={showHistory} onClose={() => setShowHistory(false)} />
+      {/* ── Modals ── */}
+      <WheelRulesModal open={showRules}   onClose={() => setShowRules(false)} />
+      <WheelHistoryModal open={showHistory} onClose={() => setShowHistory(false)} />
     </>
   );
 }
