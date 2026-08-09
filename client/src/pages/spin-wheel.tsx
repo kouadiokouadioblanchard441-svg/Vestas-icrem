@@ -4,6 +4,8 @@ import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import WheelRulesModal from "@/components/wheel-rules-modal";
 import WheelInviteModal from "@/components/wheel-invite-modal";
+import WheelNoToursModal from "@/components/wheel-no-tours-modal";
+import WheelResultModal from "@/components/wheel-result-modal";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
@@ -351,6 +353,8 @@ export default function SpinWheelPage() {
   const [spinTokens,  setSpinTokens] = useState(() => user?.spinTokens ?? 0);
   const [showRules,   setShowRules]  = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showNoTours, setShowNoTours] = useState(false);
+  const [spinResult,  setSpinResult]  = useState<{ won: boolean; amount: number; label: string } | null>(null);
 
   /* Personal spin history — for "Balance" (total winnings on the wheel) */
   const { data: spinHistory = [] } = useQuery<{ amount: string }[]>({
@@ -437,7 +441,14 @@ export default function SpinWheelPage() {
   });
 
   const handleSpin = useCallback(() => {
-    if (spinning.current || spinTokens <= 0 || spinMutation.isPending) return;
+    if (spinning.current || spinMutation.isPending) return;
+
+    /* No tours available → white-card popup */
+    if (spinTokens <= 0) {
+      setShowNoTours(true);
+      return;
+    }
+
     spinning.current = true;
     setSpinning2(true);
 
@@ -465,10 +476,9 @@ export default function SpinWheelPage() {
             setSpinning2(false);
             setSpinTokens((prev) => Math.max(0, prev - 1));
             refreshUser();
-            toast({
-              title: t.wheelCongrats,
-              description: t.wheelWonDesc.replace("{0}", String(result.amount)),
-            });
+            /* Show result popup (win / loss) */
+            const won = result.amount > 0;
+            setSpinResult({ won, amount: result.amount, label: result.label });
           }
         }
         animRef.current = requestAnimationFrame(tick);
@@ -640,6 +650,18 @@ export default function SpinWheelPage() {
         onClose={() => setShowHistory(false)}
         text={inviteText}
         highlight={inviteHighlight}
+      />
+      <WheelNoToursModal
+        open={showNoTours}
+        onClose={() => setShowNoTours(false)}
+        referralCode={user?.referralCode ?? ""}
+      />
+      <WheelResultModal
+        open={spinResult !== null}
+        onClose={() => setSpinResult(null)}
+        won={spinResult?.won ?? false}
+        amount={spinResult?.amount}
+        label={spinResult?.label}
       />
     </>
   );
