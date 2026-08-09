@@ -180,13 +180,30 @@ export default function DepositPage() {
             Recharger
           </h1>
         </header>
+      ) : step === "operator" ? (
+        /* ── Operator step header: amount floats top-left ── */
+        <header className="px-5 pt-10 pb-6">
+          <button
+            className="mb-4 p-1 -ml-1"
+            onClick={() => setStep("amount")}
+            data-testid="button-deposit-back"
+          >
+            <ChevronLeft className="w-6 h-6 text-white" strokeWidth={2.5} />
+          </button>
+          <p className="text-white text-[15px] font-normal leading-none mb-2">
+            Montant:
+          </p>
+          <p className="text-white font-black leading-none" style={{ fontSize: 42 }}>
+            {Number(amount).toLocaleString("fr-FR")}{" "}
+            <span className="font-bold" style={{ fontSize: 22 }}>{CURRENCY}</span>
+          </p>
+        </header>
       ) : (
         <header className="flex items-start px-4 pt-12 pb-5">
           <button
             className="p-1 mr-2 mt-1"
             onClick={() => {
-              if (step === "operator") setStep("amount");
-              else if (step === "phone") setStep("operator");
+              if (step === "phone") setStep("operator");
               else if (step === "info") setStep("phone");
               else if (step === "done") setStep("amount");
             }}
@@ -335,31 +352,54 @@ export default function DepositPage() {
             STEP 2 : Operator list (BLUE/PURPLE)
         ───────────────────────────────────────── */}
         {step === "operator" && (
-          <div className="space-y-3">
-            <p className="text-white/80 text-[15px] font-medium mb-4">
+          <div>
+            {/* Label */}
+            <p
+              className="text-white font-normal mb-4"
+              style={{ fontSize: 15 }}
+            >
               Sélectionnez le mode de paiement :
             </p>
+
             {operators.length === 0 ? (
               <p className="text-white/50 text-sm text-center py-12">
                 Aucun opérateur disponible
               </p>
             ) : (
-              operators.map((op) => (
-                <button
-                  key={op.id}
-                  onClick={() => {
-                    setSelectedChannel(op);
-                    setStep("phone");
-                  }}
-                  className="w-full bg-white rounded-2xl px-5 py-4 flex items-center justify-between shadow-sm active:opacity-80 transition"
-                  data-testid={`button-operator-${op.id}`}
-                >
-                  <span className="font-bold text-gray-800 text-base tracking-wide">
-                    {op.operatorName.toUpperCase()}
-                  </span>
-                  <span className="text-gray-400 text-xl font-light">›</span>
-                </button>
-              ))
+              <div className="flex flex-col gap-3">
+                {operators.map((op) => (
+                  <button
+                    key={op.id}
+                    onClick={() => {
+                      setSelectedChannel(op);
+                      setStep("phone");
+                    }}
+                    className="w-full bg-white flex items-center justify-between transition active:scale-[0.98]"
+                    style={{
+                      borderRadius: 14,
+                      paddingTop: 18,
+                      paddingBottom: 18,
+                      paddingLeft: 20,
+                      paddingRight: 20,
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
+                    }}
+                    data-testid={`button-operator-${op.id}`}
+                  >
+                    <span
+                      className="font-extrabold tracking-wide"
+                      style={{ color: "#1B3A6B", fontSize: 17 }}
+                    >
+                      {op.operatorName.toUpperCase()}
+                    </span>
+                    <span
+                      className="font-semibold"
+                      style={{ color: "#1B3A6B", fontSize: 18 }}
+                    >
+                      {">"}
+                    </span>
+                  </button>
+                ))}
+              </div>
             )}
           </div>
         )}
