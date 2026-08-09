@@ -259,11 +259,20 @@ export default function SpinWheelPage() {
   const rafRef     = useRef<number | null>(null);
   const spinning   = useRef(false);
 
-  const [rotation,   setRotation]   = useState(0);
-  const [spinning2,  setSpinning2]  = useState(false);
-  const [spinTokens, setSpinTokens] = useState(() => user?.spinTokens ?? 0);
-  const [showRules,  setShowRules]  = useState(false);
+  const [rotation,    setRotation]   = useState(0);
+  const [spinning2,   setSpinning2]  = useState(false);
+  const [spinTokens,  setSpinTokens] = useState(() => user?.spinTokens ?? 0);
+  const [showRules,   setShowRules]  = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+
+  /* Personal spin history — for "Balance" (total winnings on the wheel) */
+  const { data: spinHistory = [] } = useQuery<{ amount: string }[]>({
+    queryKey: ["/api/spin-wheel/history"],
+  });
+  const wheelTotalWon = useMemo(
+    () => spinHistory.reduce((sum, tx) => sum + parseFloat(tx.amount || "0"), 0),
+    [spinHistory],
+  );
 
   const [segments, setSegments] = useState<SpinWheelSegment[]>(DEFAULT_SPIN_WHEEL_SEGMENTS);
   const rotDrawRef   = useRef(rotation);
@@ -380,7 +389,7 @@ export default function SpinWheelPage() {
     if (rafRef.current)  cancelAnimationFrame(rafRef.current);
   }, []);
 
-  const balance = parseFloat(user?.balance ?? "0");
+  // balance kept for reference but we display wheelTotalWon in the UI
 
   /* Masked display list — prefer API data, fall back to demo rows */
   const historyRows: RecentSpin[] = useMemo(() => {
@@ -421,9 +430,7 @@ export default function SpinWheelPage() {
             style={{
               borderRadius: "50%",
               boxShadow: "0 0 32px rgba(255,215,0,0.25), 0 10px 36px rgba(0,0,0,0.5)",
-              cursor: spinning2 ? "not-allowed" : "pointer",
             }}
-            onClick={handleSpin}
           >
             <canvas
               ref={canvasRef}
@@ -434,27 +441,27 @@ export default function SpinWheelPage() {
                 width:  "min(88vw, 340px)",
                 height: "min(88vw, 340px)",
                 borderRadius: "50%",
+                cursor: spinning2 ? "not-allowed" : "pointer",
+              }}
+              onClick={(e) => {
+                /* Only spin when clicking the centre GO button */
+                const canvas = canvasRef.current;
+                if (!canvas) return;
+                const rect   = canvas.getBoundingClientRect();
+                const scaleX = canvas.width  / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const x = (e.clientX - rect.left) * scaleX;
+                const y = (e.clientY - rect.top)  * scaleY;
+                const cx = canvas.width  / 2;
+                const cy = canvas.height / 2;
+                const outerR  = cx - 5;
+                const segR    = outerR - 26;
+                const centerR = segR * 0.30 * 0.82;
+                const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+                if (dist <= centerR) handleSpin();
               }}
             />
           </div>
-
-          {/* Spin tokens indicator */}
-          {spinTokens > 0 && (
-            <div
-              className="mt-3 px-4 py-1.5 rounded-full text-sm font-bold"
-              style={{ background: "rgba(255,255,255,0.15)", color: "#FFD700" }}
-            >
-              🎡 {t.wheelSpinsLeft?.replace("{0}", String(spinTokens)) ?? `${spinTokens} tour(s) restant(s)`}
-            </div>
-          )}
-          {spinTokens === 0 && (
-            <div
-              className="mt-3 px-4 py-1.5 rounded-full text-sm font-medium"
-              style={{ background: "rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.55)" }}
-            >
-              {t.wheelNoSpins ?? "Aucun tour disponible"}
-            </div>
-          )}
         </div>
 
         {/* ── Rules bar ── */}
@@ -488,14 +495,14 @@ export default function SpinWheelPage() {
               boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
             }}
           >
-            {/* Balance */}
+            {/* Total gagné sur la roue */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-700 font-medium">Balance</span>
               <span
                 className="px-3 py-0.5 rounded-full text-sm font-bold text-white"
                 style={{ background: "#3d8a40" }}
               >
-                {balance.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                {wheelTotalWon.toLocaleString("fr-FR", { maximumFractionDigits: 0 })}
               </span>
             </div>
 
