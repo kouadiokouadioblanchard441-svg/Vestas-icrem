@@ -11,10 +11,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Edit, Loader2, TrendingUp, Plus, Trash2 } from "lucide-react";
-import type { Product } from "@shared/schema";
+import { Edit, Loader2, TrendingUp, Plus, Trash2, Users, ShoppingBag } from "lucide-react";
+import type { Product, ProductSeries } from "@shared/schema";
 import ImageUploader from "@/components/admin/image-uploader";
 
 const productSchema = z.object({
@@ -23,30 +24,15 @@ const productSchema = z.object({
   dailyEarnings: z.string().min(1, "Gains journaliers requis"),
   cycleDays: z.string().min(1, "Durée requise"),
   imageUrl: z.string().optional(),
+  seriesId: z.string().optional(),
+  minInviteCount: z.string().optional(),
+  maxOwned: z.string().optional(),
 });
 
 type ProductForm = z.infer<typeof productSchema>;
 
-// Drizzle types decimal columns as `string` in TypeScript, but the DB and
-// Drizzle's set() both accept numbers at runtime. We use this local type so
-// the mutation call is correctly typed without spurious string conversions.
-interface ProductUpdatePayload {
-  name: string;
-  price: number;
-  dailyEarnings: number;
-  cycleDays: number;
-  totalReturn: number;
-  imageUrl: string | null | undefined;
-}
-
 // ─── ImageUploadField ────────────────────────────────────────────────────────
-// Defined OUTSIDE AdminProducts so React never sees it as a new component type.
-
-interface ImageUploadFieldProps {
-  form: any;
-}
-
-function ImageUploadField({ form }: ImageUploadFieldProps) {
+function ImageUploadField({ form }: { form: any }) {
   const currentValue: string = form.watch("imageUrl") || "";
   return (
     <FormField
@@ -54,14 +40,10 @@ function ImageUploadField({ form }: ImageUploadFieldProps) {
       name="imageUrl"
       render={() => (
         <FormItem>
-          <FormLabel>
-            Image <span className="text-muted-foreground font-normal">(optionnel)</span>
-          </FormLabel>
+          <FormLabel>Image <span className="text-muted-foreground font-normal">(optionnel)</span></FormLabel>
           <ImageUploader
             value={currentValue}
-            onChange={(url) =>
-              form.setValue("imageUrl", url, { shouldValidate: true, shouldDirty: true })
-            }
+            onChange={(url) => form.setValue("imageUrl", url, { shouldValidate: true, shouldDirty: true })}
             label=""
             previewHeight={112}
           />
@@ -73,91 +55,117 @@ function ImageUploadField({ form }: ImageUploadFieldProps) {
 }
 
 // ─── ProductFormFields ───────────────────────────────────────────────────────
-// Also defined outside to keep a stable component identity across re-renders.
-
 interface ProductFormFieldsProps {
   form: any;
   isPending: boolean;
   submitLabel: string;
   onSubmit: (data: ProductForm) => void;
+  series: ProductSeries[];
 }
 
-function ProductFormFields({ form, isPending, submitLabel, onSubmit }: ProductFormFieldsProps) {
+function ProductFormFields({ form, isPending, submitLabel, onSubmit, series }: ProductFormFieldsProps) {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-      <FormField
-        control={form.control}
-        name="name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Nom du produit</FormLabel>
-            <FormControl>
-              <Input {...field} placeholder="Ex: VIP 3" />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {/* Name */}
+      <FormField control={form.control} name="name" render={({ field }) => (
+        <FormItem>
+          <FormLabel>Nom du produit</FormLabel>
+          <FormControl><Input {...field} placeholder="Ex: VIP 3" /></FormControl>
+          <FormMessage />
+        </FormItem>
+      )} />
+
+      {/* Price + Daily */}
       <div className="grid grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Prix (USDT)</FormLabel>
-              <FormControl>
-                <Input {...field} type="number" placeholder="Ex: 15000" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="dailyEarnings"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Gains/jour (USDT)</FormLabel>
-              <FormControl>
-                <Input {...field} type="number" placeholder="Ex: 300" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
-      <FormField
-        control={form.control}
-        name="cycleDays"
-        render={({ field }) => (
+        <FormField control={form.control} name="price" render={({ field }) => (
           <FormItem>
-            <FormLabel>Durée (jours)</FormLabel>
-            <FormControl>
-              <Input {...field} type="number" />
-            </FormControl>
+            <FormLabel>Prix (FCFA)</FormLabel>
+            <FormControl><Input {...field} type="number" placeholder="Ex: 15000" /></FormControl>
             <FormMessage />
           </FormItem>
-        )}
-      />
-      <ImageUploadField form={form} />
+        )} />
+        <FormField control={form.control} name="dailyEarnings" render={({ field }) => (
+          <FormItem>
+            <FormLabel>Gains/jour</FormLabel>
+            <FormControl><Input {...field} type="number" placeholder="Ex: 300" /></FormControl>
+            <FormMessage />
+          </FormItem>
+        )} />
+      </div>
+
+      {/* Cycle */}
+      <FormField control={form.control} name="cycleDays" render={({ field }) => (
+        <FormItem>
+          <FormLabel>Durée (jours)</FormLabel>
+          <FormControl><Input {...field} type="number" /></FormControl>
+          <FormMessage />
+        </FormItem>
+      )} />
+
+      {/* Total return preview */}
       {form.watch("price") && form.watch("dailyEarnings") && form.watch("cycleDays") && (
         <div className="bg-primary/10 rounded-lg p-3 text-sm">
           <p className="text-muted-foreground">Retour total estimé :</p>
           <p className="font-bold text-primary text-lg">
-            {(
-              parseFloat(form.watch("dailyEarnings") || "0") *
-              parseInt(form.watch("cycleDays") || "0")
-            ).toLocaleString()}{" "}
-            USDT
+            {(parseFloat(form.watch("dailyEarnings") || "0") * parseInt(form.watch("cycleDays") || "0")).toLocaleString()} FCFA
           </p>
         </div>
       )}
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={isPending}
-        data-testid="button-save-product"
-      >
+
+      {/* Series */}
+      <FormField control={form.control} name="seriesId" render={({ field }) => (
+        <FormItem>
+          <FormLabel>Série</FormLabel>
+          <Select value={field.value || "none"} onValueChange={(v) => field.onChange(v === "none" ? "" : v)}>
+            <FormControl>
+              <SelectTrigger><SelectValue placeholder="Choisir une série" /></SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectItem value="none">— Aucune série —</SelectItem>
+              {series.map(s => (
+                <SelectItem key={s.id} value={String(s.id)}>{s.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      )} />
+
+      {/* Conditions */}
+      <div className="border rounded-lg p-3 space-y-3 bg-muted/30">
+        <p className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <ShoppingBag className="w-4 h-4" /> Conditions d'achat
+        </p>
+        <div className="grid grid-cols-2 gap-3">
+          <FormField control={form.control} name="minInviteCount" render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs flex items-center gap-1">
+                <Users className="w-3 h-3" /> Min. invitations
+              </FormLabel>
+              <FormControl>
+                <Input {...field} type="number" min="0" placeholder="0 = aucune" />
+              </FormControl>
+              <p className="text-[10px] text-muted-foreground">0 = pas de condition</p>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <FormField control={form.control} name="maxOwned" render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs">Max achats / utilisateur</FormLabel>
+              <FormControl>
+                <Input {...field} type="number" min="0" placeholder="0 = illimité" />
+              </FormControl>
+              <p className="text-[10px] text-muted-foreground">0 = illimité</p>
+              <FormMessage />
+            </FormItem>
+          )} />
+        </div>
+      </div>
+
+      {/* Image */}
+      <ImageUploadField form={form} />
+
+      <Button type="submit" className="w-full" disabled={isPending} data-testid="button-save-product">
         {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : submitLabel}
       </Button>
     </form>
@@ -165,7 +173,6 @@ function ProductFormFields({ form, isPending, submitLabel, onSubmit }: ProductFo
 }
 
 // ─── AdminProducts ────────────────────────────────────────────────────────────
-
 export default function AdminProducts() {
   const { toast } = useToast();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -175,92 +182,85 @@ export default function AdminProducts() {
     queryKey: ["/api/admin/products/all"],
   });
 
-  const editForm = useForm<ProductForm>({
-    resolver: zodResolver(productSchema),
-    defaultValues: { name: "", price: "", dailyEarnings: "", cycleDays: "80", imageUrl: "" },
+  const { data: series = [] } = useQuery<ProductSeries[]>({
+    queryKey: ["/api/admin/product-series"],
   });
 
-  const createForm = useForm<ProductForm>({
-    resolver: zodResolver(productSchema),
-    defaultValues: { name: "", price: "", dailyEarnings: "", cycleDays: "80", imageUrl: "" },
-  });
+  const defaultValues: ProductForm = {
+    name: "", price: "", dailyEarnings: "", cycleDays: "80",
+    imageUrl: "", seriesId: "", minInviteCount: "0", maxOwned: "0",
+  };
+
+  const editForm = useForm<ProductForm>({ resolver: zodResolver(productSchema), defaultValues });
+  const createForm = useForm<ProductForm>({ resolver: zodResolver(productSchema), defaultValues });
 
   const createMutation = useMutation({
     mutationFn: async (data: ProductForm) => {
-      const response = await apiRequest("POST", "/api/admin/products", data);
-      if (!response.ok) {
-        const result = await response.json();
-        throw new Error(result.message || "Erreur");
-      }
-      return response.json();
+      const res = await apiRequest("POST", "/api/admin/products", data);
+      if (!res.ok) { const r = await res.json(); throw new Error(r.message || "Erreur"); }
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products/all"] });
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      toast({ title: "Produit créé!" });
+      toast({ title: "✅ Produit créé!" });
       setShowCreateForm(false);
-      createForm.reset();
+      createForm.reset(defaultValues);
     },
-    onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
-    },
+    onError: (e: any) => toast({ title: e.message || "Erreur", variant: "destructive" }),
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: ProductUpdatePayload }) => {
-      const response = await apiRequest("PATCH", `/api/admin/products/${id}`, data);
-      if (!response.ok) {
-        const result = await response.json();
-        throw new Error(result.message || "Erreur");
-      }
-      return response.json();
+    mutationFn: async ({ id, data }: { id: number; data: ProductForm }) => {
+      const payload = {
+        name: data.name,
+        price: parseFloat(data.price),
+        dailyEarnings: parseFloat(data.dailyEarnings),
+        cycleDays: parseInt(data.cycleDays),
+        totalReturn: parseFloat((parseFloat(data.dailyEarnings) * parseInt(data.cycleDays)).toFixed(2)),
+        imageUrl: data.imageUrl || null,
+        seriesId: data.seriesId ? parseInt(data.seriesId) : null,
+        minInviteCount: parseInt(data.minInviteCount || "0") || 0,
+        maxOwned: parseInt(data.maxOwned || "0") || 0,
+      };
+      const res = await apiRequest("PATCH", `/api/admin/products/${id}`, payload);
+      if (!res.ok) { const r = await res.json(); throw new Error(r.message || "Erreur"); }
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products/all"] });
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      toast({ title: "Produit mis à jour!" });
+      toast({ title: "✅ Produit mis à jour!" });
       setSelectedProduct(null);
     },
-    onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
-    },
+    onError: (e: any) => toast({ title: e.message || "Erreur", variant: "destructive" }),
   });
 
   const toggleMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: number; isActive: boolean }) => {
-      const response = await apiRequest("PATCH", `/api/admin/products/${id}`, { isActive });
-      if (!response.ok) {
-        const result = await response.json();
-        throw new Error(result.message || "Erreur");
-      }
-      return response.json();
+      const res = await apiRequest("PATCH", `/api/admin/products/${id}`, { isActive });
+      if (!res.ok) { const r = await res.json(); throw new Error(r.message || "Erreur"); }
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products/all"] });
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
     },
-    onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
-    },
+    onError: (e: any) => toast({ title: e.message || "Erreur", variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiRequest("DELETE", `/api/admin/products/${id}`, {});
-      if (!response.ok) {
-        const result = await response.json();
-        throw new Error(result.message || "Erreur");
-      }
-      return response.json();
+      const res = await apiRequest("DELETE", `/api/admin/products/${id}`, {});
+      if (!res.ok) { const r = await res.json(); throw new Error(r.message || "Erreur"); }
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products/all"] });
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
       toast({ title: "Produit supprimé" });
     },
-    onError: (error: any) => {
-      toast({ title: error.message || "Une erreur est survenue", variant: "destructive" });
-    },
+    onError: (e: any) => toast({ title: e.message || "Erreur", variant: "destructive" }),
   });
 
   const openEdit = (product: Product) => {
@@ -271,41 +271,20 @@ export default function AdminProducts() {
       dailyEarnings: product.dailyEarnings.toString(),
       cycleDays: product.cycleDays.toString(),
       imageUrl: product.imageUrl || "",
+      seriesId: product.seriesId ? String(product.seriesId) : "",
+      minInviteCount: String(product.minInviteCount ?? 0),
+      maxOwned: String(product.maxOwned ?? 0),
     });
   };
 
-  const handleUpdate = (data: ProductForm) => {
-    if (!selectedProduct) return;
-    const price = parseFloat(data.price);
-    const dailyEarnings = parseFloat(data.dailyEarnings);
-    const cycleDays = parseInt(data.cycleDays);
-    updateMutation.mutate({
-      id: selectedProduct.id,
-      data: {
-        name: data.name,
-        price,
-        dailyEarnings,
-        cycleDays,
-        totalReturn: parseFloat((dailyEarnings * cycleDays).toFixed(2)),
-        imageUrl: data.imageUrl || null,
-      },
-    });
-  };
-
-  const handleCreate = (data: ProductForm) => {
-    createMutation.mutate(data);
-  };
+  const seriesMap = new Map(series.map(s => [s.id, s.name]));
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">{products?.length || 0} produit(s)</p>
-        <Button
-          onClick={() => { setShowCreateForm(true); createForm.reset(); }}
-          data-testid="button-add-product"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Nouveau produit
+        <Button onClick={() => { setShowCreateForm(true); createForm.reset(defaultValues); }} data-testid="button-add-product">
+          <Plus className="w-4 h-4 mr-2" />Nouveau produit
         </Button>
       </div>
 
@@ -318,51 +297,56 @@ export default function AdminProducts() {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   {product.imageUrl ? (
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className="w-12 h-12 rounded-lg object-contain border border-border"
-                    />
+                    <img src={product.imageUrl} alt={product.name} className="w-12 h-12 rounded-lg object-contain border border-border" />
                   ) : (
                     <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
                       <TrendingUp className="w-6 h-6 text-primary" />
                     </div>
                   )}
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-medium text-foreground">{product.name}</p>
                       {product.isFree && <Badge variant="secondary" className="text-xs">Gratuit</Badge>}
                       <Badge variant={product.isActive ? "default" : "outline"} className="text-xs">
                         {product.isActive ? "Actif" : "Inactif"}
                       </Badge>
+                      {product.seriesId && (
+                        <Badge variant="outline" className="text-xs text-blue-600 border-blue-300">
+                          {seriesMap.get(product.seriesId) || `Série #${product.seriesId}`}
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {product.price.toLocaleString()} USDT — {product.dailyEarnings.toLocaleString()} USDT/jour
+                      {Number(product.price).toLocaleString()} — {Number(product.dailyEarnings).toLocaleString()}/jour
                     </p>
+                    {/* Conditions */}
+                    <div className="flex gap-2 mt-0.5 flex-wrap">
+                      {Number(product.minInviteCount) > 0 && (
+                        <span className="text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded-full">
+                          👥 {product.minInviteCount} invitations requises
+                        </span>
+                      )}
+                      {Number(product.maxOwned) > 0 && (
+                        <span className="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full">
+                          🛒 Max {product.maxOwned}/utilisateur
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 shrink-0">
                   <Switch
                     checked={product.isActive}
                     onCheckedChange={(checked) => toggleMutation.mutate({ id: product.id, isActive: checked })}
                     data-testid={`switch-product-${product.id}`}
                   />
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => openEdit(product)}
-                    data-testid={`button-edit-product-${product.id}`}
-                  >
+                  <Button size="icon" variant="ghost" onClick={() => openEdit(product)} data-testid={`button-edit-product-${product.id}`}>
                     <Edit className="w-4 h-4" />
                   </Button>
                   {!product.isFree && (
                     <Button
-                      size="icon"
-                      variant="ghost"
-                      className="text-destructive"
-                      onClick={() => {
-                        if (confirm(`Supprimer "${product.name}" ?`)) deleteMutation.mutate(product.id);
-                      }}
+                      size="icon" variant="ghost" className="text-destructive"
+                      onClick={() => { if (confirm(`Supprimer "${product.name}" ?`)) deleteMutation.mutate(product.id); }}
                       disabled={deleteMutation.isPending}
                       data-testid={`button-delete-product-${product.id}`}
                     >
@@ -375,15 +359,15 @@ export default function AdminProducts() {
               <div className="grid grid-cols-3 gap-2 text-sm">
                 <div>
                   <p className="text-muted-foreground">Prix</p>
-                  <p className="font-medium text-foreground">{product.price.toLocaleString()} USDT</p>
+                  <p className="font-medium text-foreground">{Number(product.price).toLocaleString()}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Gains/jour</p>
-                  <p className="font-medium text-foreground">{product.dailyEarnings.toLocaleString()} USDT</p>
+                  <p className="font-medium text-foreground">{Number(product.dailyEarnings).toLocaleString()}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Total ({product.cycleDays}j)</p>
-                  <p className="font-medium text-primary">{product.totalReturn.toLocaleString()} USDT</p>
+                  <p className="font-medium text-primary">{Number(product.totalReturn).toLocaleString()}</p>
                 </div>
               </div>
             </CardContent>
@@ -394,21 +378,11 @@ export default function AdminProducts() {
       )}
 
       {/* Create Dialog */}
-      <Dialog
-        open={showCreateForm}
-        onOpenChange={(open) => { if (!open) { setShowCreateForm(false); createForm.reset(); } }}
-      >
+      <Dialog open={showCreateForm} onOpenChange={(open) => { if (!open) { setShowCreateForm(false); createForm.reset(defaultValues); } }}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Nouveau produit</DialogTitle>
-          </DialogHeader>
+          <DialogHeader><DialogTitle>Nouveau produit</DialogTitle></DialogHeader>
           <Form {...createForm}>
-            <ProductFormFields
-              form={createForm}
-              isPending={createMutation.isPending}
-              submitLabel="Créer"
-              onSubmit={handleCreate}
-            />
+            <ProductFormFields form={createForm} isPending={createMutation.isPending} submitLabel="Créer" onSubmit={(d) => createMutation.mutate(d)} series={series} />
           </Form>
         </DialogContent>
       </Dialog>
@@ -416,15 +390,14 @@ export default function AdminProducts() {
       {/* Edit Dialog */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => { if (!open) setSelectedProduct(null); }}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Modifier — {selectedProduct?.name}</DialogTitle>
-          </DialogHeader>
+          <DialogHeader><DialogTitle>Modifier — {selectedProduct?.name}</DialogTitle></DialogHeader>
           <Form {...editForm}>
             <ProductFormFields
               form={editForm}
               isPending={updateMutation.isPending}
               submitLabel="Enregistrer"
-              onSubmit={handleUpdate}
+              onSubmit={(d) => { if (selectedProduct) updateMutation.mutate({ id: selectedProduct.id, data: d }); }}
+              series={series}
             />
           </Form>
         </DialogContent>

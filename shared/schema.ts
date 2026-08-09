@@ -62,6 +62,18 @@ export const withdrawalWallets = pgTable("withdrawal_wallets", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Product series table
+export const productSeries = pgTable("product_series", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type ProductSeries = typeof productSeries.$inferSelect;
+export type InsertProductSeries = typeof productSeries.$inferInsert;
+
 // Products table
 export const products = pgTable("products", {
   id: serial("id").primaryKey(),
@@ -74,6 +86,10 @@ export const products = pgTable("products", {
   isFree: boolean("is_free").notNull().default(false),
   isActive: boolean("is_active").notNull().default(true),
   sortOrder: integer("sort_order").notNull().default(0),
+  // Series & purchase conditions
+  seriesId: integer("series_id").references(() => productSeries.id),
+  minInviteCount: integer("min_invite_count").notNull().default(0),   // 0 = aucune condition
+  maxOwned: integer("max_owned").notNull().default(0),                // 0 = illimité
 });
 
 // User products (investments)

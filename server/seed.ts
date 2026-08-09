@@ -1,10 +1,26 @@
 import { db } from "./db";
-import { users, products, tasks, paymentChannels, paymentNumbers, platformSettings, companyContent, countries, stakingProducts, depositChannels } from "@shared/schema";
+import { users, products, tasks, paymentChannels, paymentNumbers, platformSettings, companyContent, countries, stakingProducts, depositChannels, productSeries } from "@shared/schema";
 import bcrypt from "bcryptjs";
 import { eq, sql } from "drizzle-orm";
 
 export async function seed() {
   console.log("Seeding database...");
+
+  // ─── Schema migrations (run FIRST, before any table access) ─────────────────
+  // Product series table
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS "product_series" (
+      "id" serial PRIMARY KEY,
+      "name" text NOT NULL,
+      "sort_order" integer NOT NULL DEFAULT 0,
+      "is_active" boolean NOT NULL DEFAULT true,
+      "created_at" timestamp NOT NULL DEFAULT now()
+    )
+  `);
+  // New columns on products
+  await db.execute(sql`ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "series_id" integer REFERENCES "product_series"("id")`);
+  await db.execute(sql`ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "min_invite_count" integer NOT NULL DEFAULT 0`);
+  await db.execute(sql`ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "max_owned" integer NOT NULL DEFAULT 0`);
 
   // Create session table for connect-pg-simple (if not exists)
   await db.execute(sql`
@@ -411,6 +427,21 @@ export async function seed() {
     console.log("Staking products seeded (first install)");
   } else {
     console.log(`Staking products skipped — ${existingStakingProducts.length} existing staking products preserved`);
+  }
+
+  // ─── Product Series seed data ────────────────────────────────────────────────
+  // Seed default series (Série A & Série B) if none exist
+  const existingSeries = await db.select({ id: productSeries.id }).from(productSeries).limit(1);
+  if (existingSeries.length === 0) {
+    const [serieA] = await db.insert(productSeries).values([
+      { name: "Série A", sortOrder: 1, isActive: true },
+      { name: "Série B", sortOrder: 2, isActive: true },
+    ]).returning();
+    // Assign all existing products to Série A by default
+    await db.execute(sql`UPDATE "products" SET "series_id" = ${serieA.id} WHERE "series_id" IS NULL AND "is_free" = false`);
+    console.log("Product series seeded (Série A, Série B) — existing products assigned to Série A");
+  } else {
+    console.log("Product series skipped — already exists");
   }
 
   console.log("Database seeding complete!");

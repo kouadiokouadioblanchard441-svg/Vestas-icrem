@@ -386,6 +386,16 @@ export async function registerRoutes(
     }
   });
 
+  // Public — series list (used by products page tabs)
+  app.get("/api/product-series", requireAuth, async (req, res) => {
+    try {
+      const series = await storage.getActiveProductSeries();
+      res.json(series);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   app.post("/api/products/:id/purchase", requireAuth, async (req, res) => {
     try {
       const productId = parseInt(req.params.id as string);
@@ -399,7 +409,32 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Ce produit n'est pas disponible à l'achat" });
       }
 
-      const userProduct = await storage.purchaseProduct(req.session.userId!, productId);
+      const userId = req.session.userId!;
+
+      // Check invite condition
+      const minInvite = Number(product.minInviteCount) || 0;
+      if (minInvite > 0) {
+        const inviteCount = await storage.getProductInviteCount(userId);
+        if (inviteCount < minInvite) {
+          return res.status(400).json({
+            message: `Vous devez inviter au moins ${minInvite} personne(s) avant d'acheter ce produit (actuellement : ${inviteCount}).`,
+          });
+        }
+      }
+
+      // Check max-owned condition
+      const maxOwned = Number(product.maxOwned) || 0;
+      if (maxOwned > 0) {
+        const userProds = await storage.getUserProducts(userId);
+        const owned = userProds.filter(up => up.productId === productId && up.isActive).length;
+        if (owned >= maxOwned) {
+          return res.status(400).json({
+            message: `Vous avez atteint la limite d'achat pour ce produit (max ${maxOwned}).`,
+          });
+        }
+      }
+
+      const userProduct = await storage.purchaseProduct(userId, productId);
       res.json(userProduct);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -2035,11 +2070,43 @@ export async function registerRoutes(
 
   app.get("/api/admin/products/all", requireAdmin, async (req, res) => {
     try {
-      const allProducts = await storage.getProducts();
+      const allProducts = await storage.getAllProductsAdmin();
       res.json(allProducts);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
+  });
+
+  // ─── Admin Product Series CRUD ──────────────────────────────────────────────
+  app.get("/api/admin/product-series", requireAdmin, async (req, res) => {
+    try { res.json(await storage.getProductSeries()); }
+    catch (e: any) { res.status(500).json({ message: e.message }); }
+  });
+
+  app.post("/api/admin/product-series", requireAdmin, async (req, res) => {
+    try {
+      const { name, sortOrder } = req.body;
+      if (!name) return res.status(400).json({ message: "Nom requis" });
+      const s = await storage.createProductSeries({ name, sortOrder: sortOrder || 0, isActive: true });
+      await storage.logAdminAction(req.session.userId!, "create_series", null, `Série "${s.name}" créée`);
+      res.json(s);
+    } catch (e: any) { res.status(400).json({ message: e.message }); }
+  });
+
+  app.patch("/api/admin/product-series/:id", requireAdmin, async (req, res) => {
+    try {
+      const s = await storage.updateProductSeries(parseInt(req.params.id as string), req.body);
+      await storage.logAdminAction(req.session.userId!, "update_series", null, `Série "${s.name}" modifiée`);
+      res.json(s);
+    } catch (e: any) { res.status(400).json({ message: e.message }); }
+  });
+
+  app.delete("/api/admin/product-series/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteProductSeries(parseInt(req.params.id as string));
+      await storage.logAdminAction(req.session.userId!, "delete_series", null, `Série supprimée`);
+      res.json({ success: true });
+    } catch (e: any) { res.status(400).json({ message: e.message }); }
   });
 
   app.get("/api/admin/users/:id/products", requireAdmin, async (req, res) => {
@@ -2064,7 +2131,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/products", requireAdmin, async (req, res) => {
     try {
-      const { name, price, dailyEarnings, cycleDays, imageUrl } = req.body;
+      const { name, price, dailyEarnings, cycleDays, imageUrl, seriesId, minInviteCount, maxOwned } = req.body;
       if (!name || !price || !dailyEarnings || !cycleDays) {
         return res.status(400).json({ message: "Champs requis manquants" });
       }
@@ -2081,6 +2148,9 @@ export async function registerRoutes(
         isFree: false,
         isActive: true,
         sortOrder: 0,
+        seriesId: seriesId ? parseInt(seriesId) : null,
+        minInviteCount: parseInt(minInviteCount) || 0,
+        maxOwned: parseInt(maxOwned) || 0,
       });
       await storage.logAdminAction(req.session.userId!, "create_product", null, `Produit ${product.name} créé`);
       res.json(product);
@@ -2091,7 +2161,12 @@ export async function registerRoutes(
 
   app.patch("/api/admin/products/:id", requireAdmin, async (req, res) => {
     try {
-      const product = await storage.updateProduct(parseInt(req.params.id as string), req.body);
+      const body = { ...req.body };
+      // Normalize numeric fields when present
+      if (body.seriesId !== undefined) body.seriesId = body.seriesId ? parseInt(body.seriesId) : null;
+      if (body.minInviteCount !== undefined) body.minInviteCount = parseInt(body.minInviteCount) || 0;
+      if (body.maxOwned !== undefined) body.maxOwned = parseInt(body.maxOwned) || 0;
+      const product = await storage.updateProduct(parseInt(req.params.id as string), body);
       await storage.logAdminAction(req.session.userId!, "update_product", null, `Produit ${product.id} modifié`);
       res.json(product);
     } catch (error: any) {

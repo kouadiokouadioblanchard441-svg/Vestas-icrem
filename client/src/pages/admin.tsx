@@ -22,6 +22,7 @@ import AdminVipSettings from "@/components/admin/vip-settings";
 import AdminDepositChannels from "@/components/admin/deposit-channels";
 import AdminSpinWheelConfig from "@/components/admin/spin-wheel-config";
 import AdminBannerConfig from "@/components/admin/banner-config";
+import AdminProductSeries from "@/components/admin/product-series";
 
 export default function AdminPage() {
   const { user } = useAuth();
@@ -49,6 +50,7 @@ export default function AdminPage() {
               <TabsTrigger value="withdrawals" data-testid="tab-withdrawals">{t.adminTabWithdrawals}</TabsTrigger>
               <TabsTrigger value="users" data-testid="tab-users">{t.adminTabUsers}</TabsTrigger>
               <TabsTrigger value="products" data-testid="tab-products">{t.adminTabProducts}</TabsTrigger>
+              <TabsTrigger value="product-series" data-testid="tab-product-series">📦 Séries</TabsTrigger>
               <TabsTrigger value="spin-wheel" data-testid="tab-spin-wheel">🎡 Roue</TabsTrigger>
               <TabsTrigger value="deposit-channels" data-testid="tab-deposit-channels">Canaux dépôt</TabsTrigger>
               <TabsTrigger value="payment-numbers" data-testid="tab-payment-numbers">{t.adminTabNumbers}</TabsTrigger>
@@ -82,6 +84,10 @@ export default function AdminPage() {
 
           <TabsContent value="products" className="mt-4">
             <AdminProducts />
+          </TabsContent>
+
+          <TabsContent value="product-series" className="mt-4">
+            <AdminProductSeries />
           </TabsContent>
 
           <TabsContent value="spin-wheel" className="mt-4">

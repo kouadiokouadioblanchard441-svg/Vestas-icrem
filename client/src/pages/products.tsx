@@ -2,38 +2,40 @@ import { useAuth } from "@/lib/auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { formatCurrency, getCountryByCode } from "@/lib/countries";
-import { Loader2 } from "lucide-react";
+import { formatCurrency } from "@/lib/countries";
+import { Loader2, Users, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
-import type { Product } from "@shared/schema";
+import type { Product, ProductSeries } from "@shared/schema";
 
 import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
 
-/* ── Palette (identique à l'accueil) ─────────── */
-const BG       = "#2d3816";   // fond olive (même que dashboard)
-const CARD_BG  = "#4a5e22";   // carte olive moyen
-const TAB_ACTIVE = "#2d3816"; // onglet actif
-const TAB_BG   = "#5a7228";   // onglet inactif olive clair
-const BUY_BG   = "#3d5818";   // bouton BUY olive foncé
+/* ── Palette ────────────────────────────────── */
+const BG       = "#2d3816";
+const CARD_BG  = "#4a5e22";
+const TAB_ACTIVE_BG = "rgba(255,255,255,0.55)";
+const TAB_BG   = "#5a7228";
+const BUY_BG   = "#3d5818";
 
-const SERIES_TABS = ["TOUS", "SERIE A", "SERIE B"] as const;
-type SeriesTab = typeof SERIES_TABS[number];
+const ALL_TAB = "TOUS";
 
 interface ProductWithOwnership extends Product {
   isOwned: boolean;
   ownedCount?: number;
-  series?: string;   // champ optionnel — ajouté par l'admin plus tard
 }
 
 export default function ProductsPage() {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<SeriesTab>("TOUS");
+  const [activeTab, setActiveTab] = useState<string>(ALL_TAB);
 
-  const { data: products, isLoading } = useQuery<ProductWithOwnership[]>({
+  const { data: products, isLoading: productsLoading } = useQuery<ProductWithOwnership[]>({
     queryKey: ["/api/products"],
+  });
+
+  const { data: series = [], isLoading: seriesLoading } = useQuery<ProductSeries[]>({
+    queryKey: ["/api/product-series"],
   });
 
   const purchaseMutation = useMutation({
@@ -59,14 +61,21 @@ export default function ProductsPage() {
   if (!user) return null;
 
   const balance = parseFloat(user.balance || "0");
-  const country = getCountryByCode(user.country);
   const currency = "FCFA";
 
   const paidProducts = (products || []).filter(p => !p.isFree);
 
-  const filtered = activeTab === "TOUS"
+  // Build tabs: ALL + active series
+  const tabs: string[] = [ALL_TAB, ...series.filter(s => s.isActive).map(s => s.name)];
+  // Series name→id map
+  const seriesNameToId = new Map(series.map(s => [s.name, s.id]));
+
+  const filtered = activeTab === ALL_TAB
     ? paidProducts
-    : paidProducts.filter(p => p.series === activeTab);
+    : (() => {
+        const sId = seriesNameToId.get(activeTab);
+        return sId !== undefined ? paidProducts.filter(p => p.seriesId === sId) : [];
+      })();
 
   const handleBuy = (product: ProductWithOwnership) => {
     if (balance < Number(product.price)) {
@@ -81,32 +90,30 @@ export default function ProductsPage() {
     purchaseMutation.mutate(product.id);
   };
 
+  const isLoading = productsLoading || seriesLoading;
+
   return (
     <div className="flex flex-col min-h-screen" style={{ background: BG }}>
       <div className="flex-1 overflow-y-auto pb-20 px-3 pt-4 space-y-4">
 
         {/* ── Titre ── */}
         <div className="flex justify-center">
-          <div
-            className="px-10 py-2 rounded-xl"
-            style={{ background: "rgba(255,255,255,0.25)" }}
-          >
+          <div className="px-10 py-2 rounded-xl" style={{ background: "rgba(255,255,255,0.25)" }}>
             <p className="text-white font-extrabold text-xl tracking-widest">List of our products</p>
           </div>
         </div>
 
-        {/* ── Onglets série ── */}
-        <div className="flex gap-3 flex-wrap">
-          {SERIES_TABS.map(tab => (
+        {/* ── Onglets série (dynamiques) ── */}
+        <div className="flex gap-2 flex-wrap">
+          {tabs.map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className="px-5 py-2 rounded-full font-extrabold text-sm text-white tracking-wide active:scale-95 transition-transform shadow"
               style={{
-                background: activeTab === tab
-                  ? "rgba(255,255,255,0.55)"
-                  : TAB_BG,
+                background: activeTab === tab ? TAB_ACTIVE_BG : TAB_BG,
                 border: activeTab === tab ? "2px solid rgba(0,0,0,0.25)" : "2px solid transparent",
+                color: activeTab === tab ? "#2d3816" : "white",
               }}
               data-testid={`tab-${tab}`}
             >
@@ -122,15 +129,17 @@ export default function ProductsPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-white/80 font-semibold text-sm">Aucun produit disponible</p>
+            <p className="text-white/80 font-semibold text-sm">Aucun produit disponible dans cette série</p>
           </div>
         ) : (
           filtered.map(product => {
             const img = product.imageUrl || productImgFallback;
-            const isPending = purchaseMutation.isPending;
+            const isPending = purchaseMutation.isPending && purchaseMutation.variables === product.id;
             const roi = Math.round(
               ((Number(product.totalReturn) - Number(product.price)) / Number(product.price)) * 100
             );
+            const minInvite = Number(product.minInviteCount) || 0;
+            const maxOwned  = Number(product.maxOwned) || 0;
             return (
               <div
                 key={product.id}
@@ -145,12 +154,10 @@ export default function ProductsPage() {
 
                 {/* ── Image + Infos ── */}
                 <div className="flex gap-3 px-3 pb-3">
-                  {/* Image */}
                   <div className="shrink-0 rounded-xl overflow-hidden shadow" style={{ width: 120, height: 130 }}>
                     <img src={img} alt={product.name} className="w-full h-full object-cover" />
                   </div>
 
-                  {/* Infos + BUY */}
                   <div className="flex-1 flex flex-col justify-between">
                     <div className="space-y-0.5">
                       <p className="text-white font-bold text-[11px] leading-snug">
@@ -170,18 +177,31 @@ export default function ProductsPage() {
                       </p>
                     </div>
 
+                    {/* Conditions badges */}
+                    {(minInvite > 0 || maxOwned > 0) && (
+                      <div className="flex gap-1 flex-wrap mt-1">
+                        {minInvite > 0 && (
+                          <span className="text-[9px] bg-orange-400/30 text-orange-100 px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                            <Users className="w-2.5 h-2.5" />{minInvite} inv. requis
+                          </span>
+                        )}
+                        {maxOwned > 0 && (
+                          <span className="text-[9px] bg-purple-400/30 text-purple-100 px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                            <ShoppingBag className="w-2.5 h-2.5" />Max {maxOwned}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
                     {/* BUY button */}
                     <button
                       onClick={() => handleBuy(product)}
-                      disabled={isPending}
+                      disabled={purchaseMutation.isPending}
                       className="mt-2 w-full py-2 rounded-full font-extrabold text-white text-sm tracking-widest shadow active:scale-95 transition-transform disabled:opacity-60 flex items-center justify-center gap-1"
                       style={{ background: BUY_BG }}
                       data-testid={`button-purchase-${product.id}`}
                     >
-                      {isPending
-                        ? <Loader2 className="w-4 h-4 animate-spin" />
-                        : "BUY"
-                      }
+                      {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "BUY"}
                     </button>
                   </div>
                 </div>

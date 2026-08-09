@@ -1,10 +1,10 @@
 import { 
   users, products, userProducts, deposits, withdrawals, withdrawalWallets,
   paymentChannels, paymentNumbers, depositChannels, stakingProducts, userStakings, referralCommissions, tasks, userTasks, transactions, platformSettings, companyContent, adminAuditLog,
-  giftCodes, giftCodeClaims, countries,
+  giftCodes, giftCodeClaims, countries, productSeries,
   type User, type Product, type UserProduct, type Deposit, type Withdrawal, type WithdrawalWallet,
   type PaymentChannel, type PaymentNumber, type DepositChannel, type StakingProduct, type UserStaking, type ReferralCommission, type Task, type UserTask, type Transaction, type PlatformSetting, type CompanyContent,
-  type GiftCode, type GiftCodeClaim, type Country
+  type GiftCode, type GiftCodeClaim, type Country, type ProductSeries
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, asc, desc, sql, gte, lte, or, inArray } from "drizzle-orm";
@@ -154,6 +154,16 @@ export interface IStorage {
   getUserStakings(userId: number): Promise<(UserStaking & { product: StakingProduct })[]>;
   getAllUserStakings(): Promise<(UserStaking & { product: StakingProduct; user: User })[]>;
   releaseMaturedStakings(): Promise<void>;
+
+  // Product Series
+  getProductSeries(): Promise<ProductSeries[]>;
+  getActiveProductSeries(): Promise<ProductSeries[]>;
+  getOneSeries(id: number): Promise<ProductSeries | undefined>;
+  createProductSeries(data: Partial<ProductSeries>): Promise<ProductSeries>;
+  updateProductSeries(id: number, data: Partial<ProductSeries>): Promise<ProductSeries>;
+  deleteProductSeries(id: number): Promise<void>;
+  getAllProductsAdmin(): Promise<Product[]>;
+  getProductInviteCount(userId: number): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1580,6 +1590,49 @@ export class DatabaseStorage implements IStorage {
         console.error("Error releasing staking:", staking.id, e);
       }
     }
+  }
+
+  // ── Product Series ──────────────────────────────────────────────────────────
+  async getProductSeries(): Promise<ProductSeries[]> {
+    return db.select().from(productSeries).orderBy(productSeries.sortOrder);
+  }
+
+  async getActiveProductSeries(): Promise<ProductSeries[]> {
+    return db.select().from(productSeries)
+      .where(eq(productSeries.isActive, true))
+      .orderBy(productSeries.sortOrder);
+  }
+
+  async getOneSeries(id: number): Promise<ProductSeries | undefined> {
+    const [s] = await db.select().from(productSeries).where(eq(productSeries.id, id));
+    return s || undefined;
+  }
+
+  async createProductSeries(data: Partial<ProductSeries>): Promise<ProductSeries> {
+    const [s] = await db.insert(productSeries).values(data as any).returning();
+    return s;
+  }
+
+  async updateProductSeries(id: number, data: Partial<ProductSeries>): Promise<ProductSeries> {
+    const [s] = await db.update(productSeries).set(data).where(eq(productSeries.id, id)).returning();
+    return s;
+  }
+
+  async deleteProductSeries(id: number): Promise<void> {
+    // Unlink products from this series before deleting
+    await db.update(products).set({ seriesId: null }).where(eq(products.seriesId, id));
+    await db.delete(productSeries).where(eq(productSeries.id, id));
+  }
+
+  async getAllProductsAdmin(): Promise<Product[]> {
+    return db.select().from(products).orderBy(products.sortOrder);
+  }
+
+  async getProductInviteCount(userId: number): Promise<number> {
+    const user = await this.getUser(userId);
+    if (!user) return 0;
+    const refs = await this.getReferrals(userId, 1);
+    return refs.length;
   }
 }
 
