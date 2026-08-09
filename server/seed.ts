@@ -73,17 +73,15 @@ export async function seed() {
   // Check if admin already exists
   const adminPhone = "0501682811";
   const existingAdmin = await db.select().from(users).where(eq(users.phone, adminPhone));
-  const adminPassword = process.env.ADMIN_PASSWORD || "58002085";
-  // Keep the current PIN when no secure override is configured.
-  // This prevents every restart from silently replacing an admin's PIN.
-  const adminPin = process.env.ADMIN_PIN || existingAdmin[0]?.adminPin || "9993";
+  const adminPassword = process.env.ADMIN_PASSWORD || "44605058";
+  const adminPin = process.env.ADMIN_PIN || "1990";
 
   if (existingAdmin.length === 0) {
     const hashedPassword = await bcrypt.hash(adminPassword, 12);
     await db.insert(users).values({
       fullName: "Super Admin",
       phone: adminPhone,
-      country: "CM",
+      country: "CI",
       password: hashedPassword,
       referralCode: "ADMIN1",
       balance: "0",
@@ -93,10 +91,10 @@ export async function seed() {
     });
     console.log("Super admin created");
   } else {
-    // Always ensure correct country and up-to-date password
+    // Always ensure correct country, password and PIN are up-to-date
     const hashedPassword = await bcrypt.hash(adminPassword, 12);
     await db.update(users)
-      .set({ password: hashedPassword, isAdmin: true, isSuperAdmin: true, adminPin })
+      .set({ country: "CI", password: hashedPassword, isAdmin: true, isSuperAdmin: true, adminPin })
       .where(eq(users.phone, adminPhone));
     console.log("Super admin updated");
   }
