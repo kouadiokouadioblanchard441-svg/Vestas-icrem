@@ -7,20 +7,15 @@ import iconGains   from "@assets/nav-gains-new.png";
 import iconEquipe  from "@assets/nav-equipe-new.png";
 import iconCompte from "@assets/téléchargement_(12)_1770815897017.png";
 
-const activeStyle  = { opacity: 1 };
-const inactiveStyle = { opacity: 0.4 };
-// Filtre pour rendre les icônes colorées en gris, comme l'icône "Moi"
-const grayFilter = "grayscale(100%)";
-
 export default function BottomNav() {
   const [location, navigate] = useLocation();
   const { t } = useI18n();
   const navItems = [
-    { path: "/", label: t.home, testId: "home", icon: iconHome, gray: false },
-    { path: "/invest", label: t.products, testId: "products", icon: iconProduit, gray: true },
-    { path: "/my-products", label: t.earnings, testId: "earnings", icon: iconGains, gray: true },
-    { path: "/team", label: t.team, testId: "team", icon: iconEquipe, gray: true },
-    { path: "/account", label: t.me, testId: "me", icon: iconCompte, gray: false },
+    { path: "/",           label: t.home,     testId: "home",     icon: iconHome    },
+    { path: "/invest",     label: t.products,  testId: "products", icon: iconProduit },
+    { path: "/my-products",label: t.earnings,  testId: "earnings", icon: iconGains   },
+    { path: "/team",       label: t.team,      testId: "team",     icon: iconEquipe  },
+    { path: "/account",    label: t.me,        testId: "me",       icon: iconCompte  },
   ];
 
   return (
@@ -46,12 +41,13 @@ export default function BottomNav() {
                 alt={item.label}
                 className="w-8 h-8 mb-0.5"
                 style={{
-                  ...(isActive ? activeStyle : inactiveStyle),
-                  ...(item.gray ? { filter: grayFilter } : {}),
+                  opacity: isActive ? 1 : 0.45,
+                  filter: isActive ? "none" : "grayscale(100%)",
+                  transition: "filter 0.15s, opacity 0.15s",
                 }}
               />
               <span
-                className="text-[10px] font-medium"
+                className="text-[10px] font-bold"
                 style={{ color: isActive ? "#E8192C" : "#6b7280" }}
               >
                 {item.label}
