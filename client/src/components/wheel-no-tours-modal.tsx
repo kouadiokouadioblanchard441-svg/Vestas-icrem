@@ -82,7 +82,7 @@ export default function WheelNoToursModal({ open, onClose, referralCode }: Props
             Fermer
           </button>
           <a
-            href="/products"
+            href="/invest"
             className="flex-1 py-4 text-center text-base font-semibold transition active:opacity-70"
             style={{ color: "#3B82F6" }}
           >
