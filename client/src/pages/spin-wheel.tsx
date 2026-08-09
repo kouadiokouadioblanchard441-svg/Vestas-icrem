@@ -6,6 +6,8 @@ import WheelRulesModal from "@/components/wheel-rules-modal";
 import WheelHistoryModal from "@/components/wheel-history-modal";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { Link } from "wouter";
+import { ChevronLeft } from "lucide-react";
 import {
   DEFAULT_SPIN_WHEEL_SEGMENTS,
   type SpinWheelSegment,
@@ -118,17 +120,16 @@ function drawWheel(
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    /* Image OR coin stack — placed at ~62% of segR from center */
-    const coinDist = segR * 0.62;
-    const coinR    = segR * 0.095;
+    /* ── Image or coin stack — at ~40% from center (inner icon zone) ── */
+    const coinDist = segR * 0.40;
+    const coinR    = segR * 0.085;
     const coinCx   = cx + Math.cos(midA) * coinDist;
     const coinCy   = cy + Math.sin(midA) * coinDist;
 
     const img = (images as Record<number, HTMLImageElement | null>)[seg.id];
     if (img && img.complete && img.naturalWidth > 0) {
-      const imgSize = segR * 0.22;
+      const imgSize = segR * 0.20;
       ctx.save();
-      // Clip to a circle centred on the icon position
       ctx.beginPath();
       ctx.arc(coinCx, coinCy, imgSize * 0.85, 0, Math.PI * 2);
       ctx.clip();
@@ -138,8 +139,8 @@ function drawWheel(
       drawCoinStack(ctx, coinCx, coinCy, coinR);
     }
 
-    /* Amount/label text — at ~36% from center */
-    const textDist = segR * 0.36;
+    /* ── Amount / label text — outer zone at ~68% from center ── */
+    const textDist = segR * 0.68;
     ctx.save();
     ctx.translate(
       cx + Math.cos(midA) * textDist,
@@ -151,13 +152,22 @@ function drawWheel(
     ctx.textAlign    = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle    = textColor;
-    ctx.shadowColor  = "rgba(255,255,255,0.7)";
-    ctx.shadowBlur   = 3;
+    ctx.shadowColor  = "rgba(255,255,255,0.8)";
+    ctx.shadowBlur   = 4;
 
-    const displayText = seg.canWin
-      ? seg.amount > 0 ? String(seg.amount) : seg.label
-      : "😊";
-    const fontSize = Math.max(9, Math.min(13, segR * 0.108));
+    // Format: "100f", "1 000f", "😊" for non-winnable
+    let displayText: string;
+    if (!seg.canWin) {
+      displayText = "😊";
+    } else if (seg.amount > 0) {
+      displayText = seg.amount >= 1000
+        ? `${(seg.amount / 1000).toLocaleString("fr-FR")}kf`
+        : `${seg.amount}f`;
+    } else {
+      displayText = seg.label;
+    }
+
+    const fontSize = Math.max(10, Math.min(15, segR * 0.118));
     ctx.font = `bold ${fontSize}px sans-serif`;
     ctx.fillText(displayText, 0, 0);
     ctx.shadowBlur = 0;
@@ -386,8 +396,27 @@ export default function SpinWheelPage() {
           background: `linear-gradient(180deg, ${BG_TOP} 0%, ${BG_MID} 45%, ${BG_BOT} 100%)`,
         }}
       >
+          {/* ── Header with back button ── */}
+        <header className="flex items-center px-4 pt-4 pb-2">
+          <Link href="/account">
+            <button
+              className="w-9 h-9 rounded-full flex items-center justify-center transition active:scale-90"
+              style={{ background: "rgba(255,255,255,0.15)" }}
+              data-testid="button-back"
+            >
+              <ChevronLeft className="w-5 h-5 text-white" />
+            </button>
+          </Link>
+          <span
+            className="ml-3 font-bold text-base"
+            style={{ color: "#FFD700" }}
+          >
+            Roue de la fortune
+          </span>
+        </header>
+
         {/* ── Wheel ── */}
-        <div className="flex flex-col items-center pt-6 px-4 mb-5">
+        <div className="flex flex-col items-center pt-2 px-4 mb-5">
           <div
             style={{
               borderRadius: "50%",
