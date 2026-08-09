@@ -54,6 +54,7 @@ function drawWheel(
   canvas: HTMLCanvasElement,
   rotation: number,
   segments: SpinWheelSegment[],
+  images: Record<number, HTMLImageElement | null> = {},
 ) {
   const ctx = canvas.getContext("2d")!;
   const W   = canvas.width;
@@ -93,37 +94,49 @@ function drawWheel(
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  /* ── Segment colors: alternating dark-gold / cream ── */
-  const SEG = [
-    { fill: "#F5C518", text: "#5C3D00" },   // dark gold (even index)
-    { fill: "#FFFDE7", text: "#7C5200" },   // cream (odd index)
-  ];
-
   /* ── Draw 8 segments ── */
   for (let i = 0; i < N; i++) {
     const seg   = segments[i];
     const start = rotation + i * ARC - Math.PI / 2;
     const end   = start + ARC;
     const midA  = start + ARC / 2;
-    const col   = SEG[i % 2];
+
+    // Use admin-configured colors (fallback to classic alternating if not set)
+    const DEFAULT_FILLS = ["#F5C518", "#FFFDE7"];
+    const DEFAULT_TEXTS = ["#5C3D00", "#7C5200"];
+    const fillColor = seg.color || DEFAULT_FILLS[i % 2];
+    const textColor = seg.dark  || DEFAULT_TEXTS[i % 2];
 
     /* Segment fill */
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.arc(cx, cy, segR, start, end);
     ctx.closePath();
-    ctx.fillStyle = col.fill;
+    ctx.fillStyle = fillColor;
     ctx.fill();
     ctx.strokeStyle = "#D4A800";
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    /* Coin stack — placed at ~62% of segR from center */
+    /* Image OR coin stack — placed at ~62% of segR from center */
     const coinDist = segR * 0.62;
     const coinR    = segR * 0.095;
     const coinCx   = cx + Math.cos(midA) * coinDist;
     const coinCy   = cy + Math.sin(midA) * coinDist;
-    drawCoinStack(ctx, coinCx, coinCy, coinR);
+
+    const img = (images as Record<number, HTMLImageElement | null>)[seg.id];
+    if (img && img.complete && img.naturalWidth > 0) {
+      const imgSize = segR * 0.22;
+      ctx.save();
+      // Clip to a circle centred on the icon position
+      ctx.beginPath();
+      ctx.arc(coinCx, coinCy, imgSize * 0.85, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(img, coinCx - imgSize, coinCy - imgSize, imgSize * 2, imgSize * 2);
+      ctx.restore();
+    } else {
+      drawCoinStack(ctx, coinCx, coinCy, coinR);
+    }
 
     /* Amount/label text — at ~36% from center */
     const textDist = segR * 0.36;
@@ -137,7 +150,7 @@ function drawWheel(
     ctx.rotate(tRot);
     ctx.textAlign    = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle    = col.text;
+    ctx.fillStyle    = textColor;
     ctx.shadowColor  = "rgba(255,255,255,0.7)";
     ctx.shadowBlur   = 3;
 
@@ -243,8 +256,9 @@ export default function SpinWheelPage() {
   const [showHistory, setShowHistory] = useState(false);
 
   const [segments, setSegments] = useState<SpinWheelSegment[]>(DEFAULT_SPIN_WHEEL_SEGMENTS);
-  const rotDrawRef  = useRef(rotation);
-  const segDrawRef  = useRef(segments);
+  const rotDrawRef   = useRef(rotation);
+  const segDrawRef   = useRef(segments);
+  const imagesRef    = useRef<Record<number, HTMLImageElement | null>>({});
 
   /* Sync spinTokens when user refreshes */
   useEffect(() => { setSpinTokens(user?.spinTokens ?? 0); }, [user?.spinTokens]);
@@ -256,6 +270,22 @@ export default function SpinWheelPage() {
   useEffect(() => {
     if (configuredSegments?.length === N) setSegments(configuredSegments);
   }, [configuredSegments]);
+
+  /* Pre-load segment images whenever segments change */
+  useEffect(() => {
+    const cache: Record<number, HTMLImageElement | null> = {};
+    segments.forEach((seg) => {
+      if (seg.imageUrl) {
+        const img = new window.Image();
+        img.crossOrigin = "anonymous";
+        img.src = seg.imageUrl;
+        cache[seg.id] = img;
+      } else {
+        cache[seg.id] = null;
+      }
+    });
+    imagesRef.current = cache;
+  }, [segments]);
 
   /* Recent global spins */
   const { data: recentSpins } = useQuery<RecentSpin[]>({
@@ -274,7 +304,7 @@ export default function SpinWheelPage() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const loop = () => {
-      drawWheel(canvas, rotDrawRef.current, segDrawRef.current);
+      drawWheel(canvas, rotDrawRef.current, segDrawRef.current, imagesRef.current);
       rafRef.current = requestAnimationFrame(loop);
     };
     rafRef.current = requestAnimationFrame(loop);

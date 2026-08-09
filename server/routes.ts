@@ -14,6 +14,7 @@ import { getSDK, getNowPaymentsCallbackUrl, createPayout, verifyPayout } from ".
 import {
   DEFAULT_SPIN_WHEEL_SEGMENTS,
   parseSpinWheelSegments,
+  pickWinningSegment,
   SPIN_WHEEL_SETTING_KEY,
   type SpinWheelSegment,
 } from "@shared/spin-wheel";
@@ -1644,13 +1645,12 @@ export async function registerRoutes(
 
       const value = await storage.getSetting(SPIN_WHEEL_SETTING_KEY);
       const segments = parseSpinWheelSegments(value);
-      const winningSegments = segments.filter((segment) => segment.canWin);
 
-      if (winningSegments.length === 0) {
+      if (!segments.some((s) => s.canWin)) {
         return res.status(400).json({ message: "Aucun gain n'est actuellement disponible." });
       }
 
-      const winner = winningSegments[crypto.randomInt(winningSegments.length)];
+      const winner = pickWinningSegment(segments);
       const newTokens = Math.max(0, (user.spinTokens || 0) - 1);
       const newEarnings = (parseFloat(user.totalEarnings) + winner.amount).toFixed(2);
       await storage.updateUser(req.session.userId!, {
@@ -2245,13 +2245,21 @@ export async function registerRoutes(
         if (typeof segment.color !== "string" || !/^#[0-9a-f]{6}$/i.test(segment.color)) {
           throw new Error(`Couleur invalide pour la section ${index + 1}`);
         }
+        const weight = Number(segment.weight);
         return {
           ...DEFAULT_SPIN_WHEEL_SEGMENTS[index],
           id: index + 1,
           label: segment.label.trim().slice(0, 40),
           amount,
           color: segment.color,
+          dark: typeof segment.dark === "string" && /^#[0-9a-f]{6}$/i.test(segment.dark)
+            ? segment.dark
+            : DEFAULT_SPIN_WHEEL_SEGMENTS[index].dark,
           canWin: Boolean(segment.canWin),
+          imageUrl: typeof segment.imageUrl === "string" && segment.imageUrl.trim()
+            ? segment.imageUrl.trim()
+            : undefined,
+          weight: Number.isFinite(weight) && weight > 0 ? weight : 1,
         };
       });
 
