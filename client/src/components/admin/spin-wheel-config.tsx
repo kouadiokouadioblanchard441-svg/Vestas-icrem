@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Loader2, Save, RotateCcw, Image as ImageIcon, Trophy, AlertCircle } from "lucide-react";
+import { Loader2, Save, RotateCcw, Image as ImageIcon, Trophy, AlertCircle, MessageSquare } from "lucide-react";
 import { DEFAULT_SPIN_WHEEL_SEGMENTS, type SpinWheelSegment } from "@shared/spin-wheel";
 
 const SEGMENT_NAMES = ["Case 1", "Case 2", "Case 3", "Case 4", "Case 5", "Case 6", "Case 7", "Case 8"];
@@ -165,6 +165,139 @@ function SegmentCard({
 }
 
 /* ══════════════════════════════════════════════════════════════════
+   POPUP TEXT EDITOR SECTION
+══════════════════════════════════════════════════════════════════ */
+function PopupTextsEditor() {
+  const { toast } = useToast();
+  const { data: settings } = useQuery<Record<string, string>>({ queryKey: ["/api/settings"] });
+
+  const [inviteText,      setInviteText]      = useState("");
+  const [inviteHighlight, setInviteHighlight] = useState("");
+  const [rulesText,       setRulesText]       = useState("");
+  const [rulesHighlight,  setRulesHighlight]  = useState("");
+  const [textDirty, setTextDirty] = useState(false);
+
+  useEffect(() => {
+    if (!settings) return;
+    setInviteText(settings.spinWheelInviteText ?? "");
+    setInviteHighlight(settings.spinWheelInviteHighlight ?? "");
+    setRulesText(settings.spinWheelRulesText ?? "");
+    setRulesHighlight(settings.spinWheelRulesHighlight ?? "");
+    setTextDirty(false);
+  }, [settings]);
+
+  const saveTexts = useMutation({
+    mutationFn: async () => {
+      const keys = [
+        { key: "spinWheelInviteText",      value: inviteText },
+        { key: "spinWheelInviteHighlight", value: inviteHighlight },
+        { key: "spinWheelRulesText",       value: rulesText },
+        { key: "spinWheelRulesHighlight",  value: rulesHighlight },
+      ];
+      for (const kv of keys) {
+        await apiRequest("POST", "/api/admin/settings", kv);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
+      setTextDirty(false);
+      toast({ title: "✅ Textes des popups sauvegardés" });
+    },
+    onError: (e: Error) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+  });
+
+  const change = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setter(e.target.value);
+    setTextDirty(true);
+  };
+
+  return (
+    <Card className="border-2 border-primary/20">
+      <CardContent className="p-4 space-y-4">
+        <div className="flex items-center gap-2 mb-1">
+          <MessageSquare className="w-5 h-5 text-primary" />
+          <h3 className="font-bold">Textes des popups</h3>
+        </div>
+        <p className="text-xs text-muted-foreground -mt-2">
+          Ces textes s'affichent lorsque l'utilisateur clique sur "?" (règles) ou "+" (invitation).
+        </p>
+
+        {/* Invite popup */}
+        <div className="space-y-2 rounded-xl border p-3 bg-muted/20">
+          <p className="text-sm font-semibold">Popup "+" — Invitation</p>
+          <div>
+            <label className="text-xs text-muted-foreground">Texte complet</label>
+            <textarea
+              value={inviteText}
+              onChange={change(setInviteText)}
+              rows={3}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none"
+              placeholder="Invitez vos amis…"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">Mot(s) en rouge/gras (optionnel)</label>
+            <Input value={inviteHighlight} onChange={change(setInviteHighlight)} placeholder="50" />
+          </div>
+          {/* Preview */}
+          {inviteText && (
+            <div className="rounded-xl border bg-white p-4 text-sm leading-relaxed text-gray-800">
+              {inviteHighlight && inviteText.includes(inviteHighlight) ? (
+                <>
+                  {inviteText.slice(0, inviteText.indexOf(inviteHighlight))}
+                  <span className="font-extrabold text-red-500">{inviteHighlight}</span>
+                  {inviteText.slice(inviteText.indexOf(inviteHighlight) + inviteHighlight.length)}
+                </>
+              ) : inviteText}
+            </div>
+          )}
+        </div>
+
+        {/* Rules popup */}
+        <div className="space-y-2 rounded-xl border p-3 bg-muted/20">
+          <p className="text-sm font-semibold">Popup "?" — Règles</p>
+          <div>
+            <label className="text-xs text-muted-foreground">Texte complet</label>
+            <textarea
+              value={rulesText}
+              onChange={change(setRulesText)}
+              rows={3}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none"
+              placeholder="Achetez un produit pour obtenir des tours…"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">Mot(s) en rouge/gras (optionnel)</label>
+            <Input value={rulesHighlight} onChange={change(setRulesHighlight)} placeholder="" />
+          </div>
+          {/* Preview */}
+          {rulesText && (
+            <div className="rounded-xl border bg-white p-4 text-sm leading-relaxed text-gray-800">
+              {rulesHighlight && rulesText.includes(rulesHighlight) ? (
+                <>
+                  {rulesText.slice(0, rulesText.indexOf(rulesHighlight))}
+                  <span className="font-extrabold text-red-500">{rulesHighlight}</span>
+                  {rulesText.slice(rulesText.indexOf(rulesHighlight) + rulesHighlight.length)}
+                </>
+              ) : rulesText}
+            </div>
+          )}
+        </div>
+
+        <Button
+          onClick={() => saveTexts.mutate()}
+          disabled={!textDirty || saveTexts.isPending}
+          className="gap-1 w-full"
+        >
+          {saveTexts.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+          Sauvegarder les textes
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
    MAIN COMPONENT
 ══════════════════════════════════════════════════════════════════ */
 export default function AdminSpinWheelConfig() {
@@ -284,6 +417,9 @@ export default function AdminSpinWheelConfig() {
           {[1,2,3,4,5,6,7,8].map(i => <Skeleton key={i} className="h-64 w-full" />)}
         </div>
       )}
+
+      {/* Popup texts editor */}
+      <PopupTextsEditor />
 
       {/* Segment cards */}
       {!isLoading && (

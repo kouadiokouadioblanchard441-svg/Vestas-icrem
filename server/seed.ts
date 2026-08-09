@@ -320,6 +320,11 @@ export async function seed() {
     { key: "vip5Reward", value: "3500" },
     { key: "vip6Reward", value: "5000" },
     { key: "vip7Reward", value: "7500" },
+    // Spin wheel popup texts (insert only — admin can override)
+    { key: "spinWheelInviteText", value: "Invitez vos amis à s'inscrire et vous aurez plus de chances de gagner des prix, jusqu'à 50 fois par jour." },
+    { key: "spinWheelInviteHighlight", value: "50" },
+    { key: "spinWheelRulesText", value: "Achetez un produit pour obtenir des tours gratuits. Chaque tour vous donne une chance de remporter un gain en FCFA crédité directement sur votre solde." },
+    { key: "spinWheelRulesHighlight", value: "" },
   ];
 
   // Keys whose values must always be overwritten (e.g. Chinese → French migration)

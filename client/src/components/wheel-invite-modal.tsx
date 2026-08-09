@@ -1,22 +1,23 @@
 /**
- * Popup carte blanche — règles du jeu
- * Texte configurable depuis le panel admin (spinWheelRulesText)
+ * Popup carte blanche — s'affiche quand on clique sur "+"
+ * Texte configurable depuis le panel admin (spinWheelInviteText)
  */
-interface WheelRulesModalProps {
+interface WheelInviteModalProps {
   open: boolean;
   onClose: () => void;
   text: string;
-  highlight?: string;
+  highlight?: string; // highlighted portion (bold red)
 }
 
-export default function WheelRulesModal({
+export default function WheelInviteModal({
   open,
   onClose,
   text,
   highlight,
-}: WheelRulesModalProps) {
+}: WheelInviteModalProps) {
   if (!open) return null;
 
+  // Split text around the highlight so we can style it
   let before = text;
   let after = "";
   if (highlight && text.includes(highlight)) {
@@ -26,11 +27,13 @@ export default function WheelRulesModal({
   }
 
   return (
+    /* Backdrop */
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-6"
       style={{ background: "rgba(0,0,0,0.35)" }}
       onClick={onClose}
     >
+      {/* Card — stop propagation so clicking inside doesn't close */}
       <div
         className="w-full rounded-2xl overflow-hidden shadow-2xl"
         style={{ maxWidth: 380, background: "#fff" }}
@@ -53,8 +56,10 @@ export default function WheelRulesModal({
           </p>
         </div>
 
+        {/* Divider */}
         <div style={{ height: 1, background: "#e5e7eb" }} />
 
+        {/* OK button */}
         <button
           onClick={onClose}
           className="w-full py-4 text-center text-base font-semibold transition active:opacity-70"

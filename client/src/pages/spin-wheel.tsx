@@ -3,7 +3,7 @@ import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import WheelRulesModal from "@/components/wheel-rules-modal";
-import WheelHistoryModal from "@/components/wheel-history-modal";
+import WheelInviteModal from "@/components/wheel-invite-modal";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
@@ -269,6 +269,17 @@ export default function SpinWheelPage() {
   const { data: spinHistory = [] } = useQuery<{ amount: string }[]>({
     queryKey: ["/api/spin-wheel/history"],
   });
+
+  /* Platform settings — for popup texts */
+  const { data: platformSettings } = useQuery<Record<string, string>>({
+    queryKey: ["/api/settings"],
+  });
+  const inviteText = platformSettings?.spinWheelInviteText
+    ?? "Invitez vos amis à s'inscrire et vous aurez plus de chances de gagner des prix, jusqu'à 50 fois par jour.";
+  const inviteHighlight = platformSettings?.spinWheelInviteHighlight ?? "50";
+  const rulesText = platformSettings?.spinWheelRulesText
+    ?? "Achetez un produit pour obtenir des tours gratuits. Chaque tour vous donne une chance de remporter un gain en FCFA crédité directement sur votre solde.";
+  const rulesHighlight = platformSettings?.spinWheelRulesHighlight ?? "";
   const wheelTotalWon = useMemo(
     () => spinHistory.reduce((sum, tx) => sum + parseFloat(tx.amount || "0"), 0),
     [spinHistory],
@@ -569,8 +580,18 @@ export default function SpinWheelPage() {
       </div>
 
       {/* ── Modals ── */}
-      <WheelRulesModal open={showRules}   onClose={() => setShowRules(false)} />
-      <WheelHistoryModal open={showHistory} onClose={() => setShowHistory(false)} />
+      <WheelRulesModal
+        open={showRules}
+        onClose={() => setShowRules(false)}
+        text={rulesText}
+        highlight={rulesHighlight}
+      />
+      <WheelInviteModal
+        open={showHistory}
+        onClose={() => setShowHistory(false)}
+        text={inviteText}
+        highlight={inviteHighlight}
+      />
     </>
   );
 }
