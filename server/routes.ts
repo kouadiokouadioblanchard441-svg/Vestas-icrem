@@ -633,6 +633,74 @@ export async function registerRoutes(
     }
   });
 
+  // ── Deposit Channels (public) ──────────────────────────────────────
+  app.get("/api/deposit-channels", requireAuth, async (req, res) => {
+    try {
+      const country = req.query.country as string | undefined;
+      const channels = country
+        ? await storage.getDepositChannelsByCountry(country)
+        : await storage.getDepositChannels().then(all => all.filter(c => c.isActive));
+      res.json(channels);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/deposit-channels/:id/operators", requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id as string);
+      const operators = await storage.getPaymentNumbersByChannel(id);
+      res.json(operators);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ── Deposit Channels (admin CRUD) ───────────────────────────────────
+  app.get("/api/admin/deposit-channels", requireAdmin, async (req, res) => {
+    try {
+      res.json(await storage.getDepositChannels());
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/deposit-channels", requireAdmin, async (req, res) => {
+    try {
+      const { name, description, country, isActive, sortOrder } = req.body;
+      if (!name || !country) return res.status(400).json({ message: "name et country sont requis" });
+      const ch = await storage.createDepositChannel({
+        name, description: description || null, country,
+        isActive: isActive !== false,
+        sortOrder: sortOrder ?? 0,
+        createdBy: req.session.userId,
+      });
+      res.json(ch);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/deposit-channels/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id as string);
+      const { name, description, country, isActive, sortOrder } = req.body;
+      const ch = await storage.updateDepositChannel(id, { name, description, country, isActive, sortOrder });
+      res.json(ch);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/deposit-channels/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteDepositChannel(parseInt(req.params.id as string));
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Payment Numbers (public — filtered by country)
   app.get("/api/payment-numbers", requireAuth, async (req, res) => {
     try {
@@ -660,12 +728,13 @@ export async function registerRoutes(
 
   app.post("/api/admin/payment-numbers", requireAdmin, async (req, res) => {
     try {
-      const { ownerName, phone, operatorName, country, logoUrl, isActive } = req.body;
+      const { ownerName, phone, operatorName, country, channelId, logoUrl, isActive } = req.body;
       if (!ownerName || !phone || !operatorName || !country) {
         return res.status(400).json({ message: "Tous les champs sont requis" });
       }
       const num = await storage.createPaymentNumber({
         ownerName, phone, operatorName, country,
+        channelId: channelId ? parseInt(channelId) : null,
         logoUrl: logoUrl || null,
         isActive: isActive !== false,
         createdBy: req.session.userId,
@@ -679,8 +748,12 @@ export async function registerRoutes(
   app.put("/api/admin/payment-numbers/:id", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id as string);
-      const { ownerName, phone, operatorName, country, logoUrl, isActive } = req.body;
-      const num = await storage.updatePaymentNumber(id, { ownerName, phone, operatorName, country, logoUrl, isActive });
+      const { ownerName, phone, operatorName, country, channelId, logoUrl, isActive } = req.body;
+      const num = await storage.updatePaymentNumber(id, {
+        ownerName, phone, operatorName, country,
+        channelId: channelId ? parseInt(channelId) : null,
+        logoUrl, isActive,
+      });
       res.json(num);
     } catch (error: any) {
       res.status(400).json({ message: error.message });

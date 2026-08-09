@@ -186,13 +186,28 @@ export const userStakings = pgTable("user_stakings", {
 export type UserStaking = typeof userStakings.$inferSelect;
 export type InsertUserStaking = typeof userStakings.$inferInsert;
 
-// Payment numbers (new deposit system)
+// Deposit channels (Canal 1, Canal 2 … — admin-managed, groups operators)
+export const depositChannels = pgTable("deposit_channels", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),            // "Canal 1", "Canal 2"
+  description: text("description"),
+  country: text("country").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  createdBy: integer("created_by"),
+});
+export type DepositChannel = typeof depositChannels.$inferSelect;
+export type InsertDepositChannel = typeof depositChannels.$inferInsert;
+
+// Payment numbers (operators — belong to a deposit channel)
 export const paymentNumbers = pgTable("payment_numbers", {
   id: serial("id").primaryKey(),
   ownerName: text("owner_name").notNull(),
   phone: text("phone").notNull(),
   operatorName: text("operator_name").notNull(),
   country: text("country").notNull(),
+  channelId: integer("channel_id"),        // FK → deposit_channels.id (soft, nullable)
   logoUrl: text("logo_url"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),

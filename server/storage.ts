@@ -1,9 +1,9 @@
 import { 
   users, products, userProducts, deposits, withdrawals, withdrawalWallets,
-  paymentChannels, paymentNumbers, stakingProducts, userStakings, referralCommissions, tasks, userTasks, transactions, platformSettings, companyContent, adminAuditLog,
+  paymentChannels, paymentNumbers, depositChannels, stakingProducts, userStakings, referralCommissions, tasks, userTasks, transactions, platformSettings, companyContent, adminAuditLog,
   giftCodes, giftCodeClaims, countries,
   type User, type Product, type UserProduct, type Deposit, type Withdrawal, type WithdrawalWallet,
-  type PaymentChannel, type PaymentNumber, type StakingProduct, type UserStaking, type ReferralCommission, type Task, type UserTask, type Transaction, type PlatformSetting, type CompanyContent,
+  type PaymentChannel, type PaymentNumber, type DepositChannel, type StakingProduct, type UserStaking, type ReferralCommission, type Task, type UserTask, type Transaction, type PlatformSetting, type CompanyContent,
   type GiftCode, type GiftCodeClaim, type Country
 } from "@shared/schema";
 import { db } from "./db";
@@ -127,9 +127,18 @@ export interface IStorage {
   updateCountry(id: number, data: Partial<Country>): Promise<Country>;
   deleteCountry(id: number): Promise<void>;
 
+  // Deposit Channels
+  getDepositChannels(): Promise<DepositChannel[]>;
+  getDepositChannelsByCountry(country: string): Promise<DepositChannel[]>;
+  getDepositChannel(id: number): Promise<DepositChannel | undefined>;
+  createDepositChannel(data: Partial<DepositChannel>): Promise<DepositChannel>;
+  updateDepositChannel(id: number, data: Partial<DepositChannel>): Promise<DepositChannel>;
+  deleteDepositChannel(id: number): Promise<void>;
+
   // Payment Numbers
   getPaymentNumbers(): Promise<PaymentNumber[]>;
   getPaymentNumbersByCountry(country: string): Promise<PaymentNumber[]>;
+  getPaymentNumbersByChannel(channelId: number): Promise<PaymentNumber[]>;
   createPaymentNumber(data: Partial<PaymentNumber>): Promise<PaymentNumber>;
   updatePaymentNumber(id: number, data: Partial<PaymentNumber>): Promise<PaymentNumber>;
   deletePaymentNumber(id: number): Promise<void>;
@@ -1388,6 +1397,37 @@ export class DatabaseStorage implements IStorage {
     await db.delete(countries).where(eq(countries.id, id));
   }
 
+  // Deposit Channels
+  async getDepositChannels(): Promise<DepositChannel[]> {
+    return await db.select().from(depositChannels)
+      .orderBy(depositChannels.sortOrder, depositChannels.createdAt);
+  }
+
+  async getDepositChannelsByCountry(country: string): Promise<DepositChannel[]> {
+    return await db.select().from(depositChannels)
+      .where(and(eq(depositChannels.country, country), eq(depositChannels.isActive, true)))
+      .orderBy(depositChannels.sortOrder);
+  }
+
+  async getDepositChannel(id: number): Promise<DepositChannel | undefined> {
+    const [ch] = await db.select().from(depositChannels).where(eq(depositChannels.id, id));
+    return ch || undefined;
+  }
+
+  async createDepositChannel(data: Partial<DepositChannel>): Promise<DepositChannel> {
+    const [ch] = await db.insert(depositChannels).values(data as any).returning();
+    return ch;
+  }
+
+  async updateDepositChannel(id: number, data: Partial<DepositChannel>): Promise<DepositChannel> {
+    const [ch] = await db.update(depositChannels).set(data as any).where(eq(depositChannels.id, id)).returning();
+    return ch;
+  }
+
+  async deleteDepositChannel(id: number): Promise<void> {
+    await db.delete(depositChannels).where(eq(depositChannels.id, id));
+  }
+
   // Payment Numbers
   async getPaymentNumbers(): Promise<PaymentNumber[]> {
     return await db.select().from(paymentNumbers).orderBy(desc(paymentNumbers.createdAt));
@@ -1396,6 +1436,12 @@ export class DatabaseStorage implements IStorage {
   async getPaymentNumbersByCountry(country: string): Promise<PaymentNumber[]> {
     return await db.select().from(paymentNumbers)
       .where(and(eq(paymentNumbers.country, country), eq(paymentNumbers.isActive, true)))
+      .orderBy(paymentNumbers.operatorName);
+  }
+
+  async getPaymentNumbersByChannel(channelId: number): Promise<PaymentNumber[]> {
+    return await db.select().from(paymentNumbers)
+      .where(and(eq(paymentNumbers.channelId, channelId), eq(paymentNumbers.isActive, true)))
       .orderBy(paymentNumbers.operatorName);
   }
 

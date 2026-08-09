@@ -17,8 +17,18 @@ interface PaymentNumber {
   phone: string;
   operatorName: string;
   country: string;
+  channelId?: number | null;
   logoUrl?: string;
   isActive: boolean;
+}
+
+interface DepositChannel {
+  id: number;
+  name: string;
+  description?: string | null;
+  country: string;
+  isActive: boolean;
+  sortOrder: number;
 }
 
 /* ── Stepper ─────────────────────────────────────────────────────── */
@@ -80,6 +90,9 @@ export default function DepositPage() {
 
   const [step, setStep] = useState<Step>("amount");
   const [amount, setAmount] = useState<number | "">("");
+  // selectedDepositChannel = the Canal (Canal 1, Canal 2…) chosen in step 1
+  const [selectedDepositChannel, setSelectedDepositChannel] = useState<DepositChannel | null>(null);
+  // selectedChannel = the operator (MTN, Orange…) chosen in step 2
   const [selectedChannel, setSelectedChannel] = useState<PaymentNumber | null>(null);
   const [senderPhone, setSenderPhone] = useState("");
   const [transactionId, setTransactionId] = useState("");
@@ -87,9 +100,47 @@ export default function DepositPage() {
   const { data: platformSettings } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
   });
-  const { data: paymentNumbers = [] } = useQuery<PaymentNumber[]>({
+
+  // Deposit channels (Canal 1, Canal 2…) filtered by the user's country
+  const { data: depositChannels = [] } = useQuery<DepositChannel[]>({
+    queryKey: ["/api/deposit-channels", user?.country],
+    queryFn: async () => {
+      const url = user?.country
+        ? `/api/deposit-channels?country=${user.country}`
+        : `/api/deposit-channels`;
+      const res = await fetch(url, { credentials: "include" });
+      return res.json();
+    },
+    enabled: !!user,
+  });
+
+  // Operators within the selected deposit channel
+  const { data: channelOperators = [] } = useQuery<PaymentNumber[]>({
+    queryKey: [`/api/deposit-channels/${selectedDepositChannel?.id}/operators`],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/deposit-channels/${selectedDepositChannel!.id}/operators`,
+        { credentials: "include" }
+      );
+      return res.json();
+    },
+    enabled: !!selectedDepositChannel,
+  });
+
+  // Legacy payment numbers (fallback if no channels configured)
+  const { data: paymentNumbersRaw = [] } = useQuery<PaymentNumber[]>({
     queryKey: ["/api/payment-numbers"],
   });
+  const fallbackOperators = paymentNumbersRaw.filter(
+    (n) =>
+      n.isActive &&
+      (!user?.country ||
+        n.country === user.country ||
+        paymentNumbersRaw.filter((x) => x.country === user?.country).length === 0)
+  );
+
+  // Are channels configured for this country?
+  const hasChannels = depositChannels.length > 0;
 
   const minDeposit = parseInt(platformSettings?.minDeposit || "1000", 10);
   const presetAmounts = useMemo(
@@ -104,13 +155,8 @@ export default function DepositPage() {
     [platformSettings?.depositPresetAmounts]
   );
 
-  const operators = paymentNumbers.filter(
-    (n) =>
-      n.isActive &&
-      (!user?.country ||
-        n.country === user.country ||
-        paymentNumbers.filter((x) => x.country === user?.country).length === 0)
-  );
+  // Operators shown on step 2: channel-specific or global fallback
+  const operators = hasChannels ? channelOperators : fallbackOperators;
 
   // Country phone prefix
   const countryPrefix =
@@ -318,30 +364,51 @@ export default function DepositPage() {
               </div>
             </div>
 
-            {/* Payment mode chips */}
-            {operators.length > 0 && (
+            {/* Payment mode chips — channels if configured, otherwise operators */}
+            {(hasChannels ? depositChannels : fallbackOperators).length > 0 && (
               <div>
                 <p className="text-white font-bold text-[15px] mb-2">
                   mode de paiement
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {operators.map((op) => (
-                    <button
-                      key={op.id}
-                      onClick={() => setSelectedChannel(op)}
-                      className="rounded-xl px-5 py-3.5 text-sm font-semibold text-white transition active:scale-95"
-                      style={{
-                        background:
-                          selectedChannel?.id === op.id
-                            ? "#1A56DB"
-                            : "rgba(255,255,255,0.10)",
-                        minWidth: 80,
-                      }}
-                      data-testid={`button-channel-${op.id}`}
-                    >
-                      {op.operatorName}
-                    </button>
-                  ))}
+                  {hasChannels
+                    ? depositChannels.map((ch) => (
+                        <button
+                          key={ch.id}
+                          onClick={() => {
+                            setSelectedDepositChannel(ch);
+                            setSelectedChannel(null); // reset operator
+                          }}
+                          className="rounded-xl px-5 py-3.5 text-sm font-semibold text-white transition active:scale-95"
+                          style={{
+                            background:
+                              selectedDepositChannel?.id === ch.id
+                                ? "#1A56DB"
+                                : "rgba(255,255,255,0.10)",
+                            minWidth: 80,
+                          }}
+                          data-testid={`button-deposit-channel-${ch.id}`}
+                        >
+                          {ch.name}
+                        </button>
+                      ))
+                    : fallbackOperators.map((op) => (
+                        <button
+                          key={op.id}
+                          onClick={() => setSelectedChannel(op)}
+                          className="rounded-xl px-5 py-3.5 text-sm font-semibold text-white transition active:scale-95"
+                          style={{
+                            background:
+                              selectedChannel?.id === op.id
+                                ? "#1A56DB"
+                                : "rgba(255,255,255,0.10)",
+                            minWidth: 80,
+                          }}
+                          data-testid={`button-channel-${op.id}`}
+                        >
+                          {op.operatorName}
+                        </button>
+                      ))}
                 </div>
               </div>
             )}
@@ -695,17 +762,22 @@ export default function DepositPage() {
                 });
                 return;
               }
-              if (operators.length > 0 && !selectedChannel) {
-                toast({
-                  title: "Mode de paiement requis",
-                  description: "Veuillez sélectionner un mode de paiement",
-                  variant: "destructive",
-                });
+              // Channels mode: need a channel selected → go to operator step
+              if (hasChannels) {
+                if (!selectedDepositChannel) {
+                  toast({ title: "Mode de paiement requis", description: "Veuillez sélectionner un canal", variant: "destructive" });
+                  return;
+                }
+                setStep("operator"); // operator step will show operators within the channel
                 return;
               }
-              // If channel already picked, go directly to phone step
+              // Fallback (no channels): operator acts as direct selector
+              if (fallbackOperators.length > 0 && !selectedChannel) {
+                toast({ title: "Mode de paiement requis", description: "Veuillez sélectionner un mode de paiement", variant: "destructive" });
+                return;
+              }
               if (selectedChannel) {
-                setStep("phone");
+                setStep("phone"); // skip operator step
               } else {
                 setStep("operator");
               }
