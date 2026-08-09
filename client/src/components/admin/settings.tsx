@@ -736,7 +736,7 @@ export default function AdminSettings({ isSuperAdmin }: AdminSettingsProps) {
               const toggle = (v: string) => {
                 const next = new Set(selected);
                 next.has(v) ? next.delete(v) : next.add(v);
-                field.onChange([...next].join(","));
+                field.onChange(Array.from(next).join(","));
               };
               return (
                 <FormItem>

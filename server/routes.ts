@@ -2374,7 +2374,8 @@ export async function registerRoutes(
   // Retourne les opérateurs Mobile Money disponibles pour un pays donné
   app.get("/api/countries/:code/operators", requireAuth, async (req, res) => {
     try {
-      const code = req.params.code.toUpperCase();
+      const codeParam = req.params.code;
+      const code = (Array.isArray(codeParam) ? codeParam[0] : codeParam).toUpperCase();
       const allCountries = await storage.getActiveCountries();
       const country = allCountries.find((c: any) => c.code === code);
       if (!country) return res.json([]);
