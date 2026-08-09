@@ -1,14 +1,12 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowRight, ChevronLeft, CheckCircle2, Loader2 } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Loader2, ClipboardList } from "lucide-react";
 import { Link } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { useI18n } from "@/lib/i18n";
 
 const CURRENCY = "FCFA";
-
 type Step = "amount" | "operator" | "confirm" | "done";
 
 interface PaymentNumber {
@@ -21,16 +19,68 @@ interface PaymentNumber {
   isActive: boolean;
 }
 
+/* ── Stepper (steps 3–4) ─────────────────────────────────────────── */
+function Stepper({ active }: { active: 1 | 2 | 3 }) {
+  const steps = [
+    { n: 1, label: "Numéro de\ntéléphone" },
+    { n: 2, label: "Informations de\nconfirmation" },
+    { n: 3, label: "Paiement terminé" },
+  ] as const;
+  return (
+    <div className="flex items-start mb-6">
+      {steps.map((s, i) => (
+        <div key={s.n} className="flex-1 flex flex-col items-center">
+          <div className="flex items-center w-full">
+            {/* left connector */}
+            {i > 0 && (
+              <div
+                className="flex-1 h-px"
+                style={{ background: active >= s.n ? "#3B82F6" : "#D1D5DB" }}
+              />
+            )}
+            {/* circle */}
+            <div
+              className="w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-bold shrink-0"
+              style={{
+                borderColor: active >= s.n ? "#3B82F6" : "#D1D5DB",
+                color: active >= s.n ? "#3B82F6" : "#9CA3AF",
+                background: "white",
+              }}
+            >
+              {s.n}
+            </div>
+            {/* right connector */}
+            {i < steps.length - 1 && (
+              <div
+                className="flex-1 h-px"
+                style={{ background: active > s.n ? "#3B82F6" : "#D1D5DB" }}
+              />
+            )}
+          </div>
+          <p
+            className="text-center mt-1 leading-tight whitespace-pre-line"
+            style={{
+              color: active >= s.n ? "#3B82F6" : "#9CA3AF",
+              fontSize: 10,
+            }}
+          >
+            {s.label}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ── Main page ───────────────────────────────────────────────────── */
 export default function DepositPage() {
   const { user } = useAuth();
-  const { t } = useI18n();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const [step, setStep]           = useState<Step>("amount");
-  const [amount, setAmount]       = useState<number | "">("");
-  const [selected, setSelected]   = useState<PaymentNumber | null>(null);
-  const [senderName, setSenderName]   = useState("");
+  const [step, setStep] = useState<Step>("amount");
+  const [amount, setAmount] = useState<number | "">("");
+  const [selectedChannel, setSelectedChannel] = useState<PaymentNumber | null>(null);
   const [senderPhone, setSenderPhone] = useState("");
 
   const { data: platformSettings } = useQuery<Record<string, string>>({
@@ -40,31 +90,38 @@ export default function DepositPage() {
     queryKey: ["/api/payment-numbers"],
   });
 
-  const minDeposit = parseInt(platformSettings?.minDeposit || "3500", 10);
+  const minDeposit = parseInt(platformSettings?.minDeposit || "1000", 10);
   const presetAmounts = useMemo(
-    () => (platformSettings?.depositPresetAmounts || "3500,5000,7000,10000,15000,20000,50000,70000")
-      .split(",")
-      .map((v) => parseInt(v.trim(), 10))
-      .filter((v) => Number.isFinite(v) && v > 0),
-    [platformSettings?.depositPresetAmounts],
+    () =>
+      (
+        platformSettings?.depositPresetAmounts ||
+        "1000,3800,15000,30000,100000,150000,200000,300000"
+      )
+        .split(",")
+        .map((v) => parseInt(v.trim(), 10))
+        .filter((v) => Number.isFinite(v) && v > 0),
+    [platformSettings?.depositPresetAmounts]
   );
 
-  // Filter by user country or show all if none match
   const operators = paymentNumbers.filter(
-    (n) => n.isActive && (!user?.country || n.country === user.country || paymentNumbers.filter(x => x.country === user?.country).length === 0)
+    (n) =>
+      n.isActive &&
+      (!user?.country ||
+        n.country === user.country ||
+        paymentNumbers.filter((x) => x.country === user?.country).length === 0)
   );
 
   const submitMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("POST", "/api/deposits", {
         amount: Number(amount),
-        accountName: senderName,
+        accountName: senderPhone,
         accountNumber: senderPhone,
-        paymentMethod: selected?.operatorName || "Mobile Money",
+        paymentMethod: selectedChannel?.operatorName || "Mobile Money",
         country: user?.country || "CM",
-        paymentNumberId: selected?.id || null,
-        channelName: selected?.operatorName || "Mobile Money",
-        reference: `${senderName} — ${senderPhone}`,
+        paymentNumberId: selectedChannel?.id || null,
+        channelName: selectedChannel?.operatorName || "Mobile Money",
+        reference: `${selectedChannel?.operatorName} — ${senderPhone}`,
       });
       if (!res.ok) {
         const err = await res.json();
@@ -81,151 +138,220 @@ export default function DepositPage() {
     },
   });
 
-  const goToOperator = () => {
-    if (!amount || Number(amount) < minDeposit) {
-      toast({
-        title: t.invalidAmount,
-        description: `Montant minimum : ${minDeposit.toLocaleString()} ${CURRENCY}`,
-        variant: "destructive",
-      });
-      return;
-    }
-    setStep("operator");
-  };
-
-  const goToConfirm = (op: PaymentNumber) => {
-    setSelected(op);
-    setStep("confirm");
-  };
-
-  const goBack = () => {
-    if (step === "operator") setStep("amount");
-    else if (step === "confirm") setStep("operator");
-  };
-
   if (!user) return null;
 
-  return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#2d3816" }}>
+  const isOlive = step === "amount";
 
-      {/* ── Header ── */}
-      <header className="flex items-center px-4 py-4" style={{ background: "#1e2e0a" }}>
-        {step === "amount" || step === "done" ? (
+  /* ── Background ── */
+  const pageStyle: React.CSSProperties = isOlive
+    ? { background: "#2d3816" }
+    : {
+        background:
+          "linear-gradient(160deg, #7C3AED 0%, #4F46E5 45%, #2563EB 100%)",
+      };
+
+  return (
+    <div className="flex flex-col min-h-screen" style={pageStyle}>
+
+      {/* ══ HEADER ══ */}
+      {isOlive ? (
+        /* Olive header with centered title */
+        <header className="flex items-center px-4 py-4">
           <Link href="/wallet">
             <button className="p-1" data-testid="button-back-account">
               <ChevronLeft className="w-6 h-6 text-white" strokeWidth={2.5} />
             </button>
           </Link>
-        ) : (
-          <button className="p-1" onClick={goBack} data-testid="button-deposit-back">
+          <h1 className="flex-1 text-center text-white font-bold text-lg pr-8">
+            Recharger
+          </h1>
+        </header>
+      ) : (
+        /* Blue/purple header with amount */
+        <header className="flex items-start px-4 pt-12 pb-5">
+          <button
+            className="p-1 mr-2 mt-1"
+            onClick={() => {
+              if (step === "operator") setStep("amount");
+              else if (step === "confirm") setStep("operator");
+              else if (step === "done") setStep("amount");
+            }}
+            data-testid="button-deposit-back"
+          >
             <ChevronLeft className="w-6 h-6 text-white" strokeWidth={2.5} />
           </button>
-        )}
-        <h1 className="flex-1 text-center text-white font-bold text-lg pr-8">
-          {step === "operator" ? "Choisir l'opérateur" : step === "confirm" ? "Confirmer le dépôt" : "Recharger"}
-        </h1>
-      </header>
+          <div>
+            <p className="text-white/70 text-sm font-medium">Montant:</p>
+            <p className="text-white font-black text-3xl leading-tight">
+              {Number(amount).toLocaleString("fr-FR")}{" "}
+              <span className="text-xl font-semibold">{CURRENCY}</span>
+            </p>
+          </div>
+        </header>
+      )}
 
-      <div className="flex-1 px-4 pt-5 pb-20">
+      {/* ══ CONTENT ══ */}
+      <div className={`flex-1 px-4 ${isOlive ? "pb-44" : "pb-8"}`}>
 
-        {/* ══ ÉTAPE 1 : Montant ══ */}
+        {/* ─────────────────────────────────────────
+            STEP 1 : Amount + mode de paiement (olive)
+        ───────────────────────────────────────── */}
         {step === "amount" && (
-          <div className="space-y-4">
-            <div className="rounded-2xl p-5" style={{ background: "#4a5e22" }}>
-              <p className="text-white/80 text-sm font-semibold mb-1">Montant à déposer</p>
-              <p className="text-white/60 text-xs mb-4">Minimum : {minDeposit.toLocaleString()} {CURRENCY}</p>
+          <div className="space-y-5">
 
-              {/* Input */}
+            {/* Olive balance card */}
+            <div
+              className="relative overflow-hidden rounded-2xl p-5"
+              style={{
+                background:
+                  "linear-gradient(135deg, #5c7e24 0%, #3d5819 55%, #263a0e 100%)",
+                boxShadow: "0 6px 24px rgba(0,0,0,0.35)",
+                minHeight: 110,
+              }}
+            >
+              {/* Decorative concentric circles with F */}
               <div
-                className="flex items-center overflow-hidden bg-white"
-                style={{ borderRadius: 999, height: 52 }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-24 h-24 rounded-full flex items-center justify-center"
+                style={{
+                  background: "rgba(255,255,255,0.07)",
+                  border: "1.5px solid rgba(255,255,255,0.15)",
+                }}
               >
-                <span className="px-4 font-bold text-sm text-gray-700 border-r border-gray-200 h-full flex items-center shrink-0">
-                  {CURRENCY}
-                </span>
-                <input
-                  type="number"
-                  value={amount}
-                  min={minDeposit}
-                  onChange={(e) => setAmount(e.target.value ? Number(e.target.value) : "")}
-                  placeholder={`Min. ${minDeposit.toLocaleString()}`}
-                  className="flex-1 bg-transparent px-4 outline-none text-gray-800 text-sm placeholder:text-gray-400"
-                  data-testid="input-deposit-amount"
-                />
+                <div
+                  className="w-16 h-16 rounded-full flex items-center justify-center"
+                  style={{
+                    background: "rgba(255,255,255,0.09)",
+                    border: "1.5px solid rgba(255,255,255,0.2)",
+                  }}
+                >
+                  <span
+                    className="font-black text-2xl italic select-none"
+                    style={{ color: "rgba(255,255,255,0.75)" }}
+                  >
+                    F
+                  </span>
+                </div>
               </div>
 
-              {/* Presets */}
-              <div className="mt-4 grid grid-cols-4 gap-2">
+              <p className="text-white/65 text-xs mb-0.5">mon solde</p>
+              <p className="text-white font-black text-3xl mb-3">
+                F{" "}
+                {(user.balance || 0).toLocaleString("fr-FR", {
+                  minimumFractionDigits: 2,
+                })}
+              </p>
+              <button className="flex items-center gap-1.5 text-white/55 text-xs hover:text-white/75 transition">
+                <ClipboardList className="w-3.5 h-3.5" />
+                enregistrer
+              </button>
+            </div>
+
+            {/* Amount section */}
+            <div>
+              <p className="text-white font-bold text-[15px] mb-2">
+                Montant de la recharge
+              </p>
+
+              {/* Text input */}
+              <input
+                type="number"
+                value={amount}
+                min={minDeposit}
+                onChange={(e) =>
+                  setAmount(e.target.value ? Number(e.target.value) : "")
+                }
+                placeholder="Veuillez saisir le montant de la recharge"
+                className="w-full rounded-xl px-4 py-3.5 text-sm outline-none"
+                style={{
+                  background: "rgba(255,255,255,0.07)",
+                  border: "1px solid rgba(255,255,255,0.18)",
+                  color: "white",
+                }}
+                data-testid="input-deposit-amount"
+              />
+
+              {/* Preset grid – 3 columns */}
+              <div className="mt-3 grid grid-cols-3 gap-2">
                 {presetAmounts.map((preset) => (
                   <button
                     key={preset}
                     onClick={() => setAmount(preset)}
-                    className="rounded-xl py-2.5 text-xs font-bold transition active:scale-95"
+                    className="rounded-xl py-3.5 text-sm font-semibold text-white transition active:scale-95"
                     style={{
-                      background: amount === preset ? "white" : "rgba(255,255,255,0.15)",
-                      color: amount === preset ? "#2d3816" : "white",
+                      background:
+                        amount === preset
+                          ? "#1A56DB"
+                          : "rgba(255,255,255,0.10)",
                     }}
                     data-testid={`button-preset-amount-${preset}`}
                   >
-                    {preset.toLocaleString()}
+                    {preset.toLocaleString("fr-FR")}
                   </button>
                 ))}
               </div>
-
-              <button
-                onClick={goToOperator}
-                className="mt-5 w-full flex items-center justify-center gap-2 font-bold text-sm rounded-full py-3.5 active:scale-95 transition"
-                style={{ background: "white", color: "#2d3816" }}
-                data-testid="button-recharge-now"
-              >
-                Continuer <ArrowRight className="w-4 h-4" />
-              </button>
             </div>
 
-            <div className="rounded-2xl p-4" style={{ background: "#4a5e22" }}>
-              <p className="text-white/70 text-xs leading-6">
-                ℹ️ Envoyez exactement le montant indiqué via Mobile Money à l'opérateur sélectionné. Votre solde sera crédité après validation par notre équipe.
-              </p>
-            </div>
+            {/* Payment mode section */}
+            {operators.length > 0 && (
+              <div>
+                <p className="text-white font-bold text-[15px] mb-2">
+                  mode de paiement
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {operators.map((op) => (
+                    <button
+                      key={op.id}
+                      onClick={() => setSelectedChannel(op)}
+                      className="rounded-xl px-5 py-3.5 text-sm font-semibold text-white transition active:scale-95"
+                      style={{
+                        background:
+                          selectedChannel?.id === op.id
+                            ? "#1A56DB"
+                            : "rgba(255,255,255,0.10)",
+                        minWidth: 80,
+                      }}
+                      data-testid={`button-channel-${op.id}`}
+                    >
+                      {op.operatorName}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
-        {/* ══ ÉTAPE 2 : Opérateur ══ */}
+        {/* ─────────────────────────────────────────
+            STEP 2 : Operator selection (blue/purple)
+        ───────────────────────────────────────── */}
         {step === "operator" && (
           <div className="space-y-3">
-            <div className="rounded-2xl px-4 py-3 mb-2" style={{ background: "#4a5e22" }}>
-              <p className="text-white/80 text-xs">Montant sélectionné</p>
-              <p className="text-white font-black text-2xl">{Number(amount).toLocaleString()} <span className="text-base font-semibold">{CURRENCY}</span></p>
-            </div>
-
-            <p className="text-white/70 text-sm font-semibold px-1">Sélectionnez l'opérateur</p>
+            <p className="text-white/80 text-[15px] font-medium mb-4">
+              Sélectionnez le mode de paiement :
+            </p>
 
             {operators.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-white/50 text-sm">Aucun opérateur disponible pour le moment</p>
+                <p className="text-white/50 text-sm">
+                  Aucun opérateur disponible pour le moment
+                </p>
               </div>
             ) : (
-              <div className="rounded-2xl overflow-hidden" style={{ background: "#4a5e22" }}>
-                {operators.map((op, idx) => (
+              <div className="space-y-3">
+                {operators.map((op) => (
                   <button
                     key={op.id}
-                    onClick={() => goToConfirm(op)}
-                    className="w-full flex items-center gap-4 px-4 py-4 active:bg-white/10 transition"
-                    style={{ borderBottom: idx < operators.length - 1 ? "1px solid rgba(255,255,255,0.1)" : undefined }}
+                    onClick={() => {
+                      setSelectedChannel(op);
+                      setStep("confirm");
+                    }}
+                    className="w-full bg-white rounded-2xl px-5 py-4 flex items-center justify-between shadow-sm active:opacity-80 transition"
                     data-testid={`button-operator-${op.id}`}
                   >
-                    {op.logoUrl ? (
-                      <img src={op.logoUrl} alt={op.operatorName} className="w-10 h-10 rounded-full object-contain bg-white p-1" />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                        <span className="text-white font-black text-sm">{op.operatorName.slice(0, 2).toUpperCase()}</span>
-                      </div>
-                    )}
-                    <div className="flex-1 text-left">
-                      <p className="text-white font-bold text-sm">{op.operatorName}</p>
-                      <p className="text-white/60 text-xs">{op.phone}</p>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-white/50" />
+                    <span className="font-bold text-gray-800 text-base tracking-wide">
+                      {op.operatorName.toUpperCase()}
+                    </span>
+                    <span className="text-gray-400 text-xl font-light">›</span>
                   </button>
                 ))}
               </div>
@@ -233,102 +359,210 @@ export default function DepositPage() {
           </div>
         )}
 
-        {/* ══ ÉTAPE 3 : Confirmation ══ */}
-        {step === "confirm" && selected && (
-          <div className="space-y-4">
-            {/* Récapitulatif */}
-            <div className="rounded-2xl p-4" style={{ background: "#4a5e22" }}>
-              <p className="text-white/70 text-xs mb-2">Envoyez exactement ce montant à :</p>
-              <div className="flex items-center gap-3 mb-3">
-                {selected.logoUrl ? (
-                  <img src={selected.logoUrl} alt={selected.operatorName} className="w-12 h-12 rounded-full object-contain bg-white p-1.5" />
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                    <span className="text-white font-black">{selected.operatorName.slice(0, 2).toUpperCase()}</span>
-                  </div>
-                )}
-                <div>
-                  <p className="text-white font-bold">{selected.operatorName}</p>
-                  <p className="text-white/80 text-lg font-black">{selected.phone}</p>
-                  <p className="text-white/60 text-xs">{selected.ownerName}</p>
-                </div>
-              </div>
-              <div className="rounded-xl p-3 text-center" style={{ background: "rgba(0,0,0,0.3)" }}>
-                <p className="text-white/70 text-xs">Montant à envoyer</p>
-                <p className="text-white font-black text-3xl">{Number(amount).toLocaleString()}</p>
-                <p className="text-white/70 text-sm">{CURRENCY}</p>
-              </div>
-            </div>
+        {/* ─────────────────────────────────────────
+            STEP 3 : Confirm – phone + method (blue/purple)
+        ───────────────────────────────────────── */}
+        {step === "confirm" && selectedChannel && (
+          <div>
+            <div
+              className="bg-white rounded-3xl p-5 shadow-xl"
+              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}
+            >
+              <Stepper active={1} />
 
-            {/* Formulaire confirmation */}
-            <div className="rounded-2xl p-4 space-y-3" style={{ background: "#4a5e22" }}>
-              <p className="text-white font-semibold text-sm">Vos informations d'envoi</p>
-
-              <div>
-                <p className="text-white/70 text-xs mb-1">Votre nom</p>
-                <input
-                  type="text"
-                  value={senderName}
-                  onChange={(e) => setSenderName(e.target.value)}
-                  placeholder="Nom complet"
-                  className="w-full rounded-xl px-4 py-3 text-sm text-gray-900 outline-none"
-                  style={{ background: "white" }}
-                />
+              {/* Warning banner */}
+              <div
+                className="rounded-xl px-4 py-3 mb-5 text-sm"
+                style={{
+                  background: "#FEF3C7",
+                  border: "1px solid #F59E0B",
+                  color: "#92400E",
+                }}
+              >
+                Veuillez sélectionner la même option que votre méthode de
+                transfert.
               </div>
-              <div>
-                <p className="text-white/70 text-xs mb-1">Votre numéro d'envoi</p>
+
+              {/* Phone input */}
+              <p className="text-gray-700 text-sm mb-2">
+                Veuillez entrer votre numéro de téléphone:
+              </p>
+              <div
+                className="flex items-center rounded-xl mb-5 overflow-hidden"
+                style={{ border: "1px solid #E5E7EB" }}
+              >
+                <span className="px-3 py-3.5 text-sm font-semibold text-blue-600 bg-gray-50 border-r border-gray-200 shrink-0">
+                  +{user.country === "CI" ? "225" : user.country === "CM" ? "237" : user.country === "BF" ? "226" : user.country === "BJ" ? "229" : "225"}
+                </span>
                 <input
                   type="tel"
                   value={senderPhone}
                   onChange={(e) => setSenderPhone(e.target.value)}
-                  placeholder="Ex: 6XXXXXXXX"
-                  className="w-full rounded-xl px-4 py-3 text-sm text-gray-900 outline-none"
-                  style={{ background: "white" }}
+                  placeholder="XXXXXXXXXX"
+                  className="flex-1 px-3 py-3.5 text-sm outline-none text-gray-800"
+                  data-testid="input-sender-phone"
                 />
               </div>
 
-              <button
-                onClick={() => {
-                  if (!senderName.trim() || !senderPhone.trim()) {
-                    toast({ title: "Champs requis", description: "Veuillez remplir tous les champs", variant: "destructive" });
-                    return;
-                  }
-                  submitMutation.mutate();
-                }}
-                disabled={submitMutation.isPending}
-                className="w-full flex items-center justify-center gap-2 font-bold text-sm rounded-full py-3.5 active:scale-95 transition disabled:opacity-60"
-                style={{ background: "white", color: "#2d3816" }}
-                data-testid="button-deposit-completed"
-              >
-                {submitMutation.isPending
-                  ? <Loader2 className="w-4 h-4 animate-spin" />
-                  : "J'ai effectué le paiement"
-                }
-              </button>
+              {/* Method selection */}
+              <p className="text-gray-700 text-sm mb-3">
+                Choisissez la méthode de transfert:
+              </p>
+              <label className="flex items-center gap-2.5 cursor-pointer mb-6">
+                <input
+                  type="radio"
+                  name="method"
+                  checked
+                  readOnly
+                  className="w-4 h-4 accent-blue-500"
+                />
+                <span className="text-gray-800 text-sm font-semibold">
+                  {selectedChannel.operatorName}
+                </span>
+              </label>
+
+              {/* Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setStep("operator")}
+                  className="flex-1 py-3 rounded-xl font-semibold text-sm transition active:opacity-80"
+                  style={{
+                    border: "1.5px solid #3B82F6",
+                    color: "#3B82F6",
+                    background: "white",
+                  }}
+                >
+                  ‹ Retourner
+                </button>
+                <button
+                  onClick={() => {
+                    if (!senderPhone.trim()) {
+                      toast({
+                        title: "Numéro requis",
+                        description: "Veuillez entrer votre numéro de téléphone",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+                    submitMutation.mutate();
+                  }}
+                  disabled={submitMutation.isPending}
+                  className="flex-1 py-3 rounded-xl font-semibold text-sm text-white transition active:opacity-80 flex items-center justify-center gap-1.5"
+                  style={{ background: "#3B82F6" }}
+                  data-testid="button-deposit-completed"
+                >
+                  {submitMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    "L'étape suivante ›"
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         )}
 
-        {/* ══ ÉTAPE 4 : Succès ══ */}
+        {/* ─────────────────────────────────────────
+            STEP 4 : Done (blue/purple)
+        ───────────────────────────────────────── */}
         {step === "done" && (
-          <div className="flex flex-col items-center justify-center py-16 gap-4">
-            <CheckCircle2 className="w-20 h-20 text-green-400" />
-            <p className="text-white font-black text-xl text-center">Dépôt soumis !</p>
-            <p className="text-white/70 text-sm text-center px-6">
-              Votre dépôt de <span className="font-bold text-white">{Number(amount).toLocaleString()} {CURRENCY}</span> est en cours de vérification. Votre solde sera crédité après validation.
-            </p>
-            <Link href="/wallet">
-              <button
-                className="mt-4 px-8 py-3 rounded-full font-bold text-sm active:scale-95 transition"
-                style={{ background: "white", color: "#2d3816" }}
-              >
-                Retour au portefeuille
-              </button>
-            </Link>
+          <div>
+            <div
+              className="bg-white rounded-3xl p-5 shadow-xl"
+              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}
+            >
+              <Stepper active={3} />
+
+              <div className="flex flex-col items-center py-4">
+                {/* Success circle */}
+                <div
+                  className="w-20 h-20 rounded-full flex items-center justify-center mb-5"
+                  style={{
+                    border: "3px solid #86EFAC",
+                    background: "rgba(134,239,172,0.12)",
+                  }}
+                >
+                  <CheckCircle2 className="w-10 h-10 text-green-400" />
+                </div>
+
+                <p className="font-black text-xl text-gray-900 mb-2">
+                  Transfert terminé!
+                </p>
+                <p className="text-gray-500 text-sm text-center mb-7 leading-relaxed">
+                  Le paiement a été effectué, veuillez revenir sur votre compte
+                  pour confirmer.
+                </p>
+
+                <Link href="/wallet">
+                  <button
+                    className="px-10 py-3 rounded-xl font-semibold text-white text-sm transition active:opacity-80"
+                    style={{ background: "#22C55E" }}
+                  >
+                    Confirm
+                  </button>
+                </Link>
+              </div>
+            </div>
           </div>
         )}
-
       </div>
+
+      {/* ══ FIXED BOTTOM BUTTON (step 1 only) ══ */}
+      {step === "amount" && (
+        <div
+          className="fixed bottom-0 left-0 right-0 px-4 pb-8 pt-4"
+          style={{
+            background:
+              "linear-gradient(to top, #2d3816 70%, rgba(45,56,22,0))",
+          }}
+        >
+          <button
+            onClick={() => {
+              if (!amount || Number(amount) < minDeposit) {
+                toast({
+                  title: "Montant invalide",
+                  description: `Montant minimum : ${minDeposit.toLocaleString()} ${CURRENCY}`,
+                  variant: "destructive",
+                });
+                return;
+              }
+              if (operators.length > 0 && !selectedChannel) {
+                toast({
+                  title: "Mode de paiement requis",
+                  description: "Veuillez sélectionner un mode de paiement",
+                  variant: "destructive",
+                });
+                return;
+              }
+              // If a channel is already selected skip the operator step
+              if (selectedChannel) {
+                setStep("confirm");
+              } else {
+                setStep("operator");
+              }
+            }}
+            className="w-full py-4 rounded-full font-bold text-white text-base transition active:opacity-80"
+            style={{
+              background: "linear-gradient(90deg, #3B82F6 0%, #1A56DB 100%)",
+            }}
+            data-testid="button-recharge-now"
+          >
+            paiement
+          </button>
+
+          {/* Instructions */}
+          <div className="mt-3 px-2">
+            <p className="text-center font-bold text-sm" style={{ color: "#A855F7" }}>
+              Instructions de charge
+            </p>
+            <p className="text-white/50 text-xs text-center mt-1 leading-5">
+              Montant minimum de recharge {minDeposit.toLocaleString()} FAFC.
+              Veuillez remplir complètement les informations selon les invites
+              pour éviter une arrivée retardée ou une charge infructueuse.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
