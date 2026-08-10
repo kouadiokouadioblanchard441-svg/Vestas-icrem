@@ -16,7 +16,6 @@ import AdminGiftCodes from "@/components/admin/gift-codes";
 import AdminCountries from "@/components/admin/countries";
 import AdminContent from "@/components/admin/content";
 import AdminCompanyContent from "@/components/admin/company-content";
-import AdminTasks from "@/components/admin/tasks";
 import AdminWheel from "@/components/admin/wheel";
 import AdminVipSettings from "@/components/admin/vip-settings";
 import AdminDepositChannels from "@/components/admin/deposit-channels";
@@ -57,7 +56,6 @@ export default function AdminPage() {
               <TabsTrigger value="countries" data-testid="tab-countries">{t.adminTabCountries}</TabsTrigger>
               <TabsTrigger value="giftcodes" data-testid="tab-giftcodes">{t.adminTabGiftCodes}</TabsTrigger>
               <TabsTrigger value="settings" data-testid="tab-settings">{t.adminTabSettings}</TabsTrigger>
-              <TabsTrigger value="tasks" data-testid="tab-tasks">{t.adminTabTasks}</TabsTrigger>
               <TabsTrigger value="wheel" data-testid="tab-wheel">{t.adminTabWheel}</TabsTrigger>
               <TabsTrigger value="content" data-testid="tab-content">{t.adminTabContent}</TabsTrigger>
               <TabsTrigger value="company" data-testid="tab-company">{t.adminTabCompany}</TabsTrigger>
@@ -112,10 +110,6 @@ export default function AdminPage() {
 
           <TabsContent value="settings" className="mt-4">
             <AdminSettings isSuperAdmin={user.isSuperAdmin} />
-          </TabsContent>
-
-          <TabsContent value="tasks" className="mt-4">
-            <AdminTasks />
           </TabsContent>
 
           <TabsContent value="wheel" className="mt-4">

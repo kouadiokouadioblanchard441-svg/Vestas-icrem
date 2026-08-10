@@ -217,19 +217,19 @@ export default function AdminWithdrawals() {
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
                     <p className="text-muted-foreground">{t.grossAmount}</p>
-                      <p className="font-medium text-foreground">{withdrawal.amount.toLocaleString()} USDT</p>
+                      <p className="font-medium text-foreground">{withdrawal.amount.toLocaleString()} FCFA</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t.netAmount}</p>
-                      <p className="font-medium text-primary">{withdrawal.netAmount.toLocaleString()} USDT</p>
+                      <p className="font-medium text-primary">{withdrawal.netAmount.toLocaleString()} FCFA</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t.fees}</p>
-                      <p className="font-medium text-destructive">{withdrawal.fees.toLocaleString()} USDT</p>
+                      <p className="font-medium text-destructive">{withdrawal.fees.toLocaleString()} FCFA</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t.method}</p>
-                    <p className="font-medium text-foreground">USDT BEP20</p>{/* network label — intentionally not translated */}
+                    <p className="font-medium text-foreground">FCFA</p>{/* network label — intentionally not translated */}
                   </div>
                   <div className="col-span-2">
                     <p className="text-muted-foreground">{t.bep20Address}</p>

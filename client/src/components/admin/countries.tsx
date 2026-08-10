@@ -26,7 +26,7 @@ interface CountryForm {
 const emptyForm: CountryForm = {
   code: "",
   name: "",
-  currency: "USDT",
+  currency: "FCFA",
   phonePrefix: "",
   operators: "",
   isActive: true,
@@ -222,7 +222,7 @@ export default function AdminCountries() {
                 <Input
                   value={form.currency}
                   onChange={e => setForm({ ...form, currency: e.target.value.toUpperCase() })}
-                  placeholder="USDT"
+                  placeholder="FCFA"
                   maxLength={5}
                   required
                   data-testid="input-country-currency"
