@@ -129,7 +129,7 @@ export default function MyProductsPage() {
                     style={{
                       background: isCollectAtEnd
                         ? "linear-gradient(135deg, #d97706, #92400e)"
-                        : "linear-gradient(135deg, #06b6d4, #0e7490)"
+                        : "linear-gradient(135deg, #d4a017, #a07010)"
                     }}
                   >
                     <div className="flex items-center gap-2">
@@ -237,7 +237,7 @@ export default function MyProductsPage() {
                     /* Produit classique */
                     <div
                       className="px-4 py-2.5 text-center text-white text-xs font-semibold"
-                      style={{ background: "linear-gradient(135deg, #06b6d4, #0e7490)" }}
+                      style={{ background: "linear-gradient(135deg, #d4a017, #a07010)" }}
                     >
                       {t.myProductsRevenueReceived} : {currency} {earnedSoFar.toLocaleString()}
                     </div>
