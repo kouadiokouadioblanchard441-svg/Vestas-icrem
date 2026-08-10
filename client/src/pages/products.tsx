@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { formatCurrency } from "@/lib/countries";
-import { Loader2, Users, ShoppingBag } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import type { Product, ProductSeries } from "@shared/schema";
@@ -138,8 +138,6 @@ export default function ProductsPage() {
             const roi = Math.round(
               ((Number(product.totalReturn) - Number(product.price)) / Number(product.price)) * 100
             );
-            const minInvite = Number(product.minInviteCount) || 0;
-            const maxOwned  = Number(product.maxOwned) || 0;
             return (
               <div
                 key={product.id}
@@ -177,21 +175,6 @@ export default function ProductsPage() {
                       </p>
                     </div>
 
-                    {/* Conditions badges */}
-                    {(minInvite > 0 || maxOwned > 0) && (
-                      <div className="flex gap-1 flex-wrap mt-1">
-                        {minInvite > 0 && (
-                          <span className="text-[9px] bg-orange-400/30 text-orange-100 px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-                            <Users className="w-2.5 h-2.5" />{minInvite} inv. requis
-                          </span>
-                        )}
-                        {maxOwned > 0 && (
-                          <span className="text-[9px] bg-purple-400/30 text-purple-100 px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-                            <ShoppingBag className="w-2.5 h-2.5" />Max {maxOwned}
-                          </span>
-                        )}
-                      </div>
-                    )}
 
                     {/* BUY button */}
                     <button
