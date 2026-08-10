@@ -174,7 +174,7 @@ export default function AccountPage() {
             >
               <span
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-black tracking-wide border"
-                style={{ background: vipStyle.bg, color: vipStyle.text, borderColor: vipStyle.border }}
+                style={{ background: "#ff0000", color: "#ffffff", borderColor: "#ff0000" }}
               >
                 Statut
               </span>
