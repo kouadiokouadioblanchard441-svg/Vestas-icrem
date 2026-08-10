@@ -9,7 +9,7 @@ import WheelResultModal from "@/components/wheel-result-modal";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ChevronDown, ChevronUp, Trophy } from "lucide-react";
 import {
   DEFAULT_SPIN_WHEEL_SEGMENTS,
   type SpinWheelSegment,
@@ -35,22 +35,18 @@ const FAKE_WINNERS = [
 ];
 
 function WinnersTicker() {
-  // duplicate list so seamless loop works
   const items = [...FAKE_WINNERS, ...FAKE_WINNERS];
   return (
     <div
-      className="mx-4 mb-4 rounded-2xl overflow-hidden"
-      style={{
-        background: "rgba(255,255,255,0.10)",
-        border: "1px solid rgba(255,255,255,0.15)",
-      }}
+      className="mx-4 mb-4 rounded-2xl overflow-hidden shadow-md"
+      style={{ background: "#ffffff", border: "1px solid #e5e7eb" }}
     >
       {/* Title row */}
       <div
         className="flex items-center gap-2 px-4 py-2 border-b"
-        style={{ borderColor: "rgba(255,255,255,0.12)" }}
+        style={{ borderColor: "#f3f4f6", background: "#f9fafb" }}
       >
-        <span className="text-xs font-semibold text-yellow-300 uppercase tracking-wide">
+        <span className="text-xs font-bold uppercase tracking-wide" style={{ color: "#b45309" }}>
           🏆 Derniers gagnants
         </span>
       </div>
@@ -71,27 +67,21 @@ function WinnersTicker() {
           {items.map((w, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-between px-4 py-3"
-              style={{
-                borderBottom: "1px solid rgba(255,255,255,0.08)",
-                height: "44px",
-              }}
+              className="flex items-center justify-between px-4"
+              style={{ borderBottom: "1px solid #f3f4f6", height: "44px" }}
             >
               <div className="flex items-center gap-2">
                 <img
                   src={w.avatar}
                   alt=""
                   className="w-8 h-8 rounded-full object-cover shrink-0"
-                  style={{ border: "2px solid rgba(255,215,0,0.45)" }}
+                  style={{ border: "2px solid #fbbf24" }}
                 />
-                <span className="text-sm text-white/90 font-medium tracking-wide font-mono">
+                <span className="text-sm font-medium tracking-wide font-mono text-gray-700">
                   {w.phone}
                 </span>
               </div>
-              <span
-                className="text-sm font-extrabold"
-                style={{ color: "#FFD700", textShadow: "0 0 6px rgba(255,215,0,0.4)" }}
-              >
+              <span className="text-sm font-extrabold" style={{ color: "#d97706" }}>
                 + {w.amount}
               </span>
             </div>
@@ -356,10 +346,11 @@ export default function SpinWheelPage() {
   const [showNoTours, setShowNoTours] = useState(false);
   const [spinResult,  setSpinResult]  = useState<{ won: boolean; amount: number; label: string } | null>(null);
 
-  /* Personal spin history — for "Balance" (total winnings on the wheel) */
-  const { data: spinHistory = [] } = useQuery<{ amount: string }[]>({
+  /* Personal spin history — for "Balance" + historique détaillé */
+  const { data: spinHistory = [] } = useQuery<{ amount: string; description: string; createdAt: string }[]>({
     queryKey: ["/api/spin-wheel/history"],
   });
+  const [showBalanceHistory, setShowBalanceHistory] = useState(false);
 
   /* Platform settings — for popup texts */
   const { data: platformSettings } = useQuery<Record<string, string>>({
@@ -597,40 +588,79 @@ export default function SpinWheelPage() {
         {/* ── Balance / Gratuit row ── */}
         <div className="mx-4 mb-3">
           <div
-            className="flex items-center justify-between rounded-2xl px-4 py-3"
-            style={{
-              background: "rgba(255,255,255,0.97)",
-              boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
-            }}
+            className="rounded-2xl overflow-hidden shadow-md"
+            style={{ background: "rgba(255,255,255,0.97)" }}
           >
-            {/* Total gagné sur la roue */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-700 font-medium">Balance</span>
-              <span
-                className="px-3 py-0.5 rounded-full text-sm font-bold text-white"
-                style={{ background: "#3d8a40" }}
+            {/* Top row */}
+            <div className="flex items-center justify-between px-4 py-3">
+              {/* Total gagné — cliquable pour voir l'historique */}
+              <button
+                className="flex items-center gap-2 active:opacity-70 transition-opacity"
+                onClick={() => setShowBalanceHistory(v => !v)}
               >
-                {wheelTotalWon.toLocaleString("fr-FR", { maximumFractionDigits: 0 })}
-              </span>
+                <Trophy className="w-4 h-4 text-amber-500" />
+                <span className="text-sm text-gray-700 font-medium">Balance</span>
+                <span
+                  className="px-3 py-0.5 rounded-full text-sm font-bold text-white"
+                  style={{ background: "#3d8a40" }}
+                >
+                  {wheelTotalWon.toLocaleString("fr-FR", { maximumFractionDigits: 0 })} FCFA
+                </span>
+                {showBalanceHistory
+                  ? <ChevronUp className="w-3.5 h-3.5 text-gray-400" />
+                  : <ChevronDown className="w-3.5 h-3.5 text-gray-400" />}
+              </button>
+
+              {/* Gratuit */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-700 font-medium">Gratuit</span>
+                <span
+                  className="px-3 py-0.5 rounded-full text-sm font-bold text-white"
+                  style={{ background: "#3d8a40" }}
+                >
+                  {spinTokens}
+                </span>
+                <button
+                  onClick={() => setShowHistory(true)}
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-white text-base font-bold shrink-0 active:scale-90 transition-transform"
+                  style={{ background: "#E63946" }}
+                >
+                  +
+                </button>
+              </div>
             </div>
 
-            {/* Gratuit */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-700 font-medium">Gratuit</span>
-              <span
-                className="px-3 py-0.5 rounded-full text-sm font-bold text-white"
-                style={{ background: "#3d8a40" }}
-              >
-                {spinTokens}
-              </span>
-              <button
-                onClick={() => setShowHistory(true)}
-                className="w-7 h-7 rounded-full flex items-center justify-center text-white text-base font-bold shrink-0 active:scale-90 transition-transform"
-                style={{ background: "#E63946" }}
-              >
-                +
-              </button>
-            </div>
+            {/* Historique déroulant */}
+            {showBalanceHistory && (
+              <div className="border-t" style={{ borderColor: "#f3f4f6" }}>
+                {spinHistory.length === 0 ? (
+                  <p className="text-center text-gray-400 text-xs py-4">Aucun gain pour l'instant</p>
+                ) : (
+                  <div className="max-h-52 overflow-y-auto divide-y divide-gray-100">
+                    {spinHistory.slice().reverse().map((tx, i) => {
+                      const d = tx.createdAt ? new Date(tx.createdAt) : null;
+                      const dateStr = d
+                        ? `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`
+                        : "";
+                      return (
+                        <div key={i} className="flex items-center justify-between px-4 py-2.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">🎰</span>
+                            <div>
+                              <p className="text-xs font-semibold text-gray-800">{tx.description || "Gain roue"}</p>
+                              <p className="text-[10px] text-gray-400">{dateStr}</p>
+                            </div>
+                          </div>
+                          <span className="text-sm font-extrabold" style={{ color: "#16a34a" }}>
+                            +{Number(tx.amount).toLocaleString("fr-FR")} FCFA
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
