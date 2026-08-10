@@ -177,13 +177,17 @@ function PopupTextsEditor() {
   const [rulesHighlight,  setRulesHighlight]  = useState("");
   const [textDirty, setTextDirty] = useState(false);
 
+  // Charge les valeurs depuis le serveur uniquement si l'admin n'a pas
+  // de modifications en cours (évite d'écraser un texte en cours de saisie).
   useEffect(() => {
-    if (!settings) return;
+    if (!settings || textDirty) return;
     setInviteText(settings.spinWheelInviteText ?? "");
     setInviteHighlight(settings.spinWheelInviteHighlight ?? "");
     setRulesText(settings.spinWheelRulesText ?? "");
     setRulesHighlight(settings.spinWheelRulesHighlight ?? "");
-    setTextDirty(false);
+  // "textDirty" est intentionnellement absent : on veut relire le serveur
+  // seulement quand settings change, pas quand l'admin tape.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings]);
 
   const saveTexts = useMutation({
