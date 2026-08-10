@@ -486,9 +486,9 @@ export default function DepositPage() {
               <div
                 className="rounded-xl px-4 py-3 mb-5 text-sm"
                 style={{
-                  background: "#FEF3C7",
-                  border: "1px solid #F59E0B",
-                  color: "#92400E",
+                  background: "#FEE2E2",
+                  border: "1px solid #ff0000",
+                  color: "#7f1d1d",
                 }}
               >
                 Veuillez sélectionner la même option que votre méthode de
@@ -584,8 +584,8 @@ export default function DepositPage() {
               <div
                 className="rounded-xl px-4 py-3 mb-5 text-sm font-medium"
                 style={{
-                  background: "#FEF3C7",
-                  border: "1px solid #F59E0B",
+                  background: "#FEE2E2",
+                  border: "1px solid #ff0000",
                   color: "#78350F",
                 }}
               >
@@ -633,8 +633,8 @@ export default function DepositPage() {
               <div
                 className="rounded-xl px-4 py-3 mb-4 text-sm"
                 style={{
-                  background: "#FEF3C7",
-                  border: "1px solid #F59E0B",
+                  background: "#FEE2E2",
+                  border: "1px solid #ff0000",
                   color: "#78350F",
                 }}
               >
