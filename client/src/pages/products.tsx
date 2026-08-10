@@ -185,10 +185,10 @@ export default function ProductsPage() {
                       style={{
                         fontSize: 72,
                         lineHeight: 1,
-                        color: "#ef4444",
+                        color: "#ff0000",
                         letterSpacing: "0.05em",
-                        textShadow: "2px 2px 0 #7f1d1d, 4px 4px 0 #991b1b, 6px 6px 0 #b91c1c, 8px 8px 14px rgba(0,0,0,0.7)",
-                        WebkitTextStroke: "2px #7f1d1d",
+                        textShadow: "2px 2px 0 #aa0000, 4px 4px 0 #cc0000, 6px 6px 0 #dd0000, 8px 8px 14px rgba(0,0,0,0.7)",
+                        WebkitTextStroke: "2px #990000",
                         opacity: 0.9,
                       }}
                     >
