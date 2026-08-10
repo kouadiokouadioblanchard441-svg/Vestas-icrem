@@ -28,6 +28,7 @@ const productSchema = z.object({
   minInviteCount: z.string().optional(),
   maxOwned: z.string().optional(),
   collectAtEnd: z.boolean().optional(),
+  stockPercentage: z.number().min(0).max(100).optional(),
 });
 
 type ProductForm = z.infer<typeof productSchema>;
@@ -188,6 +189,50 @@ function ProductFormFields({ form, isPending, submitLabel, onSubmit, series }: P
         )} />
       </div>
 
+      {/* Stock percentage */}
+      <div className="border rounded-lg p-3 space-y-2 bg-slate-50">
+        <FormField control={form.control} name="stockPercentage" render={({ field }) => (
+          <FormItem>
+            <div className="flex items-center justify-between mb-1">
+              <FormLabel className="text-sm font-semibold">
+                📊 Taux de remplissage du stock
+              </FormLabel>
+              <span
+                className="text-sm font-extrabold px-2 py-0.5 rounded-full text-white"
+                style={{
+                  background: (field.value ?? 0) >= 100
+                    ? "#ef4444"
+                    : (field.value ?? 0) >= 75
+                    ? "#8b5cf6"
+                    : (field.value ?? 0) >= 50
+                    ? "#f97316"
+                    : (field.value ?? 0) >= 25
+                    ? "#eab308"
+                    : "#22c55e",
+                }}
+              >
+                {field.value ?? 0}%
+              </span>
+            </div>
+            <FormControl>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={1}
+                value={field.value ?? 0}
+                onChange={e => field.onChange(Number(e.target.value))}
+                className="w-full accent-current h-2 rounded-full cursor-pointer"
+              />
+            </FormControl>
+            <p className="text-[10px] text-muted-foreground">
+              À 100% → produit épuisé, tampon FAKE visible, achat bloqué
+            </p>
+            <FormMessage />
+          </FormItem>
+        )} />
+      </div>
+
       {/* Image */}
       <ImageUploadField form={form} />
 
@@ -214,7 +259,7 @@ export default function AdminProducts() {
 
   const defaultValues: ProductForm = {
     name: "", price: "", dailyEarnings: "", cycleDays: "80",
-    imageUrl: "", seriesId: "", minInviteCount: "0", maxOwned: "0", collectAtEnd: false,
+    imageUrl: "", seriesId: "", minInviteCount: "0", maxOwned: "0", collectAtEnd: false, stockPercentage: 0,
   };
 
   const editForm = useForm<ProductForm>({ resolver: zodResolver(productSchema), defaultValues });
@@ -249,6 +294,7 @@ export default function AdminProducts() {
         minInviteCount: parseInt(data.minInviteCount || "0") || 0,
         maxOwned: parseInt(data.maxOwned || "0") || 0,
         collectAtEnd: !!data.collectAtEnd,
+        stockPercentage: Math.min(100, Math.max(0, data.stockPercentage ?? 0)),
       };
       const res = await apiRequest("PATCH", `/api/admin/products/${id}`, payload);
       if (!res.ok) { const r = await res.json(); throw new Error(r.message || "Erreur"); }
@@ -302,6 +348,7 @@ export default function AdminProducts() {
       minInviteCount: String(product.minInviteCount ?? 0),
       maxOwned: String(product.maxOwned ?? 0),
       collectAtEnd: product.collectAtEnd ?? false,
+      stockPercentage: product.stockPercentage ?? 0,
     });
   };
 

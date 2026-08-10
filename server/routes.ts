@@ -467,6 +467,9 @@ export async function registerRoutes(
       if (product.isFree) {
         return res.status(400).json({ message: "Ce produit n'est pas disponible à l'achat" });
       }
+      if ((product.stockPercentage ?? 0) >= 100) {
+        return res.status(400).json({ message: "Ce produit est épuisé — stock complet" });
+      }
 
       const userId = req.session.userId!;
 
@@ -2192,7 +2195,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/products", requireAdmin, async (req, res) => {
     try {
-      const { name, price, dailyEarnings, cycleDays, imageUrl, seriesId, minInviteCount, maxOwned } = req.body;
+      const { name, price, dailyEarnings, cycleDays, imageUrl, seriesId, minInviteCount, maxOwned, collectAtEnd, stockPercentage } = req.body;
       if (!name || !price || !dailyEarnings || !cycleDays) {
         return res.status(400).json({ message: "Champs requis manquants" });
       }
@@ -2212,6 +2215,8 @@ export async function registerRoutes(
         seriesId: seriesId ? parseInt(seriesId) : null,
         minInviteCount: parseInt(minInviteCount) || 0,
         maxOwned: parseInt(maxOwned) || 0,
+        collectAtEnd: !!collectAtEnd,
+        stockPercentage: Math.min(100, Math.max(0, parseInt(stockPercentage) || 0)),
       });
       await storage.logAdminAction(req.session.userId!, "create_product", null, `Produit ${product.name} créé`);
       res.json(product);
@@ -2227,6 +2232,7 @@ export async function registerRoutes(
       if (body.seriesId !== undefined) body.seriesId = body.seriesId ? parseInt(body.seriesId) : null;
       if (body.minInviteCount !== undefined) body.minInviteCount = parseInt(body.minInviteCount) || 0;
       if (body.maxOwned !== undefined) body.maxOwned = parseInt(body.maxOwned) || 0;
+      if (body.stockPercentage !== undefined) body.stockPercentage = Math.min(100, Math.max(0, parseInt(body.stockPercentage) || 0));
       const product = await storage.updateProduct(parseInt(req.params.id as string), body);
       await storage.logAdminAction(req.session.userId!, "update_product", null, `Produit ${product.id} modifié`);
       res.json(product);

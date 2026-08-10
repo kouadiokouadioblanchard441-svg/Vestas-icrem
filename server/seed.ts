@@ -22,6 +22,7 @@ export async function seed() {
   await db.execute(sql`ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "min_invite_count" integer NOT NULL DEFAULT 0`);
   await db.execute(sql`ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "max_owned" integer NOT NULL DEFAULT 0`);
   await db.execute(sql`ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "collect_at_end" boolean NOT NULL DEFAULT false`);
+  await db.execute(sql`ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "stock_percentage" integer NOT NULL DEFAULT 0`);
 
   // Create session table for connect-pg-simple (if not exists)
   await db.execute(sql`

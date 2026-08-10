@@ -92,6 +92,8 @@ export const products = pgTable("products", {
   maxOwned: integer("max_owned").notNull().default(0),                // 0 = illimité
   // Collect mode: false = daily collect, true = collect only at end of cycle
   collectAtEnd: boolean("collect_at_end").notNull().default(false),
+  // Stock saturation 0-100 (admin-controlled). At 100 → product is sold out / FAKE
+  stockPercentage: integer("stock_percentage").notNull().default(0),
 });
 
 // User products (investments)

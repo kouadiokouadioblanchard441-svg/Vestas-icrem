@@ -17,6 +17,32 @@ const TAB_ACTIVE_BG = "rgba(255,255,255,0.55)";
 const TAB_BG   = "#5a7228";
 const BUY_BG   = "#3d5818";
 
+/* ── Arc-en-ciel pour la barre de progression ── */
+// 0%→vert · 25%→jaune · 50%→orange · 75%→violet · 100%→rouge
+const RAINBOW_STOPS: Array<[number, [number, number, number]]> = [
+  [0,   [34,  197,  94]],   // vert
+  [25,  [234, 179,   8]],   // jaune
+  [50,  [249, 115,  22]],   // orange
+  [75,  [139,  92, 246]],   // violet
+  [100, [239,  68,  68]],   // rouge
+];
+
+function rainbowColor(pct: number): string {
+  const clamped = Math.max(0, Math.min(100, pct));
+  for (let i = 0; i < RAINBOW_STOPS.length - 1; i++) {
+    const [p0, c0] = RAINBOW_STOPS[i];
+    const [p1, c1] = RAINBOW_STOPS[i + 1];
+    if (clamped >= p0 && clamped <= p1) {
+      const t = (clamped - p0) / (p1 - p0);
+      const r = Math.round(c0[0] + (c1[0] - c0[0]) * t);
+      const g = Math.round(c0[1] + (c1[1] - c0[1]) * t);
+      const b = Math.round(c0[2] + (c1[2] - c0[2]) * t);
+      return `rgb(${r},${g},${b})`;
+    }
+  }
+  return "rgb(239,68,68)";
+}
+
 const ALL_TAB = "TOUS";
 
 interface ProductWithOwnership extends Product {
@@ -138,13 +164,39 @@ export default function ProductsPage() {
             const roi = Math.round(
               ((Number(product.totalReturn) - Number(product.price)) / Number(product.price)) * 100
             );
+            const stock = Math.min(100, Math.max(0, Number(product.stockPercentage) || 0));
+            const isSoldOut = stock >= 100;
+            const barColor = rainbowColor(stock);
             return (
               <div
                 key={product.id}
-                className="rounded-2xl overflow-hidden shadow-lg"
-                style={{ background: CARD_BG }}
+                className="rounded-2xl overflow-hidden shadow-lg relative"
+                style={{ background: CARD_BG, opacity: isSoldOut ? 0.85 : 1 }}
                 data-testid={`product-card-${product.id}`}
               >
+                {/* ── Tampon FAKE 3D quand stock = 100% ── */}
+                {isSoldOut && (
+                  <div
+                    className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"
+                    style={{ transform: "rotate(-20deg)" }}
+                  >
+                    <span
+                      className="font-black select-none"
+                      style={{
+                        fontSize: 72,
+                        lineHeight: 1,
+                        color: "#ef4444",
+                        letterSpacing: "0.05em",
+                        textShadow: "2px 2px 0 #7f1d1d, 4px 4px 0 #991b1b, 6px 6px 0 #b91c1c, 8px 8px 14px rgba(0,0,0,0.7)",
+                        WebkitTextStroke: "2px #7f1d1d",
+                        opacity: 0.9,
+                      }}
+                    >
+                      FAKE
+                    </span>
+                  </div>
+                )}
+
                 {/* ── Nom produit ── */}
                 <div className="px-3 pt-3 pb-1">
                   <p className="font-extrabold italic text-white text-base">{product.name}</p>
@@ -176,35 +228,38 @@ export default function ProductsPage() {
                     </div>
 
 
-                    {/* BUY button */}
+                    {/* BUY button — désactivé si stock épuisé */}
                     <button
-                      onClick={() => handleBuy(product)}
-                      disabled={purchaseMutation.isPending}
+                      onClick={() => !isSoldOut && handleBuy(product)}
+                      disabled={purchaseMutation.isPending || isSoldOut}
                       className="mt-2 w-full py-2 rounded-full font-extrabold text-white text-sm tracking-widest shadow active:scale-95 transition-transform disabled:opacity-60 flex items-center justify-center gap-1"
-                      style={{ background: BUY_BG }}
+                      style={{ background: isSoldOut ? "#6b7280" : BUY_BG }}
                       data-testid={`button-purchase-${product.id}`}
                     >
-                      {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "BUY"}
+                      {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : isSoldOut ? "ÉPUISÉ" : "BUY"}
                     </button>
                   </div>
                 </div>
 
-                {/* ── Barre de progression ── */}
+                {/* ── Barre de progression arc-en-ciel ── */}
                 <div
-                  className="mx-3 mb-3 rounded-full overflow-hidden flex items-center justify-center relative"
-                  style={{ background: "white", height: 28 }}
+                  className="mx-3 mb-3 rounded-full overflow-hidden relative"
+                  style={{ background: "rgba(255,255,255,0.25)", height: 28 }}
                 >
+                  {/* Remplissage coloré */}
                   <div
-                    className="absolute left-0 top-0 bottom-0 rounded-full"
+                    className="absolute left-0 top-0 bottom-0 rounded-full transition-all duration-700"
                     style={{
-                      width: product.isOwned ? "1%" : "0%",
-                      background: "rgba(255,255,255,0.4)",
-                      transition: "width 0.5s ease",
+                      width: `${stock}%`,
+                      background: barColor,
                     }}
                   />
-                  <span className="relative z-10 text-black font-bold text-sm">
-                    {product.isOwned ? "En cours" : "0.00%"}
-                  </span>
+                  {/* Texte centré */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="relative z-10 text-white font-extrabold text-sm drop-shadow-md">
+                      {stock}%
+                    </span>
+                  </div>
                 </div>
               </div>
             );
