@@ -4,8 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getCountryByCode } from "@/lib/countries";
-import { Loader2, Shield, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { Loader2, Shield, ChevronRight, Download } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -32,6 +32,38 @@ export default function AccountPage() {
   const [, navigate] = useLocation();
   const [showPinModal, setShowPinModal] = useState(false);
   const [adminPin, setAdminPin] = useState("");
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+  const [installing, setInstalling] = useState(false);
+
+  useEffect(() => {
+    if ((window as any)._installPrompt) setInstallPrompt((window as any)._installPrompt);
+    if ((window as any)._appInstalled) setIsInstalled(true);
+    const onPrompt = (e: any) => { e.preventDefault(); setInstallPrompt(e); };
+    const onInstalled = () => { setIsInstalled(true); setInstallPrompt(null); };
+    window.addEventListener("beforeinstallprompt", onPrompt);
+    window.addEventListener("appinstalled", onInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onPrompt);
+      window.removeEventListener("appinstalled", onInstalled);
+    };
+  }, []);
+
+  const handleInstall = async () => {
+    if (!installPrompt) return;
+    setInstalling(true);
+    try {
+      await installPrompt.prompt();
+      const { outcome } = await installPrompt.userChoice;
+      if (outcome === "accepted") {
+        setIsInstalled(true);
+        setInstallPrompt(null);
+        toast({ title: "Application installée avec succès !" });
+      }
+    } finally {
+      setInstalling(false);
+    }
+  };
 
   const { data: products } = useQuery<any[]>({
     queryKey: ["/api/user-products"],
@@ -256,6 +288,26 @@ export default function AccountPage() {
               </button>
             </Link>
           ))}
+
+          {/* ── Application (PWA install) ── */}
+          <button
+            onClick={handleInstall}
+            disabled={isInstalled || installing}
+            className="flex items-center gap-3 w-full px-4 py-4 active:opacity-70 border-t border-white/5"
+            data-testid="button-install-pwa"
+          >
+            <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #4a5e22, #2d3816)" }}>
+              <img src="/icon-192.png" alt="Application" className="w-9 h-9 object-cover" />
+            </div>
+            <span className="flex-1 text-white font-bold text-sm text-left">Application</span>
+            {installing ? (
+              <Loader2 className="w-4 h-4 text-white/60 animate-spin shrink-0" />
+            ) : isInstalled ? (
+              <span className="text-green-400 text-xs font-bold shrink-0">Installée ✓</span>
+            ) : (
+              <Download className="w-4 h-4 text-white/40 shrink-0" />
+            )}
+          </button>
         </div>
 
         {/* ── Déconnexion ── */}
