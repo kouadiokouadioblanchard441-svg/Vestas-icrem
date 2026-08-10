@@ -217,7 +217,7 @@ export default function DepositPage() {
       {/* ══ HEADER ══ */}
       {isOlive ? (
         <header className="flex items-center px-4 py-4">
-          <Link href="/wallet">
+          <Link href="/">
             <button className="p-1" data-testid="button-back-account">
               <ChevronLeft className="w-6 h-6 text-white" strokeWidth={2.5} />
             </button>
@@ -251,7 +251,7 @@ export default function DepositPage() {
             onClick={() => {
               if (step === "phone") setStep("operator");
               else if (step === "info") setStep("phone");
-              else if (step === "done") setStep("amount");
+              else if (step === "done") { window.location.href = "/"; return; }
             }}
             data-testid="button-deposit-back"
           >
@@ -729,7 +729,7 @@ export default function DepositPage() {
                   pour confirmer.
                 </p>
 
-                <Link href="/wallet">
+                <Link href="/">
                   <button
                     className="px-10 py-3 rounded-xl font-semibold text-white text-sm transition active:opacity-80"
                     style={{ background: "#22C55E" }}
