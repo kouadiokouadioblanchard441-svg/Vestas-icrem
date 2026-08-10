@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import landscapeImg from "@assets/portable-charger-power-banks_480x480_d6b67d82-6118-4295-be02-e_1784966597898.jpg";
+import landscapeImg from "@assets/composition-isometrique-hypothecaire-images-tas-pieces-monnaie_1786376427298.jpg";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Eye, EyeOff, ChevronLeft } from "lucide-react";
@@ -173,7 +173,7 @@ export default function ChangePasswordPage() {
         </div>
       </div>
 
-      <img src={landscapeImg} alt="ASUS" className="w-full object-cover object-top" style={{ maxHeight: 220 }} />
+      <img src={landscapeImg} alt="Finance" className="w-full object-contain bg-white" style={{ maxHeight: 220 }} />
     </div>
   );
 }
