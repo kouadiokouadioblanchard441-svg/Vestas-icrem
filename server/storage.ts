@@ -572,34 +572,37 @@ export class DatabaseStorage implements IStorage {
           const earningsPerCycle = parseFloat(product.dailyEarnings as string);
           const totalEarningsForProduct = parseFloat((earningsPerCycle * cyclesToCredit).toFixed(2));
 
-          // La nouvelle référence = moment exact du traitement (secondes comprises)
-          // Si collecte en retard, c'est cette heure qui devient le prochain point de départ
           const newLastEarningDate = new Date(now);
-
-          const currentTotal = userEarnings.get(user.id) || 0;
-          userEarnings.set(user.id, currentTotal + totalEarningsForProduct);
-
           const newDaysRemaining = userProduct.daysRemaining - cyclesToCredit;
           const updateData: any = {
             lastEarningDate: newLastEarningDate,
             daysRemaining: newDaysRemaining,
             totalEarned: (parseFloat(userProduct.totalEarned || "0") + totalEarningsForProduct).toFixed(2),
           };
-          
+
           if (newDaysRemaining <= 0) {
             updateData.isActive = false;
           }
 
           await db.update(userProducts).set(updateData).where(eq(userProducts.id, userProduct.id));
 
-          for (let i = 0; i < cyclesToCredit; i++) {
-            await this.createTransaction({
-              userId: user.id,
-              type: "earning",
-              amount: earningsPerCycle.toString(),
-              description: `Gains ${product.name}`,
-            });
+          // collectAtEnd: gains accumulés, pas crédités avant la fin du cycle
+          // On ne met PAS à jour todayEarnings/totalEarnings de l'utilisateur ici.
+          if (!product.collectAtEnd) {
+            const currentTotal = userEarnings.get(user.id) || 0;
+            userEarnings.set(user.id, currentTotal + totalEarningsForProduct);
+
+            for (let i = 0; i < cyclesToCredit; i++) {
+              await this.createTransaction({
+                userId: user.id,
+                type: "earning",
+                amount: earningsPerCycle.toString(),
+                description: `Gains ${product.name}`,
+              });
+            }
           }
+          // Note: for collectAtEnd, the transaction & balance update happen when user
+          // manually collects via POST /api/user/collect-final/:userProductId
         }
       } catch (productError) {
         console.error(`processEarnings error for product ${userProduct.id}:`, productError);

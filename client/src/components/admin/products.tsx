@@ -14,7 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Edit, Loader2, TrendingUp, Plus, Trash2, Users, ShoppingBag } from "lucide-react";
+import { Edit, Loader2, TrendingUp, Plus, Trash2, Users, ShoppingBag, Lock } from "lucide-react";
 import type { Product, ProductSeries } from "@shared/schema";
 import ImageUploader from "@/components/admin/image-uploader";
 
@@ -27,6 +27,7 @@ const productSchema = z.object({
   seriesId: z.string().optional(),
   minInviteCount: z.string().optional(),
   maxOwned: z.string().optional(),
+  collectAtEnd: z.boolean().optional(),
 });
 
 type ProductForm = z.infer<typeof productSchema>;
@@ -162,6 +163,31 @@ function ProductFormFields({ form, isPending, submitLabel, onSubmit, series }: P
         </div>
       </div>
 
+      {/* Collect mode */}
+      <div className="border rounded-lg p-3 bg-amber-50 border-amber-200">
+        <FormField control={form.control} name="collectAtEnd" render={({ field }) => (
+          <FormItem>
+            <div className="flex items-start gap-3">
+              <Switch
+                checked={!!field.value}
+                onCheckedChange={field.onChange}
+                className="mt-0.5"
+              />
+              <div>
+                <FormLabel className="text-sm font-semibold flex items-center gap-1.5 cursor-pointer">
+                  <Lock className="w-3.5 h-3.5 text-amber-600" />
+                  Collecte en fin de cycle
+                </FormLabel>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Les gains s'accumulent pendant tout le cycle. L'utilisateur ne peut collecter qu'à la fin (ex: 2 000 FCFA → 400 FCFA/j × 30 j, collecte totale à J+30).
+                </p>
+              </div>
+            </div>
+            <FormMessage />
+          </FormItem>
+        )} />
+      </div>
+
       {/* Image */}
       <ImageUploadField form={form} />
 
@@ -188,7 +214,7 @@ export default function AdminProducts() {
 
   const defaultValues: ProductForm = {
     name: "", price: "", dailyEarnings: "", cycleDays: "80",
-    imageUrl: "", seriesId: "", minInviteCount: "0", maxOwned: "0",
+    imageUrl: "", seriesId: "", minInviteCount: "0", maxOwned: "0", collectAtEnd: false,
   };
 
   const editForm = useForm<ProductForm>({ resolver: zodResolver(productSchema), defaultValues });
@@ -222,6 +248,7 @@ export default function AdminProducts() {
         seriesId: data.seriesId ? parseInt(data.seriesId) : null,
         minInviteCount: parseInt(data.minInviteCount || "0") || 0,
         maxOwned: parseInt(data.maxOwned || "0") || 0,
+        collectAtEnd: !!data.collectAtEnd,
       };
       const res = await apiRequest("PATCH", `/api/admin/products/${id}`, payload);
       if (!res.ok) { const r = await res.json(); throw new Error(r.message || "Erreur"); }
@@ -274,6 +301,7 @@ export default function AdminProducts() {
       seriesId: product.seriesId ? String(product.seriesId) : "",
       minInviteCount: String(product.minInviteCount ?? 0),
       maxOwned: String(product.maxOwned ?? 0),
+      collectAtEnd: product.collectAtEnd ?? false,
     });
   };
 
@@ -329,6 +357,11 @@ export default function AdminProducts() {
                       {Number(product.maxOwned) > 0 && (
                         <span className="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full">
                           🛒 Max {product.maxOwned}/utilisateur
+                        </span>
+                      )}
+                      {product.collectAtEnd && (
+                        <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">
+                          🔒 Collecte fin de cycle
                         </span>
                       )}
                     </div>

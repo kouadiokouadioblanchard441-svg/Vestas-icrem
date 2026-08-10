@@ -90,6 +90,8 @@ export const products = pgTable("products", {
   seriesId: integer("series_id").references(() => productSeries.id),
   minInviteCount: integer("min_invite_count").notNull().default(0),   // 0 = aucune condition
   maxOwned: integer("max_owned").notNull().default(0),                // 0 = illimité
+  // Collect mode: false = daily collect, true = collect only at end of cycle
+  collectAtEnd: boolean("collect_at_end").notNull().default(false),
 });
 
 // User products (investments)

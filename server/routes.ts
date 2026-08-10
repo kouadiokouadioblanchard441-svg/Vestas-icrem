@@ -387,6 +387,65 @@ export async function registerRoutes(
   });
 
   // Public — series list (used by products page tabs)
+  // Collect final payout for a collectAtEnd product (cycle must be complete)
+  app.post("/api/user/collect-final/:userProductId", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session.userId!;
+      const userProductId = parseInt(req.params.userProductId as string);
+      const userProductsList = await storage.getAllUserProducts(userId);
+      const entry = userProductsList.find(e => e.userProduct.id === userProductId);
+
+      if (!entry) return res.status(404).json({ message: "Produit introuvable" });
+      const { userProduct, product } = entry;
+
+      if (!product.collectAtEnd) {
+        return res.status(400).json({ message: "Ce produit ne nécessite pas de collecte manuelle finale" });
+      }
+      if (userProduct.daysRemaining > 0) {
+        return res.status(400).json({ message: `Cycle non terminé — encore ${userProduct.daysRemaining} jour(s) restant(s)` });
+      }
+
+      const amount = parseFloat(userProduct.totalEarned || "0");
+      if (amount <= 0) return res.status(400).json({ message: "Aucun gain à collecter" });
+
+      // Check if already collected (totalEarned stays but we mark it)
+      // We use a convention: after collect, set totalEarned to negative or use a dedicated flag.
+      // Simpler: check if userProduct is already inactive with daysRemaining=0 AND was already processed.
+      // We'll use a "collected" marker via the existing isActive field: after final collect, we update
+      // totalEarned to 0 so a second collect returns 0.
+      // Actually safest: mark with a sentinel by setting totalEarned to "0" after payout.
+      // The UI will not show collect button when totalEarned is 0.
+
+      const freshUser = await storage.getUser(userId);
+      if (!freshUser) return res.status(401).json({ message: "Utilisateur introuvable" });
+
+      const newBalance = parseFloat(freshUser.balance || "0") + amount;
+      const newTotalEarnings = parseFloat(freshUser.totalEarnings || "0") + amount;
+
+      await storage.updateUser(userId, {
+        balance: newBalance.toFixed(2),
+        totalEarnings: newTotalEarnings.toFixed(2),
+      });
+
+      // Mark as collected by zeroing totalEarned
+      await storage.updateUserProduct(userProductId, { totalEarned: "0" });
+
+      await storage.createTransaction({
+        userId,
+        type: "earning",
+        amount: amount.toFixed(2),
+        description: `Collecte finale — ${product.name}`,
+      });
+
+      await storage.logAdminAction(userId, "collect_final", null, `Collecte finale ${product.name} : ${amount} FCFA`);
+
+      const updatedUser = await storage.getUser(userId);
+      res.json({ success: true, collected: amount, newBalance: updatedUser?.balance || "0" });
+    } catch (e: any) {
+      res.status(500).json({ message: e.message });
+    }
+  });
+
   app.get("/api/product-series", requireAuth, async (req, res) => {
     try {
       const series = await storage.getActiveProductSeries();
@@ -478,6 +537,8 @@ export async function registerRoutes(
 
       for (const { userProduct, product } of userProductsList) {
         try {
+          // collectAtEnd products are collected via /api/user/collect-final/:id
+          if (product.collectAtEnd) continue;
           if (!userProduct.isActive || userProduct.daysRemaining <= 0) continue;
 
           const purchaseDate = userProduct.purchaseDate ? new Date(userProduct.purchaseDate) : null;
