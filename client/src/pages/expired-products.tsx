@@ -75,9 +75,30 @@ export default function ExpiredProductsPage() {
             return (
               <div
                 key={up.id}
-                className="rounded-2xl overflow-hidden shadow-lg"
-                style={{ background: "#4a5e22" }}
+                className="rounded-2xl overflow-hidden shadow-lg relative"
+                style={{ background: "#4a5e22", opacity: 0.9 }}
               >
+                {/* ── Tampon FAKE 3D ── */}
+                <div
+                  className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"
+                  style={{ transform: "rotate(-20deg)" }}
+                >
+                  <span
+                    className="font-black select-none"
+                    style={{
+                      fontSize: 72,
+                      lineHeight: 1,
+                      color: "#ff0000",
+                      letterSpacing: "0.05em",
+                      textShadow: "2px 2px 0 #aa0000, 4px 4px 0 #cc0000, 6px 6px 0 #dd0000, 8px 8px 14px rgba(0,0,0,0.7)",
+                      WebkitTextStroke: "2px #990000",
+                      opacity: 0.9,
+                    }}
+                  >
+                    FAKE
+                  </span>
+                </div>
+
                 {/* Header carte */}
                 <div
                   className="flex items-center justify-between px-4 py-2.5"
