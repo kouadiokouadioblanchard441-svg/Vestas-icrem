@@ -296,8 +296,8 @@ export default function AccountPage() {
             className="flex items-center gap-3 w-full px-4 py-4 active:opacity-70 border-t border-white/5"
             data-testid="button-install-pwa"
           >
-            <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #4a5e22, #2d3816)" }}>
-              <img src="/icon-192.png" alt="Application" className="w-9 h-9 object-cover" />
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "linear-gradient(135deg, #4a5e22, #2d3816)" }}>
+              <Download className="w-5 h-5 text-white" />
             </div>
             <span className="flex-1 text-white font-bold text-sm text-left">Application</span>
             {installing ? (
