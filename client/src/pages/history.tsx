@@ -21,44 +21,48 @@ interface HistoryItem {
 function formatDate(iso: string) {
   const d = new Date(iso);
   const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}  ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())}  ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
 function formatRef(id: string) {
-  return `#${String(id).padStart(8, "0")}`;
+  return `TXN-${String(id).padStart(8, "0")}`;
 }
 
-const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> = {
-  completed:   { label: "Complété",   color: "#16a34a", bg: "#dcfce7" },
-  approved:    { label: "Arrivé",     color: "#16a34a", bg: "#dcfce7" },
-  pending:     { label: "En attente", color: "#d97706", bg: "#fef9c3" },
-  pending_2fa: { label: "2FA requis", color: "#d97706", bg: "#fef9c3" },
-  processing:  { label: "En cours",  color: "#2563eb", bg: "#dbeafe" },
-  rejected:    { label: "Rejeté",    color: "#dc2626", bg: "#fee2e2" },
-  failed:      { label: "Échoué",    color: "#dc2626", bg: "#fee2e2" },
+const STATUS_MAP: Record<string, { label: string; color: string }> = {
+  completed:   { label: "COMPLÉTÉ",   color: "#00b300" },
+  approved:    { label: "ARRIVÉ",     color: "#00b300" },
+  pending:     { label: "EN ATTENTE", color: "#ff8c00" },
+  pending_2fa: { label: "2FA REQUIS", color: "#ff8c00" },
+  processing:  { label: "EN COURS",  color: "#0055ff" },
+  rejected:    { label: "REJETÉ",    color: "#ff0000" },
+  failed:      { label: "ÉCHOUÉ",    color: "#ff0000" },
 };
 
 const CATEGORY_META: Record<string, { label: string; color: string; sign: "+" | "-"; emoji: string }> = {
-  deposit:     { label: "Dépôt",              color: "#1d4ed8", sign: "+", emoji: "💳" },
-  withdrawal:  { label: "Retrait",            color: "#dc2626", sign: "-", emoji: "🏧" },
-  earning:     { label: "Gain produit",       color: "#16a34a", sign: "+", emoji: "📈" },
-  commission:  { label: "Bonus parrainage",   color: "#16a34a", sign: "+", emoji: "🤝" },
-  bonus:       { label: "Bonus",              color: "#16a34a", sign: "+", emoji: "🎁" },
-  gift_code:   { label: "Code cadeau",        color: "#16a34a", sign: "+", emoji: "🎟️" },
-  task_reward: { label: "Récompense tâche",   color: "#16a34a", sign: "+", emoji: "✅" },
-  spin_reward: { label: "Récompense spin",    color: "#a21caf", sign: "+", emoji: "🎰" },
+  deposit:     { label: "DÉPÔT",              color: "#0055ff", sign: "+", emoji: "💳" },
+  withdrawal:  { label: "RETRAIT",            color: "#ff0000", sign: "-", emoji: "🏧" },
+  earning:     { label: "GAIN PRODUIT",       color: "#00b300", sign: "+", emoji: "📈" },
+  commission:  { label: "BONUS PARRAINAGE",   color: "#00b300", sign: "+", emoji: "🤝" },
+  bonus:       { label: "BONUS",              color: "#00b300", sign: "+", emoji: "🎁" },
+  gift_code:   { label: "CODE CADEAU",        color: "#00b300", sign: "+", emoji: "🎟️" },
+  task_reward: { label: "RÉCOMPENSE TÂCHE",   color: "#00b300", sign: "+", emoji: "✅" },
+  spin_reward: { label: "RÉCOMPENSE SPIN",    color: "#9900cc", sign: "+", emoji: "🎰" },
 };
 
 function getCategoryMeta(category: string) {
-  return CATEGORY_META[category] ?? { label: category, color: "#6b7280", sign: "+" as const, emoji: "💰" };
+  return CATEGORY_META[category] ?? { label: category.toUpperCase(), color: "#333333", sign: "+" as const, emoji: "💰" };
 }
 
-// ── Receipt row ──────────────────────────────────────────────────────────────
-function Row({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
+// ── Ligne de détail ──────────────────────────────────────────────────────────
+function Row({ label, value, valueColor }: { label: string; value: string; valueColor?: string }) {
   return (
-    <div className="flex items-center justify-between py-0.5">
-      <span className="text-gray-500 text-xs">{label}</span>
-      <span className={`text-xs ${bold ? "font-extrabold text-gray-900" : "font-semibold text-gray-700"}`}>{value}</span>
+    <div className="flex items-start justify-between gap-4 py-1" style={{ borderBottom: "1px dotted #e5e7eb" }}>
+      <span style={{ color: "#888888", fontSize: 11, fontFamily: "monospace", textTransform: "uppercase", letterSpacing: 1, whiteSpace: "nowrap" }}>
+        {label}
+      </span>
+      <span style={{ color: valueColor ?? "#111111", fontSize: 12, fontFamily: "monospace", fontWeight: 700, textAlign: "right" }}>
+        {value}
+      </span>
     </div>
   );
 }
@@ -72,7 +76,7 @@ export default function HistoryPage() {
   });
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#f3f4f6" }}>
+    <div className="flex flex-col min-h-screen" style={{ background: "#ececec" }}>
 
       {/* Header */}
       <header className="flex items-center px-4 py-4 bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -81,13 +85,13 @@ export default function HistoryPage() {
             <ChevronLeft className="w-6 h-6 text-gray-800" strokeWidth={2.5} />
           </button>
         </Link>
-        <h1 className="flex-1 text-center font-extrabold text-gray-900 pr-8 text-lg tracking-wide">
+        <h1 className="flex-1 text-center font-extrabold text-gray-900 pr-8 text-lg tracking-widest uppercase" style={{ fontFamily: "monospace" }}>
           Historique
         </h1>
       </header>
 
       {/* List */}
-      <div className="flex-1 px-4 py-4 space-y-3 pb-10">
+      <div className="flex-1 px-3 py-4 space-y-4 pb-10">
         {isLoading ? (
           <div className="flex justify-center py-20">
             <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
@@ -99,118 +103,107 @@ export default function HistoryPage() {
           </div>
         ) : (
           items.map((item) => {
-            const cat  = getCategoryMeta(item.category);
-            const st   = STATUS_MAP[item.status] ?? { label: item.status, color: "#6b7280", bg: "#f3f4f6" };
-            const amt  = parseFloat(item.amount);
+            const cat = getCategoryMeta(item.category);
+            const st  = STATUS_MAP[item.status] ?? { label: item.status.toUpperCase(), color: "#888888" };
+            const amt = parseFloat(item.amount);
             const fees = item.extra.fees ? parseFloat(item.extra.fees) : null;
             const net  = item.extra.netAmount ? parseFloat(item.extra.netAmount) : null;
+            const amtColor = cat.sign === "+" ? "#00b300" : "#ff0000";
 
             return (
               <div
                 key={item.id}
                 data-testid={`history-item-${item.id}`}
-                className="bg-white rounded-none shadow-sm"
                 style={{
-                  /* bord supérieur et inférieur plein, pas de radius pour l'effet ticket */
-                  border: "1px solid #d1d5db",
+                  background: "#ffffff",
+                  border: "1px solid #cccccc",
                   borderRadius: 0,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
                   position: "relative",
                   overflow: "visible",
+                  fontFamily: "monospace",
                 }}
               >
-                {/* ─── En-tête du reçu ─────────────────────────────── */}
-                <div
-                  className="flex items-center justify-between px-4 py-3"
-                  style={{ borderBottom: "1px solid #e5e7eb", background: "#fafafa" }}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">{cat.emoji}</span>
-                    <span className="font-extrabold text-sm text-gray-900 tracking-wide uppercase">
-                      {cat.label}
+
+                {/* ══ EN-TÊTE ══════════════════════════════════════════ */}
+                <div style={{ background: "#111111", padding: "10px 16px" }}>
+                  {/* Logo / App name */}
+                  <div style={{ textAlign: "center", marginBottom: 6 }}>
+                    <span style={{ color: "#ffffff", fontWeight: 900, fontSize: 13, letterSpacing: 4, textTransform: "uppercase" }}>
+                      ★ ASUS INVEST ★
                     </span>
                   </div>
-                  <span
-                    className="px-2.5 py-0.5 rounded-full text-[11px] font-bold"
-                    style={{ background: st.bg, color: st.color }}
-                  >
-                    {st.label}
-                  </span>
+                  <div style={{ borderTop: "1px solid #444444", marginBottom: 6 }} />
+                  {/* Catégorie + Statut */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ color: cat.color, fontWeight: 900, fontSize: 13, letterSpacing: 1 }}>
+                      {cat.emoji} {cat.label}
+                    </span>
+                    <span style={{ color: st.color, fontWeight: 900, fontSize: 11, letterSpacing: 1 }}>
+                      ● {st.label}
+                    </span>
+                  </div>
                 </div>
 
-                {/* ─── Corps du reçu ───────────────────────────────── */}
-                <div className="px-4 py-3 space-y-0.5">
-                  <Row label="Référence" value={formatRef(item.id)} />
-                  <Row label="Date" value={formatDate(item.createdAt)} />
+                {/* ══ CORPS ════════════════════════════════════════════ */}
+                <div style={{ padding: "12px 16px", display: "flex", flexDirection: "column", gap: 0 }}>
+                  <Row label="Réf"    value={formatRef(item.id)}         valueColor="#111111" />
+                  <Row label="Date"   value={formatDate(item.createdAt)} valueColor="#333333" />
                   {item.description && (
-                    <Row label="Détail" value={item.description} />
+                    <Row label="Détail" value={item.description}         valueColor="#333333" />
                   )}
                   {item.extra.paymentMethod && (
-                    <Row label="Méthode" value={item.extra.paymentMethod} />
+                    <Row label="Méthode" value={item.extra.paymentMethod} valueColor="#333333" />
                   )}
                 </div>
 
-                {/* ─── Séparateur perforé ───────────────────────────── */}
-                <div
-                  className="relative mx-0 my-0"
-                  style={{
-                    borderTop: "2px dashed #d1d5db",
-                    marginLeft: 0,
-                    marginRight: 0,
-                  }}
-                >
-                  {/* demi-cercles gauche et droite */}
-                  <span
-                    style={{
-                      position: "absolute",
-                      left: -9,
-                      top: -9,
-                      width: 18,
-                      height: 18,
-                      borderRadius: "50%",
-                      background: "#f3f4f6",
-                      border: "1px solid #d1d5db",
-                      display: "block",
-                    }}
-                  />
-                  <span
-                    style={{
-                      position: "absolute",
-                      right: -9,
-                      top: -9,
-                      width: 18,
-                      height: 18,
-                      borderRadius: "50%",
-                      background: "#f3f4f6",
-                      border: "1px solid #d1d5db",
-                      display: "block",
-                    }}
-                  />
+                {/* ══ SÉPARATEUR PERFORÉ ═══════════════════════════════ */}
+                <div style={{ position: "relative", margin: "0 0" }}>
+                  <div style={{ borderTop: "2px dashed #cccccc" }} />
+                  {/* demi-cercles */}
+                  <div style={{
+                    position: "absolute", left: -10, top: -10,
+                    width: 20, height: 20, borderRadius: "50%",
+                    background: "#ececec", border: "1px solid #cccccc",
+                  }} />
+                  <div style={{
+                    position: "absolute", right: -10, top: -10,
+                    width: 20, height: 20, borderRadius: "50%",
+                    background: "#ececec", border: "1px solid #cccccc",
+                  }} />
                 </div>
 
-                {/* ─── Montant (pied de reçu) ───────────────────────── */}
-                <div className="px-4 pt-4 pb-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Montant</span>
-                    <span
-                      className="font-black text-xl tracking-tight"
-                      style={{ color: cat.sign === "+" ? "#16a34a" : "#dc2626" }}
-                    >
-                      {cat.sign}&nbsp;{amt.toLocaleString("fr-FR")}&nbsp;FCFA
+                {/* ══ MONTANT ══════════════════════════════════════════ */}
+                <div style={{ padding: "14px 16px 10px" }}>
+                  {/* Total principal */}
+                  <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 4 }}>
+                    <span style={{ color: "#888888", fontSize: 10, letterSpacing: 2, textTransform: "uppercase" }}>
+                      Montant total
+                    </span>
+                    <span style={{ color: amtColor, fontWeight: 900, fontSize: 22, letterSpacing: -0.5 }}>
+                      {cat.sign}{amt.toLocaleString("fr-FR")} <span style={{ fontSize: 13 }}>FCFA</span>
                     </span>
                   </div>
 
                   {fees !== null && (
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-gray-400">Frais</span>
-                      <span className="text-xs font-semibold text-gray-600">−{fees.toLocaleString("fr-FR")} FCFA</span>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
+                      <span style={{ color: "#888888", fontSize: 11 }}>Frais bancaires</span>
+                      <span style={{ color: "#ff0000", fontWeight: 700, fontSize: 12 }}>−{fees.toLocaleString("fr-FR")} FCFA</span>
                     </div>
                   )}
                   {net !== null && fees !== null && (
-                    <div className="flex items-center justify-between mt-0.5">
-                      <span className="text-xs text-gray-400">Net reçu</span>
-                      <span className="text-xs font-extrabold text-gray-900">{net.toLocaleString("fr-FR")} FCFA</span>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginTop: 2, borderTop: "1px solid #e5e7eb", paddingTop: 4 }}>
+                      <span style={{ color: "#333333", fontSize: 11, fontWeight: 700 }}>Net reçu</span>
+                      <span style={{ color: "#00b300", fontWeight: 900, fontSize: 13 }}>{net.toLocaleString("fr-FR")} FCFA</span>
                     </div>
                   )}
+                </div>
+
+                {/* ══ PIED ═════════════════════════════════════════════ */}
+                <div style={{ background: "#f7f7f7", borderTop: "1px solid #e5e7eb", padding: "6px 16px", textAlign: "center" }}>
+                  <span style={{ color: "#bbbbbb", fontSize: 10, letterSpacing: 2 }}>
+                    MERCI DE VOTRE CONFIANCE — ASUS INVEST
+                  </span>
                 </div>
 
               </div>
