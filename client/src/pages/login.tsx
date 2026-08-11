@@ -181,7 +181,7 @@ export default function LoginPage() {
                 style={{
                   width: 20,
                   height: 20,
-                  borderRadius: 4,
+                  borderRadius: "50%",
                   border: `2px solid ${rememberMe ? "#22a84a" : "rgba(255,255,255,0.6)"}`,
                   background: rememberMe ? "#22a84a" : "rgba(255,255,255,0.15)",
                 }}
