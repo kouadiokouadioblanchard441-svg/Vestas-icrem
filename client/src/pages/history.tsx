@@ -1,6 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { Link } from "wouter";
+import img3dDeposit    from "@assets/3d-deposit.png";
+import img3dWithdrawal from "@assets/3d-withdrawal.png";
+import img3dEarning    from "@assets/3d-earning.png";
+import img3dCommission from "@assets/3d-commission.png";
+import img3dBonus      from "@assets/3d-bonus.png";
+import img3dGiftCode   from "@assets/3d-gift-code.png";
+import img3dTask       from "@assets/3d-task.png";
+import img3dSpin       from "@assets/3d-spin.png";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface HistoryItem {
@@ -38,19 +46,19 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
   failed:      { label: "ÉCHOUÉ",    color: "#ff0000" },
 };
 
-const CATEGORY_META: Record<string, { label: string; color: string; sign: "+" | "-"; emoji: string }> = {
-  deposit:     { label: "DÉPÔT",              color: "#0055ff", sign: "+", emoji: "💳" },
-  withdrawal:  { label: "RETRAIT",            color: "#ff0000", sign: "-", emoji: "🏧" },
-  earning:     { label: "GAIN PRODUIT",       color: "#00b300", sign: "+", emoji: "📈" },
-  commission:  { label: "BONUS PARRAINAGE",   color: "#00b300", sign: "+", emoji: "🤝" },
-  bonus:       { label: "BONUS",              color: "#00b300", sign: "+", emoji: "🎁" },
-  gift_code:   { label: "CODE CADEAU",        color: "#00b300", sign: "+", emoji: "🎟️" },
-  task_reward: { label: "RÉCOMPENSE TÂCHE",   color: "#00b300", sign: "+", emoji: "✅" },
-  spin_reward: { label: "RÉCOMPENSE SPIN",    color: "#9900cc", sign: "+", emoji: "🎰" },
+const CATEGORY_META: Record<string, { label: string; color: string; sign: "+" | "-"; img: string }> = {
+  deposit:     { label: "DÉPÔT",              color: "#0055ff", sign: "+", img: img3dDeposit    },
+  withdrawal:  { label: "RETRAIT",            color: "#ff0000", sign: "-", img: img3dWithdrawal },
+  earning:     { label: "GAIN PRODUIT",       color: "#00b300", sign: "+", img: img3dEarning    },
+  commission:  { label: "BONUS PARRAINAGE",   color: "#00b300", sign: "+", img: img3dCommission },
+  bonus:       { label: "BONUS",              color: "#00b300", sign: "+", img: img3dBonus      },
+  gift_code:   { label: "CODE CADEAU",        color: "#00b300", sign: "+", img: img3dGiftCode   },
+  task_reward: { label: "RÉCOMPENSE TÂCHE",   color: "#00b300", sign: "+", img: img3dTask       },
+  spin_reward: { label: "RÉCOMPENSE SPIN",    color: "#9900cc", sign: "+", img: img3dSpin       },
 };
 
 function getCategoryMeta(category: string) {
-  return CATEGORY_META[category] ?? { label: category.toUpperCase(), color: "#333333", sign: "+" as const, emoji: "💰" };
+  return CATEGORY_META[category] ?? { label: category.toUpperCase(), color: "#333333", sign: "+" as const, img: img3dBonus };
 }
 
 // ── Ligne de détail ──────────────────────────────────────────────────────────
@@ -136,8 +144,9 @@ export default function HistoryPage() {
                   <div style={{ borderTop: "1px solid #444444", marginBottom: 6 }} />
                   {/* Catégorie + Statut */}
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <span style={{ color: cat.color, fontWeight: 900, fontSize: 13, letterSpacing: 1 }}>
-                      {cat.emoji} {cat.label}
+                    <span style={{ display: "flex", alignItems: "center", gap: 8, color: cat.color, fontWeight: 900, fontSize: 13, letterSpacing: 1 }}>
+                      <img src={cat.img} alt={cat.label} style={{ width: 28, height: 28, objectFit: "contain", flexShrink: 0 }} />
+                      {cat.label}
                     </span>
                     <span style={{ color: st.color, fontWeight: 900, fontSize: 11, letterSpacing: 1 }}>
                       ● {st.label}
