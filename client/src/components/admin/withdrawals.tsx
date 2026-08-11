@@ -229,11 +229,11 @@ export default function AdminWithdrawals() {
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t.method}</p>
-                    <p className="font-medium text-foreground">FCFA</p>{/* network label — intentionally not translated */}
+                    <p className="font-medium text-foreground">{withdrawal.paymentMethod || "—"}</p>
                   </div>
                   <div className="col-span-2">
-                    <p className="text-muted-foreground">{t.bep20Address}</p>
-                    <p className="font-medium text-foreground">{withdrawal.accountNumber} - {withdrawal.accountName}</p>
+                    <p className="text-muted-foreground">Numéro / Nom</p>
+                    <p className="font-medium text-foreground">{withdrawal.accountNumber} — {withdrawal.accountName}</p>
                   </div>
                   {withdrawal.nowPaymentsPayoutId && (
                     <div className="col-span-2 text-xs text-muted-foreground">
