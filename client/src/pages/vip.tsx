@@ -19,7 +19,7 @@ export default function VipPage() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
 
-  const { data: products = [] } = useQuery<any[]>({ queryKey: ["/api/user-products"] });
+  const { data: products = [] } = useQuery<any[]>({ queryKey: ["/api/user/products"] });
   const { data: stats } = useQuery<TeamStats>({ queryKey: ["/api/team/stats"] });
   const { data: settings = {} } = useQuery<Record<string, string>>({ queryKey: ["/api/settings"] });
 

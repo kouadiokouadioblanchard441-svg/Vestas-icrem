@@ -66,7 +66,7 @@ export default function AccountPage() {
   };
 
   const { data: products } = useQuery<any[]>({
-    queryKey: ["/api/user-products"],
+    queryKey: ["/api/user/products"],
   });
 
   const { data: settings } = useQuery<Record<string, string>>({
