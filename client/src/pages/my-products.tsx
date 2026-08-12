@@ -35,6 +35,48 @@ export default function MyProductsPage() {
     onError: (e: any) => toast({ title: e.message, variant: "destructive" }),
   });
 
+  const collectDailyMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/user/collect-earnings", {});
+      if (!res.ok) { const r = await res.json(); throw new Error(r.message || "Erreur"); }
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user/products"] });
+      refreshUser();
+      if (data.collected > 0) {
+        toast({
+          title: "✅ Gains collectés !",
+          description: `${Number(data.collected).toLocaleString()} FCFA ajoutés à votre solde.`,
+        });
+      } else {
+        toast({ title: "Aucun gain disponible pour le moment." });
+      }
+    },
+    onError: (e: any) => toast({ title: e.message, variant: "destructive" }),
+  });
+
+  // Vérifie si 24h se sont écoulées depuis la dernière collecte
+  function canCollectDaily(up: any): boolean {
+    if (!up.lastEarningDate) {
+      // Jamais collecté : disponible 24h après l'achat
+      const purchaseTime = up.purchasedAt ? new Date(up.purchasedAt).getTime() : 0;
+      return Date.now() - purchaseTime >= 24 * 60 * 60 * 1000;
+    }
+    return Date.now() - new Date(up.lastEarningDate).getTime() >= 24 * 60 * 60 * 1000;
+  }
+
+  // Temps restant avant prochaine collecte (en hh:mm)
+  function nextCollectIn(up: any): string {
+    const ref = up.lastEarningDate
+      ? new Date(up.lastEarningDate).getTime()
+      : (up.purchasedAt ? new Date(up.purchasedAt).getTime() : Date.now());
+    const msLeft = Math.max(0, ref + 24 * 60 * 60 * 1000 - Date.now());
+    const h = Math.floor(msLeft / 3600000);
+    const m = Math.floor((msLeft % 3600000) / 60000);
+    return `${String(h).padStart(2, "0")}h${String(m).padStart(2, "0")}`;
+  }
+
   if (!user) return null;
 
   const currency = "FCFA";
@@ -234,13 +276,37 @@ export default function MyProductsPage() {
                       Disponible à J+{cycleDays} — encore {daysRemaining}j
                     </div>
                   ) : (
-                    /* Produit classique */
-                    <div
-                      className="px-4 py-2.5 text-center text-white text-xs font-semibold"
-                      style={{ background: "linear-gradient(135deg, #d4a017, #a07010)" }}
-                    >
-                      {t.myProductsRevenueReceived} : {currency} {earnedSoFar.toLocaleString()}
-                    </div>
+                    /* Produit classique — collecte manuelle toutes les 24h */
+                    canCollectDaily(up) ? (
+                      <button
+                        onClick={() => collectDailyMutation.mutate()}
+                        disabled={collectDailyMutation.isPending}
+                        className="w-full py-3 text-white font-extrabold text-sm tracking-wide flex items-center justify-center gap-2 active:opacity-80 transition-opacity disabled:opacity-60"
+                        style={{ background: "linear-gradient(135deg, #16a34a, #15803d)" }}
+                        data-testid={`button-collect-daily-${up.id}`}
+                      >
+                        {collectDailyMutation.isPending ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            <CheckCircle2 className="w-4 h-4" />
+                            Collecter {currency} {Number(up.product?.dailyEarnings || 0).toLocaleString()}
+                          </>
+                        )}
+                      </button>
+                    ) : (
+                      <div
+                        className="px-4 py-3 flex items-center justify-between"
+                        style={{ background: "linear-gradient(135deg, #d4a017, #a07010)" }}
+                      >
+                        <span className="text-white/80 text-xs font-semibold">
+                          {t.myProductsRevenueReceived} : {currency} {earnedSoFar.toLocaleString()}
+                        </span>
+                        <span className="text-white text-xs font-bold bg-white/20 px-2.5 py-1 rounded-full">
+                          ⏱ {nextCollectIn(up)}
+                        </span>
+                      </div>
+                    )
                   )}
                 </div>
               );

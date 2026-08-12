@@ -223,7 +223,7 @@ export default function AccountPage() {
               </p>
               <p className="text-white/60 text-[11px] mt-1">{currency}</p>
             </div>
-            <div className="rounded-2xl px-4 py-4" style={{ background: "#ff0000" }}>
+            <div className="rounded-2xl px-4 py-4" style={{ background: "#4a5e22" }}>
               <p className="text-white/70 text-xs font-semibold mb-2 uppercase tracking-wide">{t.revenueLabel}</p>
               <p className="text-white font-black text-2xl leading-tight" data-testid="text-earnings">
                 {totalEarnings.toFixed(2)}
