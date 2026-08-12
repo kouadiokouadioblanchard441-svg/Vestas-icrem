@@ -927,7 +927,7 @@ const T: Record<Lang, Translations> = {
     rewardsSuccessTitle:"Félicitations",
     rewardsSuccessDesc: "Récompense reçue avec succès !",
     accountBalanceLabel:"Solde du compte",
-    revenueLabel:       "Revenus",
+    revenueLabel:       "Collecter",
     depositPaymentInfo: "Informations de paiement",
     depositSubmitted:   "Recharge soumise !",
     depositSubmittedDesc: "Votre recharge est en attente de validation.",
