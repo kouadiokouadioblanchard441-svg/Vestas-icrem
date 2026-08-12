@@ -9,6 +9,7 @@ import img3dBonus      from "@assets/3d-bonus.png";
 import img3dGiftCode   from "@assets/3d-gift-code.png";
 import img3dTask       from "@assets/3d-task.png";
 import img3dSpin       from "@assets/3d-spin.png";
+import imgAsus3d       from "@assets/asus-3d-text.png";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface HistoryItem {
@@ -135,11 +136,13 @@ export default function HistoryPage() {
 
                 {/* ══ EN-TÊTE ══════════════════════════════════════════ */}
                 <div style={{ background: "#111111", padding: "10px 16px" }}>
-                  {/* Logo / App name */}
+                  {/* Logo 3D ASUS */}
                   <div style={{ textAlign: "center", marginBottom: 6 }}>
-                    <span style={{ color: "#ffffff", fontWeight: 900, fontSize: 13, letterSpacing: 4, textTransform: "uppercase" }}>
-                      ★ ASUS INVEST ★
-                    </span>
+                    <img
+                      src={imgAsus3d}
+                      alt="ASUS"
+                      style={{ height: 36, maxWidth: "100%", objectFit: "contain", display: "inline-block" }}
+                    />
                   </div>
                   <div style={{ borderTop: "1px solid #444444", marginBottom: 6 }} />
                   {/* Catégorie + Statut */}
@@ -211,7 +214,7 @@ export default function HistoryPage() {
                 {/* ══ PIED ═════════════════════════════════════════════ */}
                 <div style={{ background: "#f7f7f7", borderTop: "1px solid #e5e7eb", padding: "6px 16px", textAlign: "center" }}>
                   <span style={{ color: "#bbbbbb", fontSize: 10, letterSpacing: 2 }}>
-                    MERCI DE VOTRE CONFIANCE — ASUS INVEST
+                    MERCI DE VOTRE CONFIANCE — ASUS
                   </span>
                 </div>
 
