@@ -56,7 +56,6 @@ expertMode = true
 WESTPAY_MERCHANT_SLUG = "business"
 
 [userenv.development]
-APP_URL = "https://www.gampower.site"
 
 [postMerge]
 path = "scripts/post-merge.sh"
