@@ -69,12 +69,12 @@ export default function HomePage() {
 
   /* ── Bannières configurables ── */
   const banner1Images: string[] = (() => {
-    try { const p = JSON.parse(settings?.banner1Images || "[]"); return Array.isArray(p) && p.length ? p : ["/banner/banner1.jpg"]; }
-    catch { return ["/banner/banner1.jpg"]; }
+    try { const p = JSON.parse(settings?.banner1Images || "[]"); return Array.isArray(p) ? p : []; }
+    catch { return []; }
   })();
   const banner2Images: string[] = (() => {
-    try { const p = JSON.parse(settings?.banner2Images || "[]"); return Array.isArray(p) && p.length ? p : ["/banner/banner2.jpg"]; }
-    catch { return ["/banner/banner2.jpg"]; }
+    try { const p = JSON.parse(settings?.banner2Images || "[]"); return Array.isArray(p) ? p : []; }
+    catch { return []; }
   })();
 
   const popupLines: string[] = [
