@@ -80,7 +80,7 @@ function BannerSlotEditor({
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      await apiRequest("POST", "/api/admin/settings", { key: settingKey, value: JSON.stringify(urls) });
+      await apiRequest("POST", "/api/admin/settings", { [settingKey]: JSON.stringify(urls) });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
