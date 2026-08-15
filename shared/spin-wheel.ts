@@ -9,15 +9,34 @@ export interface SpinWheelSegment {
   weight?: number;    // relative probability weight (default 1)
 }
 
+/**
+ * Fixed public game rules.
+ *
+ * The amounts and winning status are deliberately not configurable. The
+ * server applies this layout when reading and saving the wheel config, so an
+ * old database value or a modified client cannot make a non-winning prize
+ * payable.
+ */
+const FIXED_WHEEL_RULES = [
+  { label: "1000F", amount: 1000, canWin: false },
+  { label: "100F",  amount: 100,  canWin: true  },
+  { label: "200F",  amount: 200,  canWin: true  },
+  { label: "500F",  amount: 500,  canWin: true  },
+  { label: "5000F", amount: 5000, canWin: false },
+  { label: "25000F", amount: 25000, canWin: false },
+  { label: "90000F", amount: 90000, canWin: false },
+  { label: "😊",    amount: 0,    canWin: false },
+] as const;
+
 export const DEFAULT_SPIN_WHEEL_SEGMENTS: SpinWheelSegment[] = [
-  { id: 1, label: "Petit gain",       amount: 10,  color: "#F5C518", dark: "#5C3D00", canWin: true,  weight: 30 },
-  { id: 2, label: "Tirage bonus",     amount: 0,   color: "#FFFDE7", dark: "#7C5200", canWin: false, weight: 10 },
-  { id: 3, label: "Bonus spécial",    amount: 0,   color: "#F5C518", dark: "#5C3D00", canWin: false, weight: 10 },
-  { id: 4, label: "Belle récompense", amount: 50,  color: "#FFFDE7", dark: "#7C5200", canWin: true,  weight: 20 },
-  { id: 5, label: "Grand prix",       amount: 100, color: "#F5C518", dark: "#5C3D00", canWin: true,  weight: 5  },
-  { id: 6, label: "Tirages bonus",    amount: 0,   color: "#FFFDE7", dark: "#7C5200", canWin: false, weight: 10 },
-  { id: 7, label: "Petit gain",       amount: 10,  color: "#F5C518", dark: "#5C3D00", canWin: true,  weight: 30 },
-  { id: 8, label: "Récompense",       amount: 20,  color: "#FFFDE7", dark: "#7C5200", canWin: true,  weight: 25 },
+  { id: 1, ...FIXED_WHEEL_RULES[0], color: "#F5C518", dark: "#5C3D00", weight: 1 },
+  { id: 2, ...FIXED_WHEEL_RULES[1], color: "#FFFDE7", dark: "#7C5200", weight: 30 },
+  { id: 3, ...FIXED_WHEEL_RULES[2], color: "#F5C518", dark: "#5C3D00", weight: 25 },
+  { id: 4, ...FIXED_WHEEL_RULES[3], color: "#FFFDE7", dark: "#7C5200", weight: 15 },
+  { id: 5, ...FIXED_WHEEL_RULES[4], color: "#F5C518", dark: "#5C3D00", weight: 1 },
+  { id: 6, ...FIXED_WHEEL_RULES[5], color: "#FFFDE7", dark: "#7C5200", weight: 1 },
+  { id: 7, ...FIXED_WHEEL_RULES[6], color: "#F5C518", dark: "#5C3D00", weight: 1 },
+  { id: 8, ...FIXED_WHEEL_RULES[7], color: "#FFFDE7", dark: "#7C5200", weight: 1 },
 ];
 
 export const SPIN_WHEEL_SETTING_KEY = "spinWheelConfig";
@@ -35,13 +54,10 @@ export function parseSpinWheelSegments(value: string | null | undefined): SpinWh
       ...DEFAULT_SPIN_WHEEL_SEGMENTS[index],
       ...segment,
       id: index + 1,
-      label: typeof segment.label === "string" && segment.label.trim()
-        ? segment.label.trim()
-        : DEFAULT_SPIN_WHEEL_SEGMENTS[index].label,
-      amount: Number.isFinite(Number(segment.amount)) && Number(segment.amount) >= 0
-        ? Number(segment.amount)
-        : DEFAULT_SPIN_WHEEL_SEGMENTS[index].amount,
-      canWin: Boolean(segment.canWin),
+       // These three fields are fixed game rules, never user-configurable.
+       label: DEFAULT_SPIN_WHEEL_SEGMENTS[index].label,
+       amount: DEFAULT_SPIN_WHEEL_SEGMENTS[index].amount,
+       canWin: DEFAULT_SPIN_WHEEL_SEGMENTS[index].canWin,
       color: typeof segment.color === "string" && /^#[0-9a-f]{6}$/i.test(segment.color)
         ? segment.color
         : DEFAULT_SPIN_WHEEL_SEGMENTS[index].color,

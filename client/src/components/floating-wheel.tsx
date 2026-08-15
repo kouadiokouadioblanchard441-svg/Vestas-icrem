@@ -49,13 +49,13 @@ function RealisticWheel({ size = 64, segments }: { size?: number; segments: Spin
   });
 
   /* Amount labels at outer edge */
-  const labels = segments.map(({ amount, dark }, i) => {
+  const labels = segments.map(({ label, amount, dark }, i) => {
     const arc = (2 * Math.PI) / n;
     const mid = i * arc + arc / 2 - Math.PI / 2;
     const lr  = r * 0.68;
     const lx  = cx + Math.cos(mid) * lr;
     const ly  = cy + Math.sin(mid) * lr;
-    const text = amount >= 1000 ? `${amount / 1000}k` : String(amount);
+    const text = amount > 0 ? `${amount.toLocaleString("fr-FR")}F` : label;
     return (
       <text
         key={i}

@@ -17,21 +17,21 @@ import {
 
 /* ── Fake winners ticker ────────────────────────────────────── */
 const FAKE_WINNERS = [
-  { phone: "0546******846", amount: "200F",   avatar: "/avatars/winner-1.jpg" },
-  { phone: "0707******231", amount: "500F",   avatar: "/avatars/winner-2.jpg" },
-  { phone: "0102******978", amount: "1 000F", avatar: "/avatars/winner-3.jpg" },
-  { phone: "0503******412", amount: "200F",   avatar: "/avatars/winner-4.jpg" },
-  { phone: "0749******065", amount: "2 000F", avatar: "/avatars/winner-5.jpg" },
-  { phone: "0101******339", amount: "500F",   avatar: "/avatars/winner-6.jpg" },
-  { phone: "0564******187", amount: "200F",   avatar: "/avatars/winner-7.jpg" },
-  { phone: "0767******824", amount: "1 000F", avatar: "/avatars/winner-8.jpg" },
-  { phone: "0505******553", amount: "200F",   avatar: "/avatars/winner-1.jpg" },
-  { phone: "0103******710", amount: "5 000F", avatar: "/avatars/winner-2.jpg" },
-  { phone: "0748******293", amount: "500F",   avatar: "/avatars/winner-3.jpg" },
-  { phone: "0546******001", amount: "200F",   avatar: "/avatars/winner-4.jpg" },
-  { phone: "0707******668", amount: "1 000F", avatar: "/avatars/winner-5.jpg" },
-  { phone: "0101******452", amount: "200F",   avatar: "/avatars/winner-6.jpg" },
-  { phone: "0505******317", amount: "2 000F", avatar: "/avatars/winner-7.jpg" },
+  { phone: "0546******846", amount: "200F", avatar: "/avatars/winner-1.jpg" },
+  { phone: "0707******231", amount: "500F", avatar: "/avatars/winner-2.jpg" },
+  { phone: "0102******978", amount: "100F", avatar: "/avatars/winner-3.jpg" },
+  { phone: "0503******412", amount: "200F", avatar: "/avatars/winner-4.jpg" },
+  { phone: "0749******065", amount: "500F", avatar: "/avatars/winner-5.jpg" },
+  { phone: "0101******339", amount: "500F", avatar: "/avatars/winner-6.jpg" },
+  { phone: "0564******187", amount: "200F", avatar: "/avatars/winner-7.jpg" },
+  { phone: "0767******824", amount: "100F", avatar: "/avatars/winner-8.jpg" },
+  { phone: "0505******553", amount: "200F", avatar: "/avatars/winner-1.jpg" },
+  { phone: "0103******710", amount: "500F", avatar: "/avatars/winner-2.jpg" },
+  { phone: "0748******293", amount: "500F", avatar: "/avatars/winner-3.jpg" },
+  { phone: "0546******001", amount: "200F", avatar: "/avatars/winner-4.jpg" },
+  { phone: "0707******668", amount: "100F", avatar: "/avatars/winner-5.jpg" },
+  { phone: "0101******452", amount: "200F", avatar: "/avatars/winner-6.jpg" },
+  { phone: "0505******317", amount: "500F", avatar: "/avatars/winner-7.jpg" },
 ];
 
 function WinnersTicker() {
@@ -234,14 +234,11 @@ function drawWheel(
     ctx.shadowColor  = "rgba(255,255,255,0.8)";
     ctx.shadowBlur   = 4;
 
-    // Format: "100f", "1 000f", "😊" for non-winnable
+    // Display every configured amount, including visible non-winning prizes.
+    // The loss section has amount 0 and displays its emoji label.
     let displayText: string;
-    if (!seg.canWin) {
-      displayText = "😊";
-    } else if (seg.amount > 0) {
-      displayText = seg.amount >= 1000
-        ? `${(seg.amount / 1000).toLocaleString("fr-FR")}kf`
-        : `${seg.amount}f`;
+    if (seg.amount > 0) {
+      displayText = `${seg.amount.toLocaleString("fr-FR")}F`;
     } else {
       displayText = seg.label;
     }

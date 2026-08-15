@@ -1758,16 +1758,19 @@ export async function registerRoutes(
       const winner = pickWinningSegment(segments);
       const newTokens = Math.max(0, (user.spinTokens || 0) - 1);
       const newEarnings = (parseFloat(user.totalEarnings) + winner.amount).toFixed(2);
-      await storage.updateUser(req.session.userId!, {
+       await storage.updateUser(req.session.userId!, {
         totalEarnings: newEarnings,
         spinTokens: newTokens,
       });
-      await storage.createTransaction({
-        userId: req.session.userId!,
-        type: "spin_reward",
-        amount: winner.amount.toFixed(2),
-        description: `Gain roue : ${winner.label}`,
-      });
+       // A loss consumes the spin but must never be recorded as a reward.
+       if (winner.amount > 0) {
+         await storage.createTransaction({
+           userId: req.session.userId!,
+           type: "spin_reward",
+           amount: winner.amount.toFixed(2),
+           description: `Gain roue : ${winner.label}`,
+         });
+       }
 
       res.json({ segmentId: winner.id, amount: winner.amount, label: winner.label, spinTokens: newTokens });
     } catch (error: any) {
@@ -2382,11 +2385,7 @@ export async function registerRoutes(
         return res.status(400).json({ message: "La roue doit contenir exactement 8 sections." });
       }
 
-      const segments: SpinWheelSegment[] = input.map((segment: any, index: number) => {
-        const amount = Number(segment.amount);
-        if (!Number.isFinite(amount) || amount < 0) {
-          throw new Error(`Montant invalide pour la section ${index + 1}`);
-        }
+       const segments: SpinWheelSegment[] = input.map((segment: any, index: number) => {
         if (typeof segment.label !== "string" || !segment.label.trim()) {
           throw new Error(`Nom obligatoire pour la section ${index + 1}`);
         }
@@ -2397,13 +2396,15 @@ export async function registerRoutes(
         return {
           ...DEFAULT_SPIN_WHEEL_SEGMENTS[index],
           id: index + 1,
-          label: segment.label.trim().slice(0, 40),
-          amount,
+           // Prize values and winning status are fixed by the game rules.
+           // Only presentation and winning weights may be customized.
+           label: DEFAULT_SPIN_WHEEL_SEGMENTS[index].label,
+           amount: DEFAULT_SPIN_WHEEL_SEGMENTS[index].amount,
           color: segment.color,
           dark: typeof segment.dark === "string" && /^#[0-9a-f]{6}$/i.test(segment.dark)
             ? segment.dark
             : DEFAULT_SPIN_WHEEL_SEGMENTS[index].dark,
-          canWin: Boolean(segment.canWin),
+           canWin: DEFAULT_SPIN_WHEEL_SEGMENTS[index].canWin,
           imageUrl: typeof segment.imageUrl === "string" && segment.imageUrl.trim()
             ? segment.imageUrl.trim()
             : undefined,

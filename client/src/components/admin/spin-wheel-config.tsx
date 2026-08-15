@@ -39,10 +39,10 @@ function SegmentCard({
             <input
               type="checkbox"
               checked={seg.canWin}
-              onChange={e => onChange(index, "canWin", e.target.checked)}
+              disabled
               className="w-4 h-4 accent-primary"
             />
-            <span className="text-xs font-medium text-muted-foreground">Gagnable</span>
+            <span className="text-xs font-medium text-muted-foreground">Gagnable (fixe)</span>
           </label>
           <Badge variant={seg.canWin ? "default" : "secondary"} className="text-xs shrink-0">
             {seg.canWin ? <Trophy className="w-3 h-3 mr-1" /> : null}
@@ -58,21 +58,20 @@ function SegmentCard({
               value={seg.label}
               maxLength={40}
               placeholder="Petit gain, Grand prix…"
-              onChange={e => onChange(index, "label", e.target.value)}
+              disabled
             />
           </div>
 
           {/* Amount */}
           <div>
-            <label className="text-xs font-medium text-muted-foreground">
-              Montant gagné (FCFA)
+              <label className="text-xs font-medium text-muted-foreground">
+                Montant affiché (FCFA)
             </label>
             <Input
               type="number"
               min={0}
               value={seg.amount}
-              onChange={e => onChange(index, "amount", parseFloat(e.target.value) || 0)}
-              disabled={!seg.canWin}
+              disabled
             />
           </div>
 
