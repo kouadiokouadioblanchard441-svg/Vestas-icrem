@@ -14,6 +14,14 @@ async function fix() {
 
   try {
     // Fix user_products table
+    await exec(`ALTER TABLE user_products ADD COLUMN IF NOT EXISTS product_snapshot text`, "user_products.product_snapshot");
+    await exec(`
+      UPDATE user_products up
+         SET product_snapshot = row_to_json(p)::text
+        FROM products p
+       WHERE up.product_id = p.id
+         AND up.product_snapshot IS NULL
+    `, "backfill user_products.product_snapshot");
     await exec(`ALTER TABLE user_products ADD COLUMN IF NOT EXISTS days_remaining integer NOT NULL DEFAULT 80`, "user_products.days_remaining");
     await exec(`ALTER TABLE user_products ADD COLUMN IF NOT EXISTS total_earned decimal(15,2) NOT NULL DEFAULT 0`, "user_products.total_earned");
     await exec(`ALTER TABLE user_products ADD COLUMN IF NOT EXISTS is_active boolean NOT NULL DEFAULT true`, "user_products.is_active");

@@ -5,6 +5,7 @@ import { serveStatic } from "./static";
 import { createServer } from "http";
 import { seed } from "./seed";
 import { storage } from "./storage";
+import { pool } from "./db";
 import path from "path";
 import fs from "fs";
 
@@ -113,6 +114,18 @@ process.on("uncaughtException", (err) => {
 
 (async () => {
   try {
+  // Purchased products are immutable snapshots. Create the compatibility
+  // column and backfill existing purchases before seeding or serving routes.
+  await pool.query(`ALTER TABLE user_products ADD COLUMN IF NOT EXISTS product_snapshot text`);
+  await pool.query(`
+    UPDATE user_products up
+       SET product_snapshot = row_to_json(p)::text
+      FROM products p
+     WHERE up.product_id = p.id
+       AND up.product_snapshot IS NULL
+  `);
+  console.log("Purchased product snapshots ready");
+
   // Seed database with initial data
   await seed().catch(console.error);
   

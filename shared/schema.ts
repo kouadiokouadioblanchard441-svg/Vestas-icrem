@@ -101,6 +101,9 @@ export const userProducts = pgTable("user_products", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
   productId: integer("product_id").notNull().references(() => products.id),
+  // Immutable product definition captured at purchase time. This keeps an
+  // investment readable and financially stable after admin edits/archives.
+  productSnapshot: text("product_snapshot"),
   purchaseDate: timestamp("purchase_date").notNull().defaultNow(),
   lastEarningDate: timestamp("last_earning_date"),
   daysRemaining: integer("days_remaining").notNull(),

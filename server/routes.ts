@@ -465,6 +465,9 @@ export async function registerRoutes(
       if (!product) {
         return res.status(404).json({ message: "Produit non trouvé" });
       }
+      if (!product.isActive) {
+        return res.status(404).json({ message: "Ce produit n'est plus disponible" });
+      }
       
       if (product.isFree) {
         return res.status(400).json({ message: "Ce produit n'est pas disponible à l'achat" });

@@ -16,6 +16,42 @@ function normalizePhoneSuffix(phone: string | null | undefined): string {
   return (phone || "").replace(/\D/g, "").slice(-8);
 }
 
+// Purchased products must use the definition captured at purchase time.
+// Existing rows without a snapshot fall back to the current product row for
+// backward compatibility; all new purchases always have a complete snapshot.
+function productForUserProduct(userProduct: UserProduct, currentProduct?: Product | null): Product {
+  if (userProduct.productSnapshot) {
+    try {
+      const snapshot = JSON.parse(userProduct.productSnapshot);
+      if (snapshot && typeof snapshot === "object") return snapshot as Product;
+    } catch {
+      // Fall through to the legacy/current product below.
+    }
+  }
+
+  if (currentProduct) return currentProduct;
+
+  // This only applies to legacy rows whose product was hard-deleted before
+  // snapshots existed. Keep the investment visible instead of dropping it.
+  return {
+    id: userProduct.productId,
+    name: "Produit supprimé",
+    price: "0",
+    dailyEarnings: "0",
+    cycleDays: userProduct.daysRemaining,
+    totalReturn: "0",
+    imageUrl: null,
+    isFree: false,
+    isActive: false,
+    sortOrder: 0,
+    seriesId: null,
+    minInviteCount: 0,
+    maxOwned: 0,
+    collectAtEnd: false,
+    stockPercentage: 100,
+  };
+}
+
 export interface IStorage {
   // Users
   getUser(id: number): Promise<User | undefined>;
@@ -286,7 +322,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteProduct(id: number): Promise<void> {
-    await db.delete(products).where(eq(products.id, id));
+    // Archive instead of hard-deleting: purchased rows keep their foreign-key
+    // reference and their snapshot, while the product disappears from the
+    // catalog returned by getProducts().
+    await db.update(products).set({ isActive: false }).where(eq(products.id, id));
   }
 
   // User Products
@@ -295,10 +334,13 @@ export class DatabaseStorage implements IStorage {
       userProduct: userProducts,
       product: products,
     }).from(userProducts)
-      .innerJoin(products, eq(userProducts.productId, products.id))
+      .leftJoin(products, eq(userProducts.productId, products.id))
       .where(and(eq(userProducts.userId, userId), eq(userProducts.isActive, true)));
     
-    return result.map(r => ({ ...r.userProduct, product: r.product }));
+    return result.map(r => ({
+      ...r.userProduct,
+      product: productForUserProduct(r.userProduct, r.product),
+    }));
   }
 
   async getAllUserProducts(userId: number): Promise<{ userProduct: UserProduct; product: Product }[]> {
@@ -306,10 +348,13 @@ export class DatabaseStorage implements IStorage {
       userProduct: userProducts,
       product: products,
     }).from(userProducts)
-      .innerJoin(products, eq(userProducts.productId, products.id))
+      .leftJoin(products, eq(userProducts.productId, products.id))
       .where(eq(userProducts.userId, userId));
     
-    return result.sort((a, b) => {
+    return result.map(r => ({
+      userProduct: r.userProduct,
+      product: productForUserProduct(r.userProduct, r.product),
+    })).sort((a, b) => {
       const dateA = a.userProduct.purchaseDate ? new Date(a.userProduct.purchaseDate).getTime() : 0;
       const dateB = b.userProduct.purchaseDate ? new Date(b.userProduct.purchaseDate).getTime() : 0;
       return dateB - dateA;
@@ -319,6 +364,7 @@ export class DatabaseStorage implements IStorage {
   async purchaseProduct(userId: number, productId: number, assignedByAdmin = false): Promise<UserProduct> {
     const product = await this.getProduct(productId);
     if (!product) throw new Error("Produit non trouvé");
+    if (!product.isActive) throw new Error("Ce produit n'est plus disponible");
 
     const user = await this.getUser(userId);
     if (!user) throw new Error("Utilisateur non trouvé");
@@ -329,16 +375,17 @@ export class DatabaseStorage implements IStorage {
       if (balance < productPrice) throw new Error("Solde insuffisant");
       
       // Check if this is user's first paid investment
-      const existingPaidProducts = await db.select()
+      const existingPaidProducts = await db.select({ userProduct: userProducts })
         .from(userProducts)
-        .innerJoin(products, eq(userProducts.productId, products.id))
         .where(and(
           eq(userProducts.userId, userId),
-          eq(products.isFree, false),
           eq(userProducts.assignedByAdmin, false)
         ));
       
-      const isFirstInvestment = existingPaidProducts.length === 0;
+      const isFirstInvestment = existingPaidProducts.every(({ userProduct }) => {
+        const snapshot = productForUserProduct(userProduct, null);
+        return snapshot.isFree;
+      });
       
       await this.updateUser(userId, { 
         balance: (balance - productPrice).toFixed(2),
@@ -379,6 +426,7 @@ export class DatabaseStorage implements IStorage {
     const [userProduct] = await db.insert(userProducts).values({
       userId,
       productId,
+      productSnapshot: JSON.stringify(product),
       daysRemaining: product.cycleDays,
       assignedByAdmin,
       lastEarningDate: new Date(),
@@ -554,17 +602,19 @@ export class DatabaseStorage implements IStorage {
       userProduct: userProducts,
       product: products,
     }).from(userProducts)
-      .innerJoin(products, eq(userProducts.productId, products.id))
+      .leftJoin(products, eq(userProducts.productId, products.id))
       .where(and(
         eq(userProducts.isActive, true),
         sql`${userProducts.daysRemaining} > 0`,
-        eq(products.collectAtEnd, true),
       ));
 
     const now = new Date();
 
-    for (const { userProduct, product } of activeCollectAtEnd) {
+    for (const row of activeCollectAtEnd) {
       try {
+        const userProduct = row.userProduct;
+        const product = productForUserProduct(userProduct, row.product);
+        if (!product.collectAtEnd) continue;
         const purchaseDate = userProduct.purchaseDate ? new Date(userProduct.purchaseDate) : null;
         if (!purchaseDate) continue;
 
@@ -592,7 +642,7 @@ export class DatabaseStorage implements IStorage {
             .where(eq(userProducts.id, userProduct.id));
         }
       } catch (err) {
-        console.error(`processEarnings (collectAtEnd) error for userProduct ${userProduct.id}:`, err);
+        console.error(`processEarnings (collectAtEnd) error for userProduct ${row.userProduct.id}:`, err);
       }
     }
   }
@@ -978,15 +1028,22 @@ export class DatabaseStorage implements IStorage {
     const level3 = await this.getReferrals(userId, 3);
 
     const enrichUser = async (user: User, vipLevel: number) => {
-      const userProductsList = await db.select({ 
-        productName: products.name,
-        productPrice: products.price,
-        purchaseDate: userProducts.purchaseDate,
-        isActive: userProducts.isActive,
+      const purchasedRows = await db.select({
+        userProduct: userProducts,
+        product: products,
       })
       .from(userProducts)
-      .innerJoin(products, eq(userProducts.productId, products.id))
+      .leftJoin(products, eq(userProducts.productId, products.id))
       .where(eq(userProducts.userId, user.id));
+      const userProductsList = purchasedRows.map(({ userProduct, product }) => {
+        const purchasedProduct = productForUserProduct(userProduct, product);
+        return {
+          productName: purchasedProduct.name,
+          productPrice: purchasedProduct.price,
+          purchaseDate: userProduct.purchaseDate,
+          isActive: userProduct.isActive,
+        };
+      });
       
       const totalInvested = userProductsList
         .reduce((sum, p) => sum + parseFloat(String(p.productPrice)), 0);
@@ -1070,15 +1127,22 @@ export class DatabaseStorage implements IStorage {
         .map(r => r.id);
       if (eligibleIds.length > 0) {
         const rows = await db
-          .selectDistinct({ userId: userProducts.userId })
+          .select({
+            userProduct: userProducts,
+            product: products,
+          })
           .from(userProducts)
-          .innerJoin(products, eq(userProducts.productId, products.id))
+          .leftJoin(products, eq(userProducts.productId, products.id))
           .where(and(
             inArray(userProducts.userId, eligibleIds),
-            eq(products.isFree, false),
             eq(userProducts.isActive, true),
           ));
-        currentInvites = rows.length;
+        const paidUserIds = new Set(
+          rows
+            .filter(({ userProduct, product }) => !productForUserProduct(userProduct, product).isFree)
+            .map(({ userProduct }) => userProduct.userId),
+        );
+        currentInvites = paidUserIds.size;
       }
     }
 
