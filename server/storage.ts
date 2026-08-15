@@ -541,95 +541,58 @@ export class DatabaseStorage implements IStorage {
   }
 
   async processEarnings(): Promise<void> {
-    const activeProducts = await db.select({
+    // Ce job ne traite QUE les produits "fin de cycle" (collectAtEnd = true).
+    // → Pour ces produits : on fait avancer le compteur de cycle (daysRemaining,
+    //   lastEarningDate, isActive) sans jamais créditer de gains à l'utilisateur.
+    //   La collecte se fait manuellement via POST /api/user/collect-final/:id.
+    //
+    // → Pour les produits classiques : AUCUN traitement automatique.
+    //   La collecte est 100% manuelle via POST /api/user/collect-earnings (toutes les 24h).
+    //   lastEarningDate n'est mis à jour QUE par l'utilisateur qui clique "Collecter".
+
+    const activeCollectAtEnd = await db.select({
       userProduct: userProducts,
       product: products,
-      user: users,
     }).from(userProducts)
       .innerJoin(products, eq(userProducts.productId, products.id))
-      .innerJoin(users, eq(userProducts.userId, users.id))
-      .where(and(eq(userProducts.isActive, true), sql`${userProducts.daysRemaining} > 0`));
+      .where(and(
+        eq(userProducts.isActive, true),
+        sql`${userProducts.daysRemaining} > 0`,
+        eq(products.collectAtEnd, true),
+      ));
 
     const now = new Date();
-    
-    const userEarnings = new Map<number, number>();
-    
-    for (const { userProduct, product, user } of activeProducts) {
+
+    for (const { userProduct, product } of activeCollectAtEnd) {
       try {
         const purchaseDate = userProduct.purchaseDate ? new Date(userProduct.purchaseDate) : null;
         if (!purchaseDate) continue;
 
-        const lastEarning = userProduct.lastEarningDate ? new Date(userProduct.lastEarningDate) : purchaseDate;
+        const lastEarning = userProduct.lastEarningDate
+          ? new Date(userProduct.lastEarningDate)
+          : purchaseDate;
 
         const msSincePurchase = now.getTime() - purchaseDate.getTime();
         const daysSincePurchase = Math.floor(msSincePurchase / (24 * 60 * 60 * 1000));
-
         const msSinceLastEarning = now.getTime() - lastEarning.getTime();
         const cyclesSinceLastEarning = Math.floor(msSinceLastEarning / (24 * 60 * 60 * 1000));
 
         if (cyclesSinceLastEarning >= 1 && daysSincePurchase >= 1) {
           const cyclesToCredit = Math.min(cyclesSinceLastEarning, userProduct.daysRemaining);
-          const earningsPerCycle = parseFloat(product.dailyEarnings as string);
-          const totalEarningsForProduct = parseFloat((earningsPerCycle * cyclesToCredit).toFixed(2));
-
-          const newLastEarningDate = new Date(now);
           const newDaysRemaining = userProduct.daysRemaining - cyclesToCredit;
 
-          // Pour les produits collectAtEnd, on ne met PAS à jour totalEarned
-          // automatiquement — les gains ne sont comptabilisés qu'à la collecte manuelle
-          // (POST /api/user/collect-final/:id). On met uniquement à jour le suivi du cycle.
           const updateData: any = {
-            lastEarningDate: newLastEarningDate,
+            lastEarningDate: new Date(now),
             daysRemaining: newDaysRemaining,
           };
+          if (newDaysRemaining <= 0) updateData.isActive = false;
 
-          if (!product.collectAtEnd) {
-            // Produit classique : on accumule totalEarned pour l'affichage
-            updateData.totalEarned = (parseFloat(userProduct.totalEarned || "0") + totalEarningsForProduct).toFixed(2);
-          }
-
-          if (newDaysRemaining <= 0) {
-            updateData.isActive = false;
-          }
-
-          await db.update(userProducts).set(updateData).where(eq(userProducts.id, userProduct.id));
-
-          // Produits classiques uniquement : créditer todayEarnings/totalEarnings
-          if (!product.collectAtEnd) {
-            const currentTotal = userEarnings.get(user.id) || 0;
-            userEarnings.set(user.id, currentTotal + totalEarningsForProduct);
-
-            for (let i = 0; i < cyclesToCredit; i++) {
-              await this.createTransaction({
-                userId: user.id,
-                type: "earning",
-                amount: earningsPerCycle.toString(),
-                description: `Gains ${product.name}`,
-              });
-            }
-          }
-          // collectAtEnd : rien d'automatique. Tout est crédité manuellement via
-          // POST /api/user/collect-final/:userProductId quand le cycle est terminé.
+          await db.update(userProducts)
+            .set(updateData)
+            .where(eq(userProducts.id, userProduct.id));
         }
-      } catch (productError) {
-        console.error(`processEarnings error for product ${userProduct.id}:`, productError);
-      }
-    }
-
-    for (const [userId, totalEarnings] of Array.from(userEarnings.entries())) {
-      try {
-        const freshUser = await this.getUser(userId);
-        if (freshUser) {
-          const newTodayEarnings = parseFloat(freshUser.todayEarnings || "0") + totalEarnings;
-          const newTotalEarnings = parseFloat(freshUser.totalEarnings || "0") + totalEarnings;
-          
-          await this.updateUser(userId, {
-            todayEarnings: newTodayEarnings.toFixed(2),
-            totalEarnings: newTotalEarnings.toFixed(2),
-          });
-        }
-      } catch (userError) {
-        console.error(`processEarnings user update error for user ${userId}:`, userError);
+      } catch (err) {
+        console.error(`processEarnings (collectAtEnd) error for userProduct ${userProduct.id}:`, err);
       }
     }
   }
