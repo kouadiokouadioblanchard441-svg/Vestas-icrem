@@ -165,10 +165,14 @@ process.on("uncaughtException", (err) => {
   });
 
   // Serve uploaded images — works in both dev and production.
-  // Files are stored in <project_root>/uploads/ and accessible at /uploads/*.
+  // New files go to <project_root>/uploads/; legacy files stay in
+  // client/public/uploads/. Both are served at /uploads/* so old URLs keep working.
   const uploadsDir = path.join(process.cwd(), "uploads");
+  const legacyUploadsDir = path.join(process.cwd(), "client", "public", "uploads");
   if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+  if (!fs.existsSync(legacyUploadsDir)) fs.mkdirSync(legacyUploadsDir, { recursive: true });
   app.use("/uploads", express.static(uploadsDir));
+  app.use("/uploads", express.static(legacyUploadsDir));
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
