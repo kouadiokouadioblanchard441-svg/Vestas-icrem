@@ -5,6 +5,8 @@ import { serveStatic } from "./static";
 import { createServer } from "http";
 import { seed } from "./seed";
 import { storage } from "./storage";
+import path from "path";
+import fs from "fs";
 
 const app = express();
 const httpServer = createServer(app);
@@ -161,6 +163,12 @@ process.on("uncaughtException", (err) => {
 
     return res.status(status).json({ message });
   });
+
+  // Serve uploaded images — works in both dev and production.
+  // Files are stored in <project_root>/uploads/ and accessible at /uploads/*.
+  const uploadsDir = path.join(process.cwd(), "uploads");
+  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+  app.use("/uploads", express.static(uploadsDir));
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route

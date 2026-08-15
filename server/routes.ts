@@ -2698,7 +2698,7 @@ export async function registerRoutes(
   });
 
   // ==================== FILE UPLOAD ====================
-  const uploadsDir = path.join(process.cwd(), "client", "public", "uploads");
+  const uploadsDir = path.join(process.cwd(), "uploads");
   if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
   const upload = multer({

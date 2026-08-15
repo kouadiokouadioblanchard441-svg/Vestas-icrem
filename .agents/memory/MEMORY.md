@@ -1,3 +1,4 @@
+- [PowerAdd uploads static serving](uploads-static-serving.md) — save uploads to root `uploads/` + explicit static middleware; `client/public/uploads/` is invisible in production.
 - [PowerAdd brand color migration](spolarpv-branding.md) — green (#00A651 family) brand replaced by orange + sky-blue (#87CEEB); semantic green-* Tailwind classes left untouched.
 - [PowerAdd user deletion / FK cascade](spolarpv-user-deletion.md) — no ON DELETE CASCADE anywhere on users.id FKs; hard-deleting a user needs manual multi-table cleanup in a transaction.
 - [PowerAdd Plesk bundle](spolarpv-plesk-bundle.md) — Plesk pulls prebuilt dist artifacts; production bundling must include SDKs without usable CommonJS exports.
