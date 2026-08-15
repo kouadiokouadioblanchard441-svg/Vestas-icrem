@@ -83,8 +83,10 @@ export default function MyProductsPage() {
 
   const allProducts = userProducts || [];
 
+  // Pour les produits collectAtEnd, totalEarned = "-1" est un sentinel "déjà collecté" :
+  // on ne l'additionne pas au total affiché.
   const totalEarned = allProducts.reduce((sum: number, p: any) => {
-    return sum + parseFloat(p.totalEarned || "0");
+    return sum + Math.max(0, parseFloat(p.totalEarned || "0"));
   }, 0);
 
   const formatDateTime = (dateStr: string) => {
@@ -155,9 +157,13 @@ export default function MyProductsPage() {
 
               const isCollectAtEnd = !!up.product?.collectAtEnd;
               const cycleComplete = daysRemaining <= 0;
-              // Can collect if collectAtEnd mode AND cycle finished AND gains not yet collected
-              const canCollectFinal = isCollectAtEnd && cycleComplete && earnedSoFar > 0;
-              const alreadyCollected = isCollectAtEnd && cycleComplete && earnedSoFar === 0;
+              // totalEarned = "-1" est le sentinel "déjà collecté" (< 0)
+              // totalEarned = "0" ou absent = pas encore collecté
+              const alreadyCollected = isCollectAtEnd && cycleComplete && earnedSoFar < 0;
+              // Peut collecter : cycle terminé ET pas encore collecté
+              const canCollectFinal = isCollectAtEnd && cycleComplete && !alreadyCollected;
+              // Montant prévu = dailyEarnings × cycleDays (calculé côté client pour affichage)
+              const expectedPayout = parseFloat(up.product?.dailyEarnings || "0") * (up.product?.cycleDays ?? 0);
 
               return (
                 <div
@@ -203,12 +209,12 @@ export default function MyProductsPage() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400 text-xs">
-                          {isCollectAtEnd ? "Gains accumulés" : t.myProductsEarned}
+                          {isCollectAtEnd ? "Gains prévus" : t.myProductsEarned}
                         </span>
                         <span className="font-bold text-sm" style={{ color: isCollectAtEnd ? "#d97706" : "#111" }}>
-                          {currency} {earnedSoFar.toLocaleString()}
+                          {currency} {isCollectAtEnd ? expectedPayout.toLocaleString() : earnedSoFar.toLocaleString()}
                           {isCollectAtEnd && !cycleComplete && (
-                            <span className="text-[10px] text-gray-400 font-normal ml-1">(bloqués)</span>
+                            <span className="text-[10px] text-gray-400 font-normal ml-1">(fin de cycle)</span>
                           )}
                         </span>
                       </div>
@@ -253,7 +259,7 @@ export default function MyProductsPage() {
                       ) : (
                         <>
                           <CheckCircle2 className="w-4 h-4" />
-                          Collecter {currency} {earnedSoFar.toLocaleString()}
+                          Collecter {currency} {expectedPayout.toLocaleString()}
                         </>
                       )}
                     </button>

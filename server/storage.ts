@@ -574,11 +574,19 @@ export class DatabaseStorage implements IStorage {
 
           const newLastEarningDate = new Date(now);
           const newDaysRemaining = userProduct.daysRemaining - cyclesToCredit;
+
+          // Pour les produits collectAtEnd, on ne met PAS à jour totalEarned
+          // automatiquement — les gains ne sont comptabilisés qu'à la collecte manuelle
+          // (POST /api/user/collect-final/:id). On met uniquement à jour le suivi du cycle.
           const updateData: any = {
             lastEarningDate: newLastEarningDate,
             daysRemaining: newDaysRemaining,
-            totalEarned: (parseFloat(userProduct.totalEarned || "0") + totalEarningsForProduct).toFixed(2),
           };
+
+          if (!product.collectAtEnd) {
+            // Produit classique : on accumule totalEarned pour l'affichage
+            updateData.totalEarned = (parseFloat(userProduct.totalEarned || "0") + totalEarningsForProduct).toFixed(2);
+          }
 
           if (newDaysRemaining <= 0) {
             updateData.isActive = false;
@@ -586,8 +594,7 @@ export class DatabaseStorage implements IStorage {
 
           await db.update(userProducts).set(updateData).where(eq(userProducts.id, userProduct.id));
 
-          // collectAtEnd: gains accumulés, pas crédités avant la fin du cycle
-          // On ne met PAS à jour todayEarnings/totalEarnings de l'utilisateur ici.
+          // Produits classiques uniquement : créditer todayEarnings/totalEarnings
           if (!product.collectAtEnd) {
             const currentTotal = userEarnings.get(user.id) || 0;
             userEarnings.set(user.id, currentTotal + totalEarningsForProduct);
@@ -601,8 +608,8 @@ export class DatabaseStorage implements IStorage {
               });
             }
           }
-          // Note: for collectAtEnd, the transaction & balance update happen when user
-          // manually collects via POST /api/user/collect-final/:userProductId
+          // collectAtEnd : rien d'automatique. Tout est crédité manuellement via
+          // POST /api/user/collect-final/:userProductId quand le cycle est terminé.
         }
       } catch (productError) {
         console.error(`processEarnings error for product ${userProduct.id}:`, productError);

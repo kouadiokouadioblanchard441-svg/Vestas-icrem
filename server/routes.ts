@@ -405,16 +405,18 @@ export async function registerRoutes(
         return res.status(400).json({ message: `Cycle non terminé — encore ${userProduct.daysRemaining} jour(s) restant(s)` });
       }
 
-      const amount = parseFloat(userProduct.totalEarned || "0");
-      if (amount <= 0) return res.status(400).json({ message: "Aucun gain à collecter" });
+      // Sentinel : totalEarned = "-1" signifie "déjà collecté"
+      if (parseFloat(userProduct.totalEarned || "0") < 0) {
+        return res.status(400).json({ message: "Gains déjà collectés pour ce produit" });
+      }
 
-      // Check if already collected (totalEarned stays but we mark it)
-      // We use a convention: after collect, set totalEarned to negative or use a dedicated flag.
-      // Simpler: check if userProduct is already inactive with daysRemaining=0 AND was already processed.
-      // We'll use a "collected" marker via the existing isActive field: after final collect, we update
-      // totalEarned to 0 so a second collect returns 0.
-      // Actually safest: mark with a sentinel by setting totalEarned to "0" after payout.
-      // The UI will not show collect button when totalEarned is 0.
+      // Montant calculé depuis la définition du produit (pas depuis le suivi automatique)
+      // Cela garantit que les gains ne sont comptabilisés QU'au moment de la collecte.
+      const dailyEarnings = parseFloat(product.dailyEarnings as string);
+      const cycleDays = product.cycleDays ?? 0;
+      const amount = parseFloat((dailyEarnings * cycleDays).toFixed(2));
+
+      if (amount <= 0) return res.status(400).json({ message: "Aucun gain à collecter" });
 
       const freshUser = await storage.getUser(userId);
       if (!freshUser) return res.status(401).json({ message: "Utilisateur introuvable" });
@@ -427,8 +429,8 @@ export async function registerRoutes(
         totalEarnings: newTotalEarnings.toFixed(2),
       });
 
-      // Mark as collected by zeroing totalEarned
-      await storage.updateUserProduct(userProductId, { totalEarned: "0" });
+      // Marquer comme collecté via le sentinel -1 (totalEarned < 0)
+      await storage.updateUserProduct(userProductId, { totalEarned: "-1" });
 
       await storage.createTransaction({
         userId,
