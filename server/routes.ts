@@ -559,35 +559,35 @@ export async function registerRoutes(
           const cyclesSinceLastEarning = Math.floor(msSinceLastEarning / (24 * 60 * 60 * 1000));
 
           if (cyclesSinceLastEarning >= 1 && daysSincePurchase >= 1) {
-            const cyclesToCredit = Math.min(cyclesSinceLastEarning, userProduct.daysRemaining);
             const earningsPerCycle = parseFloat(String(product.dailyEarnings));
-            const totalEarningsForProduct = earningsPerCycle * cyclesToCredit;
 
-            // La nouvelle référence = moment exact de la collecte (secondes comprises)
-            // Si collecte en retard, c'est cette heure qui devient le prochain point de départ
-            const newLastEarningDate = new Date(now);
+            // Jours consommés = tous les jours écoulés (manqués ou non), capped au cycle restant.
+            // Le cycle avance toujours, qu'on collecte ou non.
+            const cyclesToConsume = Math.min(cyclesSinceLastEarning, userProduct.daysRemaining);
 
-            totalCollected += totalEarningsForProduct;
-            productsCollected++;
+            // On ne crédite QUE si le créneau courant est encore dans le cycle.
+            // Si cyclesSinceLastEarning > daysRemaining → le créneau actuel est après
+            // la fin du cycle → les gains du jour sont perdus.
+            const canCollectToday = cyclesSinceLastEarning <= userProduct.daysRemaining;
+            const dayEarnings = canCollectToday ? earningsPerCycle : 0;
 
-            const newDaysRemaining = userProduct.daysRemaining - cyclesToCredit;
+            const newDaysRemaining = userProduct.daysRemaining - cyclesToConsume;
             const updateData: any = {
-              lastEarningDate: newLastEarningDate,
+              lastEarningDate: new Date(now),
               daysRemaining: newDaysRemaining,
-              totalEarned: (parseFloat(userProduct.totalEarned || "0") + totalEarningsForProduct).toFixed(2),
+              totalEarned: (parseFloat(userProduct.totalEarned || "0") + dayEarnings).toFixed(2),
             };
-            
-            if (newDaysRemaining <= 0) {
-              updateData.isActive = false;
-            }
+            if (newDaysRemaining <= 0) updateData.isActive = false;
 
             await storage.updateUserProduct(userProduct.id, updateData);
 
-            for (let i = 0; i < cyclesToCredit; i++) {
+            if (dayEarnings > 0) {
+              totalCollected += dayEarnings;
+              productsCollected++;
               await storage.createTransaction({
                 userId,
                 type: "earning",
-                amount: earningsPerCycle.toString(),
+                amount: dayEarnings.toString(),
                 description: `Gains ${product.name}`,
               });
             }
