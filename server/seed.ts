@@ -384,10 +384,10 @@ export async function seed() {
     { key: "vip6Reward", value: "5000" },
     { key: "vip7Reward", value: "7500" },
     // Spin wheel popup texts (insert only — admin can override)
-    { key: "spinWheelInviteText", value: "Invitez vos amis à s'inscrire et vous aurez plus de chances de gagner des prix, jusqu'à 50 fois par jour." },
-    { key: "spinWheelInviteHighlight", value: "50" },
-    { key: "spinWheelRulesText", value: "Achetez un produit pour obtenir des tours gratuits. Chaque tour vous donne une chance de remporter un gain en FCFA crédité directement sur votre solde." },
-    { key: "spinWheelRulesHighlight", value: "" },
+    { key: "spinWheelInviteText", value: "Invitez vos amis à rejoindre la plateforme et augmentez vos possibilités d'obtenir des tours gratuits. Partagez votre code de parrainage pour développer votre équipe et profiter des avantages prévus par le programme." },
+    { key: "spinWheelInviteHighlight", value: "tours gratuits" },
+    { key: "spinWheelRulesText", value: "Utilisez vos tours disponibles pour participer à la roue. Chaque tour vous permet de tenter votre chance de remporter 100, 200 ou 500 FCFA. Les gains obtenus sont crédités directement sur votre solde. Les autres montants affichés sont des cases non gagnantes." },
+    { key: "spinWheelRulesHighlight", value: "100, 200 ou 500 FCFA" },
     { key: "banner1Images", value: JSON.stringify(["/banner/banner1.jpg", "/banner/banner3.jpg", "/banner/banner5.jpg"]) },
     { key: "banner2Images", value: JSON.stringify(["/banner/banner2.jpg", "/banner/banner4.jpg", "/banner/banner6.jpg"]) },
   ];

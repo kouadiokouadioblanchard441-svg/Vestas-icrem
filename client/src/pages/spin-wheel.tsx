@@ -354,11 +354,11 @@ export default function SpinWheelPage() {
     queryKey: ["/api/settings"],
   });
   const inviteText = platformSettings?.spinWheelInviteText
-    ?? "Invitez vos amis à s'inscrire et vous aurez plus de chances de gagner des prix, jusqu'à 50 fois par jour.";
-  const inviteHighlight = platformSettings?.spinWheelInviteHighlight ?? "50";
+    ?? "Invitez vos amis à rejoindre la plateforme et augmentez vos possibilités d'obtenir des tours gratuits. Partagez votre code de parrainage pour développer votre équipe et profiter des avantages prévus par le programme.";
+  const inviteHighlight = platformSettings?.spinWheelInviteHighlight ?? "tours gratuits";
   const rulesText = platformSettings?.spinWheelRulesText
-    ?? "Achetez un produit pour obtenir des tours gratuits. Chaque tour vous donne une chance de remporter un gain en FCFA crédité directement sur votre solde.";
-  const rulesHighlight = platformSettings?.spinWheelRulesHighlight ?? "";
+    ?? "Utilisez vos tours disponibles pour participer à la roue. Chaque tour vous permet de tenter votre chance de remporter 100, 200 ou 500 FCFA. Les gains obtenus sont crédités directement sur votre solde. Les autres montants affichés sont des cases non gagnantes.";
+  const rulesHighlight = platformSettings?.spinWheelRulesHighlight ?? "100, 200 ou 500 FCFA";
   const wheelTotalWon = useMemo(
     () => spinHistory.reduce((sum, tx) => sum + parseFloat(tx.amount || "0"), 0),
     [spinHistory],
