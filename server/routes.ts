@@ -2704,7 +2704,11 @@ export async function registerRoutes(
   });
 
   // ==================== FILE UPLOAD ====================
-  const uploadsDir = path.join(process.cwd(), "uploads");
+  // Keep uploads beside the deployed application root. This remains stable
+  // when Plesk starts dist/index.cjs with another current working directory.
+  const applicationRoot =
+    typeof __dirname === "undefined" ? process.cwd() : path.resolve(__dirname, "..");
+  const uploadsDir = path.join(applicationRoot, "uploads");
   if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
   const upload = multer({

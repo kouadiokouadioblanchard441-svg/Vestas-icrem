@@ -1,6 +1,6 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
-import { rm, readFile } from "fs/promises";
+import { rm, readFile, cp } from "fs/promises";
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -41,6 +41,17 @@ async function buildAll() {
 
   console.log("building client...");
   await viteBuild();
+
+  // Include existing uploaded banners in the prebuilt Plesk artifact. The
+  // runtime middleware still serves the root uploads/ directory so images
+  // uploaded after deployment continue to work as well.
+  try {
+    await cp("uploads", "dist/public/uploads", { recursive: true, force: true });
+    console.log("copied uploads into dist/public");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    console.log("no uploads directory to copy");
+  }
 
   console.log("building server...");
   const pkg = JSON.parse(await readFile("package.json", "utf-8"));

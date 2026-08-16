@@ -180,8 +180,12 @@ process.on("uncaughtException", (err) => {
   // Serve uploaded images — works in both dev and production.
   // New files go to <project_root>/uploads/; legacy files stay in
   // client/public/uploads/. Both are served at /uploads/* so old URLs keep working.
-  const uploadsDir = path.join(process.cwd(), "uploads");
-  const legacyUploadsDir = path.join(process.cwd(), "client", "public", "uploads");
+  // Resolve from the application files instead of process.cwd(). Plesk can
+  // start the Node process from a different working directory.
+  const applicationRoot =
+    typeof __dirname === "undefined" ? process.cwd() : path.resolve(__dirname, "..");
+  const uploadsDir = path.join(applicationRoot, "uploads");
+  const legacyUploadsDir = path.join(applicationRoot, "client", "public", "uploads");
   if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
   if (!fs.existsSync(legacyUploadsDir)) fs.mkdirSync(legacyUploadsDir, { recursive: true });
   app.use("/uploads", express.static(uploadsDir));
