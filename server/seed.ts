@@ -386,8 +386,8 @@ export async function seed() {
     // Spin wheel popup texts (insert only — admin can override)
     { key: "spinWheelInviteText", value: "Invitez vos amis à rejoindre la plateforme et augmentez vos possibilités d'obtenir des tours gratuits. Partagez votre code de parrainage pour développer votre équipe et profiter des avantages prévus par le programme." },
     { key: "spinWheelInviteHighlight", value: "tours gratuits" },
-    { key: "spinWheelRulesText", value: "Utilisez vos tours disponibles pour participer à la roue. Chaque tour vous permet de tenter votre chance. Les montants affichés sont 1 000, 100, 200, 500, 5 000, 25 000 et 90 000 FCFA, ainsi qu'une case de perte. Les gains réellement attribuables sont 100, 200 et 500 FCFA ; les autres cases sont non gagnantes. Les gains obtenus sont crédités directement sur votre solde." },
-    { key: "spinWheelRulesHighlight", value: "100, 200 et 500 FCFA" },
+    { key: "spinWheelRulesText", value: "Utilisez vos tours disponibles pour participer à la roue. Chaque tour vous permet de tenter votre chance. Les montants affichés sont 1 000, 100, 200, 500, 5 000, 25 000 et 90 000 FCFA, ainsi qu'une case de perte. Les gains obtenus sont crédités directement sur votre solde." },
+    { key: "spinWheelRulesHighlight", value: "" },
     { key: "banner1Images", value: JSON.stringify(["/banner/banner1.jpg", "/banner/banner3.jpg", "/banner/banner5.jpg"]) },
     { key: "banner2Images", value: JSON.stringify(["/banner/banner2.jpg", "/banner/banner4.jpg", "/banner/banner6.jpg"]) },
   ];
