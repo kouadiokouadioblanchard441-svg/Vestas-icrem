@@ -9,6 +9,8 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 
 import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
 
+const PRODUCT_CARD_BG = "#4a5e22";
+
 export default function MyProductsPage() {
   const { user, refreshUser } = useAuth();
   const { t } = useI18n();
@@ -168,20 +170,17 @@ export default function MyProductsPage() {
               return (
                 <div
                   key={up.id}
-                  className="bg-white rounded-2xl shadow-sm overflow-hidden"
+                  className="rounded-2xl overflow-hidden shadow-lg relative"
+                  style={{ background: PRODUCT_CARD_BG }}
                   data-testid={`product-card-${up.id}`}
                 >
                   {/* Top header */}
                   <div
                     className="flex items-center justify-between px-4 py-2.5"
-                    style={{
-                      background: isCollectAtEnd
-                        ? "linear-gradient(135deg, #d97706, #92400e)"
-                        : "linear-gradient(135deg, #d4a017, #a07010)"
-                    }}
+                    style={{ background: "rgba(0,0,0,0.18)" }}
                   >
                     <div className="flex items-center gap-2">
-                      <p className="text-white font-bold text-sm">{up.product?.name || t.adminTabProducts}</p>
+                      <p className="font-extrabold italic text-white text-base">{up.product?.name || t.adminTabProducts}</p>
                       {isCollectAtEnd && (
                         <span className="text-[10px] bg-white/20 text-white px-1.5 py-0.5 rounded-full flex items-center gap-1">
                           <Lock className="w-2.5 h-2.5" /> Fin de cycle
@@ -192,35 +191,35 @@ export default function MyProductsPage() {
                   </div>
 
                   {/* Content */}
-                  <div className="flex items-center gap-3 p-4">
-                    <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
+                  <div className="flex gap-3 px-3 pb-3">
+                    <div className="w-[120px] h-[130px] rounded-xl overflow-hidden shrink-0 shadow">
                       <img
                         src={up.product?.imageUrl || productImgFallback}
                         alt={up.product?.name || t.adminTabProducts}
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="flex-1 space-y-1.5">
+                    <div className="flex-1 flex flex-col justify-between">
                       <div className="flex justify-between">
-                        <span className="text-gray-400 text-xs">{t.myProductsDailyRevenue}</span>
-                        <span className="font-bold text-sm text-gray-900">
+                        <span className="text-white/80 text-[11px]">{t.myProductsDailyRevenue}</span>
+                        <span className="font-bold text-[11px] text-white">
                           {currency} {dailyEarnings.toLocaleString()}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400 text-xs">
+                        <span className="text-white/80 text-[11px]">
                           {isCollectAtEnd ? "Gains prévus" : t.myProductsEarned}
                         </span>
-                        <span className="font-bold text-sm" style={{ color: isCollectAtEnd ? "#d97706" : "#111" }}>
+                        <span className="font-bold text-[11px] text-white">
                           {currency} {isCollectAtEnd ? expectedPayout.toLocaleString() : earnedSoFar.toLocaleString()}
                           {isCollectAtEnd && !cycleComplete && (
-                            <span className="text-[10px] text-gray-400 font-normal ml-1">(fin de cycle)</span>
+                            <span className="text-[10px] text-white/60 font-normal ml-1">(fin de cycle)</span>
                           )}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400 text-xs">{t.myProductsDuration}</span>
-                        <span className="font-bold text-xs text-gray-700">
+                        <span className="text-white/80 text-[11px]">{t.myProductsDuration}</span>
+                        <span className="font-bold text-[11px] text-white">
                           {daysCompleted}/{cycleDays} {t.myProductsDays}
                         </span>
                       </div>
@@ -230,10 +229,10 @@ export default function MyProductsPage() {
                   {/* Progress bar */}
                   <div className="px-4 pb-3">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-gray-400 text-xs">{t.myProductsProgress}</span>
-                      <span className="text-xs font-bold text-gray-900">{progress}%</span>
+                      <span className="text-white/80 text-xs">{t.myProductsProgress}</span>
+                      <span className="text-xs font-bold text-white">{progress}%</span>
                     </div>
-                    <div className="w-full rounded-full h-2" style={{ background: "#e5e5e5" }}>
+                    <div className="w-full rounded-full h-2" style={{ background: "rgba(255,255,255,0.2)" }}>
                       <div
                         className="h-2 rounded-full transition-all"
                         style={{
