@@ -8,8 +8,6 @@ import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import type { Product, ProductSeries } from "@shared/schema";
 
-import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
-
 /* ── Palette ────────────────────────────────── */
 const BG       = "#2d3816";
 const CARD_BG  = "#4a5e22";
@@ -159,7 +157,6 @@ export default function ProductsPage() {
           </div>
         ) : (
           filtered.map(product => {
-            const img = product.imageUrl || productImgFallback;
             const isPending = purchaseMutation.isPending && purchaseMutation.variables === product.id;
             const roi = Math.round(
               ((Number(product.totalReturn) - Number(product.price)) / Number(product.price)) * 100
@@ -205,7 +202,13 @@ export default function ProductsPage() {
                 {/* ── Image + Infos ── */}
                 <div className="flex gap-3 px-3 pb-3">
                   <div className="shrink-0 rounded-xl overflow-hidden shadow" style={{ width: 120, height: 130 }}>
-                    <img src={img} alt={product.name} className="w-full h-full object-cover" />
+                    {product.imageUrl ? (
+                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-white/10 flex items-center justify-center px-2 text-center text-white/60 text-[10px]">
+                        Image indisponible
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex-1 flex flex-col justify-between">

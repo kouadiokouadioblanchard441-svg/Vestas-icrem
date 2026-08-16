@@ -12,7 +12,6 @@ import type { Product } from "@shared/schema";
 
 const poweraddLogo = "/poweradd/poweradd-logo-official.png";
 import serviceIcon from "@assets/20260311_214852_1773265973964.png";
-import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
 
 interface ProductWithOwnership extends Product {
   isOwned: boolean;
@@ -79,7 +78,6 @@ export default function InvestPage() {
         ) : paidProducts.length > 0 ? (
           <div className="grid grid-cols-2 gap-2">
             {paidProducts.map((product) => {
-              const img = product.imageUrl || productImgFallback;
               return (
                 <div
                   key={product.id}
@@ -91,7 +89,13 @@ export default function InvestPage() {
                   </div>
 
                   <div className="mx-3 my-2 rounded-xl overflow-hidden" style={{ height: 110 }}>
-                    <img src={img} alt={product.name} className="w-full h-full object-cover" />
+                    {product.imageUrl ? (
+                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gray-100 flex items-center justify-center px-2 text-center text-gray-400 text-[10px]">
+                        Image indisponible
+                      </div>
+                    )}
                   </div>
 
                   <div className="px-3 pb-1 space-y-0.5">
@@ -166,11 +170,17 @@ export default function InvestPage() {
 
             <div className="flex items-center gap-4 px-6 py-3">
               <div className="w-28 h-24 rounded-2xl overflow-hidden shrink-0 shadow-lg">
-                <img
-                  src={confirmProduct.imageUrl || productImgFallback}
-                  alt={confirmProduct.name}
-                  className="w-full h-full object-cover"
-                />
+                {confirmProduct.imageUrl ? (
+                  <img
+                    src={confirmProduct.imageUrl}
+                    alt={confirmProduct.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-white/10 flex items-center justify-center px-2 text-center text-white/60 text-[10px]">
+                    Image indisponible
+                  </div>
+                )}
               </div>
               <div className="flex-1 space-y-1.5">
                 <div>

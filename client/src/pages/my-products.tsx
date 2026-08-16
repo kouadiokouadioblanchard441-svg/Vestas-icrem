@@ -7,8 +7,6 @@ import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
-import productImgFallback from "@assets/vestas_112v_closeup_1783210181172.jpg";
-
 const PRODUCT_CARD_BG = "#4a5e22";
 
 export default function MyProductsPage() {
@@ -193,11 +191,17 @@ export default function MyProductsPage() {
                   {/* Content */}
                   <div className="flex gap-3 px-3 pb-3">
                     <div className="w-[120px] h-[130px] rounded-xl overflow-hidden shrink-0 shadow">
-                      <img
-                        src={up.product?.imageUrl || productImgFallback}
-                        alt={up.product?.name || t.adminTabProducts}
-                        className="w-full h-full object-cover"
-                      />
+                      {up.product?.imageUrl ? (
+                        <img
+                          src={up.product.imageUrl}
+                          alt={up.product?.name || t.adminTabProducts}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-white/10 flex items-center justify-center px-2 text-center text-white/60 text-[10px]">
+                          Image indisponible
+                        </div>
+                      )}
                     </div>
                     <div className="flex-1 flex flex-col justify-between">
                       <div className="flex justify-between">

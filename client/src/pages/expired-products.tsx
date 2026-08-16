@@ -117,11 +117,17 @@ export default function ExpiredProductsPage() {
                 <div className="flex gap-3 px-4 py-3">
                   {/* Image */}
                   <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
-                    <img
-                      src={up.product?.imageUrl || "/powerbank-1.jpg"}
-                      alt={up.product?.name}
-                      className="w-full h-full object-cover"
-                    />
+                    {up.product?.imageUrl ? (
+                      <img
+                        src={up.product.imageUrl}
+                        alt={up.product?.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-white/10 flex items-center justify-center px-2 text-center text-white/60 text-[9px]">
+                        Image indisponible
+                      </div>
+                    )}
                   </div>
 
                   {/* Infos */}
