@@ -6,6 +6,7 @@ import { formatCurrency } from "@/lib/countries";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { getProductFallbackImage } from "@/lib/product-images";
 import type { Product, ProductSeries } from "@shared/schema";
 
 /* ── Palette ────────────────────────────────── */
@@ -203,11 +204,23 @@ export default function ProductsPage() {
                 <div className="flex gap-3 px-3 pb-3">
                   <div className="shrink-0 rounded-xl overflow-hidden shadow" style={{ width: 120, height: 130 }}>
                     {product.imageUrl ? (
-                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                      <img
+                        src={product.imageUrl}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                        onError={(event) => {
+                          const image = event.currentTarget;
+                          const fallback = getProductFallbackImage(product.name);
+                          if (image.src.endsWith(fallback)) return;
+                          image.src = fallback;
+                        }}
+                      />
                     ) : (
-                      <div className="w-full h-full bg-white/10 flex items-center justify-center px-2 text-center text-white/60 text-[10px]">
-                        Image indisponible
-                      </div>
+                      <img
+                        src={getProductFallbackImage(product.name)}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
                     )}
                   </div>
 

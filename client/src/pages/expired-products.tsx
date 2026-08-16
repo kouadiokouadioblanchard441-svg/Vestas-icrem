@@ -2,6 +2,7 @@ import { useAuth } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, PackageX } from "lucide-react";
 import { Link } from "wouter";
+import { getProductFallbackImage } from "@/lib/product-images";
 
 interface UserProduct {
   id: number;
@@ -122,11 +123,19 @@ export default function ExpiredProductsPage() {
                         src={up.product.imageUrl}
                         alt={up.product?.name}
                         className="w-full h-full object-cover"
+                        onError={(event) => {
+                          const image = event.currentTarget;
+                          const fallback = getProductFallbackImage(up.product?.name);
+                          if (image.src.endsWith(fallback)) return;
+                          image.src = fallback;
+                        }}
                       />
                     ) : (
-                      <div className="w-full h-full bg-white/10 flex items-center justify-center px-2 text-center text-white/60 text-[9px]">
-                        Image indisponible
-                      </div>
+                      <img
+                        src={getProductFallbackImage(up.product?.name)}
+                        alt={up.product?.name || "Produit"}
+                        className="w-full h-full object-cover"
+                      />
                     )}
                   </div>
 

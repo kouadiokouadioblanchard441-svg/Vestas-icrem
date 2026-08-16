@@ -6,19 +6,13 @@ import { Link } from "wouter";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { getProductFallbackImage } from "@/lib/product-images";
 
 const PRODUCT_CARD_BG = "#4a5e22";
 
 function safeNumber(value: unknown, fallback = 0): number {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
-}
-
-function getProductFallbackImage(name: string): string {
-  const normalizedName = name.toLowerCase();
-  if (normalizedName.includes("asus")) return "/products/asus-prime-z590-p.svg";
-  if (normalizedName.includes("intel")) return "/products/intel-core-i3-h510m-k.svg";
-  return "/products/device-fallback.svg";
 }
 
 export default function MyProductsPage() {

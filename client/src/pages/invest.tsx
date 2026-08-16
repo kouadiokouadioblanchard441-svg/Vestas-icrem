@@ -8,6 +8,7 @@ import { formatCurrency, getCountryByCode } from "@/lib/countries";
 import { Loader2, AlertTriangle, Settings } from "lucide-react";
 import { useLocation } from "wouter";
 import { useI18n } from "@/lib/i18n";
+import { getProductFallbackImage } from "@/lib/product-images";
 import type { Product } from "@shared/schema";
 
 const poweraddLogo = "/poweradd/poweradd-logo-official.png";
@@ -90,11 +91,23 @@ export default function InvestPage() {
 
                   <div className="mx-3 my-2 rounded-xl overflow-hidden" style={{ height: 110 }}>
                     {product.imageUrl ? (
-                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                      <img
+                        src={product.imageUrl}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                        onError={(event) => {
+                          const image = event.currentTarget;
+                          const fallback = getProductFallbackImage(product.name);
+                          if (image.src.endsWith(fallback)) return;
+                          image.src = fallback;
+                        }}
+                      />
                     ) : (
-                      <div className="w-full h-full bg-gray-100 flex items-center justify-center px-2 text-center text-gray-400 text-[10px]">
-                        Image indisponible
-                      </div>
+                      <img
+                        src={getProductFallbackImage(product.name)}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
                     )}
                   </div>
 
@@ -175,11 +188,19 @@ export default function InvestPage() {
                     src={confirmProduct.imageUrl}
                     alt={confirmProduct.name}
                     className="w-full h-full object-cover"
+                    onError={(event) => {
+                      const image = event.currentTarget;
+                      const fallback = getProductFallbackImage(confirmProduct.name);
+                      if (image.src.endsWith(fallback)) return;
+                      image.src = fallback;
+                    }}
                   />
                 ) : (
-                  <div className="w-full h-full bg-white/10 flex items-center justify-center px-2 text-center text-white/60 text-[10px]">
-                    Image indisponible
-                  </div>
+                  <img
+                    src={getProductFallbackImage(confirmProduct.name)}
+                    alt={confirmProduct.name}
+                    className="w-full h-full object-cover"
+                  />
                 )}
               </div>
               <div className="flex-1 space-y-1.5">
