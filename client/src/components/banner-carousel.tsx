@@ -66,7 +66,7 @@ export default function BannerCarousel({
       {/* Slides */}
       <div
         className="flex h-full transition-transform duration-500 ease-in-out"
-        style={{ transform: `translateX(-${current * 100}%)`, width: `${count * 100}%` }}
+        style={{ transform: `translateX(-${current * (100 / count)}%)`, width: `${count * 100}%` }}
       >
         {images.map((src, i) => (
           <div key={i} style={{ width: `${100 / count}%`, height: "100%", flexShrink: 0 }}>
