@@ -20,20 +20,31 @@ export default function BannerCarousel({
   overlay,
 }: BannerCarouselProps) {
   const [current, setCurrent] = useState(0);
+  const [failedImages, setFailedImages] = useState<string[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const touchStartX = useRef<number | null>(null);
 
-  const count = images.length;
+  const imageKey = images.join("\u0000");
+  const availableImages = Array.from(
+    new Set(images.filter((src): src is string => typeof src === "string" && src.trim().length > 0))
+  ).filter(src => !failedImages.includes(src));
+  const count = availableImages.length;
 
-  const next = () => setCurrent(c => (c + 1) % count);
-  const prev = () => setCurrent(c => (c - 1 + count) % count);
+  const next = () => setCurrent(c => count > 0 ? (c + 1) % count : 0);
+  const prev = () => setCurrent(c => count > 0 ? (c - 1 + count) % count : 0);
+
+  // A new banner configuration should be tried from the first image again.
+  useEffect(() => {
+    setFailedImages([]);
+    setCurrent(0);
+  }, [imageKey]);
 
   // Auto-play
   useEffect(() => {
     if (count <= 1) return;
     timerRef.current = setInterval(next, autoPlayMs);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [count, autoPlayMs]);
+  }, [count, autoPlayMs, imageKey]);
 
   // Reset timer on manual change
   const go = (idx: number) => {
@@ -54,7 +65,12 @@ export default function BannerCarousel({
     touchStartX.current = null;
   };
 
-  if (!images || images.length === 0) return null;
+  if (count === 0) return null;
+
+  const handleImageError = (src: string) => {
+    setFailedImages(previous => previous.includes(src) ? previous : [...previous, src]);
+    setCurrent(index => index >= count - 1 ? 0 : index);
+  };
 
   return (
     <div
@@ -68,12 +84,13 @@ export default function BannerCarousel({
         className="flex h-full transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${current * 100}%)`, width: `${count * 100}%` }}
       >
-        {images.map((src, i) => (
+        {availableImages.map((src, i) => (
           <div key={i} style={{ width: `${100 / count}%`, height: "100%", flexShrink: 0 }}>
             <img
               src={src}
               alt={`banner-${i + 1}`}
-              className="w-full h-full object-cover"
+              onError={() => handleImageError(src)}
+              className="w-full h-full object-contain"
               draggable={false}
             />
           </div>
@@ -90,7 +107,7 @@ export default function BannerCarousel({
       {/* Dot indicators */}
       {count > 1 && (
         <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
-          {images.map((_, i) => (
+          {availableImages.map((_, i) => (
             <button
               key={i}
               onClick={() => go(i)}
