@@ -20,20 +20,7 @@ function normalizePhoneSuffix(phone: string | null | undefined): string {
 // Existing rows without a snapshot fall back to the current product row for
 // backward compatibility; all new purchases always have a complete snapshot.
 function productForUserProduct(userProduct: UserProduct, currentProduct?: Product | null): Product {
-  if (userProduct.productSnapshot) {
-    try {
-      const snapshot = JSON.parse(userProduct.productSnapshot);
-      if (snapshot && typeof snapshot === "object") return snapshot as Product;
-    } catch {
-      // Fall through to the legacy/current product below.
-    }
-  }
-
-  if (currentProduct) return currentProduct;
-
-  // This only applies to legacy rows whose product was hard-deleted before
-  // snapshots existed. Keep the investment visible instead of dropping it.
-  return {
+  const fallbackProduct: Product = currentProduct ?? {
     id: userProduct.productId,
     name: "Produit supprimé",
     price: "0",
@@ -50,6 +37,58 @@ function productForUserProduct(userProduct: UserProduct, currentProduct?: Produc
     collectAtEnd: false,
     stockPercentage: 100,
   };
+
+  if (userProduct.productSnapshot) {
+    try {
+      const snapshot = JSON.parse(userProduct.productSnapshot);
+      if (snapshot && typeof snapshot === "object") {
+        // Some early purchases contain only the product name. Merge the
+        // missing fields from the current catalog row so the investment
+        // remains visible without replacing fields already captured in the
+        // snapshot.
+        const purchasedProduct: any = { ...fallbackProduct, ...snapshot };
+        const fallbackFields: (keyof Product)[] = [
+          "price",
+          "dailyEarnings",
+          "cycleDays",
+          "totalReturn",
+          "imageUrl",
+          "collectAtEnd",
+        ];
+        for (const field of fallbackFields) {
+          if (purchasedProduct[field] === null || purchasedProduct[field] === undefined || purchasedProduct[field] === "") {
+            purchasedProduct[field] = fallbackProduct[field];
+          }
+        }
+
+        // If cycleDays was not saved, infer the original cycle from the
+        // remaining days plus elapsed days. This avoids showing 0/60 for an
+        // older purchase that was created with a 360-day cycle.
+        const snapshotCycleDays = Number(snapshot.cycleDays);
+        if (!Number.isFinite(snapshotCycleDays) || snapshotCycleDays <= 0) {
+          const purchaseTime = userProduct.purchaseDate
+            ? new Date(userProduct.purchaseDate).getTime()
+            : NaN;
+          const elapsedDays = Number.isFinite(purchaseTime)
+            ? Math.max(0, Math.floor((Date.now() - purchaseTime) / (24 * 60 * 60 * 1000)))
+            : 0;
+          const rawInferredCycleDays = userProduct.daysRemaining + elapsedDays;
+          const inferredCycleDays = rawInferredCycleDays >= 300
+            ? Math.round(rawInferredCycleDays / 30) * 30
+            : rawInferredCycleDays;
+          if (inferredCycleDays > Number(purchasedProduct.cycleDays || 0)) {
+            purchasedProduct.cycleDays = inferredCycleDays;
+          }
+        }
+
+        return purchasedProduct;
+      }
+    } catch {
+      // Fall through to the legacy/current product below.
+    }
+  }
+
+  return fallbackProduct;
 }
 
 export interface IStorage {

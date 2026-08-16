@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 500" role="img" aria-labelledby="title">
+  <title id="title">Produit</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#344b1d"/>
+      <stop offset="1" stop-color="#7a8f43"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="500" fill="url(#bg)"/>
+  <rect x="230" y="92" width="260" height="260" rx="28" fill="#d9e5b2" opacity=".9"/>
+  <circle cx="360" cy="210" r="58" fill="#344b1d"/>
+  <path d="M325 210h70M360 175v70" stroke="#d9e5b2" stroke-width="12" stroke-linecap="round"/>
+  <text x="282" y="420" fill="#fff" font-family="Arial, sans-serif" font-size="34" font-weight="700">PRODUIT</text>
+</svg>

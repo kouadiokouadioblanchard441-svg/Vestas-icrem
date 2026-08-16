@@ -9,6 +9,18 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 
 const PRODUCT_CARD_BG = "#4a5e22";
 
+function safeNumber(value: unknown, fallback = 0): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function getProductFallbackImage(name: string): string {
+  const normalizedName = name.toLowerCase();
+  if (normalizedName.includes("asus")) return "/products/asus-prime-z590-p.svg";
+  if (normalizedName.includes("intel")) return "/products/intel-core-i3-h510m-k.svg";
+  return "/products/device-fallback.svg";
+}
+
 export default function MyProductsPage() {
   const { user, refreshUser } = useAuth();
   const { t } = useI18n();
@@ -86,7 +98,7 @@ export default function MyProductsPage() {
   // Pour les produits collectAtEnd, totalEarned = "-1" est un sentinel "déjà collecté" :
   // on ne l'additionne pas au total affiché.
   const totalEarned = allProducts.reduce((sum: number, p: any) => {
-    return sum + Math.max(0, parseFloat(p.totalEarned || "0"));
+    return sum + Math.max(0, safeNumber(p.totalEarned));
   }, 0);
 
   const formatDateTime = (dateStr: string) => {
@@ -148,11 +160,12 @@ export default function MyProductsPage() {
             </div>
           ) : (
             allProducts.map((up: any) => {
-              const cycleDays = up.product?.cycleDays || 60;
-              const daysRemaining = up.daysRemaining ?? 0;
+              const productName = up.product?.name || t.adminTabProducts;
+              const cycleDays = Math.max(1, safeNumber(up.product?.cycleDays, 60));
+              const daysRemaining = Math.max(0, safeNumber(up.daysRemaining));
               const daysCompleted = Math.max(0, cycleDays - daysRemaining);
-              const dailyEarnings = Number(up.product?.dailyEarnings || 0);
-              const earnedSoFar = parseFloat(up.totalEarned || "0");
+              const dailyEarnings = safeNumber(up.product?.dailyEarnings);
+              const earnedSoFar = safeNumber(up.totalEarned);
               const progress = cycleDays > 0 ? Math.round((daysCompleted / cycleDays) * 100) : 0;
 
               const isCollectAtEnd = !!up.product?.collectAtEnd;
@@ -163,7 +176,8 @@ export default function MyProductsPage() {
               // Peut collecter : cycle terminé ET pas encore collecté
               const canCollectFinal = isCollectAtEnd && cycleComplete && !alreadyCollected;
               // Montant prévu = dailyEarnings × cycleDays (calculé côté client pour affichage)
-              const expectedPayout = parseFloat(up.product?.dailyEarnings || "0") * (up.product?.cycleDays ?? 0);
+              const expectedPayout = dailyEarnings * cycleDays;
+              const fallbackImage = getProductFallbackImage(productName);
 
               return (
                 <div
@@ -178,7 +192,7 @@ export default function MyProductsPage() {
                     style={{ background: "rgba(0,0,0,0.18)" }}
                   >
                     <div className="flex items-center gap-2">
-                      <p className="font-extrabold italic text-white text-base">{up.product?.name || t.adminTabProducts}</p>
+                      <p className="font-extrabold italic text-white text-base">{productName}</p>
                       {isCollectAtEnd && (
                         <span className="text-[10px] bg-white/20 text-white px-1.5 py-0.5 rounded-full flex items-center gap-1">
                           <Lock className="w-2.5 h-2.5" /> Fin de cycle
@@ -191,11 +205,16 @@ export default function MyProductsPage() {
                   {/* Content */}
                   <div className="flex gap-3 px-3 pb-3">
                     <div className="w-[120px] h-[130px] rounded-xl overflow-hidden shrink-0 shadow">
-                      {up.product?.imageUrl ? (
+                      {up.product?.imageUrl || fallbackImage ? (
                         <img
-                          src={up.product.imageUrl}
-                          alt={up.product?.name || t.adminTabProducts}
+                          src={up.product?.imageUrl || fallbackImage}
+                          alt={productName}
                           className="w-full h-full object-cover"
+                          onError={(event) => {
+                            if (!event.currentTarget.src.endsWith(fallbackImage)) {
+                              event.currentTarget.src = fallbackImage;
+                            }
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full bg-white/10 flex items-center justify-center px-2 text-center text-white/60 text-[10px]">

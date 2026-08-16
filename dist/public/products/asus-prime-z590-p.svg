@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 500" role="img" aria-labelledby="title desc">
+  <title id="title">ASUS PRIME Z590-P</title>
+  <desc id="desc">Visuel de secours de la carte mère ASUS PRIME Z590-P</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#111827"/>
+      <stop offset="1" stop-color="#334155"/>
+    </linearGradient>
+    <linearGradient id="board" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#263449"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="500" fill="url(#bg)"/>
+  <rect x="62" y="48" width="596" height="404" rx="24" fill="url(#board)" stroke="#60a5fa" stroke-width="5"/>
+  <path d="M110 132h214v190H110zM360 95h245v82H360zM360 208h100v114H360zM490 208h115v114H490z" fill="#172033" stroke="#64748b" stroke-width="3"/>
+  <path d="M120 112h180M120 350h210M382 365h205M382 115h190" stroke="#38bdf8" stroke-width="4" opacity=".7"/>
+  <circle cx="213" cy="227" r="55" fill="#0b1220" stroke="#93c5fd" stroke-width="4"/>
+  <circle cx="213" cy="227" r="24" fill="#1d4ed8"/>
+  <text x="88" y="414" fill="#e0f2fe" font-family="Arial, sans-serif" font-size="29" font-weight="700">ASUS PRIME Z590-P</text>
+  <text x="515" y="78" fill="#93c5fd" font-family="Arial, sans-serif" font-size="18" font-weight="700">ATX</text>
+</svg>

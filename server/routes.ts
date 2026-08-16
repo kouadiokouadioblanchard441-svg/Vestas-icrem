@@ -513,16 +513,19 @@ export async function registerRoutes(
     try {
       const userProductsList = await storage.getAllUserProducts(req.session.userId!);
       
-      const formattedProducts = userProductsList.map(up => ({
-        id: up.userProduct.id,
-        productId: up.userProduct.productId,
-        purchasedAt: up.userProduct.purchaseDate,
-        lastEarningDate: up.userProduct.lastEarningDate,
-        daysRemaining: up.userProduct.daysRemaining,
-        totalEarned: up.userProduct.totalEarned,
-        status: up.userProduct.isActive ? 'active' : 'completed',
-        product: up.product
-      }));
+      const formattedProducts = userProductsList.map(up => {
+        const totalEarned = Number(up.userProduct.totalEarned);
+        return {
+          id: up.userProduct.id,
+          productId: up.userProduct.productId,
+          purchasedAt: up.userProduct.purchaseDate,
+          lastEarningDate: up.userProduct.lastEarningDate,
+          daysRemaining: up.userProduct.daysRemaining,
+          totalEarned: Number.isFinite(totalEarned) ? up.userProduct.totalEarned : "0",
+          status: up.userProduct.isActive ? 'active' : 'completed',
+          product: up.product,
+        };
+      });
       
       res.json(formattedProducts);
     } catch (error: any) {
@@ -575,10 +578,12 @@ export async function registerRoutes(
             const dayEarnings = canCollectToday ? earningsPerCycle : 0;
 
             const newDaysRemaining = userProduct.daysRemaining - cyclesToConsume;
+            const previousEarned = Number(userProduct.totalEarned);
+            const safePreviousEarned = Number.isFinite(previousEarned) ? previousEarned : 0;
             const updateData: any = {
               lastEarningDate: new Date(now),
               daysRemaining: newDaysRemaining,
-              totalEarned: (parseFloat(userProduct.totalEarned || "0") + dayEarnings).toFixed(2),
+              totalEarned: (safePreviousEarned + dayEarnings).toFixed(2),
             };
             if (newDaysRemaining <= 0) updateData.isActive = false;
 
