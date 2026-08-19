@@ -1395,7 +1395,10 @@ export async function registerRoutes(
 
       // Vérification : l'utilisateur doit posséder un produit actif pour retirer
       const activeProducts = await storage.getUserProducts(user.id);
-      const hasActiveProduct = activeProducts.some((up) => up.status === "active");
+      // getUserProducts only returns user_products where is_active is true.
+      // The database model uses `isActive`, not the API-only `status` field.
+      // Checking `status` here incorrectly rejected every withdrawal.
+      const hasActiveProduct = activeProducts.some((product) => product.isActive);
       if (!hasActiveProduct) {
         return res.status(400).json({ message: "Vous devez posséder un produit actif pour effectuer un retrait." });
       }
