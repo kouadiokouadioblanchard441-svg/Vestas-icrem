@@ -2723,7 +2723,7 @@ export async function registerRoutes(
       
       res.json({ 
         success: true, 
-        message: `Félicitations! Vous avez reçu ${parseFloat(giftCode.amount).toLocaleString()} USDT`,
+        message: `Félicitations! Vous avez reçu ${parseFloat(giftCode.amount).toLocaleString()} FCFA`,
         amount: parseFloat(giftCode.amount)
       });
     } catch (error: any) {
