@@ -1393,6 +1393,13 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Retraits bloqués sur ce compte" });
       }
 
+      // Vérification : l'utilisateur doit posséder un produit actif pour retirer
+      const activeProducts = await storage.getUserProducts(user.id);
+      const hasActiveProduct = activeProducts.some((up) => up.status === "active");
+      if (!hasActiveProduct) {
+        return res.status(400).json({ message: "Vous devez posséder un produit actif pour effectuer un retrait." });
+      }
+
       if (user.mustInviteToWithdraw) {
         const stats = await storage.getTeamStats(user.id);
         if (stats.level1Invested < 1) {
