@@ -444,7 +444,23 @@ export default function SpinWheelPage() {
       onSuccess: (result) => {
         const winIdx   = Math.max(0, segments.findIndex((s) => s.id === result.segmentId));
         const extra    = Math.PI * 2 * (6 + Math.random() * 4);
-        const targetRot = rotRef.current + extra + (Math.PI * 2 - winIdx * ARC);
+
+        // ── Calcul correct de l'angle cible ──────────────────────────────
+        // Le pointeur est fixé à 12h, soit l'angle canvas -π/2.
+        // Le centre du segment i est dessiné à :  rotation + (i + 0.5)*ARC - π/2
+        // Pour que le pointeur tombe sur le centre du segment gagnant :
+        //   targetRot + (winIdx + 0.5)*ARC - π/2  ≡  -π/2  (mod 2π)
+        // → targetRot + (winIdx + 0.5)*ARC  ≡  0  (mod 2π)
+        // → targetRot  ≡  -(winIdx + 0.5)*ARC  (mod 2π)
+        const twoPi      = Math.PI * 2;
+        const base       = rotRef.current + extra;
+        const desiredMod = ((-(winIdx + 0.5) * ARC) % twoPi + twoPi) % twoPi;
+        const currentMod = ((base             % twoPi) + twoPi) % twoPi;
+        const delta      = (desiredMod - currentMod + twoPi) % twoPi;
+        // Légère variation aléatoire (±25 % de la largeur du segment) pour
+        // que la roue ne s'arrête pas toujours exactement au centre.
+        const jitter     = (Math.random() - 0.5) * ARC * 0.5;
+        const targetRot  = base + delta + jitter;
         const duration  = 3500;
         const startTime = performance.now();
         const startRot  = rotRef.current;
