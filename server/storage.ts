@@ -1006,11 +1006,11 @@ export class DatabaseStorage implements IStorage {
     };
 
     const countInvested = async (userList: User[]) => {
-      let count = 0;
-      for (const u of userList) {
-        if (u.hasActiveProduct) count++;
-      }
-      return count;
+      const activeMembers = await Promise.all(userList.map(async (u) => {
+        const products = await this.getUserProducts(u.id);
+        return products.some(({ product }) => !product.isFree);
+      }));
+      return activeMembers.filter(Boolean).length;
     };
 
     const countRecharged = async (userList: User[]) => {
@@ -1086,6 +1086,7 @@ export class DatabaseStorage implements IStorage {
       
       const totalInvested = userProductsList
         .reduce((sum, p) => sum + parseFloat(String(p.productPrice)), 0);
+      const hasActivePaidProduct = userProductsList.some((p) => p.isActive && parseFloat(String(p.productPrice)) > 0);
 
       // Bonus earned by current user FROM this specific member
       const bonusResult = await db
@@ -1103,7 +1104,7 @@ export class DatabaseStorage implements IStorage {
         phone: user.phone,
         country: user.country,
         balance: user.balance,
-        hasActiveProduct: user.hasActiveProduct,
+        hasActiveProduct: hasActivePaidProduct,
         hasDeposited: user.hasDeposited,
         createdAt: user.createdAt,
         totalInvested,
@@ -1705,10 +1706,29 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getProductInviteCount(userId: number): Promise<number> {
-    const user = await this.getUser(userId);
-    if (!user) return 0;
     const refs = await this.getReferrals(userId, 1);
-    return refs.length;
+    const eligibleIds = refs.filter((ref) => !ref.isBanned).map((ref) => ref.id);
+    if (eligibleIds.length === 0) return 0;
+
+    const rows = await db
+      .select({
+        userProduct: userProducts,
+        product: products,
+      })
+      .from(userProducts)
+      .leftJoin(products, eq(userProducts.productId, products.id))
+      .where(and(
+        inArray(userProducts.userId, eligibleIds),
+        eq(userProducts.isActive, true),
+      ));
+
+    // A member counts only after purchasing an active paid product.
+    // Registration alone, a free product, or an expired product does not count.
+    return new Set(
+      rows
+        .filter(({ userProduct, product }) => !productForUserProduct(userProduct, product).isFree)
+        .map(({ userProduct }) => userProduct.userId),
+    ).size;
   }
 }
 
