@@ -87,7 +87,11 @@ export default function MyProductsPage() {
 
   const currency = "FCFA";
 
-  const allProducts = userProducts || [];
+  // Keep expired/removed products exclusively on the expired-products page.
+  // The API intentionally returns the full history so that page can display it.
+  const allProducts = (userProducts || []).filter(
+    (product: any) => product.status === "active" && product.daysRemaining > 0,
+  );
 
   // Pour les produits collectAtEnd, totalEarned = "-1" est un sentinel "déjà collecté" :
   // on ne l'additionne pas au total affiché.
