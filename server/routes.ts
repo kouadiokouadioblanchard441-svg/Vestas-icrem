@@ -22,6 +22,13 @@ import {
   type SpinWheelSegment,
 } from "@shared/spin-wheel";
 
+const PHONE_LENGTHS_BY_COUNTRY: Record<string, number> = {
+  CI: 10,
+  BJ: 10,
+  BF: 8,
+  ML: 8,
+};
+
 // --- Brute-force protection (in-memory) ---
 const loginAttempts = new Map<string, { count: number; blockedUntil: number }>();
 const MAX_LOGIN_ATTEMPTS = 5;
@@ -298,6 +305,16 @@ export async function registerRoutes(
   app.post("/api/auth/register", async (req, res) => {
     try {
       const data = registerSchema.parse(req.body);
+
+      const expectedPhoneLength = PHONE_LENGTHS_BY_COUNTRY[data.country];
+      if (expectedPhoneLength !== undefined) {
+        const phoneDigits = data.phone.replace(/\D/g, "");
+        if (phoneDigits.length !== expectedPhoneLength) {
+          return res.status(400).json({
+            message: `Le numéro doit contenir exactement ${expectedPhoneLength} chiffres`,
+          });
+        }
+      }
       
       const existing = await storage.getUserByPhone(data.phone, data.country);
       if (existing) {
