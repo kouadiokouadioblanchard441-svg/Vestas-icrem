@@ -449,6 +449,8 @@ export const walletSchema = z.object({
 export const giftCodeSchema = z.object({
   code: z.string().min(4, "Le code doit avoir au moins 4 caracteres"),
   amount: z.number().min(1, "Le montant doit etre positif"),
+  minAmount: z.number().positive("Le montant minimum doit etre positif").optional(),
+  maxAmount: z.number().positive("Le montant maximum doit etre positif").optional(),
   maxUses: z.number().min(1, "Le nombre d'utilisations doit etre au moins 1"),
   expiresAt: z.string(),
 });

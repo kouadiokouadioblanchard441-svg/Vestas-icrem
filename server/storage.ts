@@ -189,7 +189,15 @@ export interface IStorage {
   // Gift Codes
   getAllGiftCodes(): Promise<GiftCode[]>;
   getGiftCodeByCode(code: string): Promise<GiftCode | undefined>;
-  createGiftCode(data: { code: string; amount: string; maxUses: number; expiresAt: Date; createdBy: number }): Promise<GiftCode>;
+  createGiftCode(data: {
+    code: string;
+    amount: string;
+    minAmount?: string;
+    maxAmount?: string;
+    maxUses: number;
+    expiresAt: Date;
+    createdBy: number;
+  }): Promise<GiftCode>;
   deleteGiftCode(id: number): Promise<void>;
   hasUserClaimedGiftCode(userId: number, giftCodeId: number): Promise<boolean>;
   claimGiftCode(userId: number, giftCodeId: number, amount: number): Promise<void>;
