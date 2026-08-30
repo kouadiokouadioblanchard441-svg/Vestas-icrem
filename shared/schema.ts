@@ -330,6 +330,9 @@ export const giftCodes = pgTable("gift_codes", {
   id: serial("id").primaryKey(),
   code: text("code").notNull().unique(),
   amount: decimal("amount", { precision: 15, scale: 2 }).notNull(),
+  // Optional inclusive range for codes whose reward is randomized per claim.
+  minAmount: decimal("min_amount", { precision: 15, scale: 2 }),
+  maxAmount: decimal("max_amount", { precision: 15, scale: 2 }),
   maxUses: integer("max_uses").notNull(),
   currentUses: integer("current_uses").notNull().default(0),
   expiresAt: timestamp("expires_at").notNull(),

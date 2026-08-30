@@ -13,6 +13,8 @@ interface GiftCode {
   id: number;
   code: string;
   amount: string;
+  minAmount?: string | null;
+  maxAmount?: string | null;
   maxUses: number;
   currentUses: number;
   expiresAt: string;
@@ -25,7 +27,10 @@ export default function AdminGiftCodes() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [formData, setFormData] = useState({
     code: "",
+    mode: "fixed" as "fixed" | "random",
     amount: "",
+    minAmount: "",
+    maxAmount: "",
     maxUses: "",
     expiresAt: "",
   });
@@ -38,7 +43,9 @@ export default function AdminGiftCodes() {
     mutationFn: async (data: typeof formData) => {
       const response = await apiRequest("POST", "/api/admin/gift-codes", {
         code: data.code,
-        amount: parseFloat(data.amount),
+        amount: data.mode === "random" ? 1 : parseInt(data.amount, 10),
+        minAmount: data.mode === "random" ? parseInt(data.minAmount, 10) : undefined,
+        maxAmount: data.mode === "random" ? parseInt(data.maxAmount, 10) : undefined,
         maxUses: parseInt(data.maxUses),
         expiresAt: data.expiresAt,
       });
@@ -51,7 +58,7 @@ export default function AdminGiftCodes() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/gift-codes"] });
       setIsCreateOpen(false);
-      setFormData({ code: "", amount: "", maxUses: "", expiresAt: "" });
+       setFormData({ code: "", mode: "fixed", amount: "", minAmount: "", maxAmount: "", maxUses: "", expiresAt: "" });
       toast({ title: "Succes", description: "Code cadeau cree avec succes" });
     },
     onError: (error: any) => {
@@ -76,9 +83,20 @@ export default function AdminGiftCodes() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.code || !formData.amount || !formData.maxUses || !formData.expiresAt) {
+    const amountFieldsMissing = formData.mode === "fixed"
+      ? !formData.amount
+      : !formData.minAmount || !formData.maxAmount;
+    if (!formData.code || amountFieldsMissing || !formData.maxUses || !formData.expiresAt) {
       toast({ title: "Tous les champs sont requis", variant: "destructive" });
       return;
+    }
+    if (formData.mode === "random") {
+      const min = Number(formData.minAmount);
+      const max = Number(formData.maxAmount);
+      if (!Number.isInteger(min) || !Number.isInteger(max) || min <= 0 || max < min) {
+        toast({ title: "Plage de montants invalide", description: "Utilisez deux montants entiers positifs, avec le minimum inférieur ou égal au maximum.", variant: "destructive" });
+        return;
+      }
     }
     createMutation.mutate(formData);
   };
@@ -130,16 +148,65 @@ export default function AdminGiftCodes() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="amount">Montant (FCFA)</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  value={formData.amount}
-                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  placeholder="Ex: 500"
-                  data-testid="input-amount"
-                />
+                <Label htmlFor="reward-mode">Type de récompense</Label>
+                <select
+                  id="reward-mode"
+                  value={formData.mode}
+                  onChange={(e) => setFormData({ ...formData, mode: e.target.value as "fixed" | "random" })}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  data-testid="select-reward-mode"
+                >
+                  <option value="fixed">Montant fixe</option>
+                  <option value="random">Montant aléatoire dans une plage</option>
+                </select>
               </div>
+              {formData.mode === "fixed" ? (
+                <div className="space-y-2">
+                  <Label htmlFor="amount">Montant fixe (FCFA)</Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={formData.amount}
+                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                    placeholder="Ex: 500"
+                    data-testid="input-amount"
+                  />
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="min-amount">Minimum (FCFA)</Label>
+                    <Input
+                      id="min-amount"
+                      type="number"
+                      min="1"
+                      step="1"
+                      value={formData.minAmount}
+                      onChange={(e) => setFormData({ ...formData, minAmount: e.target.value })}
+                      placeholder="Ex: 20"
+                      data-testid="input-min-amount"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="max-amount">Maximum (FCFA)</Label>
+                    <Input
+                      id="max-amount"
+                      type="number"
+                      min="1"
+                      step="1"
+                      value={formData.maxAmount}
+                      onChange={(e) => setFormData({ ...formData, maxAmount: e.target.value })}
+                      placeholder="Ex: 50"
+                      data-testid="input-max-amount"
+                    />
+                  </div>
+                  <p className="col-span-2 text-xs text-muted-foreground">
+                    Chaque utilisateur recevra un montant entier différent ou identique, tiré entre ces deux valeurs incluses.
+                  </p>
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="maxUses">Nombre d'utilisateurs max</Label>
                 <Input
@@ -198,7 +265,11 @@ export default function AdminGiftCodes() {
               <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Montant</span>
-                  <span className="font-semibold" data-testid={`text-amount-${giftCode.id}`}>{parseFloat(giftCode.amount).toLocaleString()} FCFA</span>
+                   <span className="font-semibold" data-testid={`text-amount-${giftCode.id}`}>
+                     {giftCode.minAmount != null && giftCode.maxAmount != null
+                       ? `${parseFloat(giftCode.minAmount).toLocaleString()} à ${parseFloat(giftCode.maxAmount).toLocaleString()} FCFA (aléatoire)`
+                       : `${parseFloat(giftCode.amount).toLocaleString()} FCFA`}
+                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Utilisations</span>

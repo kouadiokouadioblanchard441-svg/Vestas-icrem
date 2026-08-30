@@ -1422,7 +1422,15 @@ export class DatabaseStorage implements IStorage {
     return giftCode || undefined;
   }
 
-  async createGiftCode(data: { code: string; amount: string; maxUses: number; expiresAt: Date; createdBy: number }): Promise<GiftCode> {
+  async createGiftCode(data: {
+    code: string;
+    amount: string;
+    minAmount?: string;
+    maxAmount?: string;
+    maxUses: number;
+    expiresAt: Date;
+    createdBy: number;
+  }): Promise<GiftCode> {
     const [giftCode] = await db.insert(giftCodes).values(data).returning();
     return giftCode;
   }

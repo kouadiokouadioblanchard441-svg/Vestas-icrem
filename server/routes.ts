@@ -2658,7 +2658,9 @@ export async function registerRoutes(
 
   const createGiftCodeSchema = z.object({
     code: z.string().min(1, "Le code est requis"),
-    amount: z.number().positive("Le montant doit etre positif").or(z.string().transform(Number)),
+    amount: z.number().nonnegative("Le montant ne peut pas etre negatif").or(z.string().transform(Number)),
+    minAmount: z.number().positive("Le montant minimum doit etre positif").or(z.string().transform(Number)).optional(),
+    maxAmount: z.number().positive("Le montant maximum doit etre positif").or(z.string().transform(Number)).optional(),
     maxUses: z.number().int().positive("Le nombre d'utilisations doit etre positif"),
     expiresAt: z.string().refine((val) => !isNaN(Date.parse(val)), "Date d'expiration invalide"),
   });
@@ -2670,7 +2672,19 @@ export async function registerRoutes(
         return res.status(400).json({ message: parseResult.error.errors[0]?.message || "Donnees invalides" });
       }
 
-      const { code, amount, maxUses, expiresAt } = parseResult.data;
+      const { code, amount, minAmount, maxAmount, maxUses, expiresAt } = parseResult.data;
+
+      const hasRange = minAmount !== undefined || maxAmount !== undefined;
+      if (hasRange) {
+        if (minAmount === undefined || maxAmount === undefined) {
+          return res.status(400).json({ message: "Les montants minimum et maximum sont requis pour un montant aléatoire" });
+        }
+        if (!Number.isInteger(minAmount) || !Number.isInteger(maxAmount) || minAmount > maxAmount) {
+          return res.status(400).json({ message: "La plage doit être composée de montants entiers valides (minimum inférieur ou égal au maximum)" });
+        }
+      } else if (!Number.isInteger(amount) || amount <= 0) {
+        return res.status(400).json({ message: "Le montant fixe doit être un nombre entier positif" });
+      }
 
       const existingCode = await storage.getGiftCodeByCode(code);
       if (existingCode) {
@@ -2680,12 +2694,17 @@ export async function registerRoutes(
       const giftCode = await storage.createGiftCode({
         code,
         amount: amount.toString(),
+        minAmount: minAmount?.toString(),
+        maxAmount: maxAmount?.toString(),
         maxUses,
         expiresAt: new Date(expiresAt),
         createdBy: req.session.userId!,
       });
 
-      await storage.logAdminAction(req.session.userId!, "create_gift_code", null, `Code cadeau cree: ${code} - ${amount} USDT`);
+      const rewardDescription = hasRange
+        ? `${minAmount}-${maxAmount} FCFA aléatoires`
+        : `${amount} FCFA`;
+      await storage.logAdminAction(req.session.userId!, "create_gift_code", null, `Code cadeau créé : ${code} - ${rewardDescription}`);
       res.json(giftCode);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -2739,12 +2758,18 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Vous avez déjà utilisé ce code" });
       }
 
-      await storage.claimGiftCode(userId, giftCode.id, parseFloat(giftCode.amount));
+      const minAmount = giftCode.minAmount !== null ? Number(giftCode.minAmount) : null;
+      const maxAmount = giftCode.maxAmount !== null ? Number(giftCode.maxAmount) : null;
+      const rewardAmount = minAmount !== null && maxAmount !== null
+        ? crypto.randomInt(Math.ceil(minAmount), Math.floor(maxAmount) + 1)
+        : parseFloat(giftCode.amount);
+
+      await storage.claimGiftCode(userId, giftCode.id, rewardAmount);
       
       res.json({ 
         success: true, 
-        message: `Félicitations! Vous avez reçu ${parseFloat(giftCode.amount).toLocaleString()} FCFA`,
-        amount: parseFloat(giftCode.amount)
+        message: `Félicitations! Vous avez reçu ${rewardAmount.toLocaleString()} FCFA`,
+        amount: rewardAmount
       });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
