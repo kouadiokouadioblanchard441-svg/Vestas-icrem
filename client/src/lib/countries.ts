@@ -15,6 +15,13 @@ export const FALLBACK_COUNTRIES = [
   { code: "TG", name: "Togo",           currency: "FCFA", phonePrefix: "228", phoneLength: 8,  operators: ["TMoney", "Moov"] },
 ];
 
+/** Normalise les anciennes valeurs de pays avant de les utiliser côté client. */
+export function normalizeCountryCode(country?: string | null): string {
+  const value = country?.trim().toUpperCase();
+  if (value === "TOGO") return "TG";
+  return value || "CI";
+}
+
 /** Retourne le nombre de chiffres attendu pour un numéro de téléphone selon le pays. */
 export function getPhoneLength(countryCode: string): number {
   const c = FALLBACK_COUNTRIES.find(c => c.code === countryCode);

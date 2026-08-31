@@ -5,7 +5,7 @@ import { Link } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { getPhoneLength } from "@/lib/countries";
+import { getPhoneLength, normalizeCountryCode, FALLBACK_COUNTRIES } from "@/lib/countries";
 
 const CURRENCY = "FCFA";
 
@@ -88,6 +88,7 @@ export default function DepositPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const countryCode = normalizeCountryCode(user?.country);
 
   const [step, setStep] = useState<Step>("amount");
   const [amount, setAmount] = useState<number | "">("");
@@ -104,10 +105,10 @@ export default function DepositPage() {
 
   // Deposit channels (Canal 1, Canal 2…) filtered by the user's country
   const { data: depositChannels = [] } = useQuery<DepositChannel[]>({
-    queryKey: ["/api/deposit-channels", user?.country],
+    queryKey: ["/api/deposit-channels", countryCode],
     queryFn: async () => {
-      const url = user?.country
-        ? `/api/deposit-channels?country=${user.country}`
+      const url = countryCode
+        ? `/api/deposit-channels?country=${countryCode}`
         : `/api/deposit-channels`;
       const res = await fetch(url, { credentials: "include" });
       return res.json();
@@ -135,9 +136,8 @@ export default function DepositPage() {
   const fallbackOperators = paymentNumbersRaw.filter(
     (n) =>
       n.isActive &&
-      (!user?.country ||
-        n.country === user.country ||
-        paymentNumbersRaw.filter((x) => x.country === user?.country).length === 0)
+      (n.country === countryCode ||
+        paymentNumbersRaw.filter((x) => x.country === countryCode).length === 0)
   );
 
   // Are channels configured for this country?
@@ -159,16 +159,10 @@ export default function DepositPage() {
   // Operators shown on step 2: channel-specific or global fallback
   const operators = hasChannels ? channelOperators : fallbackOperators;
 
-  // Country phone prefix
+  // Country phone prefix — use the same country reference as registration/login.
   const countryPrefix =
-    user?.country === "CI" ? "225"
-    : user?.country === "CM" ? "237"
-    : user?.country === "BF" ? "226"
-    : user?.country === "BJ" ? "229"
-    : user?.country === "ML" ? "223"
-    : user?.country === "TG" ? "228"
-    : "225";
-  const senderPhoneLength = getPhoneLength(user?.country || "CI");
+    FALLBACK_COUNTRIES.find((country) => country.code === countryCode)?.phonePrefix || "225";
+  const senderPhoneLength = getPhoneLength(countryCode);
 
   const submitMutation = useMutation({
     mutationFn: async () => {
@@ -177,7 +171,7 @@ export default function DepositPage() {
         accountName: senderPhone,
         accountNumber: senderPhone,
         paymentMethod: selectedChannel?.operatorName || "Mobile Money",
-        country: user?.country || "CM",
+         country: countryCode,
         paymentNumberId: selectedChannel?.id || null,
         channelName: selectedChannel?.operatorName || "Mobile Money",
         reference: transactionId || senderPhone,
