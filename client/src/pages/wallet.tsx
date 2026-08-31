@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
-import { FALLBACK_COUNTRIES, getPhoneLength } from "@/lib/countries";
+import { FALLBACK_COUNTRIES, getPhoneLength, normalizeCountryCode } from "@/lib/countries";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -53,7 +53,9 @@ export default function WalletPage() {
   });
 
   // Opérateurs Mobile Money selon le pays de l'utilisateur
-  const userCountryCode = user?.country || "CI";
+  // Keep legacy accounts (for example, country saved as "Togo") aligned with
+  // the country codes used by the API and by the phone-prefix reference.
+  const userCountryCode = normalizeCountryCode(user?.country);
   const { data: countryOperators = [] } = useQuery<string[]>({
     queryKey: [`/api/countries/${userCountryCode}/operators`],
     enabled: !!user,
@@ -65,7 +67,7 @@ export default function WalletPage() {
         accountName: holderName,
         accountNumber: accountNumber,
         paymentMethod: selectedOperator,
-        country: user!.country,
+        country: userCountryCode,
       });
       if (!response.ok) {
         const result = await response.json();
