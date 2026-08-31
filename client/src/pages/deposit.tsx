@@ -5,6 +5,7 @@ import { Link } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { getPhoneLength } from "@/lib/countries";
 
 const CURRENCY = "FCFA";
 
@@ -165,7 +166,9 @@ export default function DepositPage() {
     : user?.country === "BF" ? "226"
     : user?.country === "BJ" ? "229"
     : user?.country === "ML" ? "223"
+    : user?.country === "TG" ? "228"
     : "225";
+  const senderPhoneLength = getPhoneLength(user?.country || "CI");
 
   const submitMutation = useMutation({
     mutationFn: async () => {
@@ -510,7 +513,7 @@ export default function DepositPage() {
                   type="tel"
                   value={senderPhone}
                   onChange={(e) => setSenderPhone(e.target.value)}
-                  placeholder="XXXXXXXXXX"
+                  placeholder={"X".repeat(senderPhoneLength)}
                   className="flex-1 px-3 py-3.5 text-sm outline-none text-gray-800"
                   data-testid="input-sender-phone"
                 />

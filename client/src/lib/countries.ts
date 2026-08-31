@@ -4,6 +4,7 @@ export const COUNTRIES = [
   { code: "BF", name: "Burkina Faso",  flag: "BF", currency: "FCFA", paymentMethods: ["Orange Burkina", "Moov Africa Burkina", "Telecel Burkina"] },
   { code: "ML", name: "Mali",          flag: "ML", currency: "FCFA", paymentMethods: ["Orange Mali", "Moov Africa Mali", "Telecel Mali"] },
   { code: "BJ", name: "Bénin",         flag: "BJ", currency: "FCFA", paymentMethods: ["MTN Bénin", "Moov Africa Bénin"] },
+  { code: "TG", name: "Togo",           flag: "TG", currency: "FCFA", paymentMethods: ["TMoney", "Moov"] },
 ];
 
 export const FALLBACK_COUNTRIES = [
@@ -11,6 +12,7 @@ export const FALLBACK_COUNTRIES = [
   { code: "BF", name: "Burkina Faso",  currency: "FCFA", phonePrefix: "226", phoneLength: 8,  operators: ["Orange Burkina", "Moov Africa Burkina", "Telecel Burkina"] },
   { code: "ML", name: "Mali",          currency: "FCFA", phonePrefix: "223", phoneLength: 8,  operators: ["Orange Mali", "Moov Africa Mali", "Telecel Mali"] },
   { code: "BJ", name: "Bénin",         currency: "FCFA", phonePrefix: "229", phoneLength: 10, operators: ["MTN Bénin", "Moov Africa Bénin"] },
+  { code: "TG", name: "Togo",           currency: "FCFA", phonePrefix: "228", phoneLength: 8,  operators: ["TMoney", "Moov"] },
 ];
 
 /** Retourne le nombre de chiffres attendu pour un numéro de téléphone selon le pays. */

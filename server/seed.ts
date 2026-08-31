@@ -117,7 +117,7 @@ export async function seed() {
     console.log("Super admin updated");
   }
 
-  // Seed/update countries (CI, BF, ML, BJ only)
+  // Seed/update supported countries and their Mobile Money operators
   const requiredCountries = [
     {
       code: "CI",
@@ -152,6 +152,15 @@ export async function seed() {
       currency: "FCFA",
       phonePrefix: "229",
       operators: JSON.stringify(["MTN Money", "Moov Money"]),
+      isActive: true,
+      autoPaymentEnabled: true,
+    },
+    {
+      code: "TG",
+      name: "Togo",
+      currency: "FCFA",
+      phonePrefix: "228",
+      operators: JSON.stringify(["TMoney", "Moov"]),
       isActive: true,
       autoPaymentEnabled: true,
     },
