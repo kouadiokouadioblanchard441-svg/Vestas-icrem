@@ -4,3 +4,4 @@
 - [PowerAdd Plesk bundle](spolarpv-plesk-bundle.md) — Plesk pulls prebuilt dist artifacts; production bundling must include SDKs without usable CommonJS exports.
 - [PowerAdd Plesk Git work tree](spolarpv-plesk-git-worktree.md) — Plesk remote-Git deployment must checkout into the website root, never its internal bare repository or .git directory.
 - [PowerAdd Supabase pooler](spolarpv-supabase-pooler.md) — the app needs Supabase's exact PostgreSQL pooler URI; public API URLs and malformed/old pooler tenants fail before login.
+- [PowerAdd country seed verification](country-seed-verification.md) — after country seed changes, verify the live API/database view; startup seed logs alone may not reflect what the running route reads.

@@ -268,11 +268,47 @@ export async function seed() {
     console.log("Deposit channel preserved: Canal 2 (CI)");
   }
 
+  // ── Seed deposit channel Togo ──────────────────────────────────────────────
+  // The real receiving numbers are managed by the administrator and are not
+  // invented here. This channel gives configured TMoney/Moov numbers a stable
+  // place in the deposit flow.
+  const existingTogoChannels = await db.select().from(depositChannels)
+    .then(rows => rows.filter(r => r.country === "TG"));
+  const hasTogoCanal1 = existingTogoChannels.some(r => r.name === "Canal 1");
+  if (!hasTogoCanal1) {
+    await db.insert(depositChannels).values({
+      name: "Canal 1",
+      description: "TMoney & Moov",
+      country: "TG",
+      isActive: true,
+      sortOrder: 1,
+      createdBy: 1,
+    });
+    console.log("Deposit channel seeded: Canal 1 (TG)");
+  } else {
+    console.log("Deposit channel preserved: Canal 1 (TG)");
+  }
+
   // ── Seed payment numbers CI — linked to channels ────────────────────────
   const existingNums = await db.select().from(paymentNumbers);
   const ciByOperator = Object.fromEntries(
     existingNums.filter(n => n.country === "CI").map(n => [n.operatorName, n])
   );
+
+  // Normalize legacy Togo labels without changing any configured receiving
+  // number or its channel assignment.
+  for (const entry of existingNums.filter(n => n.country === "TG")) {
+    const normalizedOperator =
+      entry.operatorName.trim().toLowerCase() === "tmoney" ? "TMoney"
+      : entry.operatorName.trim().toLowerCase() === "moov" ? "Moov"
+      : entry.operatorName.trim();
+    if (normalizedOperator && normalizedOperator !== entry.operatorName) {
+      await db.update(paymentNumbers)
+        .set({ operatorName: normalizedOperator })
+        .where(eq(paymentNumbers.id, entry.id));
+      console.log(`Payment number label normalized: ${normalizedOperator} (TG)`);
+    }
+  }
 
   const defaultCiNumbers = [
     // Canal 1 — Wave + MTN
