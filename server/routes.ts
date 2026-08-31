@@ -357,6 +357,16 @@ export async function registerRoutes(
     if (checkBruteForce(req, res)) return;
     try {
       const data = loginSchema.parse(req.body);
+
+      const expectedPhoneLength = PHONE_LENGTHS_BY_COUNTRY[data.country];
+      if (expectedPhoneLength !== undefined) {
+        const phoneDigits = data.phone.replace(/\D/g, "");
+        if (phoneDigits.length !== expectedPhoneLength) {
+          return res.status(400).json({
+            message: `Le numéro doit contenir exactement ${expectedPhoneLength} chiffres`,
+          });
+        }
+      }
       
       const user = await storage.getUserByPhone(data.phone, data.country);
       if (!user) {
@@ -2790,11 +2800,22 @@ export async function registerRoutes(
   // Retourne les opérateurs Mobile Money disponibles pour un pays donné
   app.get("/api/countries/:code/operators", requireAuth, async (req, res) => {
     try {
-      const codeParam = req.params.code;
-      const code = (Array.isArray(codeParam) ? codeParam[0] : codeParam).toUpperCase();
+      const code = String(req.params.code || "").trim().toUpperCase();
       const allCountries = await storage.getActiveCountries();
-      const country = allCountries.find((c: any) => c.code === code);
+      const country = allCountries.find((c: any) => String(c.code).trim().toUpperCase() === code);
       if (!country) return res.json([]);
+
+      // Withdrawal wallets must offer operators that have an active receiving
+      // account configured for the country. Fall back to the country catalog
+      // when the administrator has not configured payment numbers yet.
+      const configuredNumbers = await storage.getPaymentNumbersByCountry(code);
+      const configuredOperators = Array.from(new Set(
+        configuredNumbers
+          .map((number) => number.operatorName.trim())
+          .filter(Boolean),
+      ));
+      if (configuredOperators.length > 0) return res.json(configuredOperators);
+
       let ops: string[] = [];
       try { ops = JSON.parse(country.operators || "[]"); } catch {}
       res.json(ops);
