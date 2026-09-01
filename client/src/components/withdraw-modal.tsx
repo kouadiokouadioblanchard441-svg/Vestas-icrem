@@ -81,7 +81,7 @@ export default function WithdrawModal({ open, onClose }: WithdrawModalProps) {
 
   if (!user) return null;
 
-  const balance = parseFloat(user.totalEarnings || "0");
+  const balance = parseFloat(user.balance || "0");
   const defaultWallet = wallets?.find(w => w.isDefault);
   const withdrawalEnabled = withdrawalSettings?.withdrawalEnabled ?? true;
   const fees = withdrawalSettings?.withdrawalFees || 15;

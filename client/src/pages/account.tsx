@@ -231,20 +231,6 @@ export default function AccountPage() {
               <p className="text-white/60 text-[11px] mt-1">{currency}</p>
             </div>
           </div>
-          {balance < 0 && (
-            <div className="mx-4 mb-5 rounded-2xl border border-red-300/40 bg-red-950/50 px-4 py-3">
-              <p className="text-red-100 text-sm font-bold">Paiement nécessaire</p>
-              <p className="text-red-100/80 text-xs mt-1">
-                Votre compte a consommé {Math.abs(balance).toLocaleString("fr-FR")} {currency} de plus que vos dépôts.
-                Effectuez un dépôt pour couvrir cette dette.
-              </p>
-              <Link href="/deposit">
-                <button className="mt-3 rounded-xl bg-red-500 px-3 py-2 text-xs font-bold text-white">
-                  Couvrir la dette
-                </button>
-              </Link>
-            </div>
-          )}
         </div>
 
         {/* ── 3 boutons rapides ── */}
