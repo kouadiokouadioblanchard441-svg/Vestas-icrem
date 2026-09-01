@@ -24,8 +24,12 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   referralCode: text("referral_code").notNull().unique(),
   referredBy: text("referred_by"),
+  // Current spendable balance: deposits and realized rewards minus purchases
+  // and withdrawal requests. This is the balance used by purchases/withdrawals.
   balance: decimal("balance", { precision: 15, scale: 2 }).notNull().default("0"),
   todayEarnings: decimal("today_earnings", { precision: 15, scale: 2 }).notNull().default("0"),
+  // Lifetime gross earned rewards. Informational only; never debit purchases
+  // or withdrawals from this counter.
   totalEarnings: decimal("total_earnings", { precision: 15, scale: 2 }).notNull().default("0"),
   isAdmin: boolean("is_admin").notNull().default(false),
   isSuperAdmin: boolean("is_super_admin").notNull().default(false),

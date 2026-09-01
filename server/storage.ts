@@ -9,6 +9,7 @@ import {
 import { db } from "./db";
 import { eq, and, asc, desc, sql, gte, lte, or, inArray } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import { calculateAvailableBalance, calculateReconciliationDifference } from "./accounting";
 
 // Compares phone numbers regardless of local vs international MSISDN format
 // (e.g. "0150839909" vs "+22990150839909") by matching on the last 8 digits.
@@ -126,7 +127,7 @@ export interface IStorage {
   cleanupDepositScreenshots(): Promise<void>;
   
   // Withdrawals
-  createWithdrawal(data: Partial<Withdrawal>): Promise<Withdrawal>;
+  createWithdrawal(data: Partial<Withdrawal>, debitAmount?: number): Promise<Withdrawal>;
   getWithdrawals(status?: string): Promise<(Withdrawal & { user: User })[]>;
   getUserWithdrawals(userId: number): Promise<Withdrawal[]>;
   updateWithdrawal(id: number, data: Partial<Withdrawal>): Promise<Withdrawal>;
@@ -134,6 +135,17 @@ export interface IStorage {
   getWithdrawalByNowPaymentsBatchId(batchId: string): Promise<Withdrawal | undefined>;
   refundWithdrawal(id: number, status: "rejected" | "failed", reason: string): Promise<Withdrawal | undefined>;
   getUserWithdrawalCountToday(userId: number): Promise<number>;
+  getBalanceReconciliation(): Promise<Array<{
+    userId: number;
+    fullName: string;
+    actualBalance: number;
+    expectedBalance: number;
+    difference: number;
+    status: "balanced" | "needs_review";
+    approvedDeposits: number;
+    otherLedgerChanges: number;
+    activeWithdrawals: number;
+  }>>;
   
   // Wallets
   getWallets(userId: number): Promise<WithdrawalWallet[]>;
@@ -510,7 +522,8 @@ export class DatabaseStorage implements IStorage {
     if (level1User) {
       const commission = amount * level1Rate;
       await this.updateUser(level1User.id, {
-        totalEarnings: (parseFloat(level1User.totalEarnings) + commission).toFixed(2),
+        balance: (parseFloat(level1User.balance || "0") + commission).toFixed(2),
+        totalEarnings: (parseFloat(level1User.totalEarnings || "0") + commission).toFixed(2),
       });
       await this.createReferralCommission({
         userId: level1User.id,
@@ -532,7 +545,8 @@ export class DatabaseStorage implements IStorage {
         if (level2User) {
           const commission2 = amount * level2Rate;
           await this.updateUser(level2User.id, {
-            totalEarnings: (parseFloat(level2User.totalEarnings) + commission2).toFixed(2),
+            balance: (parseFloat(level2User.balance || "0") + commission2).toFixed(2),
+            totalEarnings: (parseFloat(level2User.totalEarnings || "0") + commission2).toFixed(2),
           });
           await this.createReferralCommission({
             userId: level2User.id,
@@ -554,7 +568,8 @@ export class DatabaseStorage implements IStorage {
             if (level3User) {
               const commission3 = amount * level3Rate;
               await this.updateUser(level3User.id, {
-                totalEarnings: (parseFloat(level3User.totalEarnings) + commission3).toFixed(2),
+                balance: (parseFloat(level3User.balance || "0") + commission3).toFixed(2),
+                totalEarnings: (parseFloat(level3User.totalEarnings || "0") + commission3).toFixed(2),
               });
               await this.createReferralCommission({
                 userId: level3User.id,
@@ -590,6 +605,7 @@ export class DatabaseStorage implements IStorage {
     if (level1User) {
       const commission1 = taskReward * level1Rate;
       await this.updateUser(level1User.id, {
+        balance: (parseFloat(level1User.balance || "0") + commission1).toFixed(2),
         totalEarnings: (parseFloat(level1User.totalEarnings || "0") + commission1).toFixed(2),
       });
       await this.createTransaction({
@@ -605,6 +621,7 @@ export class DatabaseStorage implements IStorage {
         if (level2User) {
           const commission2 = taskReward * level2Rate;
           await this.updateUser(level2User.id, {
+            balance: (parseFloat(level2User.balance || "0") + commission2).toFixed(2),
             totalEarnings: (parseFloat(level2User.totalEarnings || "0") + commission2).toFixed(2),
           });
           await this.createTransaction({
@@ -620,7 +637,8 @@ export class DatabaseStorage implements IStorage {
             if (level3User) {
               const commission3 = taskReward * level3Rate;
               await this.updateUser(level3User.id, {
-                totalEarnings: (parseFloat(level3User.totalEarnings || "0") + commission3).toFixed(2),
+              balance: (parseFloat(level3User.balance || "0") + commission3).toFixed(2),
+              totalEarnings: (parseFloat(level3User.totalEarnings || "0") + commission3).toFixed(2),
               });
               await this.createTransaction({
                 userId: level3User.id,
@@ -752,9 +770,42 @@ export class DatabaseStorage implements IStorage {
 
 
   // Withdrawals
-  async createWithdrawal(data: Partial<Withdrawal>): Promise<Withdrawal> {
-    const [withdrawal] = await db.insert(withdrawals).values(data as any).returning();
-    return withdrawal;
+  async createWithdrawal(data: Partial<Withdrawal>, debitAmount?: number): Promise<Withdrawal> {
+    if (debitAmount === undefined) {
+      const [withdrawal] = await db.insert(withdrawals).values(data as any).returning();
+      return withdrawal;
+    }
+
+    const userId = data.userId;
+    if (!userId) throw new Error("Utilisateur introuvable");
+    if (!Number.isFinite(debitAmount) || debitAmount <= 0) {
+      throw new Error("Montant de retrait invalide");
+    }
+
+    return db.transaction(async (tx) => {
+      // Debit and withdrawal creation share one transaction. The conditional
+      // update also prevents two concurrent requests from spending the same
+      // available balance.
+      const [updatedUser] = await tx
+        .update(users)
+        .set({ balance: sql`${users.balance} - ${debitAmount}` })
+        .where(and(
+          eq(users.id, userId),
+          sql`${users.balance} >= ${debitAmount}`,
+        ))
+        .returning({ id: users.id });
+
+      if (!updatedUser) throw new Error("Solde insuffisant");
+
+      const [withdrawal] = await tx.insert(withdrawals).values(data as any).returning();
+      await tx.insert(transactions).values({
+        userId,
+        type: "withdrawal",
+        amount: (-debitAmount).toFixed(2),
+        description: `Demande de retrait #${withdrawal.id}`,
+      });
+      return withdrawal;
+    });
   }
 
   async getWithdrawals(status?: string): Promise<(Withdrawal & { user: User })[]> {
@@ -822,10 +873,9 @@ export class DatabaseStorage implements IStorage {
 
       const [user] = await tx.select().from(users).where(eq(users.id, withdrawal.userId));
       if (user) {
-        const refundedEarnings = parseFloat(user.totalEarnings || "0") + withdrawal.amount;
         await tx
           .update(users)
-          .set({ totalEarnings: refundedEarnings.toFixed(2) })
+          .set({ balance: sql`${users.balance} + ${withdrawal.amount}` })
           .where(eq(users.id, user.id));
         await tx.insert(transactions).values({
           userId: user.id,
@@ -836,6 +886,94 @@ export class DatabaseStorage implements IStorage {
       }
 
       return withdrawal;
+    });
+  }
+
+  /**
+   * Read-only report for the controlled historical reconciliation.
+   *
+   * Approved deposits are read from deposits because old records may predate
+   * deposit transaction entries. Other balance movements come from the
+   * transaction ledger. Active withdrawal rows are subtracted separately so
+   * both old and new withdrawals are visible in the report; withdrawal and
+   * refund transaction rows are intentionally excluded to avoid double-counting.
+   */
+  async getBalanceReconciliation(): Promise<Array<{
+    userId: number;
+    fullName: string;
+    actualBalance: number;
+    expectedBalance: number;
+    difference: number;
+    status: "balanced" | "needs_review";
+    approvedDeposits: number;
+    otherLedgerChanges: number;
+    activeWithdrawals: number;
+  }>> {
+    const [userRows, depositRows, transactionRows, withdrawalRows] = await Promise.all([
+      db.select({
+        id: users.id,
+        fullName: users.fullName,
+        balance: users.balance,
+      }).from(users),
+      db.select({
+        userId: deposits.userId,
+        amount: deposits.amount,
+      }).from(deposits).where(eq(deposits.status, "approved")),
+      db.select({
+        userId: transactions.userId,
+        type: transactions.type,
+        amount: transactions.amount,
+      }).from(transactions),
+      db.select({
+        userId: withdrawals.userId,
+        amount: withdrawals.amount,
+        status: withdrawals.status,
+      }).from(withdrawals),
+    ]);
+
+    const sumByUser = (rows: Array<{ userId: number; amount: string | number }>) => {
+      const sums = new Map<number, number>();
+      for (const row of rows) {
+        sums.set(row.userId, (sums.get(row.userId) || 0) + Number(row.amount || 0));
+      }
+      return sums;
+    };
+
+    const approvedDeposits = sumByUser(depositRows);
+    const otherLedgerChanges = sumByUser(
+      transactionRows
+        .filter(({ type }) => !["deposit", "withdrawal", "withdrawal_refund"].includes(type))
+        .map(({ userId, amount }) => ({ userId, amount })),
+    );
+    const activeWithdrawals = sumByUser(
+      withdrawalRows
+        .filter(({ status }) => !["rejected", "failed"].includes(status))
+        .map(({ userId, amount }) => ({ userId, amount })),
+    );
+
+    return userRows.map((user) => {
+      const approvedDepositTotal = approvedDeposits.get(user.id) || 0;
+      const otherLedgerTotal = otherLedgerChanges.get(user.id) || 0;
+      const activeWithdrawalTotal = activeWithdrawals.get(user.id) || 0;
+      const expectedBalance = calculateAvailableBalance({
+        approvedDeposits: approvedDepositTotal,
+        otherCredits: otherLedgerTotal,
+        activeWithdrawals: activeWithdrawalTotal,
+      });
+      const actualBalance = Number(user.balance || 0);
+      const difference = calculateReconciliationDifference(actualBalance, expectedBalance);
+
+      return {
+        userId: user.id,
+        fullName: user.fullName,
+        actualBalance,
+        expectedBalance,
+        difference,
+        status: Math.abs(difference) <= 0.01 ? "balanced" : "needs_review",
+        approvedDeposits: Number(approvedDepositTotal.toFixed(2)),
+        otherLedgerChanges: Number(otherLedgerTotal.toFixed(2)),
+        activeWithdrawals: Number(activeWithdrawalTotal.toFixed(2)),
+      };
     });
   }
 
@@ -1234,9 +1372,13 @@ export class DatabaseStorage implements IStorage {
         rewardClaimed: true,
       });
 
+      const newBalance = parseFloat(user.balance || "0") + taskStatus.reward;
       const newTotalEarnings = parseFloat(user.totalEarnings || "0") + taskStatus.reward;
       await tx.update(users)
-        .set({ totalEarnings: newTotalEarnings.toFixed(2) })
+        .set({
+          balance: newBalance.toFixed(2),
+          totalEarnings: newTotalEarnings.toFixed(2),
+        })
         .where(eq(users.id, userId));
 
       await tx.insert(transactions).values({
@@ -1460,9 +1602,9 @@ export class DatabaseStorage implements IStorage {
       await tx.update(giftCodes).set({
         currentUses: sql`${giftCodes.currentUses} + 1`
       }).where(eq(giftCodes.id, giftCodeId));
-       await tx.update(users).set({
-         totalEarnings: sql`${users.totalEarnings} + ${amount}`
-       }).where(eq(users.id, userId));
+      await tx.update(users).set({
+        balance: sql`${users.balance} + ${amount}`
+      }).where(eq(users.id, userId));
       await tx.insert(transactions).values({
         userId,
         type: "gift_code",
@@ -1668,8 +1810,8 @@ export class DatabaseStorage implements IStorage {
       try {
         const user = await this.getUser(staking.userId);
         if (!user) continue;
-        const newTotalEarnings = (parseFloat(user.totalEarnings || "0") + staking.returnAmount).toFixed(2);
-        await this.updateUser(staking.userId, { totalEarnings: newTotalEarnings });
+        const newBalance = (parseFloat(user.balance) + staking.returnAmount).toFixed(2);
+        await this.updateUser(staking.userId, { balance: newBalance });
         await db.update(userStakings)
           .set({ status: "released", releasedAt: now })
           .where(eq(userStakings.id, staking.id));

@@ -1340,7 +1340,10 @@ export async function registerRoutes(
           createdAt: w.createdAt,
           extra: { fees: w.fees, netAmount: w.netAmount, paymentMethod: w.paymentMethod },
         })),
-        ...txs.map((t: any) => ({
+        // Withdrawal rows already appear above with their status and fees.
+        // Keep the internal debit/refund transactions available through
+        // /api/transactions, but do not duplicate them in this unified view.
+        ...txs.filter((t: any) => !["withdrawal", "withdrawal_refund"].includes(t.type)).map((t: any) => ({
           id: `tx-${t.id}`,
           category: t.type,
           amount: t.amount,
@@ -1434,7 +1437,9 @@ export async function registerRoutes(
         }
       }
 
-      const balance = parseFloat(user.totalEarnings || "0");
+      // Withdrawals consume the same spendable balance shown in the wallet
+      // and used by product purchases.
+      const balance = parseFloat(user.balance || "0");
       if (amount > balance) {
         return res.status(400).json({ message: "Solde insuffisant" });
       }
@@ -1464,11 +1469,6 @@ export async function registerRoutes(
       const feeAmount = Math.round(amount * fees / 100);
       const netAmount = amount - feeAmount;
 
-      // Deduct from totalEarnings (solde des revenus)
-      await storage.updateUser(user.id, {
-        totalEarnings: (balance - amount).toFixed(2),
-      });
-
       const withdrawalMode = settings.withdrawalMode || "manual";
 
       if (withdrawalMode === "manual") {
@@ -1483,7 +1483,7 @@ export async function registerRoutes(
           country: user.country,
           paymentMethod: wallet.paymentMethod || "Mobile Money",
           status: "pending",
-        });
+        }, amount);
         return res.json({ ...withdrawal, payoutRequiresVerification: false });
       }
 
@@ -1499,7 +1499,7 @@ export async function registerRoutes(
         paymentMethod: "USDT BEP20",
         status: "processing",
         nowPaymentsStatus: "CREATING",
-      });
+      }, amount);
 
       try {
         const payout = await createPayout({
@@ -1736,10 +1736,14 @@ export async function registerRoutes(
         }
       }
 
-      // Montant configurable depuis l'admin
+      // Montant configurable depuis l'admin. A bonus is immediately available
+      // for purchases and withdrawals, while totalEarnings remains its gross
+      // lifetime counter.
       const bonusAmount = parseFloat(settings.dailyBonusAmount || "50");
+      const newBalance = parseFloat(user.balance || "0") + bonusAmount;
       const newTotalEarnings = parseFloat(user.totalEarnings || "0") + bonusAmount;
       await storage.updateUser(user.id, { 
+        balance: newBalance.toFixed(2),
         totalEarnings: newTotalEarnings.toFixed(2),
         lastDailyBonusClaim: now
       });
@@ -1900,8 +1904,10 @@ export async function registerRoutes(
 
       const winner = pickWinningSegment(segments);
       const newTokens = Math.max(0, (user.spinTokens || 0) - 1);
+      const newBalance = (parseFloat(user.balance || "0") + winner.amount).toFixed(2);
       const newEarnings = (parseFloat(user.totalEarnings) + winner.amount).toFixed(2);
        await storage.updateUser(req.session.userId!, {
+         balance: newBalance,
         totalEarnings: newEarnings,
         spinTokens: newTokens,
       });
@@ -1963,6 +1969,22 @@ export async function registerRoutes(
       const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
       const stats = await storage.getStats(startDate, endDate);
       res.json(stats);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Read-only historical accounting report. It intentionally performs no
+  // repairs: mismatches must be reviewed before any account data is changed.
+  app.get("/api/admin/account-reconciliation", requireAdmin, async (_req, res) => {
+    try {
+      const report = await storage.getBalanceReconciliation();
+      res.json({
+        generatedAt: new Date().toISOString(),
+        readOnly: true,
+        accounts: report,
+        needsReviewCount: report.filter((account) => account.status === "needs_review").length,
+      });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -2096,18 +2118,16 @@ export async function registerRoutes(
 
   app.post("/api/admin/withdrawals/:id/reject", requireAdmin, async (req, res) => {
     try {
-      const withdrawal = await storage.updateWithdrawal(parseInt(req.params.id as string), {
-        status: "rejected",
-        processedAt: new Date(),
-        processedBy: req.session.userId,
-      });
-
-      // Refund the user — withdrawals are deducted from totalEarnings, so refund there
-      const user = await storage.getUser(withdrawal.userId);
-      if (user) {
-        const newEarnings = parseFloat(user.totalEarnings || "0") + withdrawal.amount;
-        await storage.updateUser(user.id, { totalEarnings: newEarnings.toFixed(2) });
+      const withdrawalId = parseInt(req.params.id as string);
+      const withdrawal = await storage.refundWithdrawal(
+        withdrawalId,
+        "rejected",
+        "Retrait rejeté par l'administration",
+      );
+      if (!withdrawal) {
+        return res.status(400).json({ message: "Ce retrait est déjà traité ou introuvable" });
       }
+      await storage.updateWithdrawal(withdrawalId, { processedBy: req.session.userId });
 
       await storage.logAdminAction(req.session.userId!, "reject_withdrawal", withdrawal.userId, `Retrait ${withdrawal.id} rejeté et remboursé`);
       res.json(withdrawal);
@@ -2992,16 +3012,16 @@ export async function registerRoutes(
 
   app.post("/api/banker/withdrawals/:id/reject", requireBanker, async (req, res) => {
     try {
-      const withdrawal = await storage.updateWithdrawal(parseInt(req.params.id as string), {
-        status: "rejected",
-        processedAt: new Date(),
-        processedBy: req.session.userId,
-      });
-      const user = await storage.getUser(withdrawal.userId);
-      if (user) {
-        const newEarnings = parseFloat(user.totalEarnings || "0") + withdrawal.amount;
-        await storage.updateUser(user.id, { totalEarnings: newEarnings.toFixed(2) });
+      const withdrawalId = parseInt(req.params.id as string);
+      const withdrawal = await storage.refundWithdrawal(
+        withdrawalId,
+        "rejected",
+        "Retrait rejeté par bankier",
+      );
+      if (!withdrawal) {
+        return res.status(400).json({ message: "Ce retrait est déjà traité ou introuvable" });
       }
+      await storage.updateWithdrawal(withdrawalId, { processedBy: req.session.userId });
       await storage.logAdminAction(req.session.userId!, "reject_withdrawal", withdrawal.userId, `Retrait ${withdrawal.id} rejeté par bankier et remboursé`);
       res.json(withdrawal);
     } catch (error: any) {

@@ -154,8 +154,9 @@ export default function WithdrawalPage() {
   if (walletsLoading) return null;
   if (!user) return null;
 
-  const balance = parseFloat(user?.balance || "0");
-  const earningsBalance = parseFloat(user?.totalEarnings || "0");
+  // The available balance is the same balance used by the API for purchases
+  // and withdrawals. totalEarnings is a lifetime gross counter, not a wallet.
+  const availableBalance = parseFloat(user?.balance || "0");
 
   // Instructions : depuis l'admin si définies, sinon générées automatiquement
   const customInstructions = allSettings?.withdrawalInstructions?.trim();
@@ -194,9 +195,9 @@ export default function WithdrawalPage() {
 
       {/* ── Balance card ── */}
       <div className="mx-4 mt-4 rounded-2xl p-5" style={{ background: "#2d3816" }}>
-        <p className="text-white/70 text-sm mb-1">Solde des gains (retirable)</p>
+        <p className="text-white/70 text-sm mb-1">Solde disponible (retirable)</p>
         <p className="text-white font-black text-4xl tracking-tight" data-testid="text-balance">
-          {currency} {earningsBalance.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+          {currency} {availableBalance.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
         </p>
       </div>
 
