@@ -53,67 +53,6 @@ function checkBruteForce(req: Request, res: Response): boolean {
   return false;
 }
 
-const productImageApplicationRoot =
-  typeof __dirname === "undefined" ? process.cwd() : path.resolve(__dirname, "..");
-
-function productFallbackImageUrl(product: { id: number; imageUrl?: string | null }): string {
-  const imageUrl = typeof product.imageUrl === "string" ? product.imageUrl.trim() : "";
-  if (!imageUrl.startsWith("/uploads/")) {
-    return imageUrl || `/product-images/${product.id}`;
-  }
-
-  const filename = path.basename(imageUrl);
-  const uploadLocations = [
-    path.join(productImageApplicationRoot, "uploads", filename),
-    path.join(productImageApplicationRoot, "client", "public", "uploads", filename),
-    path.join(productImageApplicationRoot, "dist", "public", "uploads", filename),
-  ];
-
-  return uploadLocations.some((location) => fs.existsSync(location))
-    ? imageUrl
-    : `/product-images/${product.id}`;
-}
-
-function escapeSvgText(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
-}
-
-function generatedProductFallback(name: string): string {
-  const normalizedName = name.toLowerCase();
-  const accent = normalizedName.includes("asus")
-    ? "#ef4444"
-    : normalizedName.includes("intel")
-      ? "#60a5fa"
-      : "#f59e0b";
-  const title = escapeSvgText(name);
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 520" role="img" aria-label="${title}">
-    <defs>
-      <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
-        <stop offset="0" stop-color="#18212f"/>
-        <stop offset="1" stop-color="#3f4f65"/>
-      </linearGradient>
-      <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0" dy="16" stdDeviation="14" flood-opacity=".35"/>
-      </filter>
-    </defs>
-    <rect width="600" height="520" rx="36" fill="url(#bg)"/>
-    <g filter="url(#shadow)" transform="translate(90 78)">
-      <rect x="30" y="0" width="360" height="290" rx="24" fill="#111827" stroke="${accent}" stroke-width="10"/>
-      <rect x="62" y="34" width="296" height="222" rx="12" fill="#0b1220" stroke="#94a3b8" stroke-width="4"/>
-      <path d="M96 92h228M96 144h170M96 196h216" stroke="${accent}" stroke-width="16" stroke-linecap="round" opacity=".85"/>
-      <circle cx="310" cy="192" r="22" fill="${accent}"/>
-      <path d="M54 290v46M366 290v46M0 336h420" stroke="#cbd5e1" stroke-width="18" stroke-linecap="round"/>
-    </g>
-    <text x="300" y="455" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="25" font-weight="700">${title}</text>
-  </svg>`;
-}
-
 function recordFailedAttempt(req: Request) {
   const key = getClientKey(req);
   const now = Date.now();
@@ -449,43 +388,6 @@ export async function registerRoutes(
     }
   });
 
-  // Product image compatibility endpoint.
-  // Older catalog rows may reference uploads that are no longer present on
-  // Plesk. Serve the bundled product visual when possible, and generate a
-  // valid SVG as the final fallback so browsers never receive a broken image.
-  app.get("/product-images/:id", async (req, res) => {
-    try {
-      const productId = Number.parseInt(req.params.id as string, 10);
-      if (!Number.isInteger(productId)) {
-        return res.status(400).send("Invalid product image");
-      }
-
-      const product = await storage.getProduct(productId);
-      const name = product?.name || "Produit";
-      const normalizedName = name.toLowerCase();
-      const fallbackFile = normalizedName.includes("asus")
-        ? "asus-prime-z590-p.svg"
-        : normalizedName.includes("intel")
-          ? "intel-core-i3-h510m-k.svg"
-          : "device-fallback.svg";
-      const candidateFiles = [
-        path.join(productImageApplicationRoot, "dist", "public", "products", fallbackFile),
-        path.join(productImageApplicationRoot, "client", "public", "products", fallbackFile),
-      ];
-      const existingFile = candidateFiles.find((file) => fs.existsSync(file));
-
-      res.setHeader("Cache-Control", "public, max-age=3600");
-      res.type("image/svg+xml");
-      if (existingFile) {
-        return res.sendFile(existingFile);
-      }
-      return res.send(generatedProductFallback(name));
-    } catch (error) {
-      console.error("Product image fallback error:", error);
-      return res.status(404).send("Product image not found");
-    }
-  });
-
   // Products
   app.get("/api/products", requireAuth, async (req, res) => {
     try {
@@ -502,7 +404,7 @@ export async function registerRoutes(
       
       const productsWithOwnership = products.map(p => ({
         ...p,
-        imageUrl: productFallbackImageUrl(p),
+        imageUrl: p.imageUrl,
         isOwned: productCounts.has(p.id),
         ownedCount: productCounts.get(p.id) || 0,
       }));
@@ -649,7 +551,7 @@ export async function registerRoutes(
           totalEarned: Number.isFinite(totalEarned) ? up.userProduct.totalEarned : "0",
           status: up.userProduct.isActive ? 'active' : 'completed',
           product: up.product
-            ? { ...up.product, imageUrl: productFallbackImageUrl(up.product) }
+            ? { ...up.product, imageUrl: up.product.imageUrl }
             : up.product,
         };
       });

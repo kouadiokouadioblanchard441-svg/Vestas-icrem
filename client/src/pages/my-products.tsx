@@ -6,7 +6,6 @@ import { Link } from "wouter";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { getProductFallbackImage } from "@/lib/product-images";
 
 const PRODUCT_CARD_BG = "#4a5e22";
 
@@ -175,7 +174,6 @@ export default function MyProductsPage() {
               const canCollectFinal = isCollectAtEnd && cycleComplete && !alreadyCollected;
               // Montant prévu = dailyEarnings × cycleDays (calculé côté client pour affichage)
               const expectedPayout = dailyEarnings * cycleDays;
-              const fallbackImage = getProductFallbackImage(productName);
 
               return (
                 <div
@@ -203,15 +201,13 @@ export default function MyProductsPage() {
                   {/* Content */}
                   <div className="flex gap-3 px-3 pb-3">
                     <div className="w-[120px] h-[130px] rounded-xl overflow-hidden shrink-0 shadow">
-                      {up.product?.imageUrl || fallbackImage ? (
+                      {up.product?.imageUrl ? (
                         <img
-                          src={up.product?.imageUrl || fallbackImage}
+                          src={up.product.imageUrl}
                           alt={productName}
                           className="w-full h-full object-cover"
                           onError={(event) => {
-                            if (!event.currentTarget.src.endsWith(fallbackImage)) {
-                              event.currentTarget.src = fallbackImage;
-                            }
+                            event.currentTarget.style.display = "none";
                           }}
                         />
                       ) : (
