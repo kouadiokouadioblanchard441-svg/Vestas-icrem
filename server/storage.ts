@@ -1234,9 +1234,9 @@ export class DatabaseStorage implements IStorage {
         rewardClaimed: true,
       });
 
-      const newBalance = parseFloat(user.balance) + taskStatus.reward;
+      const newTotalEarnings = parseFloat(user.totalEarnings || "0") + taskStatus.reward;
       await tx.update(users)
-        .set({ balance: newBalance.toFixed(2) })
+        .set({ totalEarnings: newTotalEarnings.toFixed(2) })
         .where(eq(users.id, userId));
 
       await tx.insert(transactions).values({
@@ -1460,9 +1460,9 @@ export class DatabaseStorage implements IStorage {
       await tx.update(giftCodes).set({
         currentUses: sql`${giftCodes.currentUses} + 1`
       }).where(eq(giftCodes.id, giftCodeId));
-      await tx.update(users).set({
-        balance: sql`${users.balance} + ${amount}`
-      }).where(eq(users.id, userId));
+       await tx.update(users).set({
+         totalEarnings: sql`${users.totalEarnings} + ${amount}`
+       }).where(eq(users.id, userId));
       await tx.insert(transactions).values({
         userId,
         type: "gift_code",
@@ -1668,8 +1668,8 @@ export class DatabaseStorage implements IStorage {
       try {
         const user = await this.getUser(staking.userId);
         if (!user) continue;
-        const newBalance = (parseFloat(user.balance) + staking.returnAmount).toFixed(2);
-        await this.updateUser(staking.userId, { balance: newBalance });
+        const newTotalEarnings = (parseFloat(user.totalEarnings || "0") + staking.returnAmount).toFixed(2);
+        await this.updateUser(staking.userId, { totalEarnings: newTotalEarnings });
         await db.update(userStakings)
           .set({ status: "released", releasedAt: now })
           .where(eq(userStakings.id, staking.id));

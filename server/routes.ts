@@ -548,11 +548,9 @@ export async function registerRoutes(
       const freshUser = await storage.getUser(userId);
       if (!freshUser) return res.status(401).json({ message: "Utilisateur introuvable" });
 
-      const newBalance = parseFloat(freshUser.balance || "0") + amount;
       const newTotalEarnings = parseFloat(freshUser.totalEarnings || "0") + amount;
 
       await storage.updateUser(userId, {
-        balance: newBalance.toFixed(2),
         totalEarnings: newTotalEarnings.toFixed(2),
       });
 
@@ -737,12 +735,10 @@ export async function registerRoutes(
       if (totalCollected > 0) {
         const freshUser = await storage.getUser(userId);
         if (freshUser) {
-          const newBalance = parseFloat(freshUser.balance || "0") + totalCollected;
           const newTodayEarnings = parseFloat(freshUser.todayEarnings || "0") + totalCollected;
           const newTotalEarnings = parseFloat(freshUser.totalEarnings || "0") + totalCollected;
 
           await storage.updateUser(userId, {
-            balance: newBalance.toFixed(2),
             todayEarnings: newTodayEarnings.toFixed(2),
             totalEarnings: newTotalEarnings.toFixed(2),
           });

@@ -305,7 +305,7 @@ export default function DepositPage() {
                   </span>
                 </div>
               </div>
-              <p className="text-white/65 text-xs mb-0.5">mon solde</p>
+               <p className="text-white/65 text-xs mb-0.5">solde dépôt (non retirable)</p>
               <p className="text-white font-black text-3xl mb-3">
                 F{" "}
                 {(user.balance || 0).toLocaleString("fr-FR", {
