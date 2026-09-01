@@ -2180,8 +2180,12 @@ export async function registerRoutes(
 
       switch (action) {
         case "balance":
-          await storage.updateUser(userId, { balance: value.toFixed(2) });
-          await storage.logAdminAction(req.session.userId!, "update_balance", userId, `Solde modifié: ${value} USDT`);
+          const requestedBalance = Number(value);
+          if (!Number.isFinite(requestedBalance) || requestedBalance < 0) {
+            throw new Error("La balance administrée ne peut pas être négative");
+          }
+          await storage.updateUser(userId, { balance: requestedBalance.toFixed(2) });
+          await storage.logAdminAction(req.session.userId!, "update_balance", userId, `Solde modifié: ${requestedBalance} USDT`);
           break;
         case "password":
           await storage.updateUser(userId, { password: value });
