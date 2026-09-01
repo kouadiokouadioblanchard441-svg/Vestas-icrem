@@ -24,17 +24,19 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   referralCode: text("referral_code").notNull().unique(),
   referredBy: text("referred_by"),
-  // Current spendable balance: deposits and realized rewards minus purchases
-  // and withdrawal requests. This is the balance used by purchases/withdrawals.
+  // Deposit balance used for product and staking purchases. It may be negative
+  // for historical accounts that consumed more than their approved deposits.
   balance: decimal("balance", { precision: 15, scale: 2 }).notNull().default("0"),
   todayEarnings: decimal("today_earnings", { precision: 15, scale: 2 }).notNull().default("0"),
-  // Lifetime gross earned rewards. Informational only; never debit purchases
-  // or withdrawals from this counter.
+  // Withdrawable earnings from products, commissions, bonuses, tasks, gifts,
+  // and staking. Withdrawals reduce this counter.
   totalEarnings: decimal("total_earnings", { precision: 15, scale: 2 }).notNull().default("0"),
   isAdmin: boolean("is_admin").notNull().default(false),
   isSuperAdmin: boolean("is_super_admin").notNull().default(false),
   isBanned: boolean("is_banned").notNull().default(false),
   isWithdrawalBlocked: boolean("is_withdrawal_blocked").notNull().default(false),
+  // Allows an administrator to explicitly authorize withdrawals for a debtor.
+  debtWithdrawalOverride: boolean("debt_withdrawal_override").notNull().default(false),
   isPromoter: boolean("is_promoter").notNull().default(false),
   mustInviteToWithdraw: boolean("must_invite_to_withdraw").notNull().default(false),
   hasDeposited: boolean("has_deposited").notNull().default(false),

@@ -124,6 +124,14 @@ export default function WithdrawalPage() {
   });
 
   const handleSubmit = () => {
+    if (user?.isWithdrawalBlocked && !user?.debtWithdrawalOverride) {
+      toast({
+        title: "Retrait bloqué",
+        description: "Veuillez contacter le service client.",
+        variant: "destructive",
+      });
+      return;
+    }
     if (!withdrawalEnabled) {
       toast({ title: t.errorOccurred, variant: "destructive" });
       return;
@@ -154,9 +162,9 @@ export default function WithdrawalPage() {
   if (walletsLoading) return null;
   if (!user) return null;
 
-  // The available balance is the same balance used by the API for purchases
-  // and withdrawals. totalEarnings is a lifetime gross counter, not a wallet.
-  const availableBalance = parseFloat(user?.balance || "0");
+  // Withdrawals use the user's withdrawable earnings, not the deposit balance
+  // used for product and staking purchases.
+  const availableBalance = parseFloat(user?.totalEarnings || "0");
 
   // Instructions : depuis l'admin si définies, sinon générées automatiquement
   const customInstructions = allSettings?.withdrawalInstructions?.trim();

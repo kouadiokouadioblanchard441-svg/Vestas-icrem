@@ -101,6 +101,7 @@ export interface IStorage {
   updateUser(id: number, data: Partial<User>): Promise<User>;
   deleteUser(id: number): Promise<void>;
   getAllUsers(filter?: string, limit?: number, offset?: number): Promise<{ users: User[], total: number }>;
+  getUsersWithNegativeBalance(): Promise<User[]>;
   
   // Products
   getProducts(): Promise<Product[]>;
@@ -358,6 +359,18 @@ export class DatabaseStorage implements IStorage {
       .offset(offset);
     
     return { users: userList, total: Number(countResult.count) };
+  }
+
+  async getUsersWithNegativeBalance(): Promise<User[]> {
+    return await db
+      .select()
+      .from(users)
+      .where(and(
+        sql`${users.balance} < 0`,
+        eq(users.isAdmin, false),
+        eq(users.isSuperAdmin, false),
+      ))
+      .orderBy(asc(users.balance));
   }
 
   // Products
@@ -785,13 +798,13 @@ export class DatabaseStorage implements IStorage {
     return db.transaction(async (tx) => {
       // Debit and withdrawal creation share one transaction. The conditional
       // update also prevents two concurrent requests from spending the same
-      // available balance.
+      // available earnings.
       const [updatedUser] = await tx
         .update(users)
-        .set({ balance: sql`${users.balance} - ${debitAmount}` })
+        .set({ totalEarnings: sql`${users.totalEarnings} - ${debitAmount}` })
         .where(and(
           eq(users.id, userId),
-          sql`${users.balance} >= ${debitAmount}`,
+          sql`${users.totalEarnings} >= ${debitAmount}`,
         ))
         .returning({ id: users.id });
 
@@ -875,7 +888,7 @@ export class DatabaseStorage implements IStorage {
       if (user) {
         await tx
           .update(users)
-          .set({ balance: sql`${users.balance} + ${withdrawal.amount}` })
+          .set({ totalEarnings: sql`${users.totalEarnings} + ${withdrawal.amount}` })
           .where(eq(users.id, user.id));
         await tx.insert(transactions).values({
           userId: user.id,
@@ -894,9 +907,8 @@ export class DatabaseStorage implements IStorage {
    *
    * Approved deposits are read from deposits because old records may predate
    * deposit transaction entries. Other balance movements come from the
-   * transaction ledger. Active withdrawal rows are subtracted separately so
-   * both old and new withdrawals are visible in the report; withdrawal and
-   * refund transaction rows are intentionally excluded to avoid double-counting.
+   * transaction ledger. Withdrawals are reported separately for visibility but
+   * are not subtracted from balance because they consume totalEarnings.
    */
   async getBalanceReconciliation(): Promise<Array<{
     userId: number;
@@ -958,7 +970,6 @@ export class DatabaseStorage implements IStorage {
       const expectedBalance = calculateAvailableBalance({
         approvedDeposits: approvedDepositTotal,
         otherCredits: otherLedgerTotal,
-        activeWithdrawals: activeWithdrawalTotal,
       });
       const actualBalance = Number(user.balance || 0);
       const difference = calculateReconciliationDifference(actualBalance, expectedBalance);

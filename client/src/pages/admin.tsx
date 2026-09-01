@@ -9,6 +9,7 @@ import AdminDashboard from "@/components/admin/dashboard";
 import AdminDeposits from "@/components/admin/deposits";
 import AdminWithdrawals from "@/components/admin/withdrawals";
 import AdminUsers from "@/components/admin/users";
+import AdminDebtors from "@/components/admin/debtors";
 import AdminProducts from "@/components/admin/products";
 import AdminPaymentNumbers from "@/components/admin/payment-numbers";
 import AdminSettings from "@/components/admin/settings";
@@ -48,6 +49,7 @@ export default function AdminPage() {
               <TabsTrigger value="deposits" data-testid="tab-deposits">{t.adminTabDeposits}</TabsTrigger>
               <TabsTrigger value="withdrawals" data-testid="tab-withdrawals">{t.adminTabWithdrawals}</TabsTrigger>
               <TabsTrigger value="users" data-testid="tab-users">{t.adminTabUsers}</TabsTrigger>
+              <TabsTrigger value="debtors" data-testid="tab-debtors">Débiteurs</TabsTrigger>
               <TabsTrigger value="products" data-testid="tab-products">{t.adminTabProducts}</TabsTrigger>
               <TabsTrigger value="product-series" data-testid="tab-product-series">📦 Séries</TabsTrigger>
               <TabsTrigger value="spin-wheel" data-testid="tab-spin-wheel">🎡 Roue</TabsTrigger>
@@ -78,6 +80,10 @@ export default function AdminPage() {
 
           <TabsContent value="users" className="mt-4">
             <AdminUsers isSuperAdmin={user.isSuperAdmin} />
+          </TabsContent>
+
+          <TabsContent value="debtors" className="mt-4">
+            <AdminDebtors />
           </TabsContent>
 
           <TabsContent value="products" className="mt-4">

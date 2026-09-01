@@ -1,9 +1,8 @@
 /**
  * Accounting contract:
- * - balance is the current spendable balance. Deposits and realized rewards
- *   increase it; purchases and withdrawal requests decrease it.
- * - totalEarnings is a lifetime gross counter for earned rewards. It is not a
- *   spendable balance and is never reduced by purchases or withdrawals.
+ * - balance contains approved deposits used for purchases. Purchases reduce it,
+ *   and historical accounts may have a negative balance representing a debt.
+ * - totalEarnings contains withdrawable rewards. Withdrawals reduce it.
  */
 
 export interface BalanceReconciliationInput {

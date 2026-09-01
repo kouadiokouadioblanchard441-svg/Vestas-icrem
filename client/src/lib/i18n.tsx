@@ -852,7 +852,7 @@ const T: Record<Lang, Translations> = {
     withdrawNeedDeposit:"Veuillez d'abord recharger",
     withdrawNeedProduct:"Veuillez d'abord acheter un produit",
     withdrawNeedWallet: "Veuillez enregistrer un portefeuille",
-    withdrawBlocked:    "Votre fonction de retrait a été bloquée",
+    withdrawBlocked:    "Votre retrait est bloqué. Veuillez contacter le service client.",
     withdrawMustInvite: "Veuillez inviter un utilisateur à investir",
     withdrawAdminDisabled:"L'administrateur a désactivé les retraits",
     withdrawWalletLabel:"Portefeuille de retrait",

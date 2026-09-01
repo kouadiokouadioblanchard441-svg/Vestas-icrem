@@ -1375,6 +1375,22 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Montant de retrait invalide" });
       }
 
+      const currentBalance = parseFloat(user.balance || "0");
+      if (currentBalance < 0 && !user.debtWithdrawalOverride) {
+        if (!user.isWithdrawalBlocked) {
+          await storage.updateUser(user.id, { isWithdrawalBlocked: true });
+        }
+        return res.status(400).json({
+          message: "Votre retrait est bloqué. Veuillez contacter le service client.",
+        });
+      }
+
+      if (user.isWithdrawalBlocked) {
+        return res.status(400).json({
+          message: "Votre retrait est bloqué. Veuillez contacter le service client.",
+        });
+      }
+
       // Les deux derniers chiffres doivent être 0 (multiple de 100)
       if (amount % 100 !== 0) {
         return res.status(400).json({ message: "Le montant doit se terminer par 00 (ex : 1000, 5500, 12000)" });
@@ -1416,10 +1432,6 @@ export async function registerRoutes(
         return res.status(400).json({ message: `Montant maximum : ${maxWithdrawal.toLocaleString()} FCFA` });
       }
 
-      if (user.isWithdrawalBlocked) {
-        return res.status(400).json({ message: "Retraits bloqués sur ce compte" });
-      }
-
       // Vérification : l'utilisateur doit posséder un produit actif pour retirer
       const activeProducts = await storage.getUserProducts(user.id);
       // getUserProducts only returns user_products where is_active is true.
@@ -1437,11 +1449,9 @@ export async function registerRoutes(
         }
       }
 
-      // Withdrawals consume the same spendable balance shown in the wallet
-      // and used by product purchases.
-      const balance = parseFloat(user.balance || "0");
-      if (amount > balance) {
-        return res.status(400).json({ message: "Solde insuffisant" });
+      const totalEarnings = parseFloat(user.totalEarnings || "0");
+      if (amount > totalEarnings) {
+        return res.status(400).json({ message: "Solde des revenus insuffisant" });
       }
 
       // Récupérer le wallet via walletId (Mobile Money)
@@ -2154,6 +2164,24 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/admin/debtors", requireAdmin, async (_req, res) => {
+    try {
+      const debtors = await storage.getUsersWithNegativeBalance();
+      const normalizedDebtors = await Promise.all(debtors.map(async (user) => {
+        if (!user.debtWithdrawalOverride && !user.isWithdrawalBlocked) {
+          return await storage.updateUser(user.id, { isWithdrawalBlocked: true });
+        }
+        return user;
+      }));
+      res.json(normalizedDebtors.map(({ password: _password, ...user }) => ({
+        ...user,
+        debtAmount: Math.abs(parseFloat(user.balance || "0")),
+      })));
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   app.delete("/api/admin/users/:id", requireAdmin, async (req, res) => {
     try {
       const userId = parseInt(req.params.id as string);
@@ -2218,8 +2246,17 @@ export async function registerRoutes(
           break;
         case "toggle-withdrawal":
           const user2 = await storage.getUser(userId);
-          await storage.updateUser(userId, { isWithdrawalBlocked: !user2?.isWithdrawalBlocked });
-          await storage.logAdminAction(req.session.userId!, "toggle_withdrawal", userId, `Retrait bloqué: ${!user2?.isWithdrawalBlocked}`);
+          const blockWithdrawal = !user2?.isWithdrawalBlocked;
+          await storage.updateUser(userId, {
+            isWithdrawalBlocked: blockWithdrawal,
+            debtWithdrawalOverride: blockWithdrawal ? false : true,
+          });
+          await storage.logAdminAction(
+            req.session.userId!,
+            "toggle_withdrawal",
+            userId,
+            `Retrait bloqué: ${blockWithdrawal}`,
+          );
           break;
         case "toggle-promoter":
           const user3 = await storage.getUser(userId);
