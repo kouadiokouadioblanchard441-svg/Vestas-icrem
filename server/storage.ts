@@ -621,6 +621,13 @@ export class DatabaseStorage implements IStorage {
         balance: (parseFloat(level1User.balance || "0") + commission1).toFixed(2),
         totalEarnings: (parseFloat(level1User.totalEarnings || "0") + commission1).toFixed(2),
       });
+      await this.createReferralCommission({
+        userId: level1User.id,
+        fromUserId: userId,
+        level: 1,
+        amount: commission1.toFixed(2),
+        productId: null,
+      });
       await this.createTransaction({
         userId: level1User.id,
         type: "commission",
@@ -637,6 +644,13 @@ export class DatabaseStorage implements IStorage {
             balance: (parseFloat(level2User.balance || "0") + commission2).toFixed(2),
             totalEarnings: (parseFloat(level2User.totalEarnings || "0") + commission2).toFixed(2),
           });
+          await this.createReferralCommission({
+            userId: level2User.id,
+            fromUserId: userId,
+            level: 2,
+            amount: commission2.toFixed(2),
+            productId: null,
+          });
           await this.createTransaction({
             userId: level2User.id,
             type: "commission",
@@ -652,6 +666,13 @@ export class DatabaseStorage implements IStorage {
               await this.updateUser(level3User.id, {
               balance: (parseFloat(level3User.balance || "0") + commission3).toFixed(2),
               totalEarnings: (parseFloat(level3User.totalEarnings || "0") + commission3).toFixed(2),
+              });
+              await this.createReferralCommission({
+                userId: level3User.id,
+                fromUserId: userId,
+                level: 3,
+                amount: commission3.toFixed(2),
+                productId: null,
               });
               await this.createTransaction({
                 userId: level3User.id,

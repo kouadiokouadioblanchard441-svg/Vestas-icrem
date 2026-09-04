@@ -1607,9 +1607,7 @@ export async function registerRoutes(
 
       // Distribuer les commissions de parrainage sur les gains de tâche
       if (taskReward > 0) {
-        storage.processTaskReferralCommissions(userId, taskReward).catch((err: any) =>
-          console.error("Erreur commission tâche:", err)
-        );
+        await storage.processTaskReferralCommissions(userId, taskReward);
       }
 
       res.json({ success: true });
